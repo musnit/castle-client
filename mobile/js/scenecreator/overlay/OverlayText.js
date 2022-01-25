@@ -6,6 +6,7 @@ import {
   sendBehaviorAction,
   sendGlobalAction,
 } from '../../core/CoreEvents';
+import { useCardCreator } from '../CreateCardContext';
 import { useOptimisticBehaviorValue } from '../inspector/InspectorUtilities';
 import { OverlayTextInput } from './OverlayTextInput';
 
@@ -64,6 +65,8 @@ const styles = StyleSheet.create({
 });
 
 export const OverlayText = () => {
+  const { isBlueprintSelected } = useCardCreator();
+
   const textComponent = useCoreState('EDITOR_SELECTED_COMPONENT:Text');
   const sendAction = React.useCallback(
     (...args) => sendBehaviorAction('Text', ...args),
@@ -155,42 +158,46 @@ export const OverlayText = () => {
               <CastleIcon name="close" size={22} color="#000" />
             </Pressable>
           </View>
-          <View style={{ flexDirection: 'column' }}>
-            <View style={[styles.button, styles.singleButton]}>
-              <ColorPicker value={colorValue} setValue={onChangeColorValue} />
+          {isBlueprintSelected ? (
+            <View style={{ flexDirection: 'column' }}>
+              <View style={[styles.button, styles.singleButton]}>
+                <ColorPicker value={colorValue} setValue={onChangeColorValue} />
+              </View>
+              <Pressable style={[styles.button, styles.singleButton]} onPress={cycleAlignmentValue}>
+                <MCIcon name={'format-align-' + alignmentValue} size={20} color="#000" />
+              </Pressable>
+              <Pressable style={[styles.button, styles.singleButton]} onPress={increaseFontSize}>
+                <FeatherIcon name={'plus'} size={24} color="#000" />
+              </Pressable>
+              <Pressable style={[styles.button, styles.singleButton]} onPress={decreaseFontSize}>
+                <FeatherIcon name={'minus'} size={24} color="#000" />
+              </Pressable>
             </View>
-            <Pressable style={[styles.button, styles.singleButton]} onPress={cycleAlignmentValue}>
-              <MCIcon name={'format-align-' + alignmentValue} size={20} color="#000" />
-            </Pressable>
-            <Pressable style={[styles.button, styles.singleButton]} onPress={increaseFontSize}>
-              <FeatherIcon name={'plus'} size={24} color="#000" />
-            </Pressable>
-            <Pressable style={[styles.button, styles.singleButton]} onPress={decreaseFontSize}>
-              <FeatherIcon name={'minus'} size={24} color="#000" />
-            </Pressable>
-          </View>
+          ) : null}
         </View>
-        <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
-          <View style={styles.toolrow}>
-            {fontNames.map((fontName, i) => {
-              return (
-                <Pressable
-                  style={[
-                    styles.button,
-                    fontNameValue == fontName ? { backgroundColor: '#000' } : null,
-                  ]}
-                  key={i}
-                  onPress={() => onChangeFontNameValue(fontName)}>
-                  <Constants.CastleIcon
-                    name={'font-' + fontName}
-                    size={28}
-                    color={fontNameValue == fontName ? '#fff' : '#000'}
-                  />
-                </Pressable>
-              );
-            })}
+        {isBlueprintSelected ? (
+          <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
+            <View style={styles.toolrow}>
+              {fontNames.map((fontName, i) => {
+                return (
+                  <Pressable
+                    style={[
+                      styles.button,
+                      fontNameValue == fontName ? { backgroundColor: '#000' } : null,
+                    ]}
+                    key={i}
+                    onPress={() => onChangeFontNameValue(fontName)}>
+                    <Constants.CastleIcon
+                      name={'font-' + fontName}
+                      size={28}
+                      color={fontNameValue == fontName ? '#fff' : '#000'}
+                    />
+                  </Pressable>
+                );
+              })}
+            </View>
           </View>
-        </View>
+        ) : null}
       </View>
     </>
   );
