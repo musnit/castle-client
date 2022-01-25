@@ -24,10 +24,7 @@ public:
   Engine(const Engine &) = delete; // Prevent accidental copies
   const Engine &operator=(const Engine &) = delete;
 
-  explicit Engine(int feedVersion);
-  explicit Engine()
-      : Engine(0) {
-  }
+  explicit Engine();
 
   // expect to set once per engine use, e.g. on mount
   void setInitialParams(const char *initialParamsJson);
@@ -90,7 +87,6 @@ private:
 
   Player player { bridge };
   std::unique_ptr<Editor> editor;
-  int feedVersion;
   std::unique_ptr<Feed> feed;
   bool isEditing = false;
   LibraryClipboard libraryClipboard; // persistent for engine instance lifetime

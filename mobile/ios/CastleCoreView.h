@@ -8,8 +8,6 @@
 
 #ifdef __cplusplus
 
-#define FEED_TYPE 2
-
 #include "engine.h"
 
 namespace CastleCore {

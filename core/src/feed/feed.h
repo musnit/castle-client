@@ -4,40 +4,72 @@
 #include "bridge.h"
 #include "player.h"
 #include "gesture.h"
-#include "play_button_feed.h"
-#include "horizontal_tap_feed.h"
-#include "horizontal_swipe_feed.h"
-#include "vertical_swipe_feed.h"
+#include "core_views/core_views.h"
+
+struct FeedItem {
+  std::string deckJson;
+  std::unique_ptr<Player> player;
+  std::unique_ptr<love::graphics::Canvas> canvas;
+  bool isLoaded;
+  bool hasRunUpdate;
+  bool hasRendered;
+  bool shouldFocus;
+  float focusPercent;
+};
 
 class Feed {
 public:
-  Feed(const Feed &) = delete; // Prevent accidental copies
-  const Feed &operator=(const Feed &) = delete;
-
-  explicit Feed(int version, Bridge &bridge) {
-    if (version == 0) {
-      instance = std::make_unique<PlayButtonFeed>(bridge);
-    } else if (version == 1) {
-      instance = std::make_unique<HorizontalTapFeed>(bridge);
-    } else if (version == 2) {
-      instance = std::make_unique<HorizontalSwipeFeed>(bridge);
-    } else {
-      instance = std::make_unique<VerticalSwipeFeed>(bridge);
-    }
+  explicit Feed(Bridge &bridge_)
+      : bridge(bridge_) {
   }
 
-  void update(double dt) {
-    instance->update(dt);
-  }
-
-  void draw() {
-    instance->draw();
-  }
-
-  void fetchInitialDecks() {
-    instance->fetchInitialDecks();
-  }
+  void update(double dt);
+  void draw();
+  void fetchInitialDecks();
 
 private:
-  std::unique_ptr<FeedInterface> instance;
+  mutable love::Transform viewTransform;
+
+  Gesture gesture { nullptr };
+  std::unique_ptr<love::Shader> shader;
+  bool hasTouch = false;
+  bool deckIsFocused = false;
+  bool ignoreCurrentTouch = false;
+  float touchVelocity = 0.0;
+  float touchStartYOffset = 0.0;
+  float touchDuration = 0.0;
+  bool isAnimating = false;
+  bool fetchingDecks = false;
+  float animateFromYOffset = 0.0;
+  float animateToYOffset = 0.0;
+  float animationTimeElapsed = 0.0;
+  float lastTouchPosition = 0.0;
+  float yOffset = 0.0;
+  float elapsedTime = 0.0;
+
+  std::shared_ptr<CoreViewRenderer> coreView;
+
+  std::set<std::string> deckIds;
+  std::vector<FeedItem> decks;
+  std::string sessionId;
+
+  void makeShader();
+  void fetchMoreDecks();
+  int getCurrentIndex();
+  void loadDeckAtIndex(int i);
+  void unloadDeckAtIndex(int i);
+  void renderCardAtPosition(int idx, float position, bool isActive);
+  love::graphics::Canvas *newCanvas(int width, int height);
+  void renderToCanvas(love::graphics::Canvas *canvas, const std::function<void()> &lambda);
+
+  Lv &lv { Lv::getInstance() };
+  Bridge &bridge;
+
+  float cubicEaseInOut(float p) {
+    return 3.0 * p * p - 2.0 * p * p * p;
+  }
+
+  float smoothstep(float a, float b, float t) {
+    return (b - a) * cubicEaseInOut(t) + a;
+  }
 };

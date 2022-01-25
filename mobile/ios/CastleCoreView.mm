@@ -17,7 +17,7 @@ bool isEngineInitialized() {
 }
 
 Engine &getEngine() {
-  static Engine engine(FEED_TYPE);
+  static Engine engine;
   engineInitialized = true;
   return engine;
 }
