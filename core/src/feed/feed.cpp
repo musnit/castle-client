@@ -186,6 +186,7 @@ void Feed::update(double dt) {
             if (response.success && idx == getCurrentIndex()) {
               auto reader = response.reader;
               decks[idx].player->readScene(reader, decks[idx].player->getScene().getDeckId());
+              decks[idx].player->getScene().getGesture().setOffset(0, TOP_PADDING);
             }
           });
           decks[idx].player->getScene().setNextCardId(std::nullopt);
@@ -236,13 +237,14 @@ void Feed::renderCardAtPosition(int idx, float position, bool isActive) {
   }
 
   if (!decks[idx].canvas) {
-    decks[idx].canvas = std::unique_ptr<love::graphics::Canvas>(newCanvas(CARD_WIDTH, CARD_HEIGHT));
+    decks[idx].canvas = std::shared_ptr<love::graphics::Canvas>(newCanvas(CARD_WIDTH, CARD_HEIGHT));
   }
+  std::shared_ptr<love::graphics::Canvas> canvas = decks[idx].canvas;
 
   lv.graphics.push(love::Graphics::STACK_ALL);
 
   if (shouldDraw) {
-    renderToCanvas(decks[idx].canvas.get(), [&]() {
+    renderToCanvas(canvas.get(), [&]() {
       lv.graphics.setColor({ 1.0, 1.0, 1.0, 1.0 });
       decks[idx].player->draw();
     });
@@ -280,7 +282,7 @@ void Feed::renderCardAtPosition(int idx, float position, bool isActive) {
     shader->updateUniform(info, 1);
   }
 
-  quad->setTexture(decks[idx].canvas.get());
+  quad->setTexture(canvas.get());
   lv.graphics.setColor({ 1.0, 1.0, 1.0, 1.0 });
   quad->draw(&lv.graphics,
       love::Matrix4(CARD_WIDTH * (1.0 - cardScale) * 0.5, CARD_HEIGHT * (1.0 - cardScale) * 0.5, 0,
@@ -459,7 +461,7 @@ void Feed::loadDeckAtIndex(int i) {
     return;
   }
 
-  decks[i].player = std::make_unique<Player>(bridge);
+  decks[i].player = std::make_shared<Player>(bridge);
   std::thread t([=] {
     auto deckArchive = Archive::fromJson(decks[i].deckJson.c_str());
     deckArchive.read([&](Reader &reader) {

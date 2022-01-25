@@ -8,8 +8,8 @@
 
 struct FeedItem {
   std::string deckJson;
-  std::unique_ptr<Player> player;
-  std::unique_ptr<love::graphics::Canvas> canvas;
+  std::shared_ptr<Player> player;
+  std::shared_ptr<love::graphics::Canvas> canvas;
   bool isLoaded;
   bool hasRunUpdate;
   bool hasRendered;
