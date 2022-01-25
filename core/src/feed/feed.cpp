@@ -13,7 +13,8 @@
 
 const std::string GRAPHQL_DECK_FIELDS
     = "\ndeckId\nvariables\ncreator {\nusername\nphoto {\nsmallAvatarUrl\n}\n}\ninitialCard {\n    "
-      "    sceneDataUrl\n      }\n    ";
+      "    sceneDataUrl\n      }\n    commentsEnabled\n  comments {\n count\n }\n reactions {\n "
+      "reactionId\n isCurrentUserToggled\n count\n }";
 const char *DEFAULT_AVATAR_URL
     = "https://castle.imgix.net/"
       "36a7bdff06fefd3da13194fdff873bc5?auto=compress&fit=crop&max-w=128&max-h=128&ar=1:1";
@@ -143,6 +144,11 @@ void Feed::update(double dt) {
 
         if (fabs(preDragOffset) > DRAG_START_OFFSET) {
           dragStarted = true;
+
+          int idx = getCurrentIndex();
+          if (idx >= 0 && idx < (int)decks.size() && decks[idx].player) {
+            decks[idx].player->getScene().getSound().stopAll();
+          }
         }
       }
 
@@ -239,6 +245,7 @@ void Feed::update(double dt) {
         decks[i].player->update(dt);
         decks[i].hasRunUpdate = true;
         decks[i].hasRunUpdateSinceLastRender = true;
+        decks[i].player->getScene().getSound().stopAll();
       }
     }
 
@@ -494,6 +501,34 @@ void Feed::loadDeckAtIndex(int i) {
         reader.obj("photo", [&]() {
           decks[i].coreView->updateProp(
               "avatar", "url", reader.str("smallAvatarUrl", DEFAULT_AVATAR_URL));
+        });
+      });
+
+      bool commentsEnabled = reader.boolean("commentsEnabled", false);
+      if (commentsEnabled) {
+        reader.obj("comments", [&]() {
+          int count = reader.num("count", 0);
+          if (count > 0) {
+            decks[i].coreView->updateProp("comment-count", "text", std::to_string(count));
+          }
+        });
+      }
+
+      reader.arr("reactions", [&]() {
+        reader.each([&]() {
+          std::string reactionId = reader.str("reactionId", "");
+
+          if (reactionId == "fire") {
+            int count = reader.num("count", 0);
+            if (count > 0) {
+              decks[i].coreView->updateProp("reaction-count", "text", std::to_string(count));
+            }
+
+            bool isCurrentUserToggled = reader.boolean("isCurrentUserToggled", false);
+            if (isCurrentUserToggled) {
+              decks[i].coreView->updateProp("reaction-icon", "filename", "fire-selected.png");
+            }
+          }
         });
       });
 
