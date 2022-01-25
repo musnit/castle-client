@@ -94,17 +94,6 @@ export const CreateCardScreen = ({
   const hasSelection = selectedActorId >= 0 && activeSheet.default !== 'capturePreview';
   const editMode = globalActions?.editMode;
 
-  const onHardwareBackPress = React.useCallback(() => {
-    if (activeSheet.default) {
-      setActiveSheet({ default: null });
-    } else {
-      maybeSaveAndGoToDeck();
-    }
-
-    return true;
-  }, [activeSheet.default]);
-  useGameViewAndroidBackHandler({ onHardwareBackPress });
-
   React.useEffect(() => {
     if (isInspectorOpen && !activeSheet.default) {
       setActiveSheet({ default: 'sceneCreatorInspector' });
@@ -217,6 +206,17 @@ export const CreateCardScreen = ({
       showActionSheetWithOptions,
     ]
   );
+
+  const onHardwareBackPress = React.useCallback(() => {
+    if (activeSheet.default) {
+      setActiveSheet({ default: null });
+    } else {
+      maybeSaveAndGoToDeck();
+    }
+
+    return true;
+  }, [activeSheet.default, setActiveSheet, maybeSaveAndGoToDeck]);
+  useGameViewAndroidBackHandler({ onHardwareBackPress });
 
   const onSelectBackupData = React.useCallback(
     (data) => {
