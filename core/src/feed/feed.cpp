@@ -229,9 +229,13 @@ void Feed::renderCardAtPosition(int idx, float position, bool isActive) {
     return;
   }
 
+  if (!decks[idx].hasRunUpdate) {
+    return;
+  }
+
   bool shouldDraw = isActive;
 
-  if (decks[idx].hasRunUpdate || !decks[idx].hasRendered) {
+  if (!decks[idx].hasRendered) {
     decks[idx].hasRendered = true;
     shouldDraw = true;
   }
