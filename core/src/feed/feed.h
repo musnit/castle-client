@@ -10,11 +10,10 @@ struct FeedItem {
   std::string deckJson;
   std::shared_ptr<Player> player;
   std::shared_ptr<love::graphics::Canvas> canvas;
-  bool isLoaded;
-  bool hasRunUpdate;
-  bool hasRendered;
-  bool shouldFocus;
-  float focusPercent;
+  bool isLoaded = false;
+  bool hasRunUpdate = false;
+  bool hasRunUpdateSinceLastRender = false;
+  bool hasRendered = false;
 };
 
 class Feed {

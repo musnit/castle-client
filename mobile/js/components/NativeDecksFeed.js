@@ -38,10 +38,12 @@ let coreViews = {
     // in the direction of the velocity.
     // Test this by touching down a drag for longer than FAST_SWIPE_MAX_DURATION, and then
     // swiping and releasing.
+
+    // A drag not classified as a fast swipe will animate to the nearest card
     FAST_SWIPE_MIN_DRAG_VELOCITY: 3.0,
     DRAG_VELOCITY_ROLLING_AVERAGE_TIME: 0.1,
 
-    // A drag not classified as a fast swipe will animate to the nearest card
+    CARD_BORDER_RADIUS: 50,
   },
   FEED: {
     id: 'image1',

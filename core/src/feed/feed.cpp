@@ -100,8 +100,11 @@ void Feed::update(double dt) {
   float DRAG_VELOCITY_ROLLING_AVERAGE_TIME
       = CoreViews::getInstance().getNumConstant("DRAG_VELOCITY_ROLLING_AVERAGE_TIME");
 
-  Debug::display("fps: {}", lv.timer.getFPS());
+  int fps = lv.timer.getFPS();
+  Debug::display("fps: {}", fps);
   elapsedTime += dt;
+
+  bool shouldSkipUpdate = fps < 20;
 
   gesture.update();
   gesture.withSingleTouch([&](const Touch &touch) {
@@ -144,25 +147,29 @@ void Feed::update(double dt) {
 
     if (touch.released) {
       hasTouch = false;
-      isAnimating = true;
-      animateFromYOffset = yOffset;
-      animationTimeElapsed = 0.0;
 
-      if (touchDuration < FAST_SWIPE_MAX_DURATION
-          && fabs(yOffset - touchStartYOffset) > FAST_SWIPE_MIN_OFFSET) {
-        if (yOffset - touchStartYOffset > 0) {
-          animateToYOffset = (round(touchStartYOffset / FEED_ITEM_HEIGHT) + 1) * FEED_ITEM_HEIGHT;
+      if (dragStarted) {
+        isAnimating = true;
+        dragStarted = false;
+        animateFromYOffset = yOffset;
+        animationTimeElapsed = 0.0;
+
+        if (touchDuration < FAST_SWIPE_MAX_DURATION
+            && fabs(yOffset - touchStartYOffset) > FAST_SWIPE_MIN_OFFSET) {
+          if (yOffset - touchStartYOffset > 0) {
+            animateToYOffset = (round(touchStartYOffset / FEED_ITEM_HEIGHT) + 1) * FEED_ITEM_HEIGHT;
+          } else {
+            animateToYOffset = (round(touchStartYOffset / FEED_ITEM_HEIGHT) - 1) * FEED_ITEM_HEIGHT;
+          }
+        } else if (fabs(dragVelocity) > FAST_SWIPE_MIN_DRAG_VELOCITY) {
+          if (dragVelocity > 0) {
+            animateToYOffset = (round(touchStartYOffset / FEED_ITEM_HEIGHT) + 1) * FEED_ITEM_HEIGHT;
+          } else {
+            animateToYOffset = (round(touchStartYOffset / FEED_ITEM_HEIGHT) - 1) * FEED_ITEM_HEIGHT;
+          }
         } else {
-          animateToYOffset = (round(touchStartYOffset / FEED_ITEM_HEIGHT) - 1) * FEED_ITEM_HEIGHT;
+          animateToYOffset = round((yOffset) / FEED_ITEM_HEIGHT) * FEED_ITEM_HEIGHT;
         }
-      } else if (fabs(dragVelocity) > FAST_SWIPE_MIN_DRAG_VELOCITY) {
-        if (dragVelocity > 0) {
-          animateToYOffset = (round(touchStartYOffset / FEED_ITEM_HEIGHT) + 1) * FEED_ITEM_HEIGHT;
-        } else {
-          animateToYOffset = (round(touchStartYOffset / FEED_ITEM_HEIGHT) - 1) * FEED_ITEM_HEIGHT;
-        }
-      } else {
-        animateToYOffset = round((yOffset) / FEED_ITEM_HEIGHT) * FEED_ITEM_HEIGHT;
       }
     }
   });
@@ -178,8 +185,8 @@ void Feed::update(double dt) {
   }
 
   int idx = getCurrentIndex();
-  if (!hasTouch && !isAnimating) {
-    if (idx >= 0 && idx < (int)decks.size() && decks[idx].player) {
+  if (!dragStarted && !isAnimating) {
+    if (!shouldSkipUpdate && idx >= 0 && idx < (int)decks.size() && decks[idx].player) {
       if (decks[idx].player->hasScene()) {
         if (auto nextCardId = decks[idx].player->getScene().getNextCardId(); nextCardId) {
           API::loadCard(nextCardId->c_str(), true, [=](APIResponse &response) {
@@ -194,16 +201,18 @@ void Feed::update(double dt) {
       }
 
       decks[idx].player->update(dt);
+      decks[idx].hasRunUpdateSinceLastRender = true;
     }
 
     for (size_t i = 0; i < decks.size(); i++) {
       if (decks[i].isLoaded && !decks[i].hasRunUpdate) {
         decks[i].player->update(dt);
         decks[i].hasRunUpdate = true;
+        decks[i].hasRunUpdateSinceLastRender = true;
       }
     }
 
-    if (decks.size() > 0 && idx > decks.size() - 3) {
+    if (decks.size() > 0 && idx > (int)decks.size() - 3) {
       fetchMoreDecks();
     }
   }
@@ -238,6 +247,8 @@ void Feed::renderCardAtPosition(int idx, float position, bool isActive) {
   if (!decks[idx].hasRendered) {
     decks[idx].hasRendered = true;
     shouldDraw = true;
+  } else if (!decks[idx].hasRunUpdateSinceLastRender) {
+    shouldDraw = false;
   }
 
   if (!decks[idx].canvas) {
@@ -252,6 +263,8 @@ void Feed::renderCardAtPosition(int idx, float position, bool isActive) {
       lv.graphics.setColor({ 1.0, 1.0, 1.0, 1.0 });
       decks[idx].player->draw();
     });
+
+    decks[idx].hasRunUpdateSinceLastRender = false;
   }
 
   viewTransform.reset();
@@ -270,27 +283,27 @@ void Feed::renderCardAtPosition(int idx, float position, bool isActive) {
   }();
   lv.graphics.setShader(shader.get());
 
-  auto focusPercent = decks[idx].focusPercent;
-
-  float cardScale = 0.9 + 0.1 * focusPercent;
-
   {
     auto info = shader->getUniformInfo("radius");
-    info->floats[0] = 0.08 * (1.0 - focusPercent);
+    info->floats[0] = CoreViews::getInstance().getNumConstant("CARD_BORDER_RADIUS");
     shader->updateUniform(info, 1);
   }
 
   {
-    auto info = shader->getUniformInfo("brightness");
-    info->floats[0] = 0.8 + (0.2 * focusPercent);
+    auto info = shader->getUniformInfo("width");
+    info->floats[0] = CARD_WIDTH;
+    shader->updateUniform(info, 1);
+  }
+
+  {
+    auto info = shader->getUniformInfo("height");
+    info->floats[0] = CARD_HEIGHT;
     shader->updateUniform(info, 1);
   }
 
   quad->setTexture(canvas.get());
   lv.graphics.setColor({ 1.0, 1.0, 1.0, 1.0 });
-  quad->draw(&lv.graphics,
-      love::Matrix4(CARD_WIDTH * (1.0 - cardScale) * 0.5, CARD_HEIGHT * (1.0 - cardScale) * 0.5, 0,
-          CARD_WIDTH * cardScale, CARD_HEIGHT * cardScale, 0, 0, 0, 0));
+  quad->draw(&lv.graphics, love::Matrix4(0.0, 0.0, 0, CARD_WIDTH, CARD_HEIGHT, 0, 0, 0, 0));
   quad->setTexture(nullptr);
   lv.graphics.setShader();
 
@@ -305,26 +318,31 @@ void Feed::makeShader() {
   )";
   static const char frag[] = R"(
     uniform float radius;
-    uniform float brightness;
+    uniform float width;
+    uniform float height;
 
     vec4 effect(vec4 color, Image tex, vec2 texCoords, vec2 screenCoords) {
-      if (texCoords.x < radius && texCoords.y < radius && distance(texCoords, vec2(radius, radius)) > radius) {
-        discard;
-      }
-    
-      if (texCoords.x < radius && texCoords.y > 1.0 - radius && distance(texCoords, vec2(radius, 1.0 - radius)) > radius) {
+      float x = texCoords.x * width;
+      float y = texCoords.y * height;
+      vec2 coord = vec2(x, y);
+
+      if (x < radius && y < radius && distance(coord, vec2(radius, radius)) > radius) {
         discard;
       }
 
-      if (texCoords.x > 1.0 - radius && texCoords.y < radius && distance(texCoords, vec2(1.0 - radius, radius)) > radius) {
-        discard;
-      }
-    
-      if (texCoords.x > 1.0 - radius && texCoords.y > 1.0 - radius && distance(texCoords, vec2(1.0 - radius, 1.0 - radius)) > radius) {
+      if (x < radius && y > height - radius && distance(coord, vec2(radius, height - radius)) > radius) {
         discard;
       }
 
-      return vec4(Texel(tex, texCoords).rgb * brightness, 1.0);
+      if (x > width - radius && y < radius && distance(coord, vec2(width - radius, radius)) > radius) {
+        discard;
+      }
+
+      if (x > width - radius && y > height - radius && distance(coord, vec2(width - radius, height - radius)) > radius) {
+        discard;
+      }
+
+      return Texel(tex, texCoords);
     }
   )";
   shader.reset(
@@ -341,15 +359,16 @@ void Feed::draw() {
   float padding = 0.0;
 
   renderCardAtPosition(idx - 1, yOffset + FEED_ITEM_HEIGHT * (idx - 1) + padding, false);
-  renderCardAtPosition(idx, yOffset + FEED_ITEM_HEIGHT * idx + padding, !hasTouch && !isAnimating);
+  renderCardAtPosition(
+      idx, yOffset + FEED_ITEM_HEIGHT * idx + padding, !dragStarted && !isAnimating);
   renderCardAtPosition(idx + 1, yOffset + FEED_ITEM_HEIGHT * (idx + 1) + padding, false);
   renderCardAtPosition(idx + 2, yOffset + FEED_ITEM_HEIGHT * (idx + 2) + padding, false);
 
-  for (int i = 0; i <= idx - 2; i++) {
+  for (int i = 0; i <= idx - 3; i++) {
     unloadDeckAtIndex(i);
   }
 
-  for (int i = idx + 3; i < (int)decks.size(); i++) {
+  for (int i = idx + 4; i < (int)decks.size(); i++) {
     unloadDeckAtIndex(i);
   }
 
@@ -398,11 +417,6 @@ void Feed::fetchInitialDecks() {
 
                   FeedItem feedItem;
                   feedItem.deckJson = reader.toJson();
-                  feedItem.isLoaded = false;
-                  feedItem.hasRunUpdate = false;
-                  feedItem.hasRendered = false;
-                  feedItem.shouldFocus = false;
-                  feedItem.focusPercent = 1.0;
                   deckIds.insert(deckId);
                   decks.push_back(std::move(feedItem));
                 });
@@ -439,10 +453,6 @@ void Feed::fetchMoreDecks() {
                   if (deckIds.find(deckId) == deckIds.end()) {
                     FeedItem feedItem;
                     feedItem.deckJson = reader.toJson();
-                    feedItem.isLoaded = false;
-                    feedItem.hasRunUpdate = false;
-                    feedItem.hasRendered = false;
-                    feedItem.focusPercent = 1.0;
                     deckIds.insert(deckId);
                     decks.push_back(std::move(feedItem));
                   }
@@ -510,6 +520,7 @@ void Feed::unloadDeckAtIndex(int i) {
 
   decks[i].isLoaded = false;
   decks[i].hasRunUpdate = false;
+  decks[i].hasRunUpdateSinceLastRender = false;
   decks[i].hasRendered = false;
   decks[i].player.reset();
   decks[i].canvas.reset();

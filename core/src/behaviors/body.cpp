@@ -691,9 +691,11 @@ void BodyBehavior::recreateFixtures(ActorId actorId, BodyComponent &component, b
             points[i] = { widthScale * (x + dX), heightScale * (y + dY) };
             angle -= 2 * M_PI / 8;
           }
-          b2PolygonShape shape;
-          shape.Set(points.data(), 8);
-          addFixture(component, &shape);
+          if (!isDegeneratePoly(points.data(), 8)) {
+            b2PolygonShape shape;
+            shape.Set(points.data(), 8);
+            addFixture(component, &shape);
+          }
         }
       } else if (fixture.shapeType() == "polygon") {
         // Polygon with given points
