@@ -12,7 +12,7 @@ class SoundTool;
 #define PATTERN_DEFAULT_VIEW_WIDTH 12.0f
 #define PATTERN_MIN_VIEW_WIDTH 4.0f
 #define PATTERN_MAX_VIEW_WIDTH 36.0f
-#define PATTERN_DEFAULT_VIEW_BOUND 5.0f
+#define PATTERN_DEFAULT_VIEW_X_BOUND 5.0f
 
 //
 // TrackTool visualizes and edits (part of) a Track, including an Instrument and a Pattern.
@@ -54,8 +54,8 @@ private:
   GesturePanZoom panZoom {
     PATTERN_MIN_VIEW_WIDTH,
     PATTERN_MAX_VIEW_WIDTH,
-    { 0.0f, -PATTERN_DEFAULT_VIEW_BOUND },
-    { PATTERN_DEFAULT_VIEW_BOUND, PATTERN_DEFAULT_VIEW_BOUND },
+    { 0.0f, -7.0f },
+    { PATTERN_DEFAULT_VIEW_X_BOUND, 9.0f },
   };
   Grid grid;
   void drawGrid(float viewScale, love::Vector2 &viewOffset);
@@ -64,6 +64,7 @@ private:
   mutable love::Transform viewTransform;
   love::Vector2 viewPosition;
   float viewWidth = PATTERN_DEFAULT_VIEW_WIDTH;
+  void zoomToFit();
 
   // adding notes
   bool hasTouch = false;

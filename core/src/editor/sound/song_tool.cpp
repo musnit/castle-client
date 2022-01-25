@@ -17,14 +17,13 @@ void SongTool::resetState() {
   hasTouch = false;
   selectedSubtool = Subtool::Select;
   viewWidth = SONG_DEFAULT_VIEW_WIDTH;
+  viewPosition.x = 0.0f;
+  viewPosition.y = 0.0f;
 }
 
 void SongTool::onSetActive() {
   hasTouch = false;
   selectedSubtool = Subtool::Select;
-  viewWidth = SONG_DEFAULT_VIEW_WIDTH;
-  viewPosition.x = 0.0f;
-  viewPosition.y = 0.0f;
   dragPatternId = "";
   dragPatternTouchDelta.x = 0.0f;
   dragPatternTouchDelta.y = 0.0f;

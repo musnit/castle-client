@@ -21,12 +21,47 @@ void TrackTool::resetState() {
 void TrackTool::onSetActive() {
   hasTouch = false;
   selectedSubtool = Subtool::Select;
-  viewWidth = PATTERN_DEFAULT_VIEW_WIDTH;
-  viewPosition.x = 0.0f;
-  viewPosition.y = 0.0f;
+  zoomToFit();
   tempNote.time = -1;
   tempNote.key = 999;
   updateViewConstraints();
+}
+
+void TrackTool::zoomToFit() {
+  viewWidth = PATTERN_DEFAULT_VIEW_WIDTH;
+  viewPosition.x = 0.0f;
+  viewPosition.y = 0.0f;
+  // find min note and max note,
+  // set view width to try to encompass the range between them
+  // set view y to center between them
+  if (auto pattern = soundTool.getSelectedPattern(); pattern) {
+    float minY = std::numeric_limits<float>::max(), maxY = -minY;
+    for (auto &[time, notes] : *pattern) {
+      auto x = time * gridCellSize;
+      if (x > PATTERN_MAX_VIEW_WIDTH) {
+        // don't consider notes that are too far along to be visible at first
+        break;
+      } else {
+        for (auto &note : notes) {
+          auto y = ((note.key - 60) * -gridCellSize) - gridCellSize;
+          if (y < minY) {
+            minY = y;
+          }
+          if (y > maxY) {
+            maxY = y;
+          }
+        }
+      }
+    }
+    // add top and bottom buffer
+    minY -= gridCellSize * 3.0f;
+    maxY += gridCellSize * 8.0f;
+    auto range = maxY - minY;
+    auto center = (maxY + minY) * 0.5f;
+    viewPosition.y = center;
+    viewWidth = std::max(
+        PATTERN_DEFAULT_VIEW_WIDTH, std::min(PATTERN_MAX_VIEW_WIDTH, range * (5.0f / 7.0f)));
+  }
 }
 
 void TrackTool::updateViewConstraints() {
@@ -40,7 +75,7 @@ void TrackTool::updateViewConstraints() {
       lastTime += scene.getClock().getStepsPerBeat();
     }
   }
-  panZoom.viewMax.x = std::max(PATTERN_DEFAULT_VIEW_BOUND, float(lastTime * gridCellSize));
+  panZoom.viewMax.x = std::max(PATTERN_DEFAULT_VIEW_X_BOUND, float(lastTime * gridCellSize));
 }
 
 void TrackTool::update(double dt) {
