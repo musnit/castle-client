@@ -33,6 +33,8 @@ public:
   bool hasBackgroundColor = false;
   float backgroundColor[3];
   bool isTouchDown = false;
+  float borderRadius = -1;
+  inline static std::unique_ptr<love::Shader> borderRadiusShader = nullptr;
 };
 
 class CoreViewRenderer {
@@ -76,6 +78,8 @@ public:
   void setJson(std::string json);
 
   std::shared_ptr<CoreViewRenderer> getRenderer(std::string layoutTemplateName);
+
+  static void hexToRGBFloat(std::string hex, float *out);
 
 private:
   friend class CoreViewRenderer;

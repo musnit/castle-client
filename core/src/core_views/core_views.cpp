@@ -3,6 +3,10 @@
 #include "api.h"
 #include "behaviors/text.h"
 
+namespace CastleCore {
+const char *getAssetsDirectoryPath();
+}
+
 //
 // CoreViewRenderer
 //
@@ -138,6 +142,30 @@ std::shared_ptr<CoreView> CoreViews::readViewFromJson(Reader &reader) {
   return view;
 }
 
+void CoreViews::hexToRGBFloat(std::string hex, float *out) {
+  if (hex.at(0) == '#') {
+    hex = hex.substr(1);
+  }
+
+  unsigned int rgb[3];
+  rgb[0] = 0;
+  rgb[1] = 0;
+  rgb[2] = 0;
+
+  if (hex.length() == 6) {
+    sscanf(hex.c_str(), "%02x%02x%02x", &rgb[0], &rgb[1], &rgb[2]);
+  } else if (hex.length() == 3) {
+    sscanf(hex.c_str(), "%01x%01x%01x", &rgb[0], &rgb[1], &rgb[2]);
+    rgb[0] = (rgb[0] + 1) * 16 - 1;
+    rgb[1] = (rgb[1] + 1) * 16 - 1;
+    rgb[2] = (rgb[2] + 1) * 16 - 1;
+  }
+
+  out[0] = rgb[0] / 255.0;
+  out[1] = rgb[1] / 255.0;
+  out[2] = rgb[2] / 255.0;
+}
+
 //
 // Views
 //
@@ -149,12 +177,12 @@ void CoreView::baseRead(Reader &reader) {
   height = reader.num("height", 0);
   id = reader.str("id");
   onTapHandlerId = reader.str("onTapHandlerId");
+  borderRadius = reader.num("borderRadius", -1);
 
   auto backgroundColorStr = reader.str("backgroundColor");
   if (backgroundColorStr) {
     hasBackgroundColor = true;
-    int num = std::stoi(std::string(*backgroundColorStr).substr(1), nullptr, 16);
-    DrawUtil::hexToRGBFloat(num, backgroundColor);
+    CoreViews::hexToRGBFloat(*backgroundColorStr, backgroundColor);
   }
 
   if (reader.has("children")) {
@@ -169,6 +197,67 @@ void CoreView::baseRead(Reader &reader) {
 }
 
 void CoreView::baseRender() {
+  if (borderRadius > 0) {
+    if (!borderRadiusShader) {
+      static const char vert[] = R"(
+        vec4 position(mat4 transformProjection, vec4 vertexPosition) {
+          return transformProjection * vertexPosition;
+        }
+      )";
+      static const char frag[] = R"(
+        uniform float radius;
+        uniform float width;
+        uniform float height;
+
+        vec4 effect(vec4 color, Image tex, vec2 texCoords, vec2 screenCoords) {
+          float x = texCoords.x * width;
+          float y = texCoords.y * height;
+          vec2 coord = vec2(x, y);
+
+          if (x < radius && y < radius && distance(coord, vec2(radius, radius)) > radius) {
+            discard;
+          }
+
+          if (x < radius && y > height - radius && distance(coord, vec2(radius, height - radius)) > radius) {
+            discard;
+          }
+
+          if (x > width - radius && y < radius && distance(coord, vec2(width - radius, radius)) > radius) {
+            discard;
+          }
+
+          if (x > width - radius && y > height - radius && distance(coord, vec2(width - radius, height - radius)) > radius) {
+            discard;
+          }
+
+          return Texel(tex, texCoords);
+        }
+      )";
+      borderRadiusShader.reset(
+          lv.graphics.newShader(lv.wrapVertexShaderCode(vert), lv.wrapFragmentShaderCode(frag)));
+    }
+
+    lv.graphics.setShader(borderRadiusShader.get());
+
+    {
+      auto info = borderRadiusShader->getUniformInfo("radius");
+      info->floats[0] = borderRadius;
+      borderRadiusShader->updateUniform(info, 1);
+    }
+
+    {
+      auto info = borderRadiusShader->getUniformInfo("width");
+      info->floats[0] = width;
+      borderRadiusShader->updateUniform(info, 1);
+    }
+
+    {
+      auto info = borderRadiusShader->getUniformInfo("height");
+      info->floats[0] = height;
+      borderRadiusShader->updateUniform(info, 1);
+    }
+  }
+
   if (hasBackgroundColor) {
     static auto quad = [&]() {
       std::vector<love::graphics::Vertex> quadVerts {
@@ -213,14 +302,13 @@ class ImageView : public CoreView {
     Stretch,
   };
 
-  love::data::ByteData *byteData = nullptr;
+  love::Data *byteData = nullptr;
   love::image::ImageData *imageData = nullptr;
   love::graphics::Image *image = nullptr;
   ResizeMode resizeMode;
 
   void read(Reader &reader) {
     auto url = reader.str("url");
-
     if (url) {
       API::getData(*url, [=](APIDataResponse &response) {
         love::data::DataModule *dataModule
@@ -228,6 +316,12 @@ class ImageView : public CoreView {
 
         byteData = dataModule->newByteData(response.data, response.length);
       });
+    }
+
+    auto filename = reader.str("filename");
+    if (filename) {
+      auto fullPath = CastleCore::getAssetsDirectoryPath() + std::string("/") + *filename;
+      byteData = lv.filesystem.read(fullPath.c_str());
     }
 
     std::string resizeModeStr = reader.str("resizeMode", "stretch");
@@ -325,8 +419,7 @@ class TextView : public CoreView {
 
     auto colorStr = reader.str("color");
     if (colorStr) {
-      int num = std::stoi(std::string(*colorStr).substr(1), nullptr, 16);
-      DrawUtil::hexToRGBFloat(num, color);
+      CoreViews::hexToRGBFloat(*colorStr, color);
     }
   }
 

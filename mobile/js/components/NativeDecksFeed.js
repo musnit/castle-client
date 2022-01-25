@@ -11,7 +11,7 @@ let coreViews = {
     y: 200,
     width: 600,
     height: 700,
-    backgroundColor: '#ff0000',
+    backgroundColor: '#7F0000',
     onTap: () => {
       console.log('on tap');
     },
@@ -19,12 +19,14 @@ let coreViews = {
       {
         id: 'image2',
         type: 'image',
+        //borderRadius: 100,
+        backgroundColor: '#ccc',
         x: 50,
-        y: 200,
-        width: 300,
-        height: 500,
-        backgroundColor: '#0000ff',
-        url: 'https://castle.imgix.net/235c0b44f27876200a91f03912659e8c?auto=compress&fit=crop&min-w=420&ar=5:7',
+        y: 250,
+        width: 100,
+        height: 100,
+        //url: 'https://castle.imgix.net/235c0b44f27876200a91f03912659e8c?auto=compress&fit=crop&min-w=420&ar=5:7',
+        filename: 'fire-selected.png',
         resizeMode: 'contain',
         onTap: () => {
           console.log('on tap 2');
@@ -38,7 +40,7 @@ let coreViews = {
         width: 400,
         height: 200,
         color: '#00FFFF',
-        backgroundColor: '#000000',
+        backgroundColor: '#222',
         textAlign: 'center',
         fontSize: 8,
         fontFamily: 'Overlay',
