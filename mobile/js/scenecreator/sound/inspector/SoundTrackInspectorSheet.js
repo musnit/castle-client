@@ -103,6 +103,7 @@ export const SoundTrackInspectorSheet = ({ isOpen }) => {
       extraTopInset={8}
       renderContent={renderContent}
       renderHeader={renderHeader}
+      persistLastSnapWhenOpened
     />
   );
 };

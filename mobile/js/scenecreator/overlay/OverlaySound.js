@@ -118,19 +118,6 @@ export const OverlaySound = ({ setActiveSheet, activeSheet }) => {
             <CastleIcon name="close" size={22} color="#000" />
           </Pressable>
         </View>
-        <View style={styles.toolbar}>
-          {subtools.map((tool, ii) => {
-            const { name, icon } = tool;
-            return (
-              <Pressable
-                key={`toolgroup-${mode}-${ii}`}
-                style={makeButtonStyles(selectedSubtool, name)}
-                onPress={() => onChangeSubtool(name)}>
-                <CastleIcon name={icon} size={22} color={makeIconColor(selectedSubtool, name)} />
-              </Pressable>
-            );
-          })}
-        </View>
       </View>
       <View style={styles.rightContainer}>
         <View style={styles.toolbar}>
@@ -155,6 +142,19 @@ export const OverlaySound = ({ setActiveSheet, activeSheet }) => {
             }>
             <MCIcon name="arrow-right" size={22} color={viewFollowsPlayhead ? '#fff' : '#000'} />
           </Pressable>
+        </View>
+        <View style={styles.toolbar}>
+          {subtools.map((tool, ii) => {
+            const { name, icon } = tool;
+            return (
+              <Pressable
+                key={`toolgroup-${mode}-${ii}`}
+                style={makeButtonStyles(selectedSubtool, name)}
+                onPress={() => onChangeSubtool(name)}>
+                <CastleIcon name={icon} size={22} color={makeIconColor(selectedSubtool, name)} />
+              </Pressable>
+            );
+          })}
         </View>
       </View>
     </View>
