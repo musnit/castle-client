@@ -3,6 +3,8 @@
 #include "api.h"
 #include "behaviors/text.h"
 
+#define TOUCH_DOWN_ALPHA 0.7f
+
 namespace CastleCore {
 const char *getAssetsDirectoryPath();
 }
@@ -41,6 +43,7 @@ void CoreViewRenderer::update(double dt) {
 
 struct CoreViewsGestureEvent {
   PROP(std::string, gestureHandlerId);
+  PROP(std::string, props);
 };
 
 void CoreViewRenderer::handleGesture(Gesture &gesture) {
@@ -69,14 +72,22 @@ void CoreViewRenderer::handleGesture(Gesture &gesture) {
     isTouchOverView = newIsTouchOverView;
 
     if (touch.released) {
-      (*touchView)->baseHandleTouch(CoreView::TouchEvent::Up);
-
       if (isTouchOverView) {
+        (*touchView)->baseHandleTouch(CoreView::TouchEvent::Up);
         (*touchView)->baseHandleTouch(CoreView::TouchEvent::Tap);
 
         if ((*touchView)->onTapHandlerId) {
           CoreViewsGestureEvent ev;
           ev.gestureHandlerId = *((*touchView)->onTapHandlerId);
+
+          Archive archive;
+          archive.write([&](Archive::Writer &writer) {
+            for (auto it = jsGestureProps.cbegin(); it != jsGestureProps.cend(); ++it) {
+              writer.str(it->first, it->second);
+            }
+          });
+
+          ev.props = archive.toJson();
           bridge.sendEvent("CORE_VIEWS_GESTURE", ev);
         }
       }
@@ -107,6 +118,10 @@ void CoreViewRenderer::updateProp(std::string viewId, std::string key, std::stri
   archive.read([&](Reader &reader) {
     (*view)->baseRead(reader, nullptr, nullptr);
   });
+}
+
+void CoreViewRenderer::updateJSGestureProp(std::string key, std::string value) {
+  jsGestureProps[key] = value;
 }
 
 std::optional<CoreView *> CoreViewRenderer::getViewForId(CoreView *root, std::string id) {
@@ -288,8 +303,13 @@ void CoreView::baseRead(Reader &reader, CoreView *parent,
     top = parentHeight - CoreViews::getInstance().readInt(reader, "bottom", parentHeight) - height;
   }
 
-  id = reader.str("id");
-  onTapHandlerId = reader.str("onTapHandlerId");
+  if (reader.has("id")) {
+    id = reader.str("id");
+  }
+
+  if (reader.has("onTapHandlerId")) {
+    onTapHandlerId = reader.str("onTapHandlerId");
+  }
 
   if (reader.has("borderRadius")) {
     borderRadius = reader.num("borderRadius", -1);
@@ -324,6 +344,7 @@ void CoreView::baseRender() {
         uniform float radius;
         uniform float width;
         uniform float height;
+        uniform float alpha;
 
         vec4 effect(vec4 color, Image tex, vec2 texCoords, vec2 screenCoords) {
           float x = texCoords.x * width;
@@ -346,7 +367,7 @@ void CoreView::baseRender() {
             discard;
           }
 
-          return Texel(tex, texCoords);
+          return vec4(Texel(tex, texCoords).rgb, alpha);
         }
       )";
       borderRadiusShader.reset(
@@ -372,6 +393,12 @@ void CoreView::baseRender() {
       info->floats[0] = height;
       borderRadiusShader->updateUniform(info, 1);
     }
+
+    {
+      auto info = borderRadiusShader->getUniformInfo("alpha");
+      info->floats[0] = isTouchDown ? TOUCH_DOWN_ALPHA : 1.0f;
+      borderRadiusShader->updateUniform(info, 1);
+    }
   }
 
   if (hasBackgroundColor) {
@@ -386,8 +413,8 @@ void CoreView::baseRender() {
           quadVerts, love::graphics::PRIMITIVE_TRIANGLE_FAN, love::graphics::vertex::USAGE_STATIC);
     }();
 
-    lv.graphics.setColor(
-        { backgroundColor[0], backgroundColor[1], backgroundColor[2], isTouchDown ? 0.6f : 1.0f });
+    lv.graphics.setColor({ backgroundColor[0], backgroundColor[1], backgroundColor[2],
+        isTouchDown ? TOUCH_DOWN_ALPHA : 1.0f });
     quad->draw(&lv.graphics, love::Matrix4(0, 0, 0, width, height, 0, 0, 0, 0));
   }
 
@@ -481,7 +508,7 @@ class ImageView : public CoreView {
           quadVerts, love::graphics::PRIMITIVE_TRIANGLE_FAN, love::graphics::vertex::USAGE_STATIC);
     }();
 
-    lv.graphics.setColor({ 1.0, 1.0, 1.0, isTouchDown ? 0.6f : 1.0f });
+    lv.graphics.setColor({ 1.0, 1.0, 1.0, isTouchDown ? TOUCH_DOWN_ALPHA : 1.0f });
     quad->setTexture(image);
 
     if (resizeMode == ResizeMode::Stretch) {
@@ -577,7 +604,7 @@ class TextView : public CoreView {
       y = (height - (downscale * font->getHeight())) * 0.5;
     }
 
-    lv.graphics.setColor({ color[0], color[1], color[2], 1.0 });
+    lv.graphics.setColor({ color[0], color[1], color[2], isTouchDown ? TOUCH_DOWN_ALPHA : 1.0f });
     lv.graphics.scale(downscale, downscale);
 
     lv.graphics.setFont(font);

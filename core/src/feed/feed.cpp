@@ -12,7 +12,8 @@
 #define FEED_ITEM_WIDTH (CARD_WIDTH + 200)
 
 const std::string GRAPHQL_DECK_FIELDS
-    = "\ndeckId\nvariables\ncreator {\nusername\nphoto {\nsmallAvatarUrl\n}\n}\ninitialCard {\n    "
+    = "\ndeckId\nvariables\ncreator {\nuserId\nusername\nphoto "
+      "{\nsmallAvatarUrl\n}\n}\ninitialCard {\n    "
       "    sceneDataUrl\n      }\n    commentsEnabled\n  comments {\n count\n }\n reactions {\n "
       "reactionId\n isCurrentUserToggled\n count\n }";
 const char *DEFAULT_AVATAR_URL
@@ -99,6 +100,15 @@ int Feed::getCurrentIndex() {
   }
 
   return idx;
+}
+
+Scene *Feed::getScene() {
+  int idx = getCurrentIndex();
+  if (idx >= 0 && idx < (int)decks.size() && decks[idx].player) {
+    return &(decks[idx].player->getScene());
+  }
+
+  return nullptr;
 }
 
 void Feed::update(double dt) {
@@ -490,6 +500,7 @@ void Feed::loadDeckAtIndex(int i) {
     auto deckArchive = Archive::fromJson(decks[i].deckJson.c_str());
     deckArchive.read([&](Reader &reader) {
       std::string deckId = reader.str("deckId", "");
+      decks[i].coreView->updateJSGestureProp("deckId", deckId);
 
       reader.arr("variables", [&]() {
         decks[i].player->readVariables(reader);
@@ -497,6 +508,7 @@ void Feed::loadDeckAtIndex(int i) {
 
       reader.obj("creator", [&]() {
         decks[i].coreView->updateProp("username", "text", reader.str("username", ""));
+        decks[i].coreView->updateJSGestureProp("userId", reader.str("userId", ""));
 
         reader.obj("photo", [&]() {
           decks[i].coreView->updateProp(
@@ -505,6 +517,7 @@ void Feed::loadDeckAtIndex(int i) {
       });
 
       bool commentsEnabled = reader.boolean("commentsEnabled", false);
+      decks[i].coreView->updateJSGestureProp("commentsEnabled", commentsEnabled ? "true" : "false");
       if (commentsEnabled) {
         reader.obj("comments", [&]() {
           int count = reader.num("count", 0);

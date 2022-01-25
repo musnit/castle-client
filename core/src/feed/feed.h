@@ -27,6 +27,7 @@ public:
   void draw();
   void fetchInitialDecks();
   void setWindowSize(int w, int h);
+  Scene *getScene(); // for screenshot
 
 private:
   mutable love::Transform viewTransform;

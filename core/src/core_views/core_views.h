@@ -56,6 +56,7 @@ public:
   void render();
 
   void updateProp(std::string viewId, std::string key, std::string value);
+  void updateJSGestureProp(std::string key, std::string value);
 
 private:
   void renderView(CoreView *view);
@@ -69,6 +70,7 @@ private:
   Lv &lv { Lv::getInstance() };
   mutable love::Transform viewTransform;
   std::unordered_map<std::string, std::unordered_map<std::string, std::string>> props;
+  std::unordered_map<std::string, std::string> jsGestureProps;
 
   std::optional<CoreView *> getViewForId(CoreView *root, std::string id);
   std::optional<CoreView *> getViewAtPoint(CoreView *root, float x, float y);

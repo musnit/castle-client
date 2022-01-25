@@ -58,6 +58,7 @@ public:
   Scene &getScene();
   Editor *maybeGetEditor();
   Player &getPlayer();
+  Feed *maybeGetFeed();
   bool getIsEditing();
   LibraryClipboard &getLibraryClipboard();
 
@@ -116,6 +117,10 @@ inline Player &Engine::getPlayer() {
 
 inline Editor *Engine::maybeGetEditor() {
   return editor.get();
+}
+
+inline Feed *Engine::maybeGetFeed() {
+  return feed.get();
 }
 
 inline bool Engine::getIsEditing() {

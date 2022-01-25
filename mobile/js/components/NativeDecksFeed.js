@@ -2,6 +2,7 @@ import React from 'react';
 import { GameView } from '../game/GameView';
 import { useListen } from '../core/CoreEvents';
 import * as Constants from '../Constants';
+import { useNavigation } from '../ReactNavigation';
 
 let coreViews = {
   CONSTANTS: {
@@ -52,8 +53,8 @@ let coreViews = {
     width: '100%',
     height: 60,
     //backgroundColor: '#f00',
-    onTap: () => {
-      console.log('on tap');
+    onTap: (props) => {
+      props.push('Profile', { userId: props.userId });
     },
     children: [
       {
@@ -65,8 +66,8 @@ let coreViews = {
         width: 60,
         height: 60,
         resizeMode: 'contain',
-        onTap: () => {
-          console.log('on tap 2');
+        onTap: (props) => {
+          props.push('Profile', { userId: props.userId });
         },
       },
       {
@@ -82,6 +83,9 @@ let coreViews = {
         fontFamily: 'Overlay',
         textAlignVertical: 'top',
         // backgroundColor: '#f00',
+        onTap: (props) => {
+          props.push('Profile', { userId: props.userId });
+        },
       },
       {
         filename: 'comment.png',
@@ -91,8 +95,11 @@ let coreViews = {
         width: 70,
         height: 70,
         resizeMode: 'contain',
-        onTap: () => {
-          console.log('on tap 2');
+        onTap: (params) => {
+          params.onPressComments({ deck: {
+            deckId: params.deckId,
+            commentsEnabled: params.commentsEnabled == 'true',
+          }});
         },
       },
       {
@@ -108,6 +115,12 @@ let coreViews = {
         fontFamily: 'Overlay',
         textAlignVertical: 'top',
         // backgroundColor: '#f00',
+        onTap: (params) => {
+          params.onPressComments({ deck: {
+            deckId: params.deckId,
+            commentsEnabled: params.commentsEnabled == 'true',
+          }});
+        },
       },
       {
         id: 'reaction-icon',
@@ -167,13 +180,27 @@ function getCoreViews() {
   return JSON.stringify(coreViews);
 }
 
-export const NativeDecksFeed = () => {
+export const NativeDecksFeed = ({ onPressComments }) => {
+  const { push, navigate } = useNavigation();
+
   useListen({
     eventName: 'CORE_VIEWS_GESTURE',
     handler: (params) => {
+      let props = {};
+      try {
+        props = JSON.parse(params.props);
+      } catch (e) {}
+
+      props = {
+        ...props,
+        push,
+        navigate,
+        onPressComments,
+      };
+
       let gestureHandlerId = params.gestureHandlerId;
       if (coreViewGestureHandlers[gestureHandlerId]) {
-        coreViewGestureHandlers[gestureHandlerId]();
+        coreViewGestureHandlers[gestureHandlerId](props);
       }
     },
   });
