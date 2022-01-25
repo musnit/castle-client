@@ -101,7 +101,7 @@ export const Provider = (props) => {
 export const useCoreEvents = () => React.useContext(CoreEventsContext);
 
 export const useListen = ({ eventName, handler, onRemove }) => {
-  const savedHandler = React.useRef();
+  const savedHandler = React.useRef(handler);
   const { eventsReady } = useCoreEvents();
 
   React.useEffect(() => {
@@ -112,7 +112,7 @@ export const useListen = ({ eventName, handler, onRemove }) => {
     if (eventsReady) {
       let mounted = true;
       const handle = listen(eventName, (params) => {
-        if (mounted) {
+        if (mounted && savedHandler.current) {
           savedHandler.current(params);
         }
       });
