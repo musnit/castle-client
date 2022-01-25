@@ -113,6 +113,8 @@ public:
   static OverlayStyle overlayStyle;
 
   static void loadFontResources(Lv &lv);
+  static TextFontResource *getFontResource(std::string);
+  static love::Font *getFont(TextFontResource *fontResource, float pixelSize);
 
 private:
   friend struct ShowResponse;
@@ -124,7 +126,6 @@ private:
 
   inline static std::unordered_map<std::string, TextFontResource> fontResources;
   mutable love::Font *overlayFont = nullptr;
-  love::Font *getFont(TextFontResource *fontResource, float pixelSize) const;
   love::Font *getOverlayFont() const;
 
   std::unique_ptr<love::Canvas> previewCanvas;
@@ -135,3 +136,7 @@ private:
 };
 
 inline TextBehavior::OverlayStyle TextBehavior::overlayStyle;
+
+inline TextFontResource *TextBehavior::getFontResource(std::string resource) {
+  return &fontResources[resource];
+}

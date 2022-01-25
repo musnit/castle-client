@@ -21,13 +21,18 @@ public:
   virtual void update(double dt) {
   }
 
-  void readBaseProperties(Reader &reader);
+  void baseRead(Reader &reader);
+  void baseRender();
+  void baseHandleTouch(TouchEvent touch);
 
   double x, y, width, height;
   std::optional<std::string> onTapHandlerId;
   std::optional<std::string> id;
   std::vector<std::shared_ptr<CoreView>> children;
   Lv &lv { Lv::getInstance() };
+  bool hasBackgroundColor = false;
+  float backgroundColor[3];
+  bool isTouchDown = false;
 };
 
 class CoreViewRenderer {

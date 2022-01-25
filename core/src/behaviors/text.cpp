@@ -202,7 +202,7 @@ void TextBehavior::handlePrePerform() {
 // Draw
 //
 
-love::Font *TextBehavior::getFont(TextFontResource *fontResource, float pixelSize) const {
+love::Font *TextBehavior::getFont(TextFontResource *fontResource, float pixelSize) {
   for (auto &entry : fontResource->entries) {
     if (entry.pixelSize > 1024 || float(entry.pixelSize) > pixelSize) {
       return entry.font.get();
@@ -214,12 +214,12 @@ love::Font *TextBehavior::getFont(TextFontResource *fontResource, float pixelSiz
         = std::floorf(baseSize * dpiScale + 0.5f); // From 'freetype/TrueTypeRasterizer.cpp'
     if (candidatePixelSize > 1024 || candidatePixelSize > pixelSize) {
       Debug::log("dpiScale: {}", dpiScale);
-      love::StrongRef rasterizer(lv.font.newTrueTypeRasterizer(fontResource->data, baseSize,
-                                     dpiScale, love::TrueTypeRasterizer::HINTING_NORMAL),
+      love::StrongRef rasterizer(Lv::getInstance().font.newTrueTypeRasterizer(fontResource->data,
+                                     baseSize, dpiScale, love::TrueTypeRasterizer::HINTING_NORMAL),
           love::Acquire::NORETAIN);
       fontResource->entries.push_back({
           int(candidatePixelSize),
-          std::unique_ptr<love::Font>(lv.graphics.newFont(rasterizer)),
+          std::unique_ptr<love::Font>(Lv::getInstance().graphics.newFont(rasterizer)),
       });
       return fontResource->entries.back().font.get();
     }

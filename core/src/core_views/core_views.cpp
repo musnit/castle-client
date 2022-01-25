@@ -1,6 +1,7 @@
 #include "core_views.h"
 #include "editor/draw/util.h"
 #include "api.h"
+#include "behaviors/text.h"
 
 //
 // CoreViewRenderer
@@ -22,7 +23,7 @@ void CoreViewRenderer::renderView(std::shared_ptr<CoreView> view) {
   viewTransform.translate(view->x, view->y);
   lv.graphics.applyTransform(&viewTransform);
 
-  view->render();
+  view->baseRender();
 
   for (size_t i = 0; i < view->children.size(); i++) {
     renderView(view->children[i]);
@@ -44,7 +45,7 @@ void CoreViewRenderer::handleGesture(Gesture &gesture) {
       touchView = getViewAtPoint(layout, touch.screenPos.x, touch.screenPos.y);
       if (touchView) {
         isTouchOverView = true;
-        (*touchView)->handleTouch(CoreView::TouchEvent::Down);
+        (*touchView)->baseHandleTouch(CoreView::TouchEvent::Down);
       }
     }
 
@@ -56,18 +57,18 @@ void CoreViewRenderer::handleGesture(Gesture &gesture) {
     bool newIsTouchOverView = newTouchView == touchView;
 
     if (isTouchOverView && !newIsTouchOverView) {
-      (*touchView)->handleTouch(CoreView::TouchEvent::Up);
+      (*touchView)->baseHandleTouch(CoreView::TouchEvent::Up);
     } else if (!isTouchOverView && newIsTouchOverView) {
-      (*touchView)->handleTouch(CoreView::TouchEvent::Down);
+      (*touchView)->baseHandleTouch(CoreView::TouchEvent::Down);
     }
 
     isTouchOverView = newIsTouchOverView;
 
     if (touch.released) {
-      (*touchView)->handleTouch(CoreView::TouchEvent::Up);
+      (*touchView)->baseHandleTouch(CoreView::TouchEvent::Up);
 
       if (isTouchOverView) {
-        (*touchView)->handleTouch(CoreView::TouchEvent::Tap);
+        (*touchView)->baseHandleTouch(CoreView::TouchEvent::Tap);
 
         if ((*touchView)->onTapHandlerId) {
           CoreViewsGestureEvent ev;
@@ -133,8 +134,7 @@ std::shared_ptr<CoreView> CoreViews::getView(std::string layoutTemplateName) {
 std::shared_ptr<CoreView> CoreViews::readViewFromJson(Reader &reader) {
   auto type = reader.str("type", "");
   auto view = getViewForType(type);
-  view->readBaseProperties(reader);
-  view->read(reader);
+  view->baseRead(reader);
   return view;
 }
 
@@ -142,13 +142,21 @@ std::shared_ptr<CoreView> CoreViews::readViewFromJson(Reader &reader) {
 // Views
 //
 
-void CoreView::readBaseProperties(Reader &reader) {
+void CoreView::baseRead(Reader &reader) {
   x = reader.num("x", 0);
   y = reader.num("y", 0);
   width = reader.num("width", 0);
   height = reader.num("height", 0);
   id = reader.str("id");
   onTapHandlerId = reader.str("onTapHandlerId");
+
+  auto backgroundColorStr = reader.str("backgroundColor");
+  if (backgroundColorStr) {
+    hasBackgroundColor = true;
+    int num = std::stoi(std::string(*backgroundColorStr).substr(1), nullptr, 16);
+    DrawUtil::hexToRGBFloat(num, backgroundColor);
+  }
+
   if (reader.has("children")) {
     reader.arr("children", [&]() {
       reader.each([&]() {
@@ -156,81 +164,83 @@ void CoreView::readBaseProperties(Reader &reader) {
       });
     });
   }
+
+  read(reader);
+}
+
+void CoreView::baseRender() {
+  if (hasBackgroundColor) {
+    static auto quad = [&]() {
+      std::vector<love::graphics::Vertex> quadVerts {
+        { 0, 0, 0, 0, { 0xff, 0xff, 0xff, 0xff } },
+        { 1, 0, 1, 0, { 0xff, 0xff, 0xff, 0xff } },
+        { 1, 1, 1, 1, { 0xff, 0xff, 0xff, 0xff } },
+        { 0, 1, 0, 1, { 0xff, 0xff, 0xff, 0xff } },
+      };
+      return lv.graphics.newMesh(
+          quadVerts, love::graphics::PRIMITIVE_TRIANGLE_FAN, love::graphics::vertex::USAGE_STATIC);
+    }();
+
+    lv.graphics.setColor(
+        { backgroundColor[0], backgroundColor[1], backgroundColor[2], isTouchDown ? 0.6f : 1.0f });
+    quad->draw(&lv.graphics, love::Matrix4(0, 0, 0, width, height, 0, 0, 0, 0));
+  }
+
+  render();
+}
+
+void CoreView::baseHandleTouch(TouchEvent touch) {
+  if (touch == Down) {
+    isTouchDown = true;
+  } else if (touch == Up) {
+    isTouchDown = false;
+  }
+
+  handleTouch(touch);
 }
 
 class View : public CoreView {
-  bool hasBackgroundColor = false;
-  float backgroundColor[3];
-  bool isTouchDown = false;
-
   void read(Reader &reader) {
-    auto backgroundColorStr = reader.str("backgroundColor");
-
-    if (backgroundColorStr) {
-      hasBackgroundColor = true;
-      int num = std::stoi(std::string(*backgroundColorStr).substr(1), nullptr, 16);
-      DrawUtil::hexToRGBFloat(num, backgroundColor);
-    }
-  }
-
-  void handleTouch(TouchEvent touch) {
-    if (touch == Down) {
-      isTouchDown = true;
-    } else if (touch == Up) {
-      isTouchDown = false;
-    }
   }
 
   void render() {
-    if (hasBackgroundColor) {
-      static auto quad = [&]() {
-        std::vector<love::graphics::Vertex> quadVerts {
-          { 0, 0, 0, 0, { 0xff, 0xff, 0xff, 0xff } },
-          { 1, 0, 1, 0, { 0xff, 0xff, 0xff, 0xff } },
-          { 1, 1, 1, 1, { 0xff, 0xff, 0xff, 0xff } },
-          { 0, 1, 0, 1, { 0xff, 0xff, 0xff, 0xff } },
-        };
-        return lv.graphics.newMesh(quadVerts, love::graphics::PRIMITIVE_TRIANGLE_FAN,
-            love::graphics::vertex::USAGE_STATIC);
-      }();
-
-      lv.graphics.setColor({ backgroundColor[0], backgroundColor[1], backgroundColor[2],
-          isTouchDown ? 0.6f : 1.0f });
-      quad->draw(&lv.graphics, love::Matrix4(0, 0, 0, width, height, 0, 0, 0, 0));
-    }
   }
 };
 
 class ImageView : public CoreView {
-  love::image::ImageData *imageData;
-  love::graphics::Image *image;
+  enum ResizeMode {
+    Contain,
+    Stretch,
+  };
+
+  love::data::ByteData *byteData = nullptr;
+  love::image::ImageData *imageData = nullptr;
+  love::graphics::Image *image = nullptr;
+  ResizeMode resizeMode;
 
   void read(Reader &reader) {
-    auto url = reader.str("url",
-        "https://castle.imgix.net/"
-        "5562132302136c9371501abd5b48bcaa?auto=compress&fit=crop&min-w=420&ar=5:7&fm=png");
+    auto url = reader.str("url");
 
-    API::getData(url, [=](APIDataResponse &response) {
-      love::data::DataModule *dataModule
-          = love::Module::getInstance<love::data::DataModule>(love::Module::M_DATA);
+    if (url) {
+      API::getData(*url, [=](APIDataResponse &response) {
+        love::data::DataModule *dataModule
+            = love::Module::getInstance<love::data::DataModule>(love::Module::M_DATA);
 
-      auto byteData = dataModule->newByteData(response.data, response.length);
-      // imageData = lv.image.newImageData(byteData);
-      imageData = lv.image.newImageData(1350, 1890, love::PixelFormat::PIXELFORMAT_RGBA8);
+        byteData = dataModule->newByteData(response.data, response.length);
+      });
+    }
 
-      love::image::Pixel p;
-      p.rgba8[0] = 0;
-      p.rgba8[1] = 200;
-      p.rgba8[2] = 0;
-      p.rgba8[3] = 100;
+    std::string resizeModeStr = reader.str("resizeMode", "stretch");
+    if (resizeModeStr == "contain") {
+      resizeMode = ResizeMode::Contain;
+    } else {
+      resizeMode = ResizeMode::Stretch;
+    }
+  }
 
-      for (int x = 0; x < 100; x++) {
-        for (int y = 0; y < 100; y++) {
-          imageData->setPixel(x, y, p);
-        }
-      }
-      /*
-            imageData->floodFill(1, 1, nullptr, p, true);*/
+  void render() {
+    if (byteData && !imageData) {
+      imageData = lv.image.newImageData(byteData);
 
       love::graphics::Image::Settings settings;
 
@@ -242,10 +252,8 @@ class ImageView : public CoreView {
       f.min = love::graphics::Texture::FILTER_NEAREST;
       f.mag = love::graphics::Texture::FILTER_NEAREST;
       image->setFilter(f);
-    });
-  }
+    }
 
-  void render() {
     if (!image) {
       return;
     }
@@ -261,16 +269,93 @@ class ImageView : public CoreView {
           quadVerts, love::graphics::PRIMITIVE_TRIANGLE_FAN, love::graphics::vertex::USAGE_STATIC);
     }();
 
-    love::image::Pixel p;
-    imageData->getPixel(1, 1, p);
-
-    lv.graphics.setColor({ 1.0, 1.0, 1.0, 1.0 });
+    lv.graphics.setColor({ 1.0, 1.0, 1.0, isTouchDown ? 0.6f : 1.0f });
     quad->setTexture(image);
-    quad->draw(&lv.graphics, love::Matrix4(0, 0, 0, width, height, 0, 0, 0, 0));
+
+    if (resizeMode == ResizeMode::Stretch) {
+      quad->draw(&lv.graphics, love::Matrix4(0, 0, 0, width, height, 0, 0, 0, 0));
+    } else {
+      int imageWidth = imageData->getWidth();
+      int imageHeight = imageData->getHeight();
+
+      if ((float)imageWidth / imageHeight > (float)width / height) {
+        int renderHeight = width * ((float)imageHeight / imageWidth);
+        quad->draw(&lv.graphics,
+            love::Matrix4(
+                0, (int)((height - renderHeight) * 0.5), 0, width, renderHeight, 0, 0, 0, 0));
+      } else {
+        int renderWidth = height * ((float)imageWidth / imageHeight);
+        quad->draw(&lv.graphics,
+            love::Matrix4(
+                (int)((width - renderWidth) * 0.5), 0, 0, renderWidth, height, 0, 0, 0, 0));
+      }
+    }
+
     quad->setTexture(nullptr);
   }
 };
 
+class TextView : public CoreView {
+  std::string text;
+  mutable love::Font *font = nullptr;
+  love::Font::AlignMode textAlign = love::Font::ALIGN_LEFT;
+  float color[3];
+  float fontSize;
+  std::string fontFamily;
+
+  void read(Reader &reader) {
+    text = reader.str("text", "");
+
+    fontSize = reader.num("fontSize", 10);
+
+    fontFamily = reader.str("fontFamily", "Overlay");
+
+    std::string textAlignStr = reader.str("textAlign", "left");
+    if (textAlignStr == "right") {
+      textAlign = love::Font::ALIGN_RIGHT;
+    } else if (textAlignStr == "center") {
+      textAlign = love::Font::ALIGN_CENTER;
+    } else if (textAlignStr == "justify") {
+      textAlign = love::Font::ALIGN_JUSTIFY;
+    }
+
+    color[0] = 0.0;
+    color[1] = 0.0;
+    color[2] = 0.0;
+
+    auto colorStr = reader.str("color");
+    if (colorStr) {
+      int num = std::stoi(std::string(*colorStr).substr(1), nullptr, 16);
+      DrawUtil::hexToRGBFloat(num, color);
+    }
+  }
+
+  void render() {
+    auto fontPixelScale = float(lv.window.getDPIScale());
+    auto worldFontSize = std::clamp(fontSize, 1.0f, 30.0f) / 10;
+    if (!font) {
+      font = TextBehavior::getFont(
+          TextBehavior::getFontResource(fontFamily), worldFontSize * fontPixelScale);
+    }
+    auto downscale = 100.0 * worldFontSize / font->getHeight();
+
+    auto wrap = width / downscale;
+
+    lv.graphics.setColor({ color[0], color[1], color[2], 1.0 });
+    lv.graphics.scale(downscale, downscale);
+
+    lv.graphics.setFont(font);
+    lv.graphics.printf(
+        { { text, { 1, 1, 1, 1 } } }, wrap, textAlign, love::Matrix4(0, 0, 0, 1, 1, 0, 0, 0, 0));
+  }
+};
+
 std::shared_ptr<CoreView> CoreViews::getViewForType(std::string viewType) {
-  return std::make_shared<View>();
+  if (viewType == "image") {
+    return std::make_shared<ImageView>();
+  } else if (viewType == "text") {
+    return std::make_shared<TextView>();
+  } else {
+    return std::make_shared<View>();
+  }
 }

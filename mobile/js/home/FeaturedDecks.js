@@ -10,7 +10,7 @@ import uniqby from 'lodash.uniqby';
 import * as Constants from '../Constants';
 
 const REFETCH_FEED_INTERVAL_MS = 60 * 60 * 1000;
-const USE_NATIVE_FEED = true;
+const USE_NATIVE_FEED = false;
 
 export const FeaturedDecks = ({
   focused,
