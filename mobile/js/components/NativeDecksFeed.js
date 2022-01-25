@@ -48,11 +48,11 @@ let coreViews = {
   FEED: {
     id: 'image1',
     type: 'view',
-    x: 100,
-    y: 200,
-    width: 600,
+    right: '25%',
+    top: 200,
+    width: '50%',
     height: 700,
-    //backgroundColor: '#7F0000',
+    backgroundColor: '#7F0000',
     onTap: () => {
       console.log('on tap');
     },

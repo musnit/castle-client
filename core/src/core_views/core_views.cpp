@@ -18,19 +18,19 @@ void CoreViewRenderer::render() {
     layout = CoreViews::getInstance().getView(layoutTemplateName);
   }
 
-  renderView(layout);
+  renderView(layout.get());
 }
 
-void CoreViewRenderer::renderView(std::shared_ptr<CoreView> view) {
+void CoreViewRenderer::renderView(CoreView *view) {
   lv.graphics.push(love::Graphics::STACK_ALL);
   viewTransform.reset();
-  viewTransform.translate(view->x, view->y);
+  viewTransform.translate(view->left, view->top);
   lv.graphics.applyTransform(&viewTransform);
 
   view->baseRender();
 
   for (size_t i = 0; i < view->children.size(); i++) {
-    renderView(view->children[i]);
+    renderView(view->children[i].get());
   }
 
   lv.graphics.pop();
@@ -46,7 +46,7 @@ struct CoreViewsGestureEvent {
 void CoreViewRenderer::handleGesture(Gesture &gesture) {
   gesture.withSingleTouch([&](const Touch &touch) {
     if (touch.pressed) {
-      touchView = getViewAtPoint(layout, touch.screenPos.x, touch.screenPos.y);
+      touchView = getViewAtPoint(layout.get(), touch.screenPos.x, touch.screenPos.y);
       if (touchView) {
         isTouchOverView = true;
         (*touchView)->baseHandleTouch(CoreView::TouchEvent::Down);
@@ -57,7 +57,7 @@ void CoreViewRenderer::handleGesture(Gesture &gesture) {
       return;
     }
 
-    auto newTouchView = getViewAtPoint(layout, touch.screenPos.x, touch.screenPos.y);
+    auto newTouchView = getViewAtPoint(layout.get(), touch.screenPos.x, touch.screenPos.y);
     bool newIsTouchOverView = newTouchView == touchView;
 
     if (isTouchOverView && !newIsTouchOverView) {
@@ -87,11 +87,11 @@ void CoreViewRenderer::handleGesture(Gesture &gesture) {
   });
 }
 
-std::optional<std::shared_ptr<CoreView>> CoreViewRenderer::getViewAtPoint(
-    std::shared_ptr<CoreView> root, float x, float y) {
-  if (x >= root->x && x <= root->x + root->width && y >= root->y && y <= root->y + root->height) {
+std::optional<CoreView *> CoreViewRenderer::getViewAtPoint(CoreView *root, float x, float y) {
+  if (x >= root->left && x <= root->left + root->width && y >= root->top
+      && y <= root->top + root->height) {
     for (int i = root->children.size() - 1; i >= 0; i--) {
-      auto childResult = getViewAtPoint(root->children[i], x - root->x, y - root->y);
+      auto childResult = getViewAtPoint(root->children[i].get(), x - root->left, y - root->top);
       if (childResult) {
         return childResult;
       }
@@ -130,17 +130,17 @@ std::shared_ptr<CoreView> CoreViews::getView(std::string layoutTemplateName) {
 
   archive.read([&](Reader &reader) {
     reader.obj(layoutTemplateName.c_str(), [&]() {
-      result = readViewFromJson(reader);
+      result = readViewFromJson(reader, nullptr);
     });
   });
 
   return result;
 }
 
-std::shared_ptr<CoreView> CoreViews::readViewFromJson(Reader &reader) {
+std::shared_ptr<CoreView> CoreViews::readViewFromJson(Reader &reader, CoreView *parent) {
   auto type = reader.str("type", "");
   auto view = getViewForType(type);
-  view->baseRead(reader);
+  view->baseRead(reader, parent);
   return view;
 }
 
@@ -183,15 +183,51 @@ float CoreViews::getNumConstant(std::string key) {
   return numConstantsCache[key];
 }
 
+int CoreViews::readInt(Reader &reader, const char *key) {
+  auto num = reader.num(key);
+  if (num) {
+    return *num;
+  } else {
+    auto cStr = reader.str(key);
+    if (cStr) {
+      std::string str = *cStr;
+
+      if (str.at(str.length() - 1) == '%') {
+        auto percentStr = str.substr(0, str.length() - 1);
+        auto percent = std::stof(percentStr);
+        return percent * 0.01 * 800;
+      }
+
+      return std::stoi(str);
+    }
+  }
+
+  return 0;
+}
+
 //
 // Views
 //
 
-void CoreView::baseRead(Reader &reader) {
-  x = reader.num("x", 0);
-  y = reader.num("y", 0);
-  width = reader.num("width", 0);
-  height = reader.num("height", 0);
+void CoreView::baseRead(Reader &reader, CoreView *parent) {
+  int parentWidth = parent ? parent->width : 800;
+  int parentHeight = parent ? parent->height : 800;
+
+  width = CoreViews::getInstance().readInt(reader, "width");
+  height = CoreViews::getInstance().readInt(reader, "height");
+
+  if (reader.has("left")) {
+    left = CoreViews::getInstance().readInt(reader, "left");
+  } else if (reader.has("right")) {
+    left = parentWidth - CoreViews::getInstance().readInt(reader, "right") - width;
+  }
+
+  if (reader.has("top")) {
+    top = CoreViews::getInstance().readInt(reader, "top");
+  } else if (reader.has("bottom")) {
+    top = parentHeight - CoreViews::getInstance().readInt(reader, "bottom") - height;
+  }
+
   id = reader.str("id");
   onTapHandlerId = reader.str("onTapHandlerId");
   borderRadius = reader.num("borderRadius", -1);
@@ -205,7 +241,7 @@ void CoreView::baseRead(Reader &reader) {
   if (reader.has("children")) {
     reader.arr("children", [&]() {
       reader.each([&]() {
-        children.push_back(CoreViews::getInstance().readViewFromJson(reader));
+        children.push_back(CoreViews::getInstance().readViewFromJson(reader, this));
       });
     });
   }

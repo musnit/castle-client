@@ -76,6 +76,11 @@ float smoothstep(float a, float b, float t) {
   }
 }
 
+void Feed::setWindowSize(int w, int h) {
+  windowWidth = w;
+  windowHeight = h;
+}
+
 int Feed::getCurrentIndex() {
   int idx = floor((FEED_ITEM_WIDTH / 2.0 - offset) / FEED_ITEM_WIDTH);
   if (idx < 0) {

@@ -323,6 +323,10 @@ bool Engine::frame() {
     int w = 0, h = 0;
     SDL_GetWindowSize(lv.window.getSDLWindow(), &w, &h);
     ghostScreenScaling = double(w) / 800;
+
+    if (feed) {
+      feed->setWindowSize(800, h / ghostScreenScaling);
+    }
   }
 #endif
 

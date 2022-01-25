@@ -21,11 +21,14 @@ public:
   virtual void update(double dt) {
   }
 
-  void baseRead(Reader &reader);
+  void baseRead(Reader &reader, CoreView *parent);
   void baseRender();
   void baseHandleTouch(TouchEvent touch);
 
-  double x, y, width, height;
+  double left = 0;
+  double top = 0;
+  double width = 0;
+  double height = 0;
   std::optional<std::string> onTapHandlerId;
   std::optional<std::string> id;
   std::vector<std::shared_ptr<CoreView>> children;
@@ -51,19 +54,18 @@ public:
   void render();
 
 private:
-  void renderView(std::shared_ptr<CoreView> view);
+  void renderView(CoreView *view);
 
   Bridge &bridge;
   std::shared_ptr<CoreView> layout;
   int jsonVersion = 0;
   std::string layoutTemplateName;
-  std::optional<std::shared_ptr<CoreView>> touchView;
+  std::optional<CoreView *> touchView;
   bool isTouchOverView = false;
   Lv &lv { Lv::getInstance() };
   mutable love::Transform viewTransform;
 
-  std::optional<std::shared_ptr<CoreView>> getViewAtPoint(
-      std::shared_ptr<CoreView> root, float x, float y);
+  std::optional<CoreView *> getViewAtPoint(CoreView *root, float x, float y);
 };
 
 class CoreViews {
@@ -97,9 +99,11 @@ private:
 
   std::shared_ptr<CoreView> getView(std::string layoutTemplateName);
 
-  std::shared_ptr<CoreView> readViewFromJson(Reader &reader);
+  std::shared_ptr<CoreView> readViewFromJson(Reader &reader, CoreView *parent);
 
   std::shared_ptr<CoreView> getViewForType(std::string viewType);
+
+  int readInt(Reader &reader, const char *key);
 
   inline static CoreViews *instance = nullptr;
 

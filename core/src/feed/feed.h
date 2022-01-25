@@ -25,9 +25,13 @@ public:
   void update(double dt);
   void draw();
   void fetchInitialDecks();
+  void setWindowSize(int w, int h);
 
 private:
   mutable love::Transform viewTransform;
+
+  int windowWidth = 800;
+  int windowHeight = 1120;
 
   Gesture gesture { nullptr };
   std::unique_ptr<love::Shader> shader;
