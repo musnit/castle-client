@@ -2,7 +2,6 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Amplitude } from '@amplitude/react-native';
 import { CardScene } from '../game/CardScene';
-import { CardText } from '../components/CardText';
 import { gql } from '@apollo/client';
 import { sendAsync, useListen } from '../core/CoreEvents';
 
@@ -70,21 +69,6 @@ export const PlayDeck = ({ deck, visibility, route, paused }) => {
     };
   }, [playingCardId.current]);
 
-  const [textActors, setTextActors] = React.useState([]);
-  useListen({
-    eventName: 'TEXT_ACTORS_DATA',
-    handler: ({ data }) => {
-      const { textActors } = JSON.parse(data);
-      setTextActors(textActors);
-    },
-  });
-
-  const selectActor = React.useCallback((actorId) => {
-    sendAsync('SELECT_ACTOR', {
-      actorId,
-    });
-  }, []);
-
   return (
     <View style={styles.container}>
       <CardScene
@@ -94,9 +78,6 @@ export const PlayDeck = ({ deck, visibility, route, paused }) => {
         style={styles.scene}
         paused={paused}
       />
-      <View pointerEvents="box-none" style={styles.textActors}>
-        <CardText visible textActors={textActors} onSelect={selectActor} />
-      </View>
     </View>
   );
 };

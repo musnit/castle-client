@@ -68,8 +68,6 @@ const ToggleWithValue = ({
 };
 
 export const CreateCardSettings = () => {
-  const { isShowingTextActors, setShowingTextActors } = useCardCreator();
-
   const settingsData = useCoreState('EDITOR_SCENE_SETTINGS');
   const sendAction = (...args) => sendAsync('EDITOR_CHANGE_SCENE_SETTINGS', ...args);
 
@@ -131,13 +129,6 @@ export const CreateCardSettings = () => {
           </View>
         </>
       ) : null}
-      <View style={styles.settingsRow}>
-        <InspectorCheckbox
-          label="Show text actors"
-          value={isShowingTextActors}
-          onChange={setShowingTextActors}
-        />
-      </View>
       <View style={styles.settingsRow}>
         {settingsData.grabToolProperties ? (
           <ToggleWithValue
@@ -202,16 +193,8 @@ export const CreateCardSettings = () => {
 };
 
 export const CreateCardSettingsSheet = ({ isOpen, onClose, ...props }) => {
-  const { isShowingTextActors, setShowingTextActors } = useCardCreator();
-
   const renderHeader = () => <BottomSheetHeader title="Layout" onClose={onClose} />;
-  const renderContent = () =>
-    !isOpen ? null : (
-      <CreateCardSettings
-        isShowingTextActors={isShowingTextActors}
-        setShowingTextActors={setShowingTextActors}
-      />
-    );
+  const renderContent = () => (!isOpen ? null : <CreateCardSettings />);
 
   return (
     <BottomSheet

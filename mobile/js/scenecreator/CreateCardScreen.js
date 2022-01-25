@@ -13,7 +13,6 @@ import { useListen, useCoreState, sendGlobalAction, sendAsync } from '../core/Co
 
 import { CardScene } from '../game/CardScene';
 import { CardSceneLoading } from './CardSceneLoading';
-import { CardText } from '../components/CardText';
 import { CommandsOverlay } from './overlay/CommandsOverlay';
 import { CreateCardContext } from './CreateCardContext';
 import { CreateCardHeader, CARD_HEADER_HEIGHT } from './CreateCardHeader';
@@ -54,34 +53,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
-  textActorsContainer: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  textActorsAspectRatio: {
-    aspectRatio: Constants.CARD_RATIO,
-    width: '100%',
-    height: '100%',
-    maxWidth: 100 * Viewport.vw,
-    maxHeight: (100 * Viewport.vw) / Constants.CARD_RATIO,
-    paddingHorizontal: 16,
-    paddingTop: 16,
-    paddingBottom: 8,
-  },
 });
-
-// TODO: consolidate with PlayDeck
-const useCoreTextActors = () => {
-  const [textActors, setTextActors] = React.useState([]);
-  useListen({
-    eventName: 'TEXT_ACTORS_DATA',
-    handler: ({ data }) => {
-      const { textActors } = JSON.parse(data);
-      setTextActors(textActors);
-    },
-  });
-  return textActors;
-};
 
 export const CreateCardScreen = ({
   deck,
@@ -113,8 +85,6 @@ export const CreateCardScreen = ({
   );
   React.useEffect(Keyboard.dismiss, [activeSheet.default]);
 
-  const [isShowingTextActors, setShowingTextActors] = React.useState(true);
-
   const globalActions = useCoreState('EDITOR_GLOBAL_ACTIONS');
 
   const isSceneLoaded = !!globalActions;
@@ -122,7 +92,6 @@ export const CreateCardScreen = ({
   const { selectedActorId, isTextActorSelected, isBlueprintSelected, isInspectorOpen } =
     globalActions || {};
   const hasSelection = selectedActorId >= 0 && activeSheet.default !== 'capturePreview';
-  const textActors = useCoreTextActors();
   const editMode = globalActions?.editMode;
 
   const onHardwareBackPress = React.useCallback(() => {
@@ -167,12 +136,6 @@ export const CreateCardScreen = ({
       sendAsync('EDITOR_JS_LOADED', {});
     }
   }, [isSceneLoaded]);
-
-  const selectActor = React.useCallback((actorId) => {
-    sendAsync('SELECT_ACTOR', {
-      actorId,
-    });
-  }, []);
 
   // used for text - never select text actor instance, just skip straight to blueprint
   const selectBlueprint = React.useCallback(
@@ -322,13 +285,6 @@ export const CreateCardScreen = ({
   const beltHeightFraction = beltHeight / maxCardHeight;
   const cardFitStyles = { width: '100%', height: maxCardHeight };
 
-  const isCardTextVisible =
-    (isShowingTextActors || isPlaying) &&
-    editMode === 'default' &&
-    !(hasSelection && !isInspectorOpen) && // TODO: how to select text blueprint?
-    textActors &&
-    Object.keys(textActors).length;
-
   const contextValue = {
     deck,
     cardId,
@@ -339,8 +295,6 @@ export const CreateCardScreen = ({
     isTextActorSelected,
     isBlueprintSelected,
     onSelectBackupData,
-    isShowingTextActors,
-    setShowingTextActors,
     saveAction,
   };
 
@@ -380,29 +334,6 @@ export const CreateCardScreen = ({
                   beltHeight={beltHeight}
                   beltHeightFraction={beltHeightFraction}
                 />
-                {isCardTextVisible ? (
-                  <View
-                    style={[
-                      styles.textActorsContainer,
-                      isPlaying ? null : { marginBottom: beltHeight },
-                    ]}
-                    pointerEvents="box-none">
-                    <View
-                      pointerEvents="box-none"
-                      style={[
-                        styles.textActorsAspectRatio,
-                        { justifyContent: isTextActorSelected ? 'flex-start' : 'flex-end' },
-                      ]}>
-                      <CardText
-                        disabled={loading}
-                        visible={isCardTextVisible}
-                        textActors={textActors}
-                        onSelect={isPlaying ? selectActor : selectBlueprint}
-                        isEditable={!isPlaying}
-                      />
-                    </View>
-                  </View>
-                ) : null}
               </View>
               <CreateCardOverlay
                 activeSheet={activeSheet}
