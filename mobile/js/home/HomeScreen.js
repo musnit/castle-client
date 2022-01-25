@@ -141,18 +141,20 @@ export const HomeScreen = ({ route }) => {
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
       <PopoverProvider>
-        <Animated.View
-          style={[
-            styles.header,
-            styles.elevatedHeader,
-            { top: insets.top, transform: [{ translateY: headerY }] },
-          ]}>
-          <SegmentedNavigation
-            items={items}
-            selectedItem={selectedItem}
-            onSelectItem={(item) => setMode(item.value)}
-          />
-        </Animated.View>
+        {!Constants.USE_NATIVE_FEED && (
+          <Animated.View
+            style={[
+              styles.header,
+              styles.elevatedHeader,
+              { top: insets.top, transform: [{ translateY: headerY }] },
+            ]}>
+            <SegmentedNavigation
+              items={items}
+              selectedItem={selectedItem}
+              onSelectItem={(item) => setMode(item.value)}
+            />
+          </Animated.View>
+        )}
         {selectedItem.item({
           deckId,
           onPressComments: openComments,

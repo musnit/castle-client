@@ -10,7 +10,6 @@ import uniqby from 'lodash.uniqby';
 import * as Constants from '../Constants';
 
 const REFETCH_FEED_INTERVAL_MS = 60 * 60 * 1000;
-const USE_NATIVE_FEED = false;
 
 export const FeaturedDecks = ({
   focused,
@@ -19,7 +18,7 @@ export const FeaturedDecks = ({
   onCloseComments,
   isCommentsOpen,
 }) => {
-  if (USE_NATIVE_FEED) {
+  if (Constants.USE_NATIVE_FEED) {
     return <NativeDecksFeed />;
   }
 

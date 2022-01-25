@@ -6,10 +6,10 @@
 #include "api.h"
 #include <thread>
 
-#define TOP_PADDING 60
+#define TOP_PADDING 0
 #define CARD_WIDTH 800
 #define CARD_HEIGHT 1120
-#define FEED_ITEM_HEIGHT (CARD_WIDTH + 200)
+#define FEED_ITEM_WIDTH (CARD_WIDTH + 200)
 
 float cubicEaseIn(float p) {
   return p * p * p;
@@ -77,7 +77,7 @@ float smoothstep(float a, float b, float t) {
 }
 
 int Feed::getCurrentIndex() {
-  int idx = floor((FEED_ITEM_HEIGHT / 2.0 - yOffset) / FEED_ITEM_HEIGHT);
+  int idx = floor((FEED_ITEM_WIDTH / 2.0 - offset) / FEED_ITEM_WIDTH);
   if (idx < 0) {
     idx = 0;
   }
@@ -121,7 +121,7 @@ void Feed::update(double dt) {
     if (!hasTouch) {
       hasTouch = true;
       touchDuration = 0.0;
-      touchStartYOffset = yOffset;
+      touchStartOffset = offset;
       dragStarted = false;
       preDragOffset = 0.0;
       dragVelocity = 0.0;
@@ -135,7 +135,17 @@ void Feed::update(double dt) {
       }
 
       if (dragStarted) {
-        yOffset += (touch.screenPos.x - lastTouchPosition) * SCROLL_MULTIPLIER;
+        if (offset > 0.0) {
+          // Scrolling before the first deck
+          float multiplier = (200.0 - offset) / 150.0;
+          if (multiplier < 0.0) {
+            multiplier = 0.0;
+          }
+          offset += (touch.screenPos.x - lastTouchPosition) * multiplier;
+        } else {
+          offset += (touch.screenPos.x - lastTouchPosition) * SCROLL_MULTIPLIER;
+        }
+
         float rollingAvgAmt = dt / DRAG_VELOCITY_ROLLING_AVERAGE_TIME;
         dragVelocity = (touch.screenPos.x - lastTouchPosition) * rollingAvgAmt
             + dragVelocity * (1.0 - rollingAvgAmt);
@@ -151,36 +161,41 @@ void Feed::update(double dt) {
       if (dragStarted) {
         isAnimating = true;
         dragStarted = false;
-        animateFromYOffset = yOffset;
+        animateFromOffset = offset;
         animationTimeElapsed = 0.0;
 
         if (touchDuration < FAST_SWIPE_MAX_DURATION
-            && fabs(yOffset - touchStartYOffset) > FAST_SWIPE_MIN_OFFSET) {
-          if (yOffset - touchStartYOffset > 0) {
-            animateToYOffset = (round(touchStartYOffset / FEED_ITEM_HEIGHT) + 1) * FEED_ITEM_HEIGHT;
+            && fabs(offset - touchStartOffset) > FAST_SWIPE_MIN_OFFSET) {
+          if (offset - touchStartOffset > 0) {
+            animateToOffset = (round(touchStartOffset / FEED_ITEM_WIDTH) + 1) * FEED_ITEM_WIDTH;
           } else {
-            animateToYOffset = (round(touchStartYOffset / FEED_ITEM_HEIGHT) - 1) * FEED_ITEM_HEIGHT;
+            animateToOffset = (round(touchStartOffset / FEED_ITEM_WIDTH) - 1) * FEED_ITEM_WIDTH;
           }
         } else if (fabs(dragVelocity) > FAST_SWIPE_MIN_DRAG_VELOCITY) {
           if (dragVelocity > 0) {
-            animateToYOffset = (round(touchStartYOffset / FEED_ITEM_HEIGHT) + 1) * FEED_ITEM_HEIGHT;
+            animateToOffset = (round(touchStartOffset / FEED_ITEM_WIDTH) + 1) * FEED_ITEM_WIDTH;
           } else {
-            animateToYOffset = (round(touchStartYOffset / FEED_ITEM_HEIGHT) - 1) * FEED_ITEM_HEIGHT;
+            animateToOffset = (round(touchStartOffset / FEED_ITEM_WIDTH) - 1) * FEED_ITEM_WIDTH;
           }
         } else {
-          animateToYOffset = round((yOffset) / FEED_ITEM_HEIGHT) * FEED_ITEM_HEIGHT;
+          animateToOffset = round((offset) / FEED_ITEM_WIDTH) * FEED_ITEM_WIDTH;
+        }
+
+        // Don't allow animating to before the first card
+        if (animateToOffset > 0.0) {
+          animateToOffset = 0.0;
         }
       }
     }
   });
 
   if (isAnimating) {
-    yOffset = smoothstep(
-        animateFromYOffset, animateToYOffset, animationTimeElapsed / SCROLL_ANIMATION_TIME);
+    offset = smoothstep(
+        animateFromOffset, animateToOffset, animationTimeElapsed / SCROLL_ANIMATION_TIME);
     animationTimeElapsed += dt;
     if (animationTimeElapsed >= SCROLL_ANIMATION_TIME) {
       isAnimating = false;
-      yOffset = animateToYOffset;
+      offset = animateToOffset;
     }
   }
 
@@ -355,14 +370,13 @@ void Feed::draw() {
   }
 
   int idx = getCurrentIndex();
-  // float padding = (FEED_ITEM_HEIGHT - CARD_HEIGHT) / 2.0;
+  // float padding = (FEED_ITEM_WIDTH - CARD_HEIGHT) / 2.0;
   float padding = 0.0;
 
-  renderCardAtPosition(idx - 1, yOffset + FEED_ITEM_HEIGHT * (idx - 1) + padding, false);
-  renderCardAtPosition(
-      idx, yOffset + FEED_ITEM_HEIGHT * idx + padding, !dragStarted && !isAnimating);
-  renderCardAtPosition(idx + 1, yOffset + FEED_ITEM_HEIGHT * (idx + 1) + padding, false);
-  renderCardAtPosition(idx + 2, yOffset + FEED_ITEM_HEIGHT * (idx + 2) + padding, false);
+  renderCardAtPosition(idx - 1, offset + FEED_ITEM_WIDTH * (idx - 1) + padding, false);
+  renderCardAtPosition(idx, offset + FEED_ITEM_WIDTH * idx + padding, !dragStarted && !isAnimating);
+  renderCardAtPosition(idx + 1, offset + FEED_ITEM_WIDTH * (idx + 1) + padding, false);
+  renderCardAtPosition(idx + 2, offset + FEED_ITEM_WIDTH * (idx + 2) + padding, false);
 
   for (int i = 0; i <= idx - 3; i++) {
     unloadDeckAtIndex(i);

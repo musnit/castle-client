@@ -35,16 +35,16 @@ private:
   bool dragStarted = false;
   bool deckIsFocused = false;
   bool ignoreCurrentTouch = false;
-  float touchStartYOffset = 0.0;
+  float touchStartOffset = 0.0;
   float touchDuration = 0.0;
   bool isAnimating = false;
   bool fetchingDecks = false;
-  float animateFromYOffset = 0.0;
-  float animateToYOffset = 0.0;
+  float animateFromOffset = 0.0;
+  float animateToOffset = 0.0;
   float animationTimeElapsed = 0.0;
   float lastTouchPosition = 0.0;
   float preDragOffset = 0.0;
-  float yOffset = 0.0;
+  float offset = 0.0;
   float elapsedTime = 0.0;
   float dragVelocity = 0.0;
 
