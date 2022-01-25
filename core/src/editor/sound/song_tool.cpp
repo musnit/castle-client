@@ -189,6 +189,14 @@ void SongTool::drawGrid(float viewScale, love::Vector2 &viewOffset) {
   auto gridDotRadius = 3.5f;
   auto gridSize = 0.0f; // indicates infinite grid
   grid.draw(gridCellSize, gridSize, viewScale, viewPosition, viewOffset, gridDotRadius, false);
+
+  // hack: cover up unwanted grid-y because grid shader only has 1 size param
+  lv.graphics.setColor({ 0.2f, 0.2f, 0.2f, 1.0f });
+  lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, viewPosition.x, -2048.0f / viewScale,
+      2048.0f / viewScale, (2048.0f / viewScale) - (gridCellSize * 0.5f));
+  lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, viewPosition.x,
+      gridCellSize * (soundTool.song->tracks.size() + 1.5f), 2048.0f / viewScale,
+      2048.0f / viewScale);
 };
 
 void SongTool::drawSequence(Song::Track::Sequence &sequence, float unit) {
