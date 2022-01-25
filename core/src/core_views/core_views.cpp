@@ -98,6 +98,15 @@ void CoreViewRenderer::handleGesture(Gesture &gesture) {
   });
 }
 
+void CoreViewRenderer::cancelGestures() {
+  if (touchView && isTouchOverView) {
+    (*touchView)->baseHandleTouch(CoreView::TouchEvent::Up);
+  }
+
+  touchView = std::nullopt;
+  isTouchOverView = false;
+}
+
 void CoreViewRenderer::updateProp(std::string viewId, std::string key, std::string value) {
   if (props.find(viewId) == props.end()) {
     props[viewId] = std::unordered_map<std::string, std::string>();

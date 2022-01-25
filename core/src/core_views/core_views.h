@@ -54,6 +54,7 @@ public:
   void update(double dt);
   void handleGesture(Gesture &gesture);
   void render();
+  void cancelGestures();
 
   void updateProp(std::string viewId, std::string key, std::string value);
   void updateJSGestureProp(std::string key, std::string value);

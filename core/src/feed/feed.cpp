@@ -156,8 +156,14 @@ void Feed::update(double dt) {
           dragStarted = true;
 
           int idx = getCurrentIndex();
-          if (idx >= 0 && idx < (int)decks.size() && decks[idx].player) {
-            decks[idx].player->getScene().getSound().stopAll();
+          if (idx >= 0 && idx < (int)decks.size()) {
+            if (decks[idx].player) {
+              decks[idx].player->getScene().getSound().stopAll();
+            }
+
+            if (decks[idx].coreView) {
+              decks[idx].coreView->cancelGestures();
+            }
           }
         }
       }
