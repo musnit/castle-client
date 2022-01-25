@@ -65,12 +65,12 @@ export const useOptimisticBehaviorValue = ({
   if (component) {
     nativeValue = component?.props[propName];
   }
-  if (component && value !== nativeValue) {
-    if (lastSentEventId === null || component.lastReportedEventId !== lastSentEventId) {
+  if (component && (lastSentEventId === null || component.lastReportedEventId > lastSentEventId)) {
+    setLastSentEventId(component.lastReportedEventId);
+    if (nativeValue !== value) {
       setValue(nativeValue);
-      setLastSentEventId(component.lastReportedEventId);
       if (onNativeUpdate) {
-        onNativeUpdate(nativeValue);
+        onNativeUpdate(nativeValue, component.lastReportedEventId);
       }
     }
   }

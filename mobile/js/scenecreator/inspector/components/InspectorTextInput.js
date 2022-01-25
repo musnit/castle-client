@@ -3,36 +3,51 @@ import { TextInput, View } from 'react-native';
 
 import * as Constants from '../../../Constants';
 
-export const InspectorTextInput = ({ style, optimistic, ...props }) => {
-  const maybeOptimisticProps = {};
-  if (optimistic) {
-    // optimistically set text, because this component is typically used
-    // to wrap a bridged lua value
-    let [text, setText] = React.useState(
-      props.value && typeof props.value === 'string' ? props.value : ''
-    );
-    const onChangeText = React.useCallback(
-      (text) => {
-        setText(text);
-        if (props.onChangeText) {
-          props.onChangeText(text);
-        }
-      },
-      [props?.onChangeText, setText]
-    );
-
-    maybeOptimisticProps.value = text;
-    maybeOptimisticProps.onChangeText = onChangeText;
-  }
-
+const InternalTextInput = ({ style, inputStyle, ...props }) => {
   return (
     <View style={[Constants.styles.textInputWrapperOnWhite, style]}>
       <TextInput
-        style={Constants.styles.textInputOnWhite}
+        style={[Constants.styles.textInputOnWhite, inputStyle]}
         placeholderTextColor={Constants.colors.grayText}
         {...props}
-        {...maybeOptimisticProps}
       />
     </View>
   );
+};
+
+const validateText = (value) => (value && typeof value === 'string' ? value : '');
+
+const OptimisticTextInput = ({ lastNativeValue, ...props }) => {
+  let optimisticProps = {};
+
+  let [text, setText] = React.useState(validateText(props.value));
+  const onChangeText = React.useCallback(
+    (text) => {
+      setText(text);
+      if (props.onChangeText) {
+        props.onChangeText(text);
+      }
+    },
+    [props?.onChangeText, setText]
+  );
+
+  // refresh displayed text if we got a new value from native
+  React.useEffect(() => {
+    if (lastNativeValue) {
+      const { value, eventId } = lastNativeValue;
+      setText(validateText(value));
+    }
+  }, [lastNativeValue]);
+
+  optimisticProps.value = text;
+  optimisticProps.onChangeText = onChangeText;
+  return <InternalTextInput {...props} {...optimisticProps} />;
+};
+
+export const InspectorTextInput = ({ optimistic, ...props }) => {
+  if (optimistic) {
+    return <OptimisticTextInput {...props} />;
+  } else {
+    return <InternalTextInput {...props} />;
+  }
 };
