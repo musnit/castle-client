@@ -2,6 +2,10 @@
 #include "sampler.h"
 
 Instrument::Instrument(const Instrument &other) {
+  *this = other;
+}
+
+const Instrument &Instrument::operator=(const Instrument &other) {
   Archive archive;
   archive.write([&](Archive::Writer &w) {
     other.write(w);
@@ -10,6 +14,7 @@ Instrument::Instrument(const Instrument &other) {
   archive.read([&](Archive::Reader &r) {
     read(r);
   });
+  return *this;
 }
 
 Instrument::~Instrument() {

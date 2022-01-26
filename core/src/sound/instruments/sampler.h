@@ -18,4 +18,8 @@ public:
   void play(Sound &sound, Pattern::Note note) override;
   void read(Reader &reader) override;
   void write(Writer &writer) const override;
+
+  inline std::unique_ptr<Instrument> clone() const override {
+    return std::make_unique<Sampler>(*this);
+  }
 };

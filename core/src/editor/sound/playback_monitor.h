@@ -3,7 +3,6 @@
 #include "sound/stream.h"
 
 class Pattern;
-class Instrument;
 
 //
 // A helper class which maintains graphics state for song/pattern playback
@@ -15,8 +14,7 @@ public:
   PlaybackMonitor(const PlaybackMonitor &) = delete;
   const PlaybackMonitor &operator=(const PlaybackMonitor &) = delete;
 
-  void add(Clock &clock, std::unique_ptr<Pattern> pattern, Instrument &instrument,
-      Sound::StreamOptions opts);
+  void add(Clock &clock, std::unique_ptr<Pattern> pattern, Sound::StreamOptions opts);
   void clear();
   void update(double dt, double clockTime);
   float getPower(int trackIndex);

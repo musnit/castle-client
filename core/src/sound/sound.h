@@ -40,8 +40,8 @@ public:
   };
   // schedule a pattern on the given clock; clock takes ownership of pattern
   // return a streamId
-  int play(
-      int clockId, std::unique_ptr<Pattern> pattern, Instrument &instrument, StreamOptions opts);
+  int play(int clockId, std::unique_ptr<Pattern> pattern, std::unique_ptr<Instrument> instrument,
+      StreamOptions opts);
 
   static void clearCache() {
     sfxrSounds.clear();
@@ -70,8 +70,8 @@ private:
     virtual ~ClockThread() = default;
     void threadFunction();
     void addClock(Clock *);
-    int addStream(
-        int clockId, std::unique_ptr<Pattern> pattern, Instrument &instrument, StreamOptions opts);
+    int addStream(int clockId, std::unique_ptr<Pattern> pattern,
+        std::unique_ptr<Instrument> instrument, StreamOptions opts);
     void clearStreams();
     void stopStream(int clockId, int streamId, StreamOptions opts);
     void finish();

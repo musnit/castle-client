@@ -162,8 +162,10 @@ void SoundTool::scheduleSongForPlayback(
     auto &pattern = patterns[idx];
     auto &track = song->tracks[idx];
     auto patternClone = std::make_unique<Pattern>(*pattern);
-    playbackMonitor.add(scene.getClock(), std::move(patternClone), *track->instrument, opts);
-    scene.getSound().play(scene.getClock().clockId, std::move(pattern), *track->instrument, opts);
+    auto instrumentClone = track->instrument->clone();
+    playbackMonitor.add(scene.getClock(), std::move(patternClone), opts);
+    scene.getSound().play(
+        scene.getClock().clockId, std::move(pattern), std::move(instrumentClone), opts);
   }
 }
 

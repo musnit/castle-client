@@ -8,11 +8,13 @@ class Sound;
 
 class Stream {
 public:
-  explicit Stream(
-      Clock &clock, std::unique_ptr<Pattern> pattern, Instrument &instrument, double wait = 0);
+  explicit Stream(Clock &clock, std::unique_ptr<Pattern> pattern,
+      std::unique_ptr<Instrument> instrument, double wait = 0);
   double startTime; // in steps
+
+  // own a copy of Pattern and Instrument so that we're invariant to changes in the originals
   std::unique_ptr<Pattern> pattern;
-  Instrument &instrument;
+  std::unique_ptr<Instrument> instrument;
 
   inline static int nextStreamId = 0;
   int streamId = nextStreamId++;
@@ -30,10 +32,10 @@ private:
   double finishTime = -1;
 };
 
-inline Stream::Stream(
-    Clock &clock, std::unique_ptr<Pattern> pattern_, Instrument &instrument_, double wait)
-    : instrument(instrument_) {
+inline Stream::Stream(Clock &clock, std::unique_ptr<Pattern> pattern_,
+    std::unique_ptr<Instrument> instrument_, double wait) {
   pattern = std::move(pattern_);
+  instrument = std::move(instrument_);
   startTime = clock.getTime() + wait;
   current = pattern->begin();
   patternClockLoopLength = pattern->getLoopLength(clock);
@@ -63,7 +65,7 @@ inline bool Stream::hasNext() {
 inline void Stream::playNextNotes(Sound &sound) {
   auto &notes = current->second;
   for (auto &note : notes) {
-    instrument.play(sound, note);
+    instrument->play(sound, note);
   }
   skipToNext();
 }

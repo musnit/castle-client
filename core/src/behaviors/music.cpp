@@ -85,8 +85,9 @@ void MusicBehavior::playSong(ActorId &actorId, Scene &scene, MusicComponent *com
     auto &pattern = patterns[idx];
     auto &track = song.tracks[idx];
     pattern->loop = loop ? Pattern::Loop::ExplicitLength : Pattern::Loop::None;
-    auto streamId
-        = scene.getSound().play(clock.clockId, std::move(pattern), *track->instrument, opts);
+    auto instrumentClone = track->instrument->clone();
+    auto streamId = scene.getSound().play(
+        clock.clockId, std::move(pattern), std::move(instrumentClone), opts);
     if (streamId >= 0) {
       streamsCreated.push_back(streamId);
     }
@@ -110,8 +111,9 @@ void MusicBehavior::playPattern(ActorId &actorId, Scene &scene, MusicComponent *
       if (!loop) {
         pattern->loop = Pattern::Loop::None;
       }
-      auto streamId
-          = scene.getSound().play(clock.clockId, std::move(pattern), *track->instrument, opts);
+      auto instrumentClone = track->instrument->clone();
+      auto streamId = scene.getSound().play(
+          clock.clockId, std::move(pattern), std::move(instrumentClone), opts);
       if (streamId >= 0) {
         activePatterns.emplace(patternId, streamId);
       }
