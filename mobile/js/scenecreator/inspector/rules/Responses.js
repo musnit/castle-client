@@ -1079,7 +1079,7 @@ const SetClockTempo = ({ response, context }) => {
   const tempo = response.params?.tempo ?? 120;
   return [
     {
-      type: 'selectEntry',
+      type: 'showEntryOptions',
       label: 'Set the clock tempo',
     },
     {
@@ -1105,7 +1105,7 @@ const PlaySong = ({ response }) => {
   const quantizeUnits = response.params?.quantizeUnits ?? 'bar';
   let cells = [
     {
-      type: 'selectEntry',
+      type: 'showEntryOptions',
       label: `Play this actor's song`,
     },
     {
@@ -1135,7 +1135,7 @@ const PlaySong = ({ response }) => {
 const StopSong = () => {
   return [
     {
-      type: 'selectEntry',
+      type: 'showEntryOptions',
       label: `Stop this actor's song`,
     },
   ];
@@ -1163,7 +1163,7 @@ const PlayPattern = ({ response, context }) => {
   }
   let cells = [
     {
-      type: 'selectEntry',
+      type: 'showEntryOptions',
       label: `Play pattern`,
     },
     {
@@ -1220,7 +1220,7 @@ const MuteTrack = ({ response, context }) => {
   }
   return [
     {
-      type: 'selectEntry',
+      type: 'showEntryOptions',
       label: `Mute track`,
     },
     {
@@ -1242,7 +1242,7 @@ const UnmuteTrack = ({ response, context }) => {
   }
   return [
     {
-      type: 'selectEntry',
+      type: 'showEntryOptions',
       label: `Unmute track`,
     },
     {
