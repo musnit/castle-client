@@ -50,6 +50,13 @@ void Editor::setIsPlaying(bool playing_) {
   }
 }
 
+void Editor::setEditMode(EditMode editMode_) {
+  if (editMode == EditMode::Sound) {
+    soundTool.stopPlayback();
+  }
+  editMode = editMode_;
+}
+
 bool Editor::androidHandleBackPressed() {
   if (playing) {
     setIsPlaying(false);
@@ -57,7 +64,7 @@ bool Editor::androidHandleBackPressed() {
   }
 
   if (editMode != EditMode::Default) {
-    editMode = EditMode::Default;
+    setEditMode(EditMode::Default);
     currentTool = Tool::Grab;
     isEditorStateDirty = true;
     return true;
@@ -79,7 +86,7 @@ bool Editor::androidHandleBackPressed() {
 
 void Editor::clearState() {
   isInspectorOpen = false;
-  editMode = EditMode::Default;
+  setEditMode(EditMode::Default);
   selection.deselectAllActors();
   belt.deselect();
   isEditorStateDirty = true;
@@ -775,16 +782,16 @@ struct EditorGlobalActionReceiver {
     } else if (action == "setMode") {
       auto newMode = params.value();
       if (newMode == "draw") {
-        editor->editMode = Editor::EditMode::Draw;
+        editor->setEditMode(Editor::EditMode::Draw);
         editor->drawTool.onSetActive();
       } else if (newMode == "sound") {
-        editor->editMode = Editor::EditMode::Sound;
+        editor->setEditMode(Editor::EditMode::Sound);
         editor->soundTool.onSetActive();
       } else if (newMode == "text") {
-        editor->editMode = Editor::EditMode::Text;
+        editor->setEditMode(Editor::EditMode::Text);
         editor->textTool.onSetActive();
       } else if (newMode == "default") {
-        editor->editMode = Editor::EditMode::Default;
+        editor->setEditMode(Editor::EditMode::Default);
         editor->currentTool = Editor::Tool::Grab;
       }
       editor->isEditorStateDirty = true;

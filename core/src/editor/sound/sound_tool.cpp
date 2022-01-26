@@ -169,13 +169,18 @@ void SoundTool::scheduleSongForPlayback(
   }
 }
 
-void SoundTool::togglePlay() {
+void SoundTool::stopPlayback() {
+  auto &scene = editor.getScene();
+  isPlaying = false;
+  playbackMonitor.clear();
+  scene.getSound().stopAll();
+}
+
+void SoundTool::togglePlayback() {
   if (hasSong()) {
     auto &scene = editor.getScene();
     if (isPlaying) {
-      isPlaying = false;
-      playbackMonitor.clear();
-      scene.getSound().stopAll();
+      stopPlayback();
     } else {
       // schedule current song to play now
       auto [songStartTime, songEndTime] = getPlaybackEndpoints();
@@ -283,7 +288,7 @@ struct SoundToolActionReceiver {
     auto action = params.action();
 
     if (action == "play") {
-      soundTool.togglePlay();
+      soundTool.togglePlayback();
     } else if (action == "setViewFollowsPlayhead") {
       soundTool.viewFollowsPlayhead = (params.doubleValue() == 1.0) ? true : false;
       soundTool.sendUIEvent();

@@ -30,7 +30,8 @@ public:
   void sendUIEvent();
 
   // play/pause currently edited song
-  void togglePlay();
+  void stopPlayback();
+  void togglePlayback();
 
   // sound tool edit modes
   enum class Mode {

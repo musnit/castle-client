@@ -69,6 +69,7 @@ public:
     Text, // edit text properties
   };
   EditMode getEditMode();
+  void setEditMode(EditMode editMode_);
 
   enum class Tool {
     Grab,
