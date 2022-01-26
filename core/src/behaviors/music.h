@@ -29,6 +29,7 @@ public:
   static std::string hash(const std::string &songJson);
   void handleEnableComponent(ActorId actorId, MusicComponent &component);
   void handleDisableComponent(ActorId actorId, MusicComponent &component, bool removeActor);
+  void handleSceneEnd();
 
   void stopMusic(
       ActorId &actorId, Scene &scene, MusicComponent *component, Sound::StreamOptions opts);

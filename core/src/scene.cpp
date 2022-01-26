@@ -51,6 +51,12 @@ Scene::~Scene() {
   // Unlink from variables
   variables.unlinkScene(this);
 
+  getBehaviors().forEach([&](auto &behavior) {
+    if constexpr (Handlers::hasSceneEnd<decltype(behavior)>) {
+      behavior.handleSceneEnd();
+    }
+  });
+
   // Unlink from clock, but don't remove clock from sound thread
   clock.unlinkScene(this);
 }

@@ -138,6 +138,9 @@ namespace Handlers {
   inline constexpr auto                                                                            \
       has##name<T, std::void_t<decltype(&std::remove_reference_t<T>::handle##name)>> = true;
 
+// Scene lifecycle
+DEFINE_HANDLER(SceneEnd);
+
 // Lifecycle
 DEFINE_HANDLER(EnableComponent);
 DEFINE_HANDLER(DisableComponent);

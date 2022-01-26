@@ -47,9 +47,7 @@ Player::~Player() {
 }
 
 void Player::setScene(std::unique_ptr<Scene> scene_) {
-  if (scene != nullptr) {
-    // TODO: tear down previous scene
-  } else {
+  if (scene == nullptr) {
     // no previous scene existed, assume we are starting a new play session
     clock.reset();
   }
@@ -58,7 +56,7 @@ void Player::setScene(std::unique_ptr<Scene> scene_) {
 
 void Player::clearState() {
   sound.removeAllClocks();
-  // TODO: maybe scene = nullptr
+  setScene(nullptr);
 }
 
 void Player::tryLoadVariables() {

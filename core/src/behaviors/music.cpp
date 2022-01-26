@@ -34,6 +34,18 @@ void MusicBehavior::handleDisableComponent(
   stopMusic(actorId, getScene(), &component, opts);
 }
 
+void MusicBehavior::handleSceneEnd() {
+  Sound::StreamOptions opts;
+  if (!getScene().getIsEditing()) {
+    // default in play mode is to stop actor's streams at the next bar
+    opts.quantize = true;
+    opts.quantizeUnits = Clock::Quantize::Bar;
+  }
+  forEachComponent([&](ActorId actorId, MusicComponent &component) {
+    stopMusic(actorId, getScene(), &component, opts);
+  });
+}
+
 std::string MusicBehavior::hash(const std::string &json) {
   auto hash = std::hash<std::string> {}(json);
 
