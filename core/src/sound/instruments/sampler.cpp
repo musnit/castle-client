@@ -13,6 +13,7 @@ void Sampler::write(Writer &writer) const {
 }
 
 void Sampler::read(Reader &reader) {
+  Instrument::read(reader);
   reader.obj("sample", [&]() {
     reader.read(sample);
   });

@@ -11,6 +11,7 @@ const Instrument &Instrument::operator=(const Instrument &other) {
     other.write(w);
   });
 
+
   archive.read([&](Archive::Reader &r) {
     read(r);
   });
@@ -26,6 +27,9 @@ void Instrument::write(Writer &writer) const {
 }
 
 void Instrument::read(Reader &reader) {
+  reader.obj("props", [&]() {
+    reader.read(props);
+  });
 }
 
 std::unique_ptr<Instrument> Instrument::readVirtual(Reader &reader) {
@@ -36,8 +40,5 @@ std::unique_ptr<Instrument> Instrument::readVirtual(Reader &reader) {
     sampler->read(reader);
     result = std::move(sampler);
   }
-  reader.obj("props", [&]() {
-    reader.read(result->props);
-  });
   return result;
 }
