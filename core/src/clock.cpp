@@ -2,7 +2,7 @@
 #include "scene.h"
 #include "behaviors/all.h"
 
-void Clock::reset(unsigned int tempo_, unsigned int beatsPerBar_, unsigned int stepsPerBeat_) {
+void Clock::set(unsigned int tempo_, unsigned int beatsPerBar_, unsigned int stepsPerBeat_) {
   beatsPerBar = beatsPerBar_;
   stepsPerBeat = stepsPerBeat_;
   if (beatsPerBar < 2.0) {
@@ -12,7 +12,6 @@ void Clock::reset(unsigned int tempo_, unsigned int beatsPerBar_, unsigned int s
     stepsPerBeat = 2.0;
   }
   setTempo(tempo_);
-  reset();
 }
 
 void Clock::reset() {

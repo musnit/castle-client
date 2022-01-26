@@ -95,8 +95,8 @@ void Scene::read(Reader &reader) {
     reader.read(props);
   });
 
-  // Reset clock
-  clock.reset(props.clock().tempo(), props.clock().beatsPerBar(), props.clock().stepsPerBeat());
+  // Set clock props
+  clock.set(props.clock().tempo(), props.clock().beatsPerBar(), props.clock().stepsPerBeat());
 }
 
 void Scene::write(Writer &writer) const {

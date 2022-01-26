@@ -64,7 +64,7 @@ public:
   void reset();
   void setScene(Scene *scene);
   void unlinkScene(Scene *scene);
-  void reset(unsigned int tempo, unsigned int beatsPerBar, unsigned int stepsPerBeat);
+  void set(unsigned int tempo, unsigned int beatsPerBar, unsigned int stepsPerBeat);
 
   void setTempo(unsigned int tempo); // don't reset, continue running
   unsigned int getTempo();
@@ -115,6 +115,7 @@ private:
 };
 
 inline void Clock::setScene(Scene *scene_) {
+  // can't read scene props here because scene may not yet have finished read()
   scene = scene_;
 }
 

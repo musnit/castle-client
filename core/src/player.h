@@ -40,6 +40,7 @@ private:
   Sound sound;
   std::optional<std::string> deckId;
 
+  void setScene(std::unique_ptr<Scene> scene_);
   Archive sceneArchive;
   std::unique_ptr<Scene> scene;
 };

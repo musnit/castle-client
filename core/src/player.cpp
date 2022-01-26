@@ -46,6 +46,16 @@ Player::~Player() {
   clearState();
 }
 
+void Player::setScene(std::unique_ptr<Scene> scene_) {
+  if (scene != nullptr) {
+    // TODO: tear down previous scene
+  } else {
+    // no previous scene existed, assume we are starting a new play session
+    clock.reset();
+  }
+  scene = std::move(scene_);
+}
+
 void Player::clearState() {
   sound.removeAllClocks();
   // TODO: maybe scene = nullptr
@@ -72,7 +82,7 @@ void Player::tryLoadNextCard() {
     sceneArchive = Archive::fromJson(sceneDataJson);
     sceneArchive.read([&](Reader &reader) {
       reader.obj("snapshot", [&]() {
-        scene = std::make_unique<Scene>(bridge, variables, sound, clock, deckId, false, &reader);
+        setScene(std::make_unique<Scene>(bridge, variables, sound, clock, deckId, false, &reader));
       });
     });
     free(sceneDataJson);
@@ -83,14 +93,14 @@ void Player::tryLoadNextCard() {
 void Player::readScene(Reader &reader, std::optional<std::string> deckId_) {
   sceneArchive = Archive::fromJson(reader.toJson().c_str());
   deckId = deckId_;
-  scene = std::make_unique<Scene>(bridge, variables, sound, clock, deckId, false, &reader);
+  setScene(std::make_unique<Scene>(bridge, variables, sound, clock, deckId, false, &reader));
 }
 
 void Player::readScene(const std::string &readerJson, std::optional<std::string> deckId_) {
   sceneArchive = Archive::fromJson(readerJson.c_str());
   deckId = deckId_;
   sceneArchive.read([&](Reader &reader) {
-    scene = std::make_unique<Scene>(bridge, variables, sound, clock, deckId, false, &reader);
+    setScene(std::make_unique<Scene>(bridge, variables, sound, clock, deckId, false, &reader));
   });
 }
 
@@ -112,11 +122,12 @@ void Player::update(double dt) {
       sceneArchive.read([&](Reader &reader) {
         if (reader.has("snapshot")) {
           reader.obj("snapshot", [&]() {
-            scene
-                = std::make_unique<Scene>(bridge, variables, sound, clock, deckId, false, &reader);
+            setScene(
+                std::make_unique<Scene>(bridge, variables, sound, clock, deckId, false, &reader));
           });
         } else {
-          scene = std::make_unique<Scene>(bridge, variables, sound, clock, deckId, false, &reader);
+          setScene(
+              std::make_unique<Scene>(bridge, variables, sound, clock, deckId, false, &reader));
         }
       });
     }
