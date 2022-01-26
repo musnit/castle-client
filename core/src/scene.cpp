@@ -48,14 +48,15 @@ Scene::Scene(Bridge &bridge_, Variables &variables_, Sound &sound_, Clock &clock
 }
 
 Scene::~Scene() {
-  // Unlink from variables
-  variables.unlinkScene(this);
-
+  // handleSceneEnd called before unlinking variables or clock
   getBehaviors().forEach([&](auto &behavior) {
     if constexpr (Handlers::hasSceneEnd<decltype(behavior)>) {
       behavior.handleSceneEnd();
     }
   });
+
+  // Unlink from variables
+  variables.unlinkScene(this);
 
   // Unlink from clock, but don't remove clock from sound thread
   clock.unlinkScene(this);
