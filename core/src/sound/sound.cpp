@@ -83,6 +83,17 @@ int Sound::ClockThread::addStream(int clockId, std::unique_ptr<Pattern> pattern,
   return result;
 }
 
+Stream *Sound::ClockThread::maybeGetStream(int clockId, int streamId) {
+  love::thread::Lock lock(mutex);
+  auto &streamsForClock = streams[clockId];
+  for (auto &stream : streamsForClock) {
+    if (stream->streamId == streamId) {
+      return stream.get();
+    }
+  }
+  return nullptr;
+}
+
 void Sound::ClockThread::stopStream(int clockId, int streamId, StreamOptions opts) {
   love::thread::Lock lock(mutex);
   auto &streamsForClock = streams[clockId];
@@ -156,6 +167,12 @@ int Sound::play(int clockId, std::unique_ptr<Pattern> pattern,
     return clockThread->addStream(clockId, std::move(pattern), std::move(instrument), opts);
   }
   return -1;
+}
+
+Stream *Sound::maybeGetStream(int clockId, int streamId) {
+  if (clockThread) {
+    return clockThread->maybeGetStream(clockId, streamId);
+  }
 }
 
 void Sound::stopStream(int clockId, int streamId, StreamOptions opts) {

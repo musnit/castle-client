@@ -55,6 +55,7 @@ public:
   void stopAll();
   void clearStreams();
   void stopStream(int clockId, int streamId, StreamOptions opts);
+  Stream *maybeGetStream(int clockId, int streamId);
 
 private:
   void initialize();
@@ -74,6 +75,7 @@ private:
         std::unique_ptr<Instrument> instrument, StreamOptions opts);
     void clearStreams();
     void stopStream(int clockId, int streamId, StreamOptions opts);
+    Stream *maybeGetStream(int clockId, int streamId);
     void finish();
 
   private:

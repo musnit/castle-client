@@ -1,5 +1,6 @@
 #include "music.h"
 #include "behaviors/all.h"
+#include "sound/stream.h"
 
 void MusicBehavior::handleEnableComponent(ActorId actorId, MusicComponent &component) {
   auto &song = component.props.song();
@@ -133,7 +134,23 @@ void MusicBehavior::playPattern(ActorId &actorId, Scene &scene, MusicComponent *
   }
 }
 
-void MusicBehavior::setTrackMuted(MusicComponent *component, int trackIndex, bool muted) {
+void MusicBehavior::setTrackMuted(
+    ActorId &actorId, MusicComponent *component, int trackIndex, bool muted) {
+  auto &clock = getScene().getClock();
+  // look up existing stream corresponding to this track and modify its instrument
+  if (auto found = activeTracks.find(actorId); found != activeTracks.end()) {
+    auto &[_, streams] = *found;
+    if (trackIndex >= 0 && trackIndex < int(streams.size())) {
+      auto streamIdForTrack = streams[trackIndex];
+      auto stream = getScene().getSound().maybeGetStream(clock.clockId, streamIdForTrack);
+      if (stream) {
+        // TODO: dangerous, probably need a lock on this stream
+        stream->instrument->props.muted() = muted;
+      }
+    }
+  }
+
+  // additionally modify the source track in the song for future streams
   auto &song = component->props.song();
   if (trackIndex >= 0 && trackIndex < int(song.tracks.size())) {
     auto &track = song.tracks[trackIndex];
@@ -241,7 +258,7 @@ struct MuteTrackResponse : BaseResponse {
     auto &scene = ctx.getScene();
     auto &musicBehavior = scene.getBehaviors().byType<MusicBehavior>();
     if (auto component = musicBehavior.maybeGetComponent(actorId)) {
-      musicBehavior.setTrackMuted(component, params.trackIndex(), true);
+      musicBehavior.setTrackMuted(actorId, component, params.trackIndex(), true);
     }
   }
 };
@@ -261,7 +278,7 @@ struct UnmuteTrackResponse : BaseResponse {
     auto &scene = ctx.getScene();
     auto &musicBehavior = scene.getBehaviors().byType<MusicBehavior>();
     if (auto component = musicBehavior.maybeGetComponent(actorId)) {
-      musicBehavior.setTrackMuted(component, params.trackIndex(), false);
+      musicBehavior.setTrackMuted(actorId, component, params.trackIndex(), false);
     }
   }
 };

@@ -39,7 +39,7 @@ public:
       Sound::StreamOptions opts);
   void playPattern(ActorId &actorId, Scene &scene, MusicComponent *component,
       const std::string &patternId, int trackIndex, bool loop, Sound::StreamOptions opts);
-  void setTrackMuted(MusicComponent *component, int trackIndex, bool muted);
+  void setTrackMuted(ActorId &actorId, MusicComponent *component, int trackIndex, bool muted);
 
   // handles to currently-running tracks, by actor id
   std::unordered_map<ActorId, std::vector<int>> activeTracks;
