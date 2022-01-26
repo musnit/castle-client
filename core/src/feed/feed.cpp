@@ -104,11 +104,15 @@ int Feed::getCurrentIndex() {
 
 Scene *Feed::getScene() {
   int idx = getCurrentIndex();
-  if (idx >= 0 && idx < (int)decks.size() && decks[idx].player) {
+  if (idx >= 0 && idx < (int)decks.size() && decks[idx].player && decks[idx].player->hasScene()) {
     return &(decks[idx].player->getScene());
   }
 
   return nullptr;
+}
+
+void Feed::setPaused(bool paused_) {
+  paused = paused_;
 }
 
 void Feed::update(double dt) {
@@ -157,7 +161,7 @@ void Feed::update(double dt) {
 
           int idx = getCurrentIndex();
           if (idx >= 0 && idx < (int)decks.size()) {
-            if (decks[idx].player) {
+            if (decks[idx].player && decks[idx].player->hasScene()) {
               decks[idx].player->getScene().getSound().stopAll();
             }
 
@@ -249,8 +253,10 @@ void Feed::update(double dt) {
         }
       }
 
-      decks[idx].player->update(dt);
-      decks[idx].hasRunUpdateSinceLastRender = true;
+      if (!paused) {
+        decks[idx].player->update(dt);
+        decks[idx].hasRunUpdateSinceLastRender = true;
+      }
 
       decks[idx].coreView->update(dt);
       decks[idx].coreView->handleGesture(gesture);
@@ -261,11 +267,13 @@ void Feed::update(double dt) {
         decks[i].player->update(dt);
         decks[i].hasRunUpdate = true;
         decks[i].hasRunUpdateSinceLastRender = true;
-        decks[i].player->getScene().getSound().stopAll();
+        if (decks[i].player->hasScene()) {
+          decks[i].player->getScene().getSound().stopAll();
+        }
       }
     }
 
-    if (decks.size() > 0 && idx > (int)decks.size() - 3) {
+    if (decks.size() > 0 && idx > (int)decks.size() - 4) {
       fetchMoreDecks();
     }
   }
@@ -351,11 +359,14 @@ void Feed::renderCardAtPosition(int idx, float position, bool isActive) {
     shader->updateUniform(info, 1);
   }
 
+
+  // / *
   quad->setTexture(canvas.get());
   lv.graphics.setColor({ 1.0, 1.0, 1.0, 1.0 });
   quad->draw(&lv.graphics, love::Matrix4(0.0, 0.0, 0, CARD_WIDTH, CARD_HEIGHT, 0, 0, 0, 0));
   quad->setTexture(nullptr);
   lv.graphics.setShader();
+  //  * /
 
   decks[idx].coreView->render();
 

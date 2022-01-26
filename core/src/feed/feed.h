@@ -28,6 +28,7 @@ public:
   void fetchInitialDecks();
   void setWindowSize(int w, int h);
   Scene *getScene(); // for screenshot
+  void setPaused(bool paused);
 
 private:
   mutable love::Transform viewTransform;
@@ -35,6 +36,7 @@ private:
   int windowWidth = 800;
   int windowHeight = 1120;
 
+  bool paused = false;
   Gesture gesture { nullptr };
   std::unique_ptr<love::Shader> shader;
   bool hasTouch = false;

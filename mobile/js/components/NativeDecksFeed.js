@@ -180,7 +180,7 @@ function getCoreViews() {
   return JSON.stringify(coreViews);
 }
 
-export const NativeDecksFeed = ({ onPressComments }) => {
+export const NativeDecksFeed = ({ onPressComments, isCommentsOpen }) => {
   const { push, navigate } = useNavigation();
 
   useListen({
@@ -212,7 +212,7 @@ export const NativeDecksFeed = ({ onPressComments }) => {
         textOverlayStyle: Constants.CORE_OVERLAY_TEXT_STYLE,
       })}
       coreViews={getCoreViews()}
-      paused={false}
+      paused={isCommentsOpen}
     />
   );
 };

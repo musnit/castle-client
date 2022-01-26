@@ -133,4 +133,8 @@ inline LibraryClipboard &Engine::getLibraryClipboard() {
 
 inline void Engine::setPaused(bool paused_) {
   paused = paused_;
+
+  if (feed) {
+    feed->setPaused(paused);
+  }
 }
