@@ -66,11 +66,11 @@ const SUBTOOL_GROUPS = {
   ],
   track: [
     {
-      name: 'select',
+      name: 'add_note',
       icon: 'grab',
     },
     {
-      name: 'erase',
+      name: 'erase_note',
       icon: 'erase',
     },
   ],

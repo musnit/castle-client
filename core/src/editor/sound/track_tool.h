@@ -5,6 +5,7 @@
 #include "editor/gesture_pan_zoom.h"
 #include "editor/grid.h"
 #include "sound/pattern.h"
+#include "subtools/sound_subtool_interface.h"
 
 struct Sample;
 class SoundTool;
@@ -35,11 +36,11 @@ public:
   void selectPatternId(std::string &patternId);
   void updateViewConstraints();
 
-  enum class Subtool {
-    Select,
-    Erase,
-  };
-  Subtool selectedSubtool = Subtool::Select;
+  std::unordered_map<std::string, std::unique_ptr<SoundSubtool>> subtools;
+  std::string currentSubtoolName;
+  SoundSubtool *getCurrentSubtool();
+  void setCurrentSubtool(const std::string &subtoolName);
+  float gridCellSize = 0.75f;
 
 private:
   friend struct TrackToolActionReceiver;
@@ -50,7 +51,6 @@ private:
   Scene &getScene();
 
   // for pattern editing
-  float gridCellSize = 0.75f;
   GesturePanZoom panZoom {
     PATTERN_MIN_VIEW_WIDTH,
     PATTERN_MAX_VIEW_WIDTH,
@@ -65,8 +65,15 @@ private:
   love::Vector2 viewPosition;
   float viewWidth = PATTERN_DEFAULT_VIEW_WIDTH;
   void zoomToFit();
-
-  // adding notes
-  bool hasTouch = false;
-  Pattern::Note tempNote;
 };
+
+inline SoundSubtool *TrackTool::getCurrentSubtool() {
+  return subtools[currentSubtoolName].get();
+}
+
+inline void TrackTool::setCurrentSubtool(const std::string &subtoolName) {
+  currentSubtoolName = subtoolName;
+  if (!getCurrentSubtool()) {
+    currentSubtoolName = "add_note";
+  }
+}

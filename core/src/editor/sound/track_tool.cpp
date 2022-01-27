@@ -3,27 +3,29 @@
 #include "bridge.h"
 #include "sound/instruments/sampler.h"
 #include "sound_tool.h"
+#include "subtools/pattern_add_note_subtool.h"
+#include "subtools/pattern_erase_note_subtool.h"
 
 TrackTool::TrackTool(SoundTool &soundTool_)
     : soundTool(soundTool_) {
+  subtools.emplace("add_note", std::make_unique<PatternAddNoteSubtool>(soundTool_));
+  subtools.emplace("erase_note", std::make_unique<PatternEraseNoteSubtool>(soundTool_));
 }
 
 Scene &TrackTool::getScene() {
-  return soundTool.editor.getScene();
+  return soundTool.getScene();
 }
 
 void TrackTool::resetState() {
-  hasTouch = false;
-  selectedSubtool = Subtool::Select;
+  currentSubtoolName = "add_note";
+  getCurrentSubtool()->onReset();
   viewWidth = PATTERN_DEFAULT_VIEW_WIDTH;
 }
 
 void TrackTool::onSetActive() {
-  hasTouch = false;
-  selectedSubtool = Subtool::Select;
+  currentSubtoolName = "add_note";
+  getCurrentSubtool()->onReset();
   zoomToFit();
-  tempNote.time = -1;
-  tempNote.key = 999;
   updateViewConstraints();
 }
 
@@ -83,14 +85,6 @@ void TrackTool::update(double dt) {
   const Gesture &gesture = scene.getGesture();
   if (gesture.getCount() == 1 && gesture.getMaxCount() == 1) {
     gesture.withSingleTouch([&](const Touch &touch) {
-      auto track = soundTool.getSelectedTrack();
-      if (!track) {
-        return;
-      }
-      auto pattern = soundTool.getSelectedPattern();
-      if (!pattern) {
-        return;
-      }
       love::Vector2 originalTouchPosition = { touch.screenPos.x, touch.screenPos.y };
       auto transformedTouchPosition = viewTransform.inverseTransformPoint(originalTouchPosition);
 
@@ -98,53 +92,18 @@ void TrackTool::update(double dt) {
       auto step = double(floor(transformedTouchPosition.x / gridCellSize));
       auto key
           = floor(-transformedTouchPosition.y / gridCellSize) + 60; // set axis to midi middle C
-      bool playNote = false;
 
-      if (touch.released) {
-        switch (selectedSubtool) {
-        case Subtool::Select: {
-          if (step >= 0 && !pattern->hasNote(step, key)) {
-            pattern->addNote(step, key);
-            soundTool.updateSelectedComponent("add notes");
-          }
-          break; // Subtool::Select
-        }
-        case Subtool::Erase: {
-          if (step >= 0 && pattern->hasNote(step, key)) {
-            pattern->removeNote(step, key);
-            soundTool.updateSelectedComponent("remove notes");
-          }
-          break; // Subtool::Erase
-        }
-        }
-        hasTouch = false;
-        tempNote.key = 999; // reset for next gesture
-      } else {
-        hasTouch = true;
-        switch (selectedSubtool) {
-        case Subtool::Select: {
-          if (touch.pressed || key != tempNote.key) {
-            // moved to a different note while touch was active
-            playNote = true;
-          }
-          break; // Subtool::Select
-        }
-        case Subtool::Erase: {
-          break; // Subtool::Erase
-        }
-        }
-        tempNote.time = step;
-        tempNote.key = key;
-      }
-      if (playNote) {
-        if (track) {
-          track->instrument->play(scene.getSound(), { step, key });
-        }
-      }
+      SoundSubtoolTouch subtoolTouch(touch);
+      subtoolTouch.touchX = transformedTouchPosition.x;
+      subtoolTouch.touchY = transformedTouchPosition.y;
+      subtoolTouch.step = step;
+      subtoolTouch.key = key;
+
+      getCurrentSubtool()->onTouch(subtoolTouch);
     });
   } else if (gesture.getCount() == 2) {
-    hasTouch = false;
     // cancel touch, don't add note
+    getCurrentSubtool()->onReset();
 
     panZoom.update(gesture, viewTransform);
     auto newView = panZoom.apply(viewPosition, viewWidth);
@@ -216,12 +175,7 @@ void TrackTool::drawPattern(Pattern *pattern) {
       lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, x, y, gridCellSize, gridCellSize);
     }
   }
-  if (hasTouch && selectedSubtool == Subtool::Select) {
-    // draw temp note
-    auto x = tempNote.time * gridCellSize;
-    auto y = ((tempNote.key - 60) * -gridCellSize) - gridCellSize;
-    lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, x, y, gridCellSize, gridCellSize);
-  }
+  getCurrentSubtool()->drawOverlay(lv);
 }
 
 void TrackTool::drawNoteAxis() {
@@ -239,7 +193,7 @@ void TrackTool::drawNoteAxis() {
     } else {
       lv.graphics.setColor({ 1.0f, 1.0f, 1.0f, 1.0f });
     }
-    if (hasTouch && note == tempNote.key) {
+    if (getCurrentSubtool()->highlightAxis(note)) {
       lv.graphics.setColor({ 0.8f, 0.0f, 0.0f, 1.0f });
     }
     lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, x, y, gridCellSize, gridCellSize);

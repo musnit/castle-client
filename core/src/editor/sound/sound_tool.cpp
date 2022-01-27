@@ -9,6 +9,10 @@ SoundTool::SoundTool(Editor &editor_)
   resetState();
 }
 
+Scene &SoundTool::getScene() {
+  return editor.getScene();
+}
+
 void SoundTool::resetState() {
   song = nullptr;
   clearSelection();
@@ -63,7 +67,7 @@ void SoundTool::useSelectedActorMusicComponent() {
 
 void SoundTool::computeSongLength() {
   if (song) {
-    auto &scene = editor.getScene();
+    auto &scene = getScene();
     songTotalLength = song->getLength(scene.getClock());
   } else {
     songTotalLength = 0;
@@ -71,7 +75,7 @@ void SoundTool::computeSongLength() {
 }
 
 MusicComponent *SoundTool::maybeGetSelectedActorMusicComponent() {
-  auto &scene = editor.getScene();
+  auto &scene = getScene();
   if (!editor.getSelection().hasSelection()) {
     return nullptr;
   }
@@ -127,7 +131,7 @@ void SoundTool::setSelectedSequenceLoops(bool loop) {
 }
 
 std::pair<double, double> SoundTool::getPlaybackEndpoints() {
-  auto &scene = editor.getScene();
+  auto &scene = getScene();
   double songStartTime = 0, songEndTime = songTotalLength;
   if (selectedPatternId != "") {
     // if editing a specific pattern in a sequence, only loop this part of the sequence
@@ -154,7 +158,7 @@ std::pair<double, double> SoundTool::getPlaybackEndpoints() {
 
 void SoundTool::scheduleSongForPlayback(
     double songStartTime, double songEndTime, double initialTimeInSong) {
-  auto &scene = editor.getScene();
+  auto &scene = getScene();
   auto patterns = song->flattenTracksForPlayback(songStartTime, songEndTime, scene.getClock());
   Sound::StreamOptions opts;
   opts.initialTimeInStream = initialTimeInSong;
@@ -170,7 +174,7 @@ void SoundTool::scheduleSongForPlayback(
 }
 
 void SoundTool::stopPlayback() {
-  auto &scene = editor.getScene();
+  auto &scene = getScene();
   isPlaying = false;
   playbackMonitor.clear();
   scene.getSound().stopAll();
@@ -178,7 +182,7 @@ void SoundTool::stopPlayback() {
 
 void SoundTool::togglePlayback() {
   if (hasSong()) {
-    auto &scene = editor.getScene();
+    auto &scene = getScene();
     if (isPlaying) {
       stopPlayback();
     } else {
@@ -197,7 +201,7 @@ void SoundTool::togglePlayback() {
 void SoundTool::updatePlaybackStreams() {
   if (hasSong() && isPlaying) {
     // stop old streams
-    auto &scene = editor.getScene();
+    auto &scene = getScene();
     playbackMonitor.clear();
     scene.getSound().clearStreams();
 
@@ -209,7 +213,7 @@ void SoundTool::updatePlaybackStreams() {
 }
 
 double SoundTool::getPlaybackTimeInSong() {
-  auto timePlaying = editor.getScene().getClock().getTime() - playStartTime;
+  auto timePlaying = getScene().getClock().getTime() - playStartTime;
   auto songLoopLength = playEndTimeInSong - playStartTimeInSong;
   while (songLoopLength > 0 && timePlaying > songLoopLength) {
     timePlaying -= songLoopLength;
@@ -220,7 +224,7 @@ double SoundTool::getPlaybackTimeInSong() {
 std::optional<double> SoundTool::getPlaybackTimeInSequenceElem(
     Song::Track::Sequence::iterator startSeq, double timeInSong) {
   auto loopLength
-      = song->patterns[startSeq->second.patternId()].getLoopLength(editor.getScene().getClock());
+      = song->patterns[startSeq->second.patternId()].getLoopLength(getScene().getClock());
   auto timeInSeq = timeInSong - startSeq->first;
   if (startSeq->second.loop() || timeInSeq < loopLength) {
     while (loopLength > 0 && timeInSeq > loopLength) {
@@ -240,7 +244,7 @@ void SoundTool::update(double dt) {
     return;
   }
   if (isPlaying) {
-    auto &clock = editor.getScene().getClock();
+    auto &clock = getScene().getClock();
     playbackMonitor.update(dt, clock.getTime());
   }
   switch (mode) {
@@ -377,14 +381,7 @@ void SoundTool::sendUIEvent() {
     break;
   case Mode::Track:
     modeStr = "track";
-    switch (trackTool.selectedSubtool) {
-    case TrackTool::Subtool::Select:
-      subtoolStr = "select";
-      break;
-    case TrackTool::Subtool::Erase:
-      subtoolStr = "erase";
-      break;
-    }
+    subtoolStr = trackTool.currentSubtoolName;
     break;
   }
 
@@ -416,11 +413,7 @@ struct SoundToolSetSubtoolReceiver {
       }
       editor->soundTool.clearSelection();
     } else if (params.mode() == "track") {
-      if (params.subtool() == "select") {
-        editor->soundTool.trackTool.selectedSubtool = TrackTool::Subtool::Select;
-      } else if (params.subtool() == "erase") {
-        editor->soundTool.trackTool.selectedSubtool = TrackTool::Subtool::Erase;
-      }
+      editor->soundTool.trackTool.setCurrentSubtool(params.subtool());
     }
     editor->soundTool.sendUIEvent();
   }

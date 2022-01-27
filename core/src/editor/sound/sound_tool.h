@@ -45,6 +45,11 @@ public:
   }
   void setMode(Mode mode, bool init = false);
 
+  Scene &getScene();
+  Song::Track *getSelectedTrack();
+  Pattern *getSelectedPattern();
+  void updateSelectedComponent(std::string commandDescription);
+
 private:
   friend class TrackTool;
   friend class SongTool;
@@ -63,7 +68,6 @@ private:
   std::string lastHash;
   void useSelectedActorMusicComponent();
   MusicComponent *maybeGetSelectedActorMusicComponent();
-  void updateSelectedComponent(std::string commandDescription);
   void validateSelection();
 
   void addPattern(double steps, int trackIndex);
@@ -84,9 +88,6 @@ private:
       Song::Track::Sequence::iterator startSeq, double timeInSong);
 
   void computeSongLength();
-
-  Song::Track *getSelectedTrack();
-  Pattern *getSelectedPattern();
 };
 
 inline void SoundTool::setTrackIndex(int trackIndex) {
