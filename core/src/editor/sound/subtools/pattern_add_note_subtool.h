@@ -20,7 +20,12 @@ public:
   }
 
   void onReset() {
+    if (hasChanges) {
+      // discard
+      soundTool.discardChanges();
+    }
     hasTouch = false;
+    hasChanges = false;
     tempNoteTime = -1;
     tempNote.key = 999;
   }
@@ -33,9 +38,9 @@ public:
     bool playNote = false;
     if (touch.touch.released) {
       if (touch.step >= 0 && !pattern->hasNote(touch.step, touch.key)) {
-        playNote = true;
         pattern->addNote(touch.step, touch.key);
         soundTool.updateSelectedComponent("add notes");
+        hasChanges = false; // changes were committed
       }
       hasTouch = false;
       tempNote.key = 999; // reset for next gesture
@@ -43,6 +48,13 @@ public:
       if (touch.touch.pressed || touch.key != tempNote.key) {
         // moved to a different note while touch was active
         playNote = true;
+      }
+      if (touch.touch.pressed) {
+        if (pattern->hasNote(touch.step, touch.key)) {
+          // began touch on an existing note, treat the gesture as moving the note
+          pattern->removeNote(touch.step, touch.key);
+          hasChanges = true;
+        }
       }
       hasTouch = true;
       tempNoteTime = touch.step;
@@ -70,6 +82,7 @@ public:
   }
 
 private:
+  bool hasChanges = false;
   bool hasTouch = false;
   Pattern::Note tempNote;
   double tempNoteTime = 0;
