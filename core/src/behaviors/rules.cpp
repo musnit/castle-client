@@ -1128,10 +1128,11 @@ struct ShowLeaderboardResponse : BaseResponse {
              "each user multiple times"
            )
          ) = "each user once";
+    PROP(std::string, label, .label("label")) = "Score";
   } params;
 
   void readLeaderboardRow(CoreViewRenderer &leaderboardView, Reader &reader, std::string i) {
-    leaderboardView.updateProp("place-" + i, "text", "#" + i);
+    leaderboardView.updateProp("place-" + i, "text", "#" + std::string(reader.str("place", "")));
     leaderboardView.updateProp("score-" + i, "text", reader.str("score", ""));
 
     reader.obj("user", [&]() {
@@ -1153,16 +1154,20 @@ struct ShowLeaderboardResponse : BaseResponse {
     } else {
       filter = "none";
     }
-    auto deckId = ctx.getScene().getDeckId();
     auto &leaderboardView = ctx.getScene().getLeaderboardView();
+    leaderboardView.reset();
+    leaderboardView.updateProp("label", "text", params.label());
+
+    auto deckId = ctx.getScene().getDeckId();
+
     if (name && deckId) {
       API::enqueueGraphQLRequest("{\n  leaderboard(deckId: \"" + *deckId + "\", variable: \""
               + *name + "\", type: " + type + ", filter: " + filter
-              + ") {\n    list {\n score\n user {\n username\n photo {\n smallAvatarUrl}}}\n  }\n}",
+              + ") {\n    list {\n place\n score\n user {\n username\n photo {\n smallAvatarUrl}}}\n  }\n}",
           [&](APIResponse &response) {
             auto &reader = response.reader;
-            leaderboardView.reset();
             leaderboardView.updateProp("leaderboard", "visibility", "visible");
+            leaderboardView.updateProp("editorText", "visibility", "hidden");
 
             reader.obj("data", [&]() {
               reader.obj("leaderboard", [&]() {
@@ -1185,8 +1190,6 @@ struct ShowLeaderboardResponse : BaseResponse {
     } else {
       leaderboardView.updateProp("leaderboard", "visibility", "visible");
       leaderboardView.updateProp("editorText", "visibility", "visible");
-      leaderboardView.updateProp("username", "visibility", "hidden");
-      leaderboardView.updateProp("score", "visibility", "hidden");
     }
   }
 };

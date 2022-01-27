@@ -800,21 +800,18 @@ const SaveVariableToLeaderboard = ({ response, context }) => {
 };
 
 const ShowLeaderboard = ({ response, context }) => {
-  const changeAllParams = {
-    paramNames: ['variableId'],
-    paramValues: {
-      ...response.params,
-    },
-  };
+  const label = response.params?.label ?? '';
+
   return [
     {
       type: 'showEntryOptions',
-      label: 'Show leaderboard for ',
+      label: 'Show leaderboard for',
     },
     {
       type: 'selectParamSheet',
+      paramName: 'variableId',
+      paramValue: response.params?.variableId,
       label: formatVariableName(getVariableName(response.params?.variableId, context.variables)),
-      ...changeAllParams,
     },
     {
       type: 'selectParamSheet',
@@ -827,6 +824,16 @@ const ShowLeaderboard = ({ response, context }) => {
       paramName: 'filter',
       paramValue: response.params?.filter ?? 0,
       label: response.params?.filter,
+    },
+    {
+      type: 'text',
+      label: 'with label',
+    },
+    {
+      type: 'selectParamSheet',
+      paramName: 'label',
+      paramValue: response.params?.label,
+      label: `"${label}"`,
     },
   ];
 };
