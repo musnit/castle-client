@@ -21,9 +21,6 @@ public class CastleSharedPreferences {
 
     private static final String AUTH_TOKEN_KEY = "AUTH_TOKEN";
     private static final String IS_NUX_COMPLETED_KEY = "IS_NUX_COMPLETED";
-    private static final String NUM_APP_OPENS = "NUM_APP_OPENS";
-    private static final String NUM_REVIEW_SHOWN = "NUM_REVIEW_SHOWN";
-    private static final String REVIEW_TIMESTAMP = "REVIEW_TIMESTAMP";
 
     private static SharedPreferences sharedPreferences;
 
@@ -66,43 +63,5 @@ public class CastleSharedPreferences {
     public static void markNuxComplete() {
         set(IS_NUX_COMPLETED_KEY, "true");
         EventBus.getDefault().post(new NuxCompleteEvent());
-    }
-
-    public static int numAppOpens() {
-        return sharedPreferences.getInt(NUM_APP_OPENS, 0);
-    }
-
-    public static int incrementNumAppOpens() {
-        int count = numAppOpens() + 1;
-        sharedPreferences.edit().putInt(NUM_APP_OPENS, count).commit();
-        return count;
-    }
-
-    public static void clearNumAppOpens() {
-        sharedPreferences.edit().putInt(NUM_APP_OPENS, 0).commit();
-    }
-
-    public static int numReviewShown() {
-        return sharedPreferences.getInt(NUM_REVIEW_SHOWN, 0);
-    }
-
-    public static int incrementNumReviewShown() {
-        int count = numReviewShown() + 1;
-        sharedPreferences.edit().putInt(NUM_REVIEW_SHOWN, count).commit();
-        return count;
-    }
-
-    public static long reviewTimestamp() {
-        long result = sharedPreferences.getLong(REVIEW_TIMESTAMP, -1);
-        if (result == -1) {
-            return updateReviewTimestamp();
-        }
-        return result;
-    }
-
-    public static long updateReviewTimestamp() {
-        long result = System.currentTimeMillis();
-        sharedPreferences.edit().putLong(REVIEW_TIMESTAMP, result).commit();
-        return result;
     }
 }
