@@ -9,7 +9,8 @@ class Pattern {
 public:
   struct Note {
     float key = 0; // up to receiving instrument to interpret key, might be pitch
-    // could later add length, velocity, probability, ...
+    int vel = 128;
+    // could later add length, vel, probability, ...
 
     inline bool operator==(const Note &b) {
       return key == b.key;
@@ -17,10 +18,16 @@ public:
 
     inline void write(Writer &writer) const {
       writer.num("key", key);
+
+      // sparse write only if not-default
+      if (vel < 128) {
+        writer.num("vel", vel);
+      }
     }
 
     inline void read(Reader &reader) {
       key = reader.num("key", 0);
+      vel = reader.num("vel", 128);
     }
   };
 

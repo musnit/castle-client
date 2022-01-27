@@ -28,7 +28,7 @@ public:
   ~Sound();
 
   void preload(const Sample &sample);
-  void play(const Sample &sample, double playbackRate);
+  void play(const Sample &sample, double playbackRate, float amplitude);
 
   void addClock(Clock *); // start audio thread if not started, add clock if not added
   void removeAllClocks(); // stop audio thread and unschedule all clocks
@@ -59,11 +59,11 @@ public:
 
 private:
   void initialize();
-  void playUrl(float playbackRate, const std::string &url);
-  void playEffect(float playbackRate, const std::string &category, int seed, int mutationSeed,
-      int mutationAmount);
-  void playTone(float playbackRate, int midiNote, const std::string &waveform, float attack,
-      float sustain, float release);
+  void playUrl(float playbackRate, float amplitude, const std::string &url);
+  void playEffect(float playbackRate, float amplitude, const std::string &category, int seed,
+      int mutationSeed, int mutationAmount);
+  void playTone(float playbackRate, float amplitude, int midiNote, const std::string &waveform,
+      float attack, float sustain, float release);
 
   class ClockThread : public love::thread::Threadable {
   public:

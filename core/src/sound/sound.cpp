@@ -5,6 +5,7 @@
 #include "clock.h"
 #include "stream.h"
 #include "sample.h"
+#include "util.h"
 
 #include <common/delay.h>
 
@@ -207,7 +208,7 @@ void Sound::preload(const Sample &sample) {
 #endif
 }
 
-void Sound::play(const Sample &sample, double playbackRate) {
+void Sound::play(const Sample &sample, double playbackRate, float amplitude) {
   initialize();
 
   if (playbackRate <= 0.0) {
@@ -216,18 +217,18 @@ void Sound::play(const Sample &sample, double playbackRate) {
 
   auto &type = sample.type();
   if (type == "sfxr") {
-    playEffect(playbackRate, sample.category(), sample.seed(), sample.mutationSeed(),
+    playEffect(playbackRate, amplitude, sample.category(), sample.seed(), sample.mutationSeed(),
         sample.mutationAmount());
   } else if (type == "tone") {
-    playTone(playbackRate, sample.midiNote(), sample.waveform(), sample.attack(), sample.sustain(),
-        sample.release());
+    playTone(playbackRate, amplitude, sample.midiNote(), sample.waveform(), sample.attack(),
+        sample.sustain(), sample.release());
   } else {
     auto url = type == "microphone" ? sample.recordingUrl() : sample.uploadUrl();
-    playUrl(playbackRate, url);
+    playUrl(playbackRate, amplitude, url);
   }
 }
 
-void Sound::playUrl(float playbackRate, const std::string &url) {
+void Sound::playUrl(float playbackRate, float amplitude, const std::string &url) {
   if (url == "") {
     return;
   }
@@ -240,16 +241,18 @@ void Sound::playUrl(float playbackRate, const std::string &url) {
       Sound::urlSounds.insert(std::make_pair(url, std::move(sound)));
 
       int handle = Sound::soloud.play(*urlSounds[url]);
+      Sound::soloud.setVolume(handle, amplitude);
       Sound::soloud.setRelativePlaySpeed(handle, playbackRate);
     });
   } else {
     int handle = Sound::soloud.play(*urlSounds[url]);
+    Sound::soloud.setVolume(handle, amplitude);
     Sound::soloud.setRelativePlaySpeed(handle, playbackRate);
   }
 }
 
-void Sound::playEffect(float playbackRate, const std::string &category, int seed, int mutationSeed,
-    int mutationAmount) {
+void Sound::playEffect(float playbackRate, float amplitude, const std::string &category, int seed,
+    int mutationSeed, int mutationAmount) {
   std::string key = "category: " + category + " seed:" + std::to_string(seed) + " mutationSeed:"
       + std::to_string(mutationSeed) + " mutationAmount:" + std::to_string(mutationAmount);
 
@@ -284,11 +287,12 @@ void Sound::playEffect(float playbackRate, const std::string &category, int seed
   }
 
   int handle = Sound::soloud.play(*Sound::sfxrSounds[key]);
+  Sound::soloud.setVolume(handle, amplitude);
   Sound::soloud.setRelativePlaySpeed(handle, playbackRate);
 }
 
-void Sound::playTone(float playbackRate, int midiNote, const std::string &waveform, float attack,
-    float sustain, float release) {
+void Sound::playTone(float playbackRate, float amplitude, int midiNote, const std::string &waveform,
+    float attack, float sustain, float release) {
   std::string key = "midiNote: " + std::to_string(midiNote) + " waveform: " + waveform
       + " attack: " + std::to_string(attack) + " sustain: " + std::to_string(sustain)
       + " release: " + std::to_string(release);
@@ -297,7 +301,7 @@ void Sound::playTone(float playbackRate, int midiNote, const std::string &wavefo
     std::unique_ptr<SoLoud::Sfxr> sound = std::make_unique<SoLoud::Sfxr>();
 
     sound->mParams.p_base_freq
-        = Sample::hzToSfxrFreq(Sample::midicps(midiNote), sound->mBaseSamplerate);
+        = SoundUtil::hzToSfxrFreq(SoundUtil::midicps(midiNote), sound->mBaseSamplerate);
     if (waveform == "square") {
       sound->mParams.wave_type = 0;
     } else if (waveform == "sawtooth") {
@@ -316,5 +320,6 @@ void Sound::playTone(float playbackRate, int midiNote, const std::string &wavefo
   }
 
   int handle = Sound::soloud.play(*Sound::sfxrSounds[key]);
+  Sound::soloud.setVolume(handle, amplitude);
   Sound::soloud.setRelativePlaySpeed(handle, playbackRate);
 }

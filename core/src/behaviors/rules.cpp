@@ -898,7 +898,7 @@ struct PlaySoundResponse : BaseResponse {
     auto &sound = ctx.getScene().getSound();
     auto playbackRate = std::clamp(
         params.playbackRate().eval<double>(ctx), Sample::minPlaybackRate, Sample::maxPlaybackRate);
-    sound.play(params, playbackRate);
+    sound.play(params, playbackRate, 1.0f);
   }
 
   void init(Scene &scene) {
@@ -922,7 +922,7 @@ struct EditorChangeSoundReceiver {
     auto &scene = engine.maybeGetEditor()->getScene();
     auto &sound = scene.getSound();
     RuleContext independent { nullptr, nullActor, {}, scene };
-    sound.play(params, params.playbackRate().eval<double>(independent));
+    sound.play(params, params.playbackRate().eval<double>(independent), 1.0f);
   }
 };
 
@@ -1163,7 +1163,8 @@ struct ShowLeaderboardResponse : BaseResponse {
     if (name && deckId) {
       API::enqueueGraphQLRequest("{\n  leaderboard(deckId: \"" + *deckId + "\", variable: \""
               + *name + "\", type: " + type + ", filter: " + filter
-              + ") {\n    list {\n place\n score\n user {\n username\n photo {\n smallAvatarUrl}}}\n  }\n}",
+              + ") {\n    list {\n place\n score\n user {\n username\n photo {\n "
+                "smallAvatarUrl}}}\n  }\n}",
           [&](APIResponse &response) {
             auto &reader = response.reader;
             leaderboardView.updateProp("leaderboard", "visibility", "visible");
