@@ -4,6 +4,7 @@ import { GameLoading } from './GameLoading';
 import { GameView } from './GameView';
 import * as Constants from '../Constants';
 import { sendAsync } from '../core/CoreEvents';
+import * as CoreViews from '../CoreViews';
 
 const styles = StyleSheet.create({
   overlay: {
@@ -73,6 +74,8 @@ export const CardScene = ({
     );
   }, [isEditable, deck?.deckId, isNewScene, initialSnapshotJson]);
 
+  CoreViews.useCoreViews();
+
   return (
     <View style={style}>
       {deck?.deckId ? (
@@ -85,6 +88,7 @@ export const CardScene = ({
               onMessage={onMessage}
               onLoaded={onLoaded}
               paused={paused}
+              coreViews={CoreViews.getCoreViews()}
             />
           )}
           {!interactionEnabled ? (

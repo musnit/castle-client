@@ -1130,42 +1130,16 @@ struct ShowLeaderboardResponse : BaseResponse {
          ) = "each user once";
   } params;
 
-  void showDismissableTextBox(RuleContext &ctx, std::string text) {
-    // Create blueprint of new text actor to add
-    Archive archive;
-    archive.write([&](Archive::Writer &writer) {
-      writer.obj("components", [&]() {
-        // Text component with content
-        writer.obj("Text", [&]() {
-          writer.str("content", text);
-        });
+  void readLeaderboardRow(CoreViewRenderer &leaderboardView, Reader &reader, std::string i) {
+    leaderboardView.updateProp("place-" + i, "text", "#" + i);
+    leaderboardView.updateProp("score-" + i, "text", reader.str("score", ""));
 
-        // Rules component with action
-        writer.obj("Rules", [&]() {
-          writer.arr("rules", [&]() {
-            writer.obj([&]() {
-              // Tap trigger
-              writer.obj("trigger", [&]() {
-                writer.str("name", "tap");
-                writer.num("behaviorId", TextBehavior::behaviorId);
-              });
-
-              // Response
-              writer.obj("response", [&]() {
-                auto &rulesBehavior = ctx.getScene().getBehaviors().byType<RulesBehavior>();
-                writer.num("index", rulesBehavior.getDestroyResponseIndex());
-              });
-            });
-          });
-        });
+    reader.obj("user", [&]() {
+      std::string username = reader.str("username", "");
+      leaderboardView.updateProp("username-" + i, "text", reader.str("username", ""));
+      reader.obj("photo", [&]() {
+        leaderboardView.updateProp("avatar-" + i, "url", reader.str("smallAvatarUrl", ""));
       });
-    });
-
-    // Create actor from blueprint
-    archive.read([&](Reader &reader) {
-      Scene::ActorDesc newActorDesc;
-      newActorDesc.reader = &reader;
-      ctx.getScene().addActor(newActorDesc);
     });
   }
 
@@ -1180,21 +1154,38 @@ struct ShowLeaderboardResponse : BaseResponse {
       filter = "none";
     }
     auto deckId = ctx.getScene().getDeckId();
+    auto &leaderboardView = ctx.getScene().getLeaderboardView();
     if (name && deckId) {
       API::enqueueGraphQLRequest("{\n  leaderboard(deckId: \"" + *deckId + "\", variable: \""
-              + *name + "\", type: " + type + ", filter: " + filter + ") {\n    text\n  }\n}",
+              + *name + "\", type: " + type + ", filter: " + filter
+              + ") {\n    list {\n score\n user {\n username\n photo {\n smallAvatarUrl}}}\n  }\n}",
           [&](APIResponse &response) {
             auto &reader = response.reader;
+            leaderboardView.updateProp("leaderboard", "visibility", "visible");
+
             reader.obj("data", [&]() {
               reader.obj("leaderboard", [&]() {
-                auto text = reader.str("text", "");
-                showDismissableTextBox(ctx, text);
+                reader.arr("list", [&]() {
+                  int iNum = 1;
+                  reader.each([&]() {
+                    if (iNum > 10) {
+                      return;
+                    }
+
+                    auto i = std::to_string(iNum);
+                    readLeaderboardRow(leaderboardView, reader, i);
+
+                    iNum++;
+                  });
+                });
               });
             });
           });
     } else {
-      showDismissableTextBox(
-          ctx, "This will show a leaderboard when playing the deck outside the editor.");
+      leaderboardView.updateProp("leaderboard", "visibility", "visible");
+      leaderboardView.updateProp("editorText", "visibility", "visible");
+      leaderboardView.updateProp("username", "visibility", "hidden");
+      leaderboardView.updateProp("score", "visibility", "hidden");
     }
   }
 };

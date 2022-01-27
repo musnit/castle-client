@@ -45,6 +45,12 @@ Scene::Scene(Bridge &bridge_, Variables &variables_, Sound &sound_, Clock &clock
   if (maybeReader) {
     read(*maybeReader);
   }
+
+  // CoreViews
+  leaderboardView = CoreViews::getInstance().getRenderer("LEADERBOARD");
+  leaderboardView->registerTapHandler([&](std::string id) {
+    leaderboardView->updateProp("leaderboard", "visibility", "hidden");
+  });
 }
 
 Scene::~Scene() {
@@ -417,6 +423,9 @@ void Scene::update(double dt) {
   });
 
   variables.update(dt);
+
+  leaderboardView->update(dt);
+  leaderboardView->handleGesture(gesture);
 }
 
 
@@ -499,6 +508,8 @@ void Scene::draw(std::optional<SceneDrawingOptions> options) const {
   });
 
   lv.graphics.pop();
+
+  leaderboardView->render();
 }
 
 //

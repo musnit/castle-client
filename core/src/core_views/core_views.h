@@ -30,6 +30,8 @@ public:
   double top = 0;
   double width = 0;
   double height = 0;
+  bool isVisible = true;
+  bool isTouchEnabled = false;
   std::optional<std::string> onTapHandlerId;
   std::optional<std::string> id;
   std::vector<std::shared_ptr<CoreView>> children;
@@ -38,7 +40,8 @@ public:
   float backgroundColor[3];
   bool isTouchDown = false;
   float borderRadius = -1;
-  inline static std::unique_ptr<love::Shader> borderRadiusShader = nullptr;
+  inline static std::unique_ptr<love::Shader> borderRadiusImageShader = nullptr;
+  inline static std::unique_ptr<love::Shader> borderRadiusColorShader = nullptr;
 };
 
 class CoreViewRenderer {
@@ -46,15 +49,16 @@ public:
   CoreViewRenderer(Bridge &bridge_, std::string layoutTemplateName_,
       std::shared_ptr<CoreView> layout_, int jsonVersion_)
       : bridge(bridge_)
-      , layoutTemplateName(layoutTemplateName_)
       , layout(layout_)
-      , jsonVersion(jsonVersion_) {
+      , jsonVersion(jsonVersion_)
+      , layoutTemplateName(layoutTemplateName_) {
   }
 
   void update(double dt);
   void handleGesture(Gesture &gesture);
   void render();
   void cancelGestures();
+  void registerTapHandler(const std::function<void(std::string)> handler);
 
   void updateProp(std::string viewId, std::string key, std::string value);
   void updateJSGestureProp(std::string key, std::string value);
@@ -72,6 +76,7 @@ private:
   mutable love::Transform viewTransform;
   std::unordered_map<std::string, std::unordered_map<std::string, std::string>> props;
   std::unordered_map<std::string, std::string> jsGestureProps;
+  std::optional<std::function<void(std::string)>> tapHandler;
 
   std::optional<CoreView *> getViewForId(CoreView *root, std::string id);
   std::optional<CoreView *> getViewAtPoint(CoreView *root, float x, float y);

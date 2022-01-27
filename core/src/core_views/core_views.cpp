@@ -3,6 +3,10 @@
 #include "api.h"
 #include "behaviors/text.h"
 
+#ifdef __EMSCRIPTEN__
+#include "core_views_json.h"
+#endif
+
 #define TOUCH_DOWN_ALPHA 0.7f
 
 namespace CastleCore {
@@ -24,6 +28,10 @@ void CoreViewRenderer::render() {
 }
 
 void CoreViewRenderer::renderView(CoreView *view) {
+  if (!view->isVisible) {
+    return;
+  }
+
   lv.graphics.push(love::Graphics::STACK_ALL);
   viewTransform.reset();
   viewTransform.translate(view->left, view->top);
@@ -76,6 +84,10 @@ void CoreViewRenderer::handleGesture(Gesture &gesture) {
         (*touchView)->baseHandleTouch(CoreView::TouchEvent::Up);
         (*touchView)->baseHandleTouch(CoreView::TouchEvent::Tap);
 
+        if ((*touchView)->id && tapHandler) {
+          (*tapHandler)(*(*touchView)->id);
+        }
+
         if ((*touchView)->onTapHandlerId) {
           CoreViewsGestureEvent ev;
           ev.gestureHandlerId = *((*touchView)->onTapHandlerId);
@@ -105,6 +117,10 @@ void CoreViewRenderer::cancelGestures() {
 
   touchView = std::nullopt;
   isTouchOverView = false;
+}
+
+void CoreViewRenderer::registerTapHandler(const std::function<void(std::string)> handler_) {
+  tapHandler = handler_;
 }
 
 void CoreViewRenderer::updateProp(std::string viewId, std::string key, std::string value) {
@@ -149,6 +165,10 @@ std::optional<CoreView *> CoreViewRenderer::getViewForId(CoreView *root, std::st
 }
 
 std::optional<CoreView *> CoreViewRenderer::getViewAtPoint(CoreView *root, float x, float y) {
+  if (!root->isVisible) {
+    return std::nullopt;
+  }
+
   if (x >= root->left && x <= root->left + root->width && y >= root->top
       && y <= root->top + root->height) {
     for (int i = root->children.size() - 1; i >= 0; i--) {
@@ -158,7 +178,11 @@ std::optional<CoreView *> CoreViewRenderer::getViewAtPoint(CoreView *root, float
       }
     }
 
-    return root;
+    if (root->isTouchEnabled) {
+      return root;
+    } else {
+      return std::nullopt;
+    }
   } else {
     return std::nullopt;
   }
@@ -171,6 +195,10 @@ std::optional<CoreView *> CoreViewRenderer::getViewAtPoint(CoreView *root, float
 CoreViews::CoreViews(Bridge &bridge_)
     : bridge(bridge_) {
   instance = this;
+
+#ifdef __EMSCRIPTEN__
+  setJson(CORE_VIEWS_JSON);
+#endif
 }
 
 void CoreViews::setJson(std::string json) {
@@ -291,7 +319,7 @@ int CoreViews::readInt(Reader &reader, const char *key, float scale) {
 void CoreView::baseRead(Reader &reader, CoreView *parent,
     std::unordered_map<std::string, std::unordered_map<std::string, std::string>> *props) {
   int parentWidth = parent ? parent->width : 800;
-  int parentHeight = parent ? parent->height : 800;
+  int parentHeight = parent ? parent->height : 1120;
 
   if (reader.has("width")) {
     width = CoreViews::getInstance().readInt(reader, "width", parentWidth);
@@ -338,12 +366,98 @@ void CoreView::baseRead(Reader &reader, CoreView *parent,
     });
   }
 
+  if (reader.has("visibility")) {
+    std::string visibility = reader.str("visibility", "visible");
+    isVisible = visibility == "visible";
+  }
+
+  if (reader.has("touch")) {
+    std::string touch = reader.str("touch", "enabled");
+    isTouchEnabled = touch == "enabled";
+  }
+
   read(reader);
 }
 
 void CoreView::baseRender() {
-  if (borderRadius > 0) {
-    if (!borderRadiusShader) {
+  if (hasBackgroundColor) {
+    if (borderRadius > 0) {
+      if (!borderRadiusColorShader) {
+        static const char vert[] = R"(
+          vec4 position(mat4 transformProjection, vec4 vertexPosition) {
+            return transformProjection * vertexPosition;
+          }
+        )";
+        static const char frag[] = R"(
+          uniform float radius;
+          uniform float width;
+          uniform float height;
+
+          vec4 effect(vec4 color, Image tex, vec2 texCoords, vec2 screenCoords) {
+            float x = texCoords.x * width;
+            float y = texCoords.y * height;
+            vec2 coord = vec2(x, y);
+
+            if (x < radius && y < radius && distance(coord, vec2(radius, radius)) > radius) {
+              discard;
+            }
+
+            if (x < radius && y > height - radius && distance(coord, vec2(radius, height - radius)) > radius) {
+              discard;
+            }
+
+            if (x > width - radius && y < radius && distance(coord, vec2(width - radius, radius)) > radius) {
+              discard;
+            }
+
+            if (x > width - radius && y > height - radius && distance(coord, vec2(width - radius, height - radius)) > radius) {
+              discard;
+            }
+
+            return color;
+          }
+        )";
+        borderRadiusColorShader.reset(
+            lv.graphics.newShader(lv.wrapVertexShaderCode(vert), lv.wrapFragmentShaderCode(frag)));
+      }
+
+      lv.graphics.setShader(borderRadiusColorShader.get());
+
+      {
+        auto info = borderRadiusColorShader->getUniformInfo("radius");
+        info->floats[0] = borderRadius;
+        borderRadiusColorShader->updateUniform(info, 1);
+      }
+
+      {
+        auto info = borderRadiusColorShader->getUniformInfo("width");
+        info->floats[0] = width;
+        borderRadiusColorShader->updateUniform(info, 1);
+      }
+
+      {
+        auto info = borderRadiusColorShader->getUniformInfo("height");
+        info->floats[0] = height;
+        borderRadiusColorShader->updateUniform(info, 1);
+      }
+    }
+
+    static auto quad = [&]() {
+      std::vector<love::graphics::Vertex> quadVerts {
+        { 0, 0, 0, 0, { 0xff, 0xff, 0xff, 0xff } },
+        { 1, 0, 1, 0, { 0xff, 0xff, 0xff, 0xff } },
+        { 1, 1, 1, 1, { 0xff, 0xff, 0xff, 0xff } },
+        { 0, 1, 0, 1, { 0xff, 0xff, 0xff, 0xff } },
+      };
+      return lv.graphics.newMesh(
+          quadVerts, love::graphics::PRIMITIVE_TRIANGLE_FAN, love::graphics::vertex::USAGE_STATIC);
+    }();
+
+    lv.graphics.setColor({ backgroundColor[0], backgroundColor[1], backgroundColor[2],
+        isTouchDown ? TOUCH_DOWN_ALPHA : 1.0f });
+    quad->draw(&lv.graphics, love::Matrix4(0, 0, 0, width, height, 0, 0, 0, 0));
+  } else if (borderRadius > 0) {
+    if (!borderRadiusImageShader) {
       static const char vert[] = R"(
         vec4 position(mat4 transformProjection, vec4 vertexPosition) {
           return transformProjection * vertexPosition;
@@ -379,55 +493,40 @@ void CoreView::baseRender() {
           return vec4(Texel(tex, texCoords).rgb, alpha);
         }
       )";
-      borderRadiusShader.reset(
+      borderRadiusImageShader.reset(
           lv.graphics.newShader(lv.wrapVertexShaderCode(vert), lv.wrapFragmentShaderCode(frag)));
     }
 
-    lv.graphics.setShader(borderRadiusShader.get());
+    lv.graphics.setShader(borderRadiusImageShader.get());
 
     {
-      auto info = borderRadiusShader->getUniformInfo("radius");
+      auto info = borderRadiusImageShader->getUniformInfo("radius");
       info->floats[0] = borderRadius;
-      borderRadiusShader->updateUniform(info, 1);
+      borderRadiusImageShader->updateUniform(info, 1);
     }
 
     {
-      auto info = borderRadiusShader->getUniformInfo("width");
+      auto info = borderRadiusImageShader->getUniformInfo("width");
       info->floats[0] = width;
-      borderRadiusShader->updateUniform(info, 1);
+      borderRadiusImageShader->updateUniform(info, 1);
     }
 
     {
-      auto info = borderRadiusShader->getUniformInfo("height");
+      auto info = borderRadiusImageShader->getUniformInfo("height");
       info->floats[0] = height;
-      borderRadiusShader->updateUniform(info, 1);
+      borderRadiusImageShader->updateUniform(info, 1);
     }
 
     {
-      auto info = borderRadiusShader->getUniformInfo("alpha");
+      auto info = borderRadiusImageShader->getUniformInfo("alpha");
       info->floats[0] = isTouchDown ? TOUCH_DOWN_ALPHA : 1.0f;
-      borderRadiusShader->updateUniform(info, 1);
+      borderRadiusImageShader->updateUniform(info, 1);
     }
-  }
-
-  if (hasBackgroundColor) {
-    static auto quad = [&]() {
-      std::vector<love::graphics::Vertex> quadVerts {
-        { 0, 0, 0, 0, { 0xff, 0xff, 0xff, 0xff } },
-        { 1, 0, 1, 0, { 0xff, 0xff, 0xff, 0xff } },
-        { 1, 1, 1, 1, { 0xff, 0xff, 0xff, 0xff } },
-        { 0, 1, 0, 1, { 0xff, 0xff, 0xff, 0xff } },
-      };
-      return lv.graphics.newMesh(
-          quadVerts, love::graphics::PRIMITIVE_TRIANGLE_FAN, love::graphics::vertex::USAGE_STATIC);
-    }();
-
-    lv.graphics.setColor({ backgroundColor[0], backgroundColor[1], backgroundColor[2],
-        isTouchDown ? TOUCH_DOWN_ALPHA : 1.0f });
-    quad->draw(&lv.graphics, love::Matrix4(0, 0, 0, width, height, 0, 0, 0, 0));
   }
 
   render();
+
+  lv.graphics.setShader();
 }
 
 void CoreView::baseHandleTouch(TouchEvent touch) {

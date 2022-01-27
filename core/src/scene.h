@@ -9,6 +9,7 @@
 #include "clock.h"
 #include "sound/sound.h"
 #include "bridge.h"
+#include "core_views/core_views.h"
 
 
 class AllBehaviors; // Forward declaration otherwise this would be circular...
@@ -193,6 +194,9 @@ public:
   Clock &getClock();
   const Clock &getClock() const;
 
+  // Leaderboard
+  CoreViewRenderer &getLeaderboardView();
+
   // Deck id
   const std::optional<std::string> getDeckId() const;
 
@@ -300,6 +304,7 @@ private:
   std::optional<std::string> nextCardId;
 
   std::unique_ptr<Screenshot> screenshot;
+  std::shared_ptr<CoreViewRenderer> leaderboardView;
 
 
   void read(Reader &reader);
@@ -541,6 +546,10 @@ inline Clock &Scene::getClock() {
 
 inline const Clock &Scene::getClock() const {
   return clock;
+}
+
+inline CoreViewRenderer &Scene::getLeaderboardView() {
+  return *leaderboardView;
 }
 
 inline const std::optional<std::string> Scene::getDeckId() const {
