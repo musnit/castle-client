@@ -8,12 +8,11 @@ class Clock;
 class Pattern {
 public:
   struct Note {
-    double time = 0; // in steps
     float key = 0; // up to receiving instrument to interpret key, might be pitch
     // could later add length, velocity, probability, ...
 
     inline bool operator==(const Note &b) {
-      return time == b.time && key == b.key;
+      return key == b.key;
     }
 
     inline void write(Writer &writer) const {

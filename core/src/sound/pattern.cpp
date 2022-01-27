@@ -42,7 +42,7 @@ bool Pattern::hasNote(double step, float key) {
   auto foundNotesItr = notes().find(step);
   if (foundNotesItr != notes().end()) {
     auto &notesAtStep = foundNotesItr->second;
-    Note noteToFind { step, key };
+    Note noteToFind { key };
     auto found = std::find(notesAtStep.begin(), notesAtStep.end(), noteToFind);
     if (found != notesAtStep.end()) {
       return true;
@@ -56,7 +56,7 @@ bool Pattern::addNote(double step, float key) {
   auto foundNotesItr = notes().find(step);
   if (foundNotesItr != notes().end()) {
     auto &notesAtStep = foundNotesItr->second;
-    Note noteToFind { step, key };
+    Note noteToFind { key };
     auto found = std::find(notesAtStep.begin(), notesAtStep.end(), noteToFind);
     if (found != notesAtStep.end()) {
       exists = true;
@@ -66,7 +66,7 @@ bool Pattern::addNote(double step, float key) {
     if (foundNotesItr == notes().end()) {
       notes().emplace(step, SmallVector<Note, 2>());
     }
-    notes()[step].push_back({ step, key });
+    notes()[step].push_back({ key });
     return true;
   }
   return false;
@@ -77,7 +77,7 @@ bool Pattern::removeNote(double step, float key) {
   auto foundNotesItr = notes().find(step);
   if (foundNotesItr != notes().end()) {
     auto &notesAtStep = foundNotesItr->second;
-    Note noteToFind { step, key };
+    Note noteToFind { key };
     auto found = std::find(notesAtStep.begin(), notesAtStep.end(), noteToFind);
     if (found != notesAtStep.end()) {
       exists = true;

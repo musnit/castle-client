@@ -21,7 +21,7 @@ public:
 
   void onReset() {
     hasTouch = false;
-    tempNote.time = -1;
+    tempNoteTime = -1;
     tempNote.key = 999;
   }
 
@@ -45,12 +45,12 @@ public:
         playNote = true;
       }
       hasTouch = true;
-      tempNote.time = touch.step;
+      tempNoteTime = touch.step;
       tempNote.key = touch.key;
     }
     if (playNote) {
       if (auto track = soundTool.getSelectedTrack(); track) {
-        track->instrument->play(soundTool.getScene().getSound(), { touch.step, touch.key });
+        track->instrument->play(soundTool.getScene().getSound(), { touch.key });
       }
     }
   }
@@ -59,7 +59,7 @@ public:
     auto gridCellSize = soundTool.trackTool.gridCellSize;
     if (hasTouch) {
       // draw temp note
-      auto x = tempNote.time * gridCellSize;
+      auto x = tempNoteTime * gridCellSize;
       auto y = ((tempNote.key - 60) * -gridCellSize) - gridCellSize;
       lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, x, y, gridCellSize, gridCellSize);
     }
@@ -72,4 +72,5 @@ public:
 private:
   bool hasTouch = false;
   Pattern::Note tempNote;
+  double tempNoteTime = 0;
 };
