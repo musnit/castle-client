@@ -49,6 +49,7 @@ public:
   Song::Track *getSelectedTrack();
   Pattern *getSelectedPattern();
   void updateSelectedComponent(std::string commandDescription);
+  void discardChanges();
 
 private:
   friend class TrackTool;

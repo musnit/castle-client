@@ -20,6 +20,11 @@ public:
   }
 
   void onReset() {
+    if (hasChanges) {
+      // discard
+      soundTool.discardChanges();
+    }
+    hasChanges = false;
   }
 
   void onTouch(SoundSubtoolTouch &touch) {
@@ -28,9 +33,13 @@ public:
       return;
     }
     if (touch.touch.released) {
+      if (hasChanges) {
+        soundTool.updateSelectedComponent("remove notes");
+      }
+    } else {
       if (touch.step >= 0 && pattern->hasNote(touch.step, touch.key)) {
         pattern->removeNote(touch.step, touch.key);
-        soundTool.updateSelectedComponent("remove notes");
+        hasChanges = true;
       }
     }
   }
@@ -43,4 +52,5 @@ public:
   }
 
 private:
+  bool hasChanges = false;
 };

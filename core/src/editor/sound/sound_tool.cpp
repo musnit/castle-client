@@ -65,6 +65,17 @@ void SoundTool::useSelectedActorMusicComponent() {
   }
 }
 
+void SoundTool::discardChanges() {
+  // recompute our current hash in case it differs from the actor's
+  auto newSongJson = song->serialize();
+  lastHash = MusicBehavior::hash(newSongJson);
+
+  // reset to actor's component if different
+  useSelectedActorMusicComponent();
+
+  sendUIEvent();
+}
+
 void SoundTool::computeSongLength() {
   if (song) {
     auto &scene = getScene();
