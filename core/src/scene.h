@@ -305,6 +305,7 @@ private:
 
   std::unique_ptr<Screenshot> screenshot;
   std::shared_ptr<CoreViewRenderer> leaderboardView;
+  mutable love::Transform leaderboardViewTransform;
 
 
   void read(Reader &reader);

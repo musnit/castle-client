@@ -509,7 +509,13 @@ void Scene::draw(std::optional<SceneDrawingOptions> options) const {
 
   lv.graphics.pop();
 
+  // Need view transform for screenshots
+  lv.graphics.push(love::Graphics::STACK_ALL);
+  leaderboardViewTransform.reset();
+  leaderboardViewTransform.scale(windowWidth / 800, windowWidth / 800);
+  lv.graphics.applyTransform(&leaderboardViewTransform);
   leaderboardView->render();
+  lv.graphics.pop();
 }
 
 //

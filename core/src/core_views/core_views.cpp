@@ -202,10 +202,12 @@ CoreViews::CoreViews(Bridge &bridge_)
 }
 
 void CoreViews::setJson(std::string json) {
-  jsonString = json;
-  jsonVersion++;
+  if (json != jsonString) {
+    jsonString = json;
+    jsonVersion++;
 
-  numConstantsCache.clear();
+    numConstantsCache.clear();
+  }
 }
 
 std::shared_ptr<CoreViewRenderer> CoreViews::getRenderer(std::string layoutTemplateName) {

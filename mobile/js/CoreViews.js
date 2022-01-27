@@ -311,6 +311,7 @@ function stripGestureHandlersFromView(view) {
 
 export function getCoreViews() {
   coreViewGestureHandlers = {};
+  gestureHandlerId = 0;
 
   for (const view of Object.values(coreViews)) {
     stripGestureHandlersFromView(view);
