@@ -31,15 +31,15 @@ public:
   void handleDisableComponent(ActorId actorId, MusicComponent &component, bool removeActor);
   void handleSceneEnd();
 
-  void stopMusic(
-      ActorId &actorId, Scene &scene, MusicComponent *component, Sound::StreamOptions opts);
-  void stopPattern(ActorId &actorId, Scene &scene, MusicComponent *component,
-      const std::string &patternId, Sound::StreamOptions opts);
-  void playSong(ActorId &actorId, Scene &scene, MusicComponent *component, bool loop,
+  void stopMusic(ActorId &actorId, MusicComponent *component, Sound::StreamOptions opts);
+  void stopPattern(ActorId &actorId, MusicComponent *component, const std::string &patternId,
       Sound::StreamOptions opts);
-  void playPattern(ActorId &actorId, Scene &scene, MusicComponent *component,
-      const std::string &patternId, int trackIndex, bool loop, Sound::StreamOptions opts);
+  void playSong(ActorId &actorId, MusicComponent *component, bool loop, Sound::StreamOptions opts);
+  void playPattern(ActorId &actorId, MusicComponent *component, const std::string &patternId,
+      int trackIndex, bool loop, Sound::StreamOptions opts);
   void setTrackMuted(ActorId &actorId, MusicComponent *component, int trackIndex, bool muted);
+  void playPatternStep(ActorId &actorId, MusicComponent *component, const std::string &patternId,
+      int trackIndex, double timeInPattern);
 
   // handles to currently-running tracks, by actor id
   std::unordered_map<ActorId, std::vector<int>> activeTracks;

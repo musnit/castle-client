@@ -352,6 +352,17 @@ const data = {
         },
       },
     },
+    ['play pattern step']: {
+      category: USE_CLOCK ? 'sound' : 'clock',
+      props: {
+        patternId: {
+          type: 'pattern',
+        },
+        trackIndex: {
+          type: 'track',
+        },
+      },
+    },
     ['mute track']: {
       category: USE_CLOCK ? 'sound' : 'clock',
       props: {

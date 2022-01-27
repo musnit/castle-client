@@ -1210,6 +1210,57 @@ const PlayPattern = ({ response, context }) => {
   return cells;
 };
 
+const PlayPatternStep = ({ response, context }) => {
+  let patternLabel,
+    hasPattern = false;
+  if (response.params?.patternId) {
+    const pattern = context.patterns[response.params.patternId];
+    if (pattern) {
+      patternLabel = makeDefaultPatternName(pattern);
+      hasPattern = true;
+    }
+  }
+  let trackLabel,
+    hasTrack = false;
+  if (response.params?.trackIndex !== undefined) {
+    const track = context.tracks[response.params.trackIndex];
+    trackLabel = makeTrackName(track);
+    hasTrack = true;
+  }
+  return [
+    {
+      type: 'showEntryOptions',
+      label: `Play step`,
+    },
+    {
+      type: 'selectParamSheet',
+      label: makeExpressionSummary(response.params?.timeInPattern ?? 0, context),
+      paramName: 'timeInPattern',
+      paramValue: response.params?.timeInPattern ?? 0,
+    },
+    {
+      type: 'text',
+      label: 'from pattern',
+    },
+    {
+      type: hasPattern ? 'selectParamSheet' : 'selectParamSheetPlaceholder',
+      label: hasPattern ? patternLabel : '(choose pattern)',
+      paramName: 'patternId',
+      paramValue: response.params?.patternId,
+    },
+    {
+      type: 'text',
+      label: ' on track',
+    },
+    {
+      type: 'selectParamSheet',
+      label: hasTrack ? trackLabel : '(choose track)',
+      paramName: 'trackIndex',
+      paramValue: response.params?.trackIndex,
+    },
+  ];
+};
+
 const MuteTrack = ({ response, context }) => {
   let trackLabel,
     hasTrack = false;
@@ -1338,6 +1389,7 @@ export const Responses = {
   ['face direction of motion']: FaceDirectionOfMotion,
   ['play sound']: PlaySound,
   ['play pattern']: PlayPattern,
+  ['play pattern step']: PlayPatternStep,
   ['mute track']: MuteTrack,
   ['unmute track']: UnmuteTrack,
   ['set clock tempo']: SetClockTempo,
