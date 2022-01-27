@@ -15,9 +15,11 @@ public:
     Tap,
   };
 
+  virtual ~CoreView() = default;
   virtual void read(Reader &reader) = 0;
   virtual void render() = 0;
-  virtual void handleTouch(TouchEvent touch) {};
+  virtual void handleTouch(TouchEvent touch) {
+  }
   virtual void update(double dt) {
   }
 
@@ -59,6 +61,7 @@ public:
   void render();
   void cancelGestures();
   void registerTapHandler(const std::function<void(std::string)> handler);
+  void reset();
 
   void updateProp(std::string viewId, std::string key, std::string value);
   void updateJSGestureProp(std::string key, std::string value);

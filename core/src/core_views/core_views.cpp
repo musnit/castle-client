@@ -123,6 +123,13 @@ void CoreViewRenderer::registerTapHandler(const std::function<void(std::string)>
   tapHandler = handler_;
 }
 
+void CoreViewRenderer::reset() {
+  props.clear();
+  jsGestureProps.clear();
+  jsonVersion--;
+  isTouchOverView = false;
+}
+
 void CoreViewRenderer::updateProp(std::string viewId, std::string key, std::string value) {
   if (props.find(viewId) == props.end()) {
     props[viewId] = std::unordered_map<std::string, std::string>();
@@ -550,6 +557,21 @@ class View : public CoreView {
 };
 
 class ImageView : public CoreView {
+public:
+  ~ImageView() {
+    if (byteData) {
+      byteData->release();
+    }
+
+    if (imageData) {
+      imageData->release();
+    }
+
+    if (image) {
+      image->release();
+    }
+  }
+
   enum ResizeMode {
     Contain,
     Stretch,
@@ -568,6 +590,8 @@ class ImageView : public CoreView {
             = love::Module::getInstance<love::data::DataModule>(love::Module::M_DATA);
 
         byteData = dataModule->newByteData(response.data, response.length);
+        imageData = nullptr;
+        image = nullptr;
       });
     }
 

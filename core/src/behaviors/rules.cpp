@@ -1161,6 +1161,7 @@ struct ShowLeaderboardResponse : BaseResponse {
               + ") {\n    list {\n score\n user {\n username\n photo {\n smallAvatarUrl}}}\n  }\n}",
           [&](APIResponse &response) {
             auto &reader = response.reader;
+            leaderboardView.reset();
             leaderboardView.updateProp("leaderboard", "visibility", "visible");
 
             reader.obj("data", [&]() {
