@@ -33,8 +33,8 @@ void SongTool::onSetActive() {
 }
 
 void SongTool::updateViewConstraints() {
-  // TODO: fit to song
-  panZoom.viewMax.x = SONG_DEFAULT_VIEW_BOUND;
+  panZoom.viewMax.x = std::max(SONG_DEFAULT_VIEW_BOUND,
+      (float(stepsToBars(soundTool.songTotalLength)) + 1.0f) * gridCellSize);
 }
 
 void SongTool::update(double dt) {
