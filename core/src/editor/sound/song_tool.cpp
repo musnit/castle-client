@@ -410,8 +410,8 @@ void SongTool::drawOverlay() {
 
   // draw global song playhead under tracks
   if (soundTool.isPlaying) {
-    auto lineY = -1024.0f / viewScale;
-    auto lineHeight = 2048.0f / viewScale;
+    auto lineY = viewPosition.y + (-1024.0f / viewScale);
+    auto lineHeight = 3000.0f / viewScale;
     lv.graphics.setColor({ 1.0f, 1.0f, 1.0f, 0.4f });
     lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, playheadX, lineY, 0.1f, lineHeight);
   }

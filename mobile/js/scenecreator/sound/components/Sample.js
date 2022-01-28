@@ -87,6 +87,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexShrink: 1,
     flexGrow: 0,
+    flexWrap: 'wrap',
   },
   shuffleButton: {
     alignItems: 'center',

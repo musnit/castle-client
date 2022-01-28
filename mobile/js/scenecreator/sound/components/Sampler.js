@@ -16,6 +16,10 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingBottom: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: Constants.colors.grayOnWhiteBorder,
   },
   label: {
     fontSize: 16,
@@ -47,13 +51,16 @@ export const Sampler = ({ instrument }) => {
       return (
         <View style={styles.container}>
           <View style={styles.row}>
-            <Text style={styles.label}>Sample type:</Text>
-            <InspectorDropdown
-              style={{ marginBottom: 0 }}
-              value={instrument.sample.type}
-              onChange={onChangeType}
-              {...Metadata.responses['play sound'].props.type}
-            />
+            <Text style={styles.label}>Sampler</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Text style={styles.label}>Type:</Text>
+              <InspectorDropdown
+                style={{ marginBottom: 0 }}
+                value={instrument.sample.type}
+                onChange={onChangeType}
+                {...Metadata.responses['play sound'].props.type}
+              />
+            </View>
           </View>
           <SampleComponent params={instrument.sample} onChangeParams={onChangeSample} />
         </View>
