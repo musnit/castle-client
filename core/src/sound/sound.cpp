@@ -174,6 +174,7 @@ Stream *Sound::maybeGetStream(int clockId, int streamId) {
   if (clockThread) {
     return clockThread->maybeGetStream(clockId, streamId);
   }
+  return nullptr;
 }
 
 void Sound::stopStream(int clockId, int streamId, StreamOptions opts) {
@@ -221,7 +222,7 @@ void Sound::play(const Sample &sample, double playbackRate, float amplitude) {
         sample.mutationAmount());
   } else if (type == "tone") {
     playTone(playbackRate, amplitude, sample.midiNote(), sample.waveform(), sample.attack(),
-        sample.sustain(), sample.release());
+        sample.release());
   } else {
     auto url = type == "microphone" ? sample.recordingUrl() : sample.uploadUrl();
     playUrl(playbackRate, amplitude, url);
@@ -292,10 +293,9 @@ void Sound::playEffect(float playbackRate, float amplitude, const std::string &c
 }
 
 void Sound::playTone(float playbackRate, float amplitude, int midiNote, const std::string &waveform,
-    float attack, float sustain, float release) {
+    float attack, float release) {
   std::string key = "midiNote: " + std::to_string(midiNote) + " waveform: " + waveform
-      + " attack: " + std::to_string(attack) + " sustain: " + std::to_string(sustain)
-      + " release: " + std::to_string(release);
+      + " attack: " + std::to_string(attack) + " release: " + std::to_string(release);
 
   if (Sound::sfxrSounds.find(key) == Sound::sfxrSounds.end()) {
     std::unique_ptr<SoLoud::Sfxr> sound = std::make_unique<SoLoud::Sfxr>();
@@ -312,8 +312,10 @@ void Sound::playTone(float playbackRate, float amplitude, int midiNote, const st
       sound->mParams.wave_type = 3;
     }
     sound->mParams.p_env_attack = attack;
-    sound->mParams.p_env_sustain = sustain;
-    sound->mParams.p_env_decay = release;
+
+    // use a soloud fade to 'release' in order to avoid warping the envelope when repitching
+    sound->mParams.p_env_sustain = release;
+    sound->mParams.p_env_decay = 0;
     sound->clampLength();
 
     Sound::sfxrSounds.insert(std::make_pair(key, std::move(sound)));
@@ -322,4 +324,8 @@ void Sound::playTone(float playbackRate, float amplitude, int midiNote, const st
   int handle = Sound::soloud.play(*Sound::sfxrSounds[key]);
   Sound::soloud.setVolume(handle, amplitude);
   Sound::soloud.setRelativePlaySpeed(handle, playbackRate);
+  Sound::soloud.setLooping(handle, true);
+  Sound::soloud.setLoopPoint(handle, attack);
+  Sound::soloud.fadeVolume(handle, 0, attack + release);
+  Sound::soloud.scheduleStop(handle, attack + release);
 }

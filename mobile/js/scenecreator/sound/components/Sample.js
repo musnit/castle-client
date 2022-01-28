@@ -671,7 +671,7 @@ const SampleTone = ({ onChangeParams, params, ...props }) => {
           </View>
         </View>
         <View style={[styles.soundInputsRow, { marginTop: 8 }]}>
-          <View style={{ maxWidth: '33%', marginRight: 8, flexShrink: 1 }}>
+          <View style={{ maxWidth: '50%', marginRight: 8, flexShrink: 1 }}>
             <InspectorNumberInput
               lastNativeUpdate={lastNativeUpdate}
               min={0}
@@ -683,19 +683,7 @@ const SampleTone = ({ onChangeParams, params, ...props }) => {
             />
             <Text style={styles.soundInputsLabel}>Attack</Text>
           </View>
-          <View style={{ maxWidth: '33%', marginRight: 8, flexShrink: 1 }}>
-            <InspectorNumberInput
-              lastNativeUpdate={lastNativeUpdate}
-              min={0}
-              max={1}
-              step={0.1}
-              placeholder="Sustain"
-              value={params.sustain}
-              onChange={onChangeSustain}
-            />
-            <Text style={styles.soundInputsLabel}>Sustain</Text>
-          </View>
-          <View style={{ maxWidth: '33%', marginRight: 8, flexShrink: 1 }}>
+          <View style={{ maxWidth: '50%', marginRight: 8, flexShrink: 1 }}>
             <InspectorNumberInput
               lastNativeUpdate={lastNativeUpdate}
               min={0}

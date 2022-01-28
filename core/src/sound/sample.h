@@ -52,12 +52,6 @@ struct Sample {
        .max(1.0f)
        ) = 0.0f;
   PROP(
-       float, sustain,
-       .label("sustain")
-       .min(0.0f)
-       .max(1.0f)
-       ) = 0.3f;
-  PROP(
        float, release,
        .label("release")
        .min(0.0f)
