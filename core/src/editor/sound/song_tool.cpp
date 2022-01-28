@@ -49,7 +49,7 @@ void SongTool::update(double dt) {
       // grid x is bar, grid y is track
       auto bar = double(transformedTouchPosition.x / gridCellSize);
       auto track = floor(transformedTouchPosition.y / gridCellSize);
-      auto dragDeltaBars = floor(dragPatternTouchDelta.x / gridCellSize);
+      auto dragDeltaBars = floor((dragPatternTouchDelta.x / gridCellSize) + 0.5f);
 
       bool selectedExistingTrack
           = track >= 0 && soundTool.hasSong() && track < int(soundTool.song->tracks.size());
@@ -149,7 +149,7 @@ void SongTool::update(double dt) {
           break;
         }
         }
-      } else if (touch.movedFar) {
+      } else if ((touch.screenPos - touch.initialScreenPos).getLengthSquare() > 10 * 10) {
         if (selectedSubtool == Subtool::Select) {
           // move/clone pattern
           if (dragPatternId == "") {
