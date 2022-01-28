@@ -61,16 +61,9 @@ void SongTool::update(double dt) {
           auto current = sequence.begin();
           while (current != sequence.end()) {
             auto &[startTime, sequenceElem] = *current;
-            auto next = std::next(current);
             auto &pattern = soundTool.song->patterns[sequenceElem.patternId()];
             auto startTimeBars = stepsToBars(startTime);
-            auto patternLength = pattern.getLoopLength(clock);
-            if (next != sequence.end()) {
-              if (startTime + patternLength > next->first) {
-                // interrupted by next pattern
-                patternLength = next->first - startTime;
-              }
-            }
+            auto patternLength = soundTool.song->getSequenceElemLength(sequence, current, clock);
             if (bar >= startTimeBars && bar < startTimeBars + stepsToBars(patternLength)) {
               patternId = sequenceElem.patternId();
               patternStartTime = startTime;
@@ -212,13 +205,8 @@ void SongTool::drawSequence(Song::Track::Sequence &sequence, float unit) {
 
     // draw pattern rectangle
     lv.graphics.setColor(pattern.color());
-    auto patternLength = pattern.getLoopLength(clock);
-    if (next != sequence.end()) {
-      if (startTime + patternLength > next->first) {
-        // interrupted by next pattern
-        patternLength = next->first - startTime;
-      }
-    }
+    auto patternLength = soundTool.song->getSequenceElemLength(sequence, current, clock);
+
     lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, startTimeBars, 0.025f * unit,
         stepsToBars(patternLength) * unit, 0.95f * unit);
 
