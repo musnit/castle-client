@@ -38,6 +38,19 @@ double Pattern::getLoopLength(Clock &clock) {
   }
 }
 
+Pattern::Note *Pattern::maybeGetNote(double step, float key) {
+  auto foundNotesItr = notes().find(step);
+  if (foundNotesItr != notes().end()) {
+    auto &notesAtStep = foundNotesItr->second;
+    Note noteToFind { key };
+    auto found = std::find(notesAtStep.begin(), notesAtStep.end(), noteToFind);
+    if (found != notesAtStep.end()) {
+      return &(*found);
+    }
+  }
+  return nullptr;
+}
+
 bool Pattern::hasNote(double step, float key) {
   auto foundNotesItr = notes().find(step);
   if (foundNotesItr != notes().end()) {
@@ -51,12 +64,12 @@ bool Pattern::hasNote(double step, float key) {
   return false;
 }
 
-bool Pattern::addNote(double step, float key) {
+bool Pattern::addNote(double step, Note note) {
   bool exists = false;
   auto foundNotesItr = notes().find(step);
   if (foundNotesItr != notes().end()) {
     auto &notesAtStep = foundNotesItr->second;
-    Note noteToFind { key };
+    Note noteToFind { note.key };
     auto found = std::find(notesAtStep.begin(), notesAtStep.end(), noteToFind);
     if (found != notesAtStep.end()) {
       exists = true;
@@ -66,7 +79,7 @@ bool Pattern::addNote(double step, float key) {
     if (foundNotesItr == notes().end()) {
       notes().emplace(step, SmallVector<Note, 2>());
     }
-    notes()[step].push_back({ key });
+    notes()[step].push_back(note);
     return true;
   }
   return false;

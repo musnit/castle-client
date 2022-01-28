@@ -78,8 +78,9 @@ public:
   static std::unique_ptr<Pattern> makeEmptyPattern();
   static std::unique_ptr<Pattern> fork(Pattern &);
 
+  Note *maybeGetNote(double step, float key);
   bool hasNote(double step, float key);
-  bool addNote(double step, float key);
+  bool addNote(double step, Note note);
   bool removeNote(double step, float key);
 
   PROP(std::string, patternId);

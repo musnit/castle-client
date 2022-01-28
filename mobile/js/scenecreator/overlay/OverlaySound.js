@@ -73,6 +73,10 @@ const SUBTOOL_GROUPS = {
       name: 'erase_note',
       icon: 'erase',
     },
+    {
+      name: 'note_velocity',
+      icon: 'draw-line',
+    },
   ],
 };
 

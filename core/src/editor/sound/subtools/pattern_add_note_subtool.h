@@ -38,7 +38,7 @@ public:
     bool playNote = false;
     if (touch.touch.released) {
       if (touch.step >= 0 && !pattern->hasNote(touch.step, touch.key)) {
-        pattern->addNote(touch.step, touch.key);
+        pattern->addNote(touch.step, { touch.key });
         soundTool.updateSelectedComponent("add notes");
         hasChanges = false; // changes were committed
       }
@@ -68,7 +68,23 @@ public:
   }
 
   void drawOverlay(Lv &lv) {
+    // draw pattern
+    auto pattern = soundTool.getSelectedPattern();
+    if (!pattern) {
+      return;
+    }
     auto gridCellSize = soundTool.trackTool.gridCellSize;
+    lv.graphics.setColor(pattern->color());
+
+    for (auto &[time, notes] : *pattern) {
+      auto x = time * gridCellSize;
+      for (auto &note : notes) {
+        auto y = ((note.key - 60) * -gridCellSize) - gridCellSize;
+        lv.graphics.rectangle(
+            love::Graphics::DrawMode::DRAW_FILL, x, y, gridCellSize, gridCellSize);
+      }
+    }
+
     if (hasTouch) {
       // draw temp note
       auto x = tempNoteTime * gridCellSize;

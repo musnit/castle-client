@@ -59,7 +59,6 @@ private:
   };
   Grid grid;
   void drawGrid(float viewScale, love::Vector2 &viewOffset);
-  void drawPattern(Pattern *pattern);
   void drawNoteAxis();
   mutable love::Transform viewTransform;
   love::Vector2 viewPosition;

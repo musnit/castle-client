@@ -5,11 +5,13 @@
 #include "sound_tool.h"
 #include "subtools/pattern_add_note_subtool.h"
 #include "subtools/pattern_erase_note_subtool.h"
+#include "subtools/pattern_note_velocity_subtool.h"
 
 TrackTool::TrackTool(SoundTool &soundTool_)
     : soundTool(soundTool_) {
   subtools.emplace("add_note", std::make_unique<PatternAddNoteSubtool>(soundTool_));
   subtools.emplace("erase_note", std::make_unique<PatternEraseNoteSubtool>(soundTool_));
+  subtools.emplace("note_velocity", std::make_unique<PatternNoteVelocitySubtool>(soundTool_));
 }
 
 Scene &TrackTool::getScene() {
@@ -162,22 +164,6 @@ void TrackTool::drawGrid(float viewScale, love::Vector2 &viewOffset) {
   grid.draw(gridCellSize, gridSize, viewScale, viewPosition, viewOffset, gridDotRadius, true);
 };
 
-void TrackTool::drawPattern(Pattern *pattern) {
-  if (!pattern) {
-    return;
-  }
-  lv.graphics.setColor(pattern->color());
-
-  for (auto &[time, notes] : *pattern) {
-    auto x = time * gridCellSize;
-    for (auto &note : notes) {
-      auto y = ((note.key - 60) * -gridCellSize) - gridCellSize;
-      lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, x, y, gridCellSize, gridCellSize);
-    }
-  }
-  getCurrentSubtool()->drawOverlay(lv);
-}
-
 void TrackTool::drawNoteAxis() {
   // TODO: this should be dependent on the instrument we're using
   auto x = viewPosition.x - gridCellSize; // always on left edge of view
@@ -243,7 +229,7 @@ void TrackTool::drawOverlay() {
   lv.graphics.setLineWidth(0.1f);
 
   drawGrid(viewScale, viewOffset);
-  drawPattern(soundTool.getSelectedPattern());
+  getCurrentSubtool()->drawOverlay(lv);
 
   // draw playhead
   if (soundTool.isPlaying) {

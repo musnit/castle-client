@@ -166,7 +166,7 @@ std::unique_ptr<Pattern> Song::flattenSequence(
         } else {
           if (timeInOutput + step >= 0 && timeInTrack + step < patternLoopEndTime) {
             for (auto &note : notes) {
-              result->addNote(timeInOutput + step, note.key);
+              result->addNote(timeInOutput + step, note);
             }
           }
         }
