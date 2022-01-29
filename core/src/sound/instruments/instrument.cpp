@@ -1,5 +1,6 @@
 #include "instrument.h"
 #include "sampler.h"
+#include "drums.h"
 
 Instrument::Instrument(const Instrument &other) {
   *this = other;
@@ -39,6 +40,10 @@ std::unique_ptr<Instrument> Instrument::readVirtual(Reader &reader) {
     auto sampler = std::make_unique<Sampler>();
     sampler->read(reader);
     result = std::move(sampler);
+  } else if (type == "drums") {
+    auto drums = std::make_unique<Drums>();
+    drums->read(reader);
+    result = std::move(drums);
   }
   return result;
 }

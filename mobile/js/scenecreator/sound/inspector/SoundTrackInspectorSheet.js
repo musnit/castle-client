@@ -1,6 +1,7 @@
 import React from 'react';
 import { TouchableOpacity, View } from 'react-native';
 import { CardCreatorBottomSheet } from '../../sheets/CardCreatorBottomSheet';
+import { Drums } from '../components/Drums';
 import { Pattern } from '../components/Pattern';
 import { Sampler } from '../components/Sampler';
 import { SoundTrackInspectorHeader } from './SoundTrackInspectorHeader';
@@ -11,6 +12,7 @@ const CastleIcon = Constants.CastleIcon;
 
 const INSTRUMENT_COMPONENTS = {
   sampler: Sampler,
+  drums: Drums,
   // TODO: more instruments
 };
 

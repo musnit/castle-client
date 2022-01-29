@@ -1,13 +1,15 @@
 #include "song.h"
 #include "archive.h"
 #include "sound/instruments/sampler.h"
+#include "sound/instruments/drums.h"
 
 #include <unordered_set>
 
 std::unique_ptr<Song::Track> Song::makeDefaultTrack() {
   // default sampler
+  // TODO: BEN
   auto track = std::make_unique<Song::Track>();
-  track->instrument = std::make_unique<Sampler>();
+  track->instrument = std::make_unique<Drums>();
   track->instrument->props.name() = track->instrument->getType();
   return track;
 }

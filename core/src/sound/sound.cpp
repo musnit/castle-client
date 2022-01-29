@@ -329,3 +329,18 @@ void Sound::playTone(float playbackRate, float amplitude, int midiNote, const st
   Sound::soloud.fadeVolume(handle, 0, attack + release);
   Sound::soloud.scheduleStop(handle, attack + release);
 }
+
+SoLoud::Sfxr *Sound::getOrMakeSfxrSourceForKey(
+    const std::string &key, std::function<void(SoLoud::Sfxr *)> f) {
+  if (Sound::sfxrSounds.find(key) == Sound::sfxrSounds.end()) {
+    std::unique_ptr<SoLoud::Sfxr> source = std::make_unique<SoLoud::Sfxr>();
+    f(source.get());
+    Sound::sfxrSounds.insert(std::make_pair(key, std::move(source)));
+  }
+  return Sound::sfxrSounds[key].get();
+}
+
+void Sound::playSfxr(const std::string &sfxrKey, float amplitude) {
+  int handle = Sound::soloud.play(*Sound::sfxrSounds[sfxrKey]);
+  Sound::soloud.setVolume(handle, amplitude);
+}

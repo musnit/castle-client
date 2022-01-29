@@ -57,6 +57,10 @@ public:
   void stopStream(int clockId, int streamId, StreamOptions opts);
   Stream *maybeGetStream(int clockId, int streamId);
 
+  SoLoud::Sfxr *getOrMakeSfxrSourceForKey(
+      const std::string &key, std::function<void(SoLoud::Sfxr *)> f);
+  void playSfxr(const std::string &sfxrKey, float amplitude);
+
 private:
   void initialize();
   void playUrl(float playbackRate, float amplitude, const std::string &url);

@@ -2,6 +2,7 @@
 #include "engine.h"
 #include "bridge.h"
 #include "sound/instruments/sampler.h"
+#include "sound/instruments/drums.h"
 #include "sound_tool.h"
 #include "subtools/pattern_add_note_subtool.h"
 #include "subtools/pattern_erase_note_subtool.h"
@@ -257,8 +258,8 @@ struct TrackToolChangeInstrumentReceiver {
     PROP(std::string, action);
     PROP(Instrument::Props, props);
 
-    // TODO: other instrument types besides sampler
     PROP(Sample, sampleValue);
+    PROP(Drums::Params, drumsValue);
   } params;
 
   void receive(Engine &engine) {
@@ -277,6 +278,11 @@ struct TrackToolChangeInstrumentReceiver {
         Sampler *sampler = (Sampler *)selectedTrack->instrument.get();
         sampler->sample = params.sampleValue();
         soundTool.updateSelectedComponent("change sample");
+      } else if (action == "setDrums") {
+        Drums *drums = (Drums *)selectedTrack->instrument.get();
+        drums->params = params.drumsValue();
+        drums->dirtyCache();
+        soundTool.updateSelectedComponent("change drums");
       }
     }
   }
