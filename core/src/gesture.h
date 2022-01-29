@@ -111,7 +111,7 @@ public:
 
   void update();
 
-  void setOffset(float x, float y);
+  void setBounds(float x, float y, float width, float height);
 
 
 private:
@@ -125,8 +125,10 @@ private:
   int count = 0;
   int maxCount = 0;
   bool allReleased = false;
-  float offsetX = 0;
-  float offsetY = 0;
+  float boundsX = 0;
+  float boundsY = 0;
+  float boundsWidth = -1;
+  float boundsHeight = -1;
 
 
   void updateTouch(float screenX, float screenY, love::int64 loveTouchId, bool isMouse);
@@ -220,7 +222,9 @@ T *Gesture::maybeGetData(TouchId touchId) const {
   return hasTouch(touchId) ? const_cast<entt::registry &>(registry).try_get<T>(touchId) : nullptr;
 }
 
-inline void Gesture::setOffset(float x, float y) {
-  offsetX = x;
-  offsetY = y;
+inline void Gesture::setBounds(float x, float y, float width, float height) {
+  boundsX = x;
+  boundsY = y;
+  boundsWidth = width;
+  boundsHeight = height;
 }

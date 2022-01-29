@@ -246,7 +246,8 @@ void Feed::update(double dt) {
             if (response.success && idx == getCurrentIndex()) {
               auto reader = response.reader;
               decks[idx].player->readScene(reader, decks[idx].player->getScene().getDeckId());
-              decks[idx].player->getScene().getGesture().setOffset(0, TOP_PADDING);
+              decks[idx].player->getScene().getGesture().setBounds(
+                  0, TOP_PADDING, CARD_WIDTH, CARD_HEIGHT);
             }
           });
           decks[idx].player->getScene().setNextCardId(std::nullopt);
@@ -569,7 +570,8 @@ void Feed::loadDeckAtIndex(int i) {
             const std::string readerJson = response.reader.toJson();
             std::thread t2([=] {
               decks[i].player->readScene(readerJson, deckId);
-              decks[i].player->getScene().getGesture().setOffset(0, TOP_PADDING);
+              decks[i].player->getScene().getGesture().setBounds(
+                  0, TOP_PADDING, CARD_WIDTH, CARD_HEIGHT);
               decks[i].isLoaded = true;
             });
             t2.detach();

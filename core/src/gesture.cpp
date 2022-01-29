@@ -89,7 +89,14 @@ void Gesture::update() {
 }
 
 void Gesture::updateTouch(float screenX, float screenY, love::int64 loveTouchId, bool isMouse) {
-  auto screenPos = love::Vector2(screenX - offsetX, screenY - offsetY);
+  auto screenPos = love::Vector2(screenX - boundsX, screenY - boundsY);
+  if (boundsWidth > 0 && screenPos.x > boundsWidth) {
+    return;
+  }
+  if (boundsHeight > 0 && screenPos.y > boundsHeight) {
+    return;
+  }
+
   auto pos = scene ? scene->inverseViewTransformPoint(screenPos) : screenPos;
   auto cameraPos = scene ? pos - scene->getCameraPosition() : screenPos;
 

@@ -611,7 +611,7 @@ inline std::optional<const char *> Reader::str() {
 }
 
 inline void Reader::read(int &i) {
-  if (cur->IsNumber()) {
+  if (cur->IsInt()) {
     i = cur->GetInt();
   }
 }
