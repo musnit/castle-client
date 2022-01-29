@@ -51,9 +51,6 @@ let coreViews = {
     height: 60,
     //backgroundColor: '#f00',
     touch: 'enabled',
-    onTap: (props) => {
-      props.push('Profile', { userId: props.userId });
-    },
     children: [
       {
         id: 'avatar',

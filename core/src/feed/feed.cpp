@@ -82,6 +82,8 @@ float smoothstep(float a, float b, float t) {
     return (b - a) * expoEaseOut(t) + a;
   case 8:
     return (b - a) * circEaseOut(t) + a;
+  default:
+    return 0;
   }
 }
 
@@ -278,6 +280,14 @@ void Feed::update(double dt) {
       fetchMoreDecks();
     }
   }
+
+  for (int i = 0; i <= idx - 3; i++) {
+    unloadDeckAtIndex(i);
+  }
+
+  for (int i = idx + 4; i < (int)decks.size(); i++) {
+    unloadDeckAtIndex(i);
+  }
 }
 
 void Feed::renderCardAtPosition(int idx, float position, bool isActive) {
@@ -426,14 +436,6 @@ void Feed::draw() {
   renderCardAtPosition(idx, offset + FEED_ITEM_WIDTH * idx + padding, !dragStarted && !isAnimating);
   renderCardAtPosition(idx + 1, offset + FEED_ITEM_WIDTH * (idx + 1) + padding, false);
   renderCardAtPosition(idx + 2, offset + FEED_ITEM_WIDTH * (idx + 2) + padding, false);
-
-  for (int i = 0; i <= idx - 3; i++) {
-    unloadDeckAtIndex(i);
-  }
-
-  for (int i = idx + 4; i < (int)decks.size(); i++) {
-    unloadDeckAtIndex(i);
-  }
 }
 
 void Feed::fetchInitialDecks() {

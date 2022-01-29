@@ -181,22 +181,23 @@ void Drawing2Behavior::handlePerform(double dt) {
   auto &rulesBehavior = getBehaviors().byType<RulesBehavior>();
   forEachEnabledComponent([&](ActorId actorId, Drawing2Component &component) {
     auto drawData = component.drawData.get();
+    if (drawData) {
+      love::AnimationComponentProperties animProps;
+      getAnimationComponentProperties(component, animProps);
 
-    love::AnimationComponentProperties animProps;
-    getAnimationComponentProperties(component, animProps);
+      auto result = drawData->runAnimation(component.animationState, animProps, float(dt));
 
-    auto result = drawData->runAnimation(component.animationState, animProps, float(dt));
+      applyAnimationComponentProperties(component, animProps);
 
-    applyAnimationComponentProperties(component, animProps);
-
-    if (result.loop) {
-      rulesBehavior.fire<AnimationLoopTrigger>(actorId, {});
-    }
-    if (result.end) {
-      rulesBehavior.fire<AnimationEndTrigger>(actorId, {});
-    }
-    if (result.changed) {
-      fireChangeFrameTriggers(actorId, component);
+      if (result.loop) {
+        rulesBehavior.fire<AnimationLoopTrigger>(actorId, {});
+      }
+      if (result.end) {
+        rulesBehavior.fire<AnimationEndTrigger>(actorId, {});
+      }
+      if (result.changed) {
+        fireChangeFrameTriggers(actorId, component);
+      }
     }
   });
 }
