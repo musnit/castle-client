@@ -20,7 +20,7 @@ let coreViews = {
     SCROLL_ANIMATION_TIME: 0.3,
 
     // How much you have to drag before the card starts moving
-    DRAG_START_OFFSET: 50,
+    DRAG_START_OFFSET: 30,
 
     // The card moves by the drag distance multiplied by this constant while the touch is down
     SCROLL_MULTIPLIER: 1.7,

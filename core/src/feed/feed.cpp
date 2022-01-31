@@ -279,24 +279,25 @@ void Feed::update(double dt) {
     if (decks.size() > 0 && idx > (int)decks.size() - 4) {
       fetchMoreDecks();
     }
-  }
 
-  for (int i = 0; i <= idx - 3; i++) {
-    unloadDeckAtIndex(i);
-  }
+    loadDeckAtIndex(idx - 1);
+    loadDeckAtIndex(idx);
+    loadDeckAtIndex(idx + 1);
+    loadDeckAtIndex(idx + 2);
 
-  for (int i = idx + 4; i < (int)decks.size(); i++) {
-    unloadDeckAtIndex(i);
+    for (int i = 0; i <= idx - 2; i++) {
+      unloadDeckAtIndex(i);
+    }
+
+    for (int i = idx + 3; i < (int)decks.size(); i++) {
+      unloadDeckAtIndex(i);
+    }
   }
 }
 
 void Feed::renderCardAtPosition(int idx, float position, bool isActive) {
   if (idx < 0) {
     return;
-  }
-
-  if (!hasTouch && !isAnimating) {
-    loadDeckAtIndex(idx);
   }
 
   if (idx >= (int)decks.size()) {
@@ -463,8 +464,6 @@ void Feed::fetchInitialDecks() {
             });
           });
 
-          loadDeckAtIndex(0);
-          loadDeckAtIndex(1);
           fetchingDecks = false;
         }
       });
