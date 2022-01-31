@@ -15,20 +15,30 @@ const styles = StyleSheet.create({
     padding: 16,
     maxWidth: Constants.TABLET_MAX_FORM_WIDTH,
   },
+  drumContainer: {
+    backgroundColor: '#fff',
+    ...Constants.styles.dropShadow,
+    padding: 16,
+    borderWidth: 1,
+    borderRadius: 6,
+    borderColor: Constants.colors.black,
+    marginBottom: 8,
+  },
+  drumParams: {
+    marginTop: 16,
+    borderTopWidth: 1,
+    borderTopColor: Constants.colors.grayOnWhiteBorder,
+  },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingBottom: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: Constants.colors.grayOnWhiteBorder,
   },
   label: {
     fontSize: 16,
     color: '#000',
     paddingRight: 12,
   },
-
   soundInputLabel: {
     fontSize: 16,
   },
@@ -38,7 +48,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexShrink: 1,
     flexGrow: 0,
-    paddingVertical: 8,
+    paddingTop: 16,
   },
   soundInput: {
     maxWidth: '50%',
@@ -80,13 +90,13 @@ const Kick = ({ value, onChange, enabled, onSetEnabled, lastNativeUpdate }) => {
   );
 
   return (
-    <>
+    <View style={styles.drumContainer}>
       <View style={styles.row}>
         <Text style={styles.label}>Kick</Text>
         <InspectorCheckbox value={enabled} onChange={onSetEnabled} />
       </View>
       {enabled ? (
-        <>
+        <View style={styles.drumParams}>
           <View style={styles.soundInputsRow}>
             <Text style={styles.soundInputLabel}>Decay</Text>
             <InspectorNumberInput
@@ -138,9 +148,9 @@ const Kick = ({ value, onChange, enabled, onSetEnabled, lastNativeUpdate }) => {
               onChange={onChangeSweep}
             />
           </View>
-        </>
+        </View>
       ) : null}
-    </>
+    </View>
   );
 };
 
@@ -171,13 +181,13 @@ const Hat = ({ value, onChange, enabled, onSetEnabled, lastNativeUpdate }) => {
   );
 
   return (
-    <>
+    <View style={styles.drumContainer}>
       <View style={styles.row}>
         <Text style={styles.label}>Hat</Text>
         <InspectorCheckbox value={enabled} onChange={onSetEnabled} />
       </View>
       {enabled ? (
-        <>
+        <View style={styles.drumParams}>
           <View style={styles.soundInputsRow}>
             <Text style={styles.soundInputLabel}>Decay</Text>
             <InspectorNumberInput
@@ -217,9 +227,9 @@ const Hat = ({ value, onChange, enabled, onSetEnabled, lastNativeUpdate }) => {
               onChange={onChangeBody}
             />
           </View>
-        </>
+        </View>
       ) : null}
-    </>
+    </View>
   );
 };
 
@@ -250,13 +260,13 @@ const Snare = ({ value, onChange, enabled, onSetEnabled, lastNativeUpdate }) => 
   );
 
   return (
-    <>
+    <View style={styles.drumContainer}>
       <View style={styles.row}>
         <Text style={styles.label}>Snare</Text>
         <InspectorCheckbox value={enabled} onChange={onSetEnabled} />
       </View>
       {enabled ? (
-        <>
+        <View style={styles.drumParams}>
           <View style={styles.soundInputsRow}>
             <Text style={styles.soundInputLabel}>Decay</Text>
             <InspectorNumberInput
@@ -296,9 +306,9 @@ const Snare = ({ value, onChange, enabled, onSetEnabled, lastNativeUpdate }) => 
               onChange={onChangeTambre}
             />
           </View>
-        </>
+        </View>
       ) : null}
-    </>
+    </View>
   );
 };
 
