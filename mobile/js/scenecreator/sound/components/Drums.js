@@ -223,6 +223,85 @@ const Hat = ({ value, onChange, enabled, onSetEnabled, lastNativeUpdate }) => {
   );
 };
 
+const Snare = ({ value, onChange, enabled, onSetEnabled, lastNativeUpdate }) => {
+  const onChangeFreq = React.useCallback(
+    (freq) =>
+      onChange({
+        ...value,
+        freq,
+      }),
+    [value, onChange]
+  );
+  const onChangeDecay = React.useCallback(
+    (decay) =>
+      onChange({
+        ...value,
+        decay,
+      }),
+    [value, onChange]
+  );
+  const onChangeTambre = React.useCallback(
+    (tambre) =>
+      onChange({
+        ...value,
+        tambre,
+      }),
+    [value, onChange]
+  );
+
+  return (
+    <>
+      <View style={styles.row}>
+        <Text style={styles.label}>Snare</Text>
+        <InspectorCheckbox value={enabled} onChange={onSetEnabled} />
+      </View>
+      {enabled ? (
+        <>
+          <View style={styles.soundInputsRow}>
+            <Text style={styles.soundInputLabel}>Decay</Text>
+            <InspectorNumberInput
+              style={styles.soundInput}
+              lastNativeUpdate={lastNativeUpdate}
+              min={0.05}
+              max={0.5}
+              step={0.05}
+              placeholder="Decay"
+              value={value.decay}
+              onChange={onChangeDecay}
+            />
+          </View>
+          <View style={styles.soundInputsRow}>
+            <Text style={styles.soundInputLabel}>Tone</Text>
+            <InspectorNumberInput
+              style={styles.soundInput}
+              lastNativeUpdate={lastNativeUpdate}
+              min={0}
+              max={1}
+              step={0.1}
+              placeholder="Tone"
+              value={value.freq}
+              onChange={onChangeFreq}
+            />
+          </View>
+          <View style={styles.soundInputsRow}>
+            <Text style={styles.soundInputLabel}>Tambre</Text>
+            <InspectorNumberInput
+              style={styles.soundInput}
+              lastNativeUpdate={lastNativeUpdate}
+              min={0}
+              max={1}
+              step={0.2}
+              placeholder="Tambre"
+              value={value.tambre}
+              onChange={onChangeTambre}
+            />
+          </View>
+        </>
+      ) : null}
+    </>
+  );
+};
+
 export const Drums = ({ instrument }) => {
   const [lastNativeUpdate, incrementLastNativeUpdate] = React.useReducer((state) => state + 1, 0);
   React.useEffect(incrementLastNativeUpdate, [instrument]);
@@ -261,6 +340,13 @@ export const Drums = ({ instrument }) => {
           onSetEnabled={(enabled) => onChangeDrum('useClosedHat', enabled)}
           value={instrument.params.closedHat}
           onChange={(closedHat) => onChangeDrum('closedHat', closedHat)}
+          lastNativeUpdate={lastNativeUpdate}
+        />
+        <Snare
+          enabled={instrument.params.useSnare}
+          onSetEnabled={(enabled) => onChangeDrum('useSnare', enabled)}
+          value={instrument.params.snare}
+          onChange={(snare) => onChangeDrum('snare', snare)}
           lastNativeUpdate={lastNativeUpdate}
         />
       </View>

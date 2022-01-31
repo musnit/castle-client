@@ -28,6 +28,14 @@ public:
     };
     PROP(bool, useClosedHat) = true;
     PROP(Hat, closedHat);
+
+    struct Snare {
+      PROP(float, decay, .min(0.05) .max(0.5)) = 0.2f;
+      PROP(float, freq, .label("tone") .min(0) .max(1)) = 0.5f;
+      PROP(float, tambre, .label("tambre") .min(0) .max(1)) = 0.5f;
+    };
+    PROP(bool, useSnare) = true;
+    PROP(Snare, snare);
   } params;
 
   void play(Sound &sound, Pattern::Note note) override;
@@ -43,11 +51,14 @@ public:
 private:
   std::string kickKey;
   std::string closedHatKey;
+  std::string snareKey;
   void playKick(Sound &sound, Params::Kick &kick, float amplitude);
   void playHat(Sound &sound, Params::Hat &hat, float amplitude);
+  void playSnare(Sound &sound, Params::Snare &snare, float amplitude);
 };
 
 inline void Drums::dirtyCache() {
   kickKey = "";
   closedHatKey = "";
+  snareKey = "";
 }

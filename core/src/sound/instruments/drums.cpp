@@ -90,6 +90,45 @@ void Drums::playHat(Sound &sound, Params::Hat &hat, float amplitude) {
   sound.playSfxr(closedHatKey, amplitude);
 }
 
+void Drums::playSnare(Sound &sound, Params::Snare &snare, float amplitude) {
+  if (snareKey == "") {
+    Archive archive;
+    archive.write([&](Archive::Writer &w) {
+      w.write("snare", snare);
+    });
+    snareKey = archive.toJson();
+  }
+
+  sound.getOrMakeSfxrSourceForKey(snareKey, [&](SoLoud::Sfxr *source) {
+    // noise
+    source->mParams.wave_type = 3;
+    source->mParams.sound_vol = 0.75f;
+
+    // decay, plus some built in sustain and punch
+    source->mParams.p_env_decay = snare.decay();
+    source->mParams.p_env_sustain = 0.05f;
+    source->mParams.p_env_punch = 0.77f;
+
+    // noise freq. built in vibrato
+    source->mParams.p_base_freq = 0.1f + snare.freq() * 0.1f;
+    source->mParams.p_vib_strength = 0.66f;
+    source->mParams.p_vib_speed = 0.1f;
+
+    // built in bandpass
+    source->mParams.filter_on = true;
+    source->mParams.p_lpf_freq = 0.66f;
+    source->mParams.p_lpf_resonance = 0.5f;
+    source->mParams.p_hpf_freq = 0.18f;
+    source->mParams.p_hpf_ramp = 0.06f;
+
+    // tambre affects phaser
+    source->mParams.p_pha_offset = snare.tambre() * 0.2f;
+    source->mParams.p_pha_ramp = -0.05f + snare.tambre() * -0.05f;
+  });
+
+  sound.playSfxr(snareKey, amplitude);
+}
+
 void Drums::play(Sound &sound, Pattern::Note note) {
   if (!props.muted()) {
     auto amplitude = SoundUtil::velocityToAmp(note.vel);
@@ -100,6 +139,12 @@ void Drums::play(Sound &sound, Pattern::Note note) {
     default: {
       if (params.useKick()) {
         playKick(sound, params.kick(), amplitude);
+      }
+      break;
+    }
+    case 39: {
+      if (params.useSnare()) {
+        playSnare(sound, params.snare(), amplitude);
       }
       break;
     }
