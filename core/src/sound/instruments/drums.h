@@ -20,6 +20,14 @@ public:
     };
     PROP(bool, useKick) = true;
     PROP(Kick, kick);
+
+    struct Hat {
+      PROP(float, decay, .min(0.05) .max(0.35)) = 0.1f;
+      PROP(float, freq, .label("tone") .min(0.5) .max(1)) = 0.9f;
+      PROP(float, body, .label("body") .min(0) .max(1)) = 0.1f;
+    };
+    PROP(bool, useClosedHat) = true;
+    PROP(Hat, closedHat);
   } params;
 
   void play(Sound &sound, Pattern::Note note) override;
@@ -34,9 +42,12 @@ public:
 
 private:
   std::string kickKey;
+  std::string closedHatKey;
   void playKick(Sound &sound, Params::Kick &kick, float amplitude);
+  void playHat(Sound &sound, Params::Hat &hat, float amplitude);
 };
 
 inline void Drums::dirtyCache() {
   kickKey = "";
+  closedHatKey = "";
 }

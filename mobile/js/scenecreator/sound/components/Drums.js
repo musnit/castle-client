@@ -95,7 +95,7 @@ const Kick = ({ value, onChange, enabled, onSetEnabled, lastNativeUpdate }) => {
               min={0.05}
               max={1}
               step={0.05}
-              placeholder="Tone"
+              placeholder="Decay"
               value={value.decay}
               onChange={onChangeDecay}
             />
@@ -108,19 +108,19 @@ const Kick = ({ value, onChange, enabled, onSetEnabled, lastNativeUpdate }) => {
               min={0}
               max={1}
               step={0.1}
-              placeholder="Tone"
+              placeholder="Punch"
               value={value.punch}
               onChange={onChangePunch}
             />
           </View>
           <View style={styles.soundInputsRow}>
-            <Text style={styles.soundInputLabel}>Freq</Text>
+            <Text style={styles.soundInputLabel}>Tune</Text>
             <InspectorNumberInput
               style={styles.soundInput}
               lastNativeUpdate={lastNativeUpdate}
               min={40}
               max={120}
-              placeholder="Tone"
+              placeholder="Tune"
               value={value.freq}
               onChange={onChangeFreq}
             />
@@ -133,9 +133,88 @@ const Kick = ({ value, onChange, enabled, onSetEnabled, lastNativeUpdate }) => {
               min={0}
               max={1}
               step={0.1}
-              placeholder="Tone"
+              placeholder="Sweep"
               value={value.sweep}
               onChange={onChangeSweep}
+            />
+          </View>
+        </>
+      ) : null}
+    </>
+  );
+};
+
+const Hat = ({ value, onChange, enabled, onSetEnabled, lastNativeUpdate }) => {
+  const onChangeFreq = React.useCallback(
+    (freq) =>
+      onChange({
+        ...value,
+        freq,
+      }),
+    [value, onChange]
+  );
+  const onChangeDecay = React.useCallback(
+    (decay) =>
+      onChange({
+        ...value,
+        decay,
+      }),
+    [value, onChange]
+  );
+  const onChangeBody = React.useCallback(
+    (body) =>
+      onChange({
+        ...value,
+        body,
+      }),
+    [value, onChange]
+  );
+
+  return (
+    <>
+      <View style={styles.row}>
+        <Text style={styles.label}>Hat</Text>
+        <InspectorCheckbox value={enabled} onChange={onSetEnabled} />
+      </View>
+      {enabled ? (
+        <>
+          <View style={styles.soundInputsRow}>
+            <Text style={styles.soundInputLabel}>Decay</Text>
+            <InspectorNumberInput
+              style={styles.soundInput}
+              lastNativeUpdate={lastNativeUpdate}
+              min={0.05}
+              max={0.35}
+              step={0.05}
+              placeholder="Decay"
+              value={value.decay}
+              onChange={onChangeDecay}
+            />
+          </View>
+          <View style={styles.soundInputsRow}>
+            <Text style={styles.soundInputLabel}>Tone</Text>
+            <InspectorNumberInput
+              style={styles.soundInput}
+              lastNativeUpdate={lastNativeUpdate}
+              min={0.5}
+              max={1}
+              step={0.1}
+              placeholder="Tone"
+              value={value.freq}
+              onChange={onChangeFreq}
+            />
+          </View>
+          <View style={styles.soundInputsRow}>
+            <Text style={styles.soundInputLabel}>Body</Text>
+            <InspectorNumberInput
+              style={styles.soundInput}
+              lastNativeUpdate={lastNativeUpdate}
+              min={0}
+              max={1}
+              step={0.2}
+              placeholder="Body"
+              value={value.body}
+              onChange={onChangeBody}
             />
           </View>
         </>
@@ -175,6 +254,13 @@ export const Drums = ({ instrument }) => {
           onSetEnabled={(enabled) => onChangeDrum('useKick', enabled)}
           value={instrument.params.kick}
           onChange={(kick) => onChangeDrum('kick', kick)}
+          lastNativeUpdate={lastNativeUpdate}
+        />
+        <Hat
+          enabled={instrument.params.useClosedHat}
+          onSetEnabled={(enabled) => onChangeDrum('useClosedHat', enabled)}
+          value={instrument.params.closedHat}
+          onChange={(closedHat) => onChangeDrum('closedHat', closedHat)}
           lastNativeUpdate={lastNativeUpdate}
         />
       </View>

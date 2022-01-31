@@ -32,9 +32,10 @@ void Drums::playKick(Sound &sound, Params::Kick &kick, float amplitude) {
   sound.getOrMakeSfxrSourceForKey(kickKey, [&](SoLoud::Sfxr *source) {
     // big sine
     source->mParams.wave_type = 2;
-    source->mParams.sound_vol = 0.9f;
+    source->mParams.sound_vol = 1.5f;
 
     // decay
+    source->mParams.p_env_sustain = 0;
     source->mParams.p_env_decay = kick.decay();
     source->mParams.p_env_punch = 0.75f;
 
@@ -56,6 +57,39 @@ void Drums::playKick(Sound &sound, Params::Kick &kick, float amplitude) {
   sound.playSfxr(kickKey, amplitude);
 }
 
+void Drums::playHat(Sound &sound, Params::Hat &hat, float amplitude) {
+  if (closedHatKey == "") {
+    Archive archive;
+    archive.write([&](Archive::Writer &w) {
+      w.write("closedHat", hat);
+    });
+    closedHatKey = archive.toJson();
+  }
+
+  sound.getOrMakeSfxrSourceForKey(closedHatKey, [&](SoLoud::Sfxr *source) {
+    // noise
+    source->mParams.wave_type = 3;
+    source->mParams.sound_vol = 0.75f;
+
+    // decay
+    source->mParams.p_env_decay = hat.decay();
+    source->mParams.p_env_sustain = 0;
+    source->mParams.p_env_punch = 0.3f;
+
+    // noise freq
+    source->mParams.p_base_freq = hat.freq();
+
+    // more body = decrease hpf (pass more noise thru)
+    source->mParams.filter_on = true;
+    source->mParams.p_lpf_freq = 0.96f;
+    source->mParams.p_lpf_resonance = 0.6f;
+    source->mParams.p_hpf_freq = std::pow(0.999f, 1.0f - hat.body()) * std::pow(0.75f, hat.body());
+    source->mParams.p_hpf_ramp = 0.2f;
+  });
+
+  sound.playSfxr(closedHatKey, amplitude);
+}
+
 void Drums::play(Sound &sound, Pattern::Note note) {
   if (!props.muted()) {
     auto amplitude = SoundUtil::velocityToAmp(note.vel);
@@ -66,6 +100,12 @@ void Drums::play(Sound &sound, Pattern::Note note) {
     default: {
       if (params.useKick()) {
         playKick(sound, params.kick(), amplitude);
+      }
+      break;
+    }
+    case 40: {
+      if (params.useClosedHat()) {
+        playHat(sound, params.closedHat(), amplitude);
       }
       break;
     }
