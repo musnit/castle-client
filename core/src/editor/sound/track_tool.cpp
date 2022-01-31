@@ -40,32 +40,35 @@ void TrackTool::zoomToFit() {
   // set view width to try to encompass the range between them
   // set view y to center between them
   if (auto pattern = soundTool.getSelectedPattern(); pattern) {
-    float minY = std::numeric_limits<float>::max(), maxY = -minY;
-    for (auto &[time, notes] : *pattern) {
-      auto x = time * gridCellSize;
-      if (x > PATTERN_MAX_VIEW_WIDTH) {
-        // don't consider notes that are too far along to be visible at first
-        break;
-      } else {
-        for (auto &note : notes) {
-          auto y = ((note.key - 60) * -gridCellSize) - gridCellSize;
-          if (y < minY) {
-            minY = y;
-          }
-          if (y > maxY) {
-            maxY = y;
+    if (auto track = soundTool.getSelectedTrack(); track) {
+      float minY = std::numeric_limits<float>::max(), maxY = -minY;
+      auto zeroKey = track->instrument->getZeroKey();
+      for (auto &[time, notes] : *pattern) {
+        auto x = time * gridCellSize;
+        if (x > PATTERN_MAX_VIEW_WIDTH) {
+          // don't consider notes that are too far along to be visible at first
+          break;
+        } else {
+          for (auto &note : notes) {
+            auto y = ((note.key - zeroKey) * -gridCellSize) - gridCellSize;
+            if (y < minY) {
+              minY = y;
+            }
+            if (y > maxY) {
+              maxY = y;
+            }
           }
         }
       }
+      // add top and bottom buffer
+      minY -= gridCellSize * 3.0f;
+      maxY += gridCellSize * 8.0f;
+      auto range = maxY - minY;
+      auto center = (maxY + minY) * 0.5f;
+      viewPosition.y = center;
+      viewWidth = std::max(
+          PATTERN_DEFAULT_VIEW_WIDTH, std::min(PATTERN_MAX_VIEW_WIDTH, range * (5.0f / 7.0f)));
     }
-    // add top and bottom buffer
-    minY -= gridCellSize * 3.0f;
-    maxY += gridCellSize * 8.0f;
-    auto range = maxY - minY;
-    auto center = (maxY + minY) * 0.5f;
-    viewPosition.y = center;
-    viewWidth = std::max(
-        PATTERN_DEFAULT_VIEW_WIDTH, std::min(PATTERN_MAX_VIEW_WIDTH, range * (5.0f / 7.0f)));
   }
 }
 
@@ -84,17 +87,22 @@ void TrackTool::updateViewConstraints() {
 }
 
 void TrackTool::update(double dt) {
+  auto track = soundTool.getSelectedTrack();
+  if (!track) {
+    return;
+  }
   auto &scene = getScene();
   const Gesture &gesture = scene.getGesture();
   if (gesture.getCount() == 1 && gesture.getMaxCount() == 1) {
+    auto zeroKey = track->instrument->getZeroKey();
     gesture.withSingleTouch([&](const Touch &touch) {
       love::Vector2 originalTouchPosition = { touch.screenPos.x, touch.screenPos.y };
       auto transformedTouchPosition = viewTransform.inverseTransformPoint(originalTouchPosition);
 
       // grid x is step, grid y is key
       auto step = double(floor(transformedTouchPosition.x / gridCellSize));
-      auto key
-          = floor(-transformedTouchPosition.y / gridCellSize) + 60; // set axis to midi middle C
+      auto key = floor(-transformedTouchPosition.y / gridCellSize)
+          + zeroKey; // set axis to midi middle C
 
       SoundSubtoolTouch subtoolTouch(touch);
       subtoolTouch.touchX = transformedTouchPosition.x;
@@ -165,13 +173,12 @@ void TrackTool::drawGrid(float viewScale, love::Vector2 &viewOffset) {
   grid.draw(gridCellSize, gridSize, viewScale, viewPosition, viewOffset, gridDotRadius, true);
 };
 
-void TrackTool::drawNoteAxis() {
-  // TODO: this should be dependent on the instrument we're using
+void TrackTool::drawNoteAxis(Song::Track *track) {
   auto x = viewPosition.x - gridCellSize; // always on left edge of view
 
-  // midi 60 is y = 0, go four octaves above and below
-  for (auto note = 0; note < 96; note++) {
-    auto y = ((note - 60) * -gridCellSize) - gridCellSize;
+  // instrument's zero key is y = 0
+  for (auto zero = track->instrument->getZeroKey(), note = zero - 60; note < zero + 36; note++) {
+    auto y = ((note - zero) * -gridCellSize) - gridCellSize;
     auto scaleDegree = note % 12;
     auto isBlack = scaleDegree == 1 || scaleDegree == 3 || scaleDegree == 6 || scaleDegree == 8
         || scaleDegree == 10;
@@ -240,7 +247,7 @@ void TrackTool::drawOverlay() {
     lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, playheadX, lineY, 0.1f, lineHeight);
   }
 
-  drawNoteAxis();
+  drawNoteAxis(track);
 
   lv.graphics.pop();
 }

@@ -38,6 +38,10 @@ public:
     PROP(Snare, snare);
   } params;
 
+  inline int getZeroKey() override {
+    // traditional bass drum midi standard
+    return 36;
+  }
   void play(Sound &sound, Pattern::Note note) override;
   void read(Reader &reader) override;
   void write(Writer &writer) const override;

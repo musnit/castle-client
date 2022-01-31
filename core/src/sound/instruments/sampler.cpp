@@ -31,7 +31,7 @@ void Sampler::play(Sound &sound, Pattern::Note note) {
      */
 
     auto basePlaybackRate = 1.0f;
-    auto keyFromMidiC4 = note.key - 60;
+    auto keyFromMidiC4 = note.key - getZeroKey();
     auto playbackRate = basePlaybackRate * pow(2.0f, keyFromMidiC4 / 12.0f);
     auto amplitude = SoundUtil::velocityToAmp(note.vel);
 

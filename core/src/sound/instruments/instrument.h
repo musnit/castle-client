@@ -17,6 +17,7 @@ public:
   virtual std::unique_ptr<Instrument> clone() const = 0;
 
   virtual std::string getType() const;
+  virtual int getZeroKey() = 0;
   virtual void play(Sound &sound, Pattern::Note note) = 0;
 
   struct Props {

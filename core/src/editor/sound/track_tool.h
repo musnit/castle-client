@@ -4,6 +4,7 @@
 #include "lv.h"
 #include "editor/gesture_pan_zoom.h"
 #include "editor/grid.h"
+#include "sound/song.h"
 #include "sound/pattern.h"
 #include "subtools/sound_subtool_interface.h"
 
@@ -59,7 +60,7 @@ private:
   };
   Grid grid;
   void drawGrid(float viewScale, love::Vector2 &viewOffset);
-  void drawNoteAxis();
+  void drawNoteAxis(Song::Track *track);
   mutable love::Transform viewTransform;
   love::Vector2 viewPosition;
   float viewWidth = PATTERN_DEFAULT_VIEW_WIDTH;

@@ -50,13 +50,18 @@ public:
     if (!pattern) {
       return;
     }
+    auto track = soundTool.getSelectedTrack();
+    if (!track) {
+      return;
+    }
     auto gridCellSize = soundTool.trackTool.gridCellSize;
+    auto zeroKey = track->instrument->getZeroKey();
     lv.graphics.setColor(pattern->color());
 
     for (auto &[time, notes] : *pattern) {
       auto x = time * gridCellSize;
       for (auto &note : notes) {
-        auto y = ((note.key - 60) * -gridCellSize) - gridCellSize;
+        auto y = ((note.key - zeroKey) * -gridCellSize) - gridCellSize;
         lv.graphics.rectangle(
             love::Graphics::DrawMode::DRAW_FILL, x, y, gridCellSize, gridCellSize);
       }

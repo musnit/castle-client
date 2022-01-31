@@ -192,7 +192,7 @@ void SongTool::drawGrid(float viewScale, love::Vector2 &viewOffset) {
       2048.0f / viewScale);
 };
 
-void SongTool::drawSequence(Song::Track::Sequence &sequence, float unit) {
+void SongTool::drawSequence(Song::Track::Sequence &sequence, int zeroKey, float unit) {
   auto &clock = getScene().getClock();
 
   auto current = sequence.begin();
@@ -255,7 +255,7 @@ void SongTool::drawSequence(Song::Track::Sequence &sequence, float unit) {
       }
       auto x = startTimeBars + stepsToBars(time) * unit;
       for (auto &note : notes) {
-        auto y = ((note.key - 60) * -keyHeight) + centerY;
+        auto y = ((note.key - zeroKey) * -keyHeight) + centerY;
         lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, x, y, noteWidth, keyHeight);
       }
     }
@@ -279,7 +279,7 @@ void SongTool::drawDragPattern(float unit) {
 void SongTool::drawTrack(Song::Track *track, int index, double timeInSong, float unit) {
   // draw sequence
   // TODO: don't need to draw outside viewport
-  drawSequence(track->sequence, unit);
+  drawSequence(track->sequence, track->instrument->getZeroKey(), unit);
 
   // draw track-specific playhead
   if (soundTool.isPlaying) {

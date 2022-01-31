@@ -72,14 +72,19 @@ public:
     if (!pattern) {
       return;
     }
+    auto track = soundTool.getSelectedTrack();
+    if (!track) {
+      return;
+    }
     auto gridCellSize = soundTool.trackTool.gridCellSize;
+    auto zeroKey = track->instrument->getZeroKey();
 
     // draw full note boxes in white
     lv.graphics.setColor({ 1.0f, 1.0f, 1.0f, 1.0f });
     for (auto &[time, notes] : *pattern) {
       auto x = time * gridCellSize;
       for (auto &note : notes) {
-        auto y = ((note.key - 60) * -gridCellSize) - gridCellSize;
+        auto y = ((note.key - zeroKey) * -gridCellSize) - gridCellSize;
         lv.graphics.rectangle(
             love::Graphics::DrawMode::DRAW_FILL, x, y, gridCellSize, gridCellSize);
       }
@@ -90,7 +95,7 @@ public:
     for (auto &[time, notes] : *pattern) {
       auto x = (time + 0.5f) * gridCellSize;
       for (auto &note : notes) {
-        auto y = ((note.key - 60) * -gridCellSize) - gridCellSize * 0.5f;
+        auto y = ((note.key - zeroKey) * -gridCellSize) - gridCellSize * 0.5f;
         auto boxSize = (float(note.vel) / 128.0f) * gridCellSize;
         lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, x - boxSize * 0.5f,
             y - boxSize * 0.5f, boxSize, boxSize);

@@ -15,6 +15,10 @@ public:
 
   Sample sample;
 
+  inline int getZeroKey() override {
+    // midi middle C
+    return 60;
+  }
   void play(Sound &sound, Pattern::Note note) override;
   void read(Reader &reader) override;
   void write(Writer &writer) const override;
