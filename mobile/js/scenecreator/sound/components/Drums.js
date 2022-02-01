@@ -272,7 +272,7 @@ const Snare = ({ value, onChange, enabled, onSetEnabled, lastNativeUpdate }) => 
             <InspectorNumberInput
               style={styles.soundInput}
               lastNativeUpdate={lastNativeUpdate}
-              min={0.05}
+              min={0.1}
               max={0.5}
               step={0.05}
               placeholder="Decay"

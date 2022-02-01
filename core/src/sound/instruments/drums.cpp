@@ -50,8 +50,7 @@ void Drums::playKick(Sound &sound, Params::Kick &kick, float amplitude) {
     source->mParams.p_lpf_resonance = 0.5f;
 
     // sweep down to specified freq
-    auto finalFreq = SoundUtil::hzToSfxrFreq(kick.freq(),
-        source->mBaseSamplerate); // SoundUtil::hzToSfxrFreq(minFreq, source->mBaseSamplerate);
+    auto finalFreq = SoundUtil::hzToSfxrFreq(kick.freq(), source->mBaseSamplerate);
     auto initialFreq
         = std::pow(finalFreq, 1.0f - kick.sweep()) * std::pow(finalFreq * 3.0f, kick.sweep());
     auto delta = finalFreq - initialFreq;
@@ -138,10 +137,34 @@ void Drums::playSnare(Sound &sound, Params::Snare &snare, float amplitude) {
     snareKey = archive.toJson();
   }
 
+  auto snareNoiseKey = snareKey + "-noise";
+
   sound.getOrMakeSfxrSourceForKey(snareKey, [&](SoLoud::Sfxr *source) {
-    // noise
+    // hollow sine in tenor range representing snare membrane
+    source->mParams.wave_type = 2;
+    source->mParams.sound_vol = 1.25f;
+    source->mParams.p_base_freq
+        = SoundUtil::hzToSfxrFreq(180.0f + 180.0f * snare.freq(), source->mBaseSamplerate);
+    source->mParams.p_vib_strength = 0.66f;
+    source->mParams.p_vib_speed = 0.1f;
+
+    // tonal component decays faster
+    source->mParams.p_env_decay = snare.decay() * 0.5f;
+    source->mParams.p_env_sustain = 0.05f;
+    source->mParams.p_env_punch = 0.77f;
+
+    // bandpass
+    source->mParams.filter_on = true;
+    source->mParams.p_lpf_freq = 0.66f;
+    source->mParams.p_lpf_resonance = 0.5f;
+    source->mParams.p_hpf_freq = 0.18f;
+    source->mParams.p_hpf_ramp = 0.06f;
+  });
+
+  sound.getOrMakeSfxrSourceForKey(snareNoiseKey, [&](SoLoud::Sfxr *source) {
+    // noise for the snares
     source->mParams.wave_type = 3;
-    source->mParams.sound_vol = 0.75f;
+    source->mParams.sound_vol = 0.75f - snare.decay() * 0.5f;
 
     // decay, plus some built in sustain and punch
     source->mParams.p_env_decay = snare.decay();
@@ -149,23 +172,23 @@ void Drums::playSnare(Sound &sound, Params::Snare &snare, float amplitude) {
     source->mParams.p_env_punch = 0.77f;
 
     // noise freq. built in vibrato
-    source->mParams.p_base_freq = 0.1f + snare.freq() * 0.1f;
+    source->mParams.p_base_freq = 0.4f + snare.freq() * 0.2f;
     source->mParams.p_vib_strength = 0.66f;
     source->mParams.p_vib_speed = 0.1f;
 
-    // built in bandpass
+    // bandpass more aggressively than sine
     source->mParams.filter_on = true;
     source->mParams.p_lpf_freq = 0.66f;
     source->mParams.p_lpf_resonance = 0.5f;
-    source->mParams.p_hpf_freq = 0.18f;
+    source->mParams.p_hpf_freq = 0.28f;
     source->mParams.p_hpf_ramp = 0.06f;
 
-    // tambre affects phaser
-    source->mParams.p_pha_offset = snare.tambre() * 0.2f;
-    source->mParams.p_pha_ramp = -0.05f + snare.tambre() * -0.05f;
+    // tambre affects noise flange
+    source->mParams.p_pha_offset = snare.tambre() * 0.3f;
   });
 
   sound.playSfxr(snareKey, amplitude);
+  sound.playSfxr(snareNoiseKey, amplitude);
 }
 
 void Drums::play(Sound &sound, Pattern::Note note) {

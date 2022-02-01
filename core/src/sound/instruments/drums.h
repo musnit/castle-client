@@ -33,7 +33,7 @@ public:
     PROP(Hat, openHat);
 
     struct Snare {
-      PROP(float, decay, .min(0.05) .max(0.5)) = 0.2f;
+      PROP(float, decay, .min(0.1) .max(0.5)) = 0.2f;
       PROP(float, freq, .label("tone") .min(0) .max(1)) = 0.5f;
       PROP(float, tambre, .label("tambre") .min(0) .max(1)) = 0.5f;
     };
