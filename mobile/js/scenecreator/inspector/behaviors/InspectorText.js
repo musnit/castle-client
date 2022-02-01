@@ -56,6 +56,9 @@ export default InspectorText = () => {
     sendGlobalAction('setMode', 'text');
   }, []);
 
+  if (!textComponent) {
+    return null;
+  }
   const hexColor = tinycolor.fromRatio(textComponent.props.color).toHexString();
 
   return (
