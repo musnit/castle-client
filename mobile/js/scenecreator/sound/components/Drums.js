@@ -312,6 +312,64 @@ const Snare = ({ value, onChange, enabled, onSetEnabled, lastNativeUpdate }) => 
   );
 };
 
+const Tom = ({ value, onChange, enabled, onSetEnabled, lastNativeUpdate }) => {
+  const onChangeFreq = React.useCallback(
+    (freq) =>
+      onChange({
+        ...value,
+        freq,
+      }),
+    [value, onChange]
+  );
+  const onChangeDecay = React.useCallback(
+    (decay) =>
+      onChange({
+        ...value,
+        decay,
+      }),
+    [value, onChange]
+  );
+
+  return (
+    <View style={styles.drumContainer}>
+      <View style={styles.row}>
+        <Text style={styles.label}>Tom</Text>
+        <InspectorCheckbox value={enabled} onChange={onSetEnabled} />
+      </View>
+      {enabled ? (
+        <View style={styles.drumParams}>
+          <View style={styles.soundInputsRow}>
+            <Text style={styles.soundInputLabel}>Decay</Text>
+            <InspectorNumberInput
+              style={styles.soundInput}
+              lastNativeUpdate={lastNativeUpdate}
+              min={0.1}
+              max={0.4}
+              step={0.05}
+              placeholder="Decay"
+              value={value.decay}
+              onChange={onChangeDecay}
+            />
+          </View>
+          <View style={styles.soundInputsRow}>
+            <Text style={styles.soundInputLabel}>Tone</Text>
+            <InspectorNumberInput
+              style={styles.soundInput}
+              lastNativeUpdate={lastNativeUpdate}
+              min={0}
+              max={1}
+              step={0.1}
+              placeholder="Tone"
+              value={value.freq}
+              onChange={onChangeFreq}
+            />
+          </View>
+        </View>
+      ) : null}
+    </View>
+  );
+};
+
 export const Drums = ({ instrument }) => {
   const [lastNativeUpdate, incrementLastNativeUpdate] = React.useReducer((state) => state + 1, 0);
   React.useEffect(incrementLastNativeUpdate, [instrument]);
@@ -343,6 +401,20 @@ export const Drums = ({ instrument }) => {
           onSetEnabled={(enabled) => onChangeDrum('useKick', enabled)}
           value={instrument.params.kick}
           onChange={(kick) => onChangeDrum('kick', kick)}
+          lastNativeUpdate={lastNativeUpdate}
+        />
+        <Tom
+          enabled={instrument.params.useLoTom}
+          onSetEnabled={(enabled) => onChangeDrum('useLoTom', enabled)}
+          value={instrument.params.loTom}
+          onChange={(loTom) => onChangeDrum('loTom', loTom)}
+          lastNativeUpdate={lastNativeUpdate}
+        />
+        <Tom
+          enabled={instrument.params.useHiTom}
+          onSetEnabled={(enabled) => onChangeDrum('useHiTom', enabled)}
+          value={instrument.params.hiTom}
+          onChange={(hiTom) => onChangeDrum('hiTom', hiTom)}
           lastNativeUpdate={lastNativeUpdate}
         />
         <Snare

@@ -142,7 +142,7 @@ void Drums::playSnare(Sound &sound, Params::Snare &snare, float amplitude) {
   sound.getOrMakeSfxrSourceForKey(snareKey, [&](SoLoud::Sfxr *source) {
     // hollow sine in tenor range representing snare membrane
     source->mParams.wave_type = 2;
-    source->mParams.sound_vol = 1.25f;
+    source->mParams.sound_vol = 1.5f - snare.freq() * 0.25f;
     source->mParams.p_base_freq
         = SoundUtil::hzToSfxrFreq(180.0f + 180.0f * snare.freq(), source->mBaseSamplerate);
     source->mParams.p_vib_strength = 0.66f;
@@ -191,16 +191,72 @@ void Drums::playSnare(Sound &sound, Params::Snare &snare, float amplitude) {
   sound.playSfxr(snareNoiseKey, amplitude);
 }
 
+void Drums::playTom(Sound &sound, bool hi, Params::Tom &tom, float amplitude) {
+  std::string key;
+  if (hi) {
+    if (hiTomKey == "") {
+      Archive archive;
+      archive.write([&](Archive::Writer &w) {
+        w.write("hiTom", tom);
+      });
+      hiTomKey = archive.toJson();
+    }
+    key = hiTomKey;
+  } else {
+    if (loTomKey == "") {
+      Archive archive;
+      archive.write([&](Archive::Writer &w) {
+        w.write("loTom", tom);
+      });
+      loTomKey = archive.toJson();
+    }
+    key = loTomKey;
+  }
+
+  sound.getOrMakeSfxrSourceForKey(key, [&](SoLoud::Sfxr *source) {
+    // hollow sine
+    source->mParams.wave_type = 2;
+    source->mParams.sound_vol = 1.75f - tom.freq() * 0.5f;
+    float freq = (hi) ? 90.0f + tom.freq() * 180.0f : 80.0f + tom.freq() * 160.0f;
+    source->mParams.p_base_freq = SoundUtil::hzToSfxrFreq(freq, source->mBaseSamplerate);
+
+    // punch + decay
+    source->mParams.p_env_decay = tom.decay();
+    source->mParams.p_env_sustain = 0.05f;
+    source->mParams.p_env_punch = 0.77f;
+
+    // bandpass at some harmonic of base freq
+    source->mParams.filter_on = true;
+    source->mParams.p_lpf_freq = SoundUtil::hzToSfxrFreq(freq * 2.5f, source->mBaseSamplerate);
+    source->mParams.p_lpf_resonance = 0.5f;
+    source->mParams.p_hpf_freq = 0.18f;
+    source->mParams.p_hpf_ramp = 0.06f;
+  });
+
+  sound.playSfxr(key, amplitude);
+}
+
 void Drums::play(Sound &sound, Pattern::Note note) {
   if (!props.muted()) {
     auto amplitude = SoundUtil::velocityToAmp(note.vel);
     int midiNote = int(note.key);
     switch (midiNote) {
-      // TODO: other drums
     case 36:
     default: {
       if (params.useKick()) {
         playKick(sound, params.kick(), amplitude);
+      }
+      break;
+    }
+    case 37: {
+      if (params.useLoTom()) {
+        playTom(sound, false, params.loTom(), amplitude);
+      }
+      break;
+    }
+    case 38: {
+      if (params.useHiTom()) {
+        playTom(sound, true, params.hiTom(), amplitude);
       }
       break;
     }
@@ -243,6 +299,20 @@ void Drums::drawEditorKeyAxis(
       if (params.useKick()) {
         hasDrum = true;
         name = "KK";
+      }
+      break;
+    }
+    case 37: {
+      if (params.useLoTom()) {
+        hasDrum = true;
+        name = "LT";
+      }
+      break;
+    }
+    case 38: {
+      if (params.useHiTom()) {
+        hasDrum = true;
+        name = "HT";
       }
       break;
     }
