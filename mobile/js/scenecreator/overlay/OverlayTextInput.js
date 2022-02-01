@@ -1,21 +1,39 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Text } from 'react-native';
 import { InspectorTextInput } from '../inspector/components/InspectorTextInput';
 import { useOptimisticBehaviorValue } from '../inspector/InspectorUtilities';
 import { useCoreState, sendBehaviorAction } from '../../core/CoreEvents';
 import tinycolor from 'tinycolor2';
 
 const styles = StyleSheet.create({
-  container: {
+  paddingContainer: {
     position: 'absolute',
     height: '100%',
+    width: '100%',
     paddingTop: 32,
+    paddingHorizontal: 64,
+  },
+  outerContainer: {
+    flex: 1,
+  },
+  measureTextContainer: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    flexDirection: 'row',
+    //borderWidth: 1,
+    //borderColor: 'black',
+  },
+  textInputContainer: {
+    position: 'absolute',
+    height: '100%',
+    width: '100%',
     alignItems: 'center',
     borderWidth: 0,
   },
   textInput: {
     width: '100%',
-    paddingHorizontal: 64,
+    paddingHorizontal: 0,
     paddingVertical: 0,
     borderTopWidth: 0,
   },
@@ -51,28 +69,59 @@ export const OverlayTextInput = ({ textComponent, sendAction }) => {
 
   const hexColor = tinycolor.fromRatio(textComponent.props.color).toHexString();
 
-  const adjustedFontSize = textComponent.props.fontSize * 7;
+  const [containerWidth, setContainerWidth] = React.useState(800);
+  const onContainerLayout = React.useCallback((event) => {
+    const { width } = event.nativeEvent.layout;
+    setContainerWidth(width);
+  }, []);
+
+  const [emWidth, setEmWidth] = React.useState(16);
+  const onEmLayout = React.useCallback((event) => {
+    const { width } = event.nativeEvent.layout;
+    setEmWidth(width);
+  }, []);
+
+  const baseFontSize = 16;
 
   return (
-    <InspectorTextInput
-      style={styles.container}
-      optimistic
-      lastNativeValue={lastNativeValue}
-      value={textContentValue}
-      onChangeText={onChangeTextContentValue}
-      placeholder="Once upon a time..."
-      multiline
-      autoFocus
-      inputStyle={[
-        styles.textInput,
-        {
-          color: hexColor,
-          fontFamily: postScriptNames[textComponent.props.fontName],
-          fontSize: adjustedFontSize,
-          textAlign: textComponent.props.alignment,
-        },
-      ]}
-      keyboardType={Platform.OS === 'ios' ? 'ascii-capable' : 'visible-password'}
-    />
+    <View style={styles.paddingContainer}>
+      <View style={styles.outerContainer} onLayout={onContainerLayout}>
+        <View style={styles.measureTextContainer}>
+          <View onLayout={onEmLayout}>
+            <Text
+              style={{
+                fontFamily: postScriptNames[textComponent.props.fontName],
+                fontSize: baseFontSize,
+                color: 'transparent',
+              }}
+            >
+              m
+            </Text>
+          </View>
+        </View>
+        <InspectorTextInput
+          style={styles.textInputContainer}
+          optimistic
+          lastNativeValue={lastNativeValue}
+          value={textContentValue}
+          onChangeText={onChangeTextContentValue}
+          placeholder="Once upon a time..."
+          multiline
+          autoFocus
+          inputStyle={[
+            styles.textInput,
+            {
+              color: hexColor,
+              fontFamily: postScriptNames[textComponent.props.fontName],
+              fontSize:
+                (1.03 * (baseFontSize * (containerWidth / emWidth))) /
+                textComponent.props.emsPerLine,
+              textAlign: textComponent.props.alignment,
+            },
+          ]}
+          keyboardType={Platform.OS === 'ios' ? 'ascii-capable' : 'visible-password'}
+        />
+      </View>
+    </View>
   );
 };

@@ -122,7 +122,7 @@ void TextBehavior::handleReadComponent(ActorId actorId, TextComponent &component
     component.props.order() = maxExistingOrder + 1;
   }
 
-  updateFont(component);
+  updateFont(actorId, component);
 }
 
 
@@ -490,16 +490,52 @@ void TextBehavior::handleSetProperty(
     const char *cStrValue = value.as<const char *>();
     if (strcmp(cStrValue, component.props.fontName().c_str()) != 0) {
       component.props.fontName() = cStrValue;
-      updateFont(component);
+      updateFont(actorId, component);
     }
   } else {
     BaseBehavior::handleSetProperty(actorId, component, propId, value);
   }
 }
 
-void TextBehavior::updateFont(TextComponent &component) {
+void TextBehavior::updateFont(ActorId actorId, TextComponent &component) {
   if (auto found = fontResources.find(component.props.fontName()); found != fontResources.end()) {
     component.fontResource = &found->second;
+  }
+  updateEmsPerLine(actorId, component);
+}
+
+void TextBehavior::updateEmsPerLine(ActorId actorId, TextComponent &component) {
+  auto &bodyBehavior = getBehaviors().byType<BodyBehavior>();
+  if (!bodyBehavior.hasComponent(actorId)) {
+    return;
+  }
+
+  auto cameraScale = 1.0f;
+  auto fontPixelScale = float(lv.window.getDPIScale()) * cameraScale;
+  auto info = getBehaviors().byType<BodyBehavior>().getRenderInfo(actorId);
+  auto scaledFontSize = component.props.fontSizeScale() * component.props.fontSize();
+  auto worldFontSize = std::clamp(scaledFontSize, 1.0f, 30.0f) / 10;
+  auto font = component.fontResource
+      ? getFont(component.fontResource, worldFontSize * fontPixelScale)
+      : getOverlayFont();
+  auto downscale = worldFontSize / font->getHeight();
+
+  auto bounds = bodyBehavior.getEditorBounds(actorId);
+
+  // Downscale since fonts are large
+  bounds.minX() *= info.widthScale / downscale;
+  bounds.maxX() *= info.widthScale / downscale;
+  bounds.minY() *= info.heightScale / downscale;
+  bounds.maxY() *= info.heightScale / downscale;
+  auto wrap = bounds.maxX() - bounds.minX();
+
+  std::vector<std::string> lines;
+  std::vector<int> lineWidths;
+  font->getWrap({ { "m", { 1, 1, 1, 1 } } }, wrap, lines, &lineWidths);
+
+  if (!lineWidths.empty()) {
+    component.props.emsPerLine() = wrap / float(lineWidths[0]);
+    Debug::log("emsPerLine: {}", component.props.emsPerLine());
   }
 }
 

@@ -52,6 +52,9 @@ struct TextComponent : BaseComponent {
     PROP(float, fontSizeScale,
         .label("Font size scale")
         ) = 1;
+    PROP(float, emsPerLine,
+        .label("Number of 'm's that fit per line")
+        ) = 1;
     PROP(std::string, alignment,
         .label("Alignment")
         .allowedValues("left", "right", "center", "justify")
@@ -113,8 +116,11 @@ public:
   static OverlayStyle overlayStyle;
 
   static void loadFontResources(Lv &lv);
-  static TextFontResource *getFontResource(std::string);
+  static TextFontResource *getFontResource(const std::string &name);
   static love::Font *getFont(TextFontResource *fontResource, float pixelSize);
+
+  void updateEmsPerLine(ActorId actorId, TextComponent &component);
+
 
 private:
   friend struct ShowResponse;
@@ -130,13 +136,13 @@ private:
 
   std::unique_ptr<love::Canvas> previewCanvas;
 
-  void updateFont(TextComponent &component);
+  void updateFont(ActorId actorId, TextComponent &component);
 
   std::string formatContent(const std::string &content) const;
 };
 
 inline TextBehavior::OverlayStyle TextBehavior::overlayStyle;
 
-inline TextFontResource *TextBehavior::getFontResource(std::string resource) {
-  return &fontResources[resource];
+inline TextFontResource *TextBehavior::getFontResource(const std::string &name) {
+  return &fontResources[name];
 }

@@ -236,6 +236,8 @@ void ScaleRotateTool::update(double dt) {
             auto &textBehavior = editor.getScene().getBehaviors().byType<TextBehavior>();
             if (auto text = textBehavior.maybeGetComponent(actorId)) {
               text->props.fontSizeScale() = newFontSizeScale;
+              textBehavior.updateEmsPerLine(actorId, *text);
+              editor.setSelectedComponentStateDirty(TextBehavior::behaviorId);
             }
           },
           [actorId, worldOldPos, oldScale, oldFontSizeScale](Editor &editor, bool) {
