@@ -49,16 +49,16 @@ void Drums::playKick(Sound &sound, Params::Kick &kick, float amplitude) {
     source->mParams.p_lpf_ramp = (-0.9f + kick.decay() * 0.5f) * source->mParams.p_lpf_freq;
     source->mParams.p_lpf_resonance = 0.5f;
 
-    // base kick freq
-    source->mParams.p_base_freq = SoundUtil::hzToSfxrFreq(kick.freq(), source->mBaseSamplerate);
-
-    // sweep down from base
-    constexpr auto minFreq = 40.0f;
-    auto finalFreq = SoundUtil::hzToSfxrFreq(minFreq, source->mBaseSamplerate);
-    auto delta = finalFreq - source->mParams.p_base_freq;
-    source->mParams.p_freq_ramp = delta * kick.sweep() * 3.0f;
-    source->mParams.castle_hold_freq_limit = true;
+    // sweep down to specified freq
+    auto finalFreq = SoundUtil::hzToSfxrFreq(kick.freq(),
+        source->mBaseSamplerate); // SoundUtil::hzToSfxrFreq(minFreq, source->mBaseSamplerate);
+    auto initialFreq
+        = std::pow(finalFreq, 1.0f - kick.sweep()) * std::pow(finalFreq * 3.0f, kick.sweep());
+    auto delta = finalFreq - initialFreq;
+    source->mParams.p_freq_ramp = std::min(delta * 2.5f, -0.2f);
+    source->mParams.p_base_freq = initialFreq;
     source->mParams.p_freq_limit = finalFreq;
+    source->mParams.castle_hold_freq_limit = true;
   });
 
   // subnoise click

@@ -15,8 +15,8 @@ public:
     struct Kick {
       PROP(float, decay, .min(0.05) .max(1.0)) = 0.3f;
       PROP(float, punch) = 0.9f;
-      PROP(float, freq, .label("tune") .min(40) .max(240)) = 60.0f;
-      PROP(float, sweep, .label("sweep") .min(0) .max(1)) = 0.5f;
+      PROP(float, freq, .label("tune") .min(40) .max(120)) = 80.0f;
+      PROP(float, sweep, .label("sweep") .min(0) .max(1)) = 0.6f;
     };
     PROP(bool, useKick) = true;
     PROP(Kick, kick);
