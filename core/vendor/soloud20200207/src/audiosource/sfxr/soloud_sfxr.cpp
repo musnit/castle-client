@@ -144,7 +144,9 @@ unsigned int SfxrInstance::getAudio(
     fperiod *= fslide;
     if (fperiod > fmaxperiod) {
       fperiod = fmaxperiod;
-      if (mParams.p_freq_limit > 0.0f) {
+      // XXX(castle): we don't want to abort the sound synthesis if we reach the freq limit,
+      // instead we want to just stay there
+      if (!mParams.castle_hold_freq_limit && mParams.p_freq_limit > 0.0f) {
         if (mFlags & LOOPING) {
           resetSample(false);
         } else {
@@ -731,6 +733,7 @@ void Sfxr::resetParams() {
 
   mParams.p_base_freq = 0.3f;
   mParams.p_freq_limit = 0.0f;
+  mParams.castle_hold_freq_limit = false;
   mParams.p_freq_ramp = 0.0f;
   mParams.p_freq_dramp = 0.0f;
   mParams.p_duty = 0.0f;

@@ -57,6 +57,7 @@ void Drums::playKick(Sound &sound, Params::Kick &kick, float amplitude) {
     auto finalFreq = SoundUtil::hzToSfxrFreq(minFreq, source->mBaseSamplerate);
     auto delta = finalFreq - source->mParams.p_base_freq;
     source->mParams.p_freq_ramp = delta * kick.sweep() * 3.0f;
+    source->mParams.castle_hold_freq_limit = true;
     source->mParams.p_freq_limit = finalFreq;
   });
 

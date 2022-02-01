@@ -69,6 +69,7 @@ struct SfxrParams {
   float master_vol;
 
   float sound_vol;
+  bool castle_hold_freq_limit;
 };
 
 class Sfxr;
