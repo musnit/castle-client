@@ -7,10 +7,13 @@ import { useActionSheet } from '@expo/react-native-action-sheet';
 import { useLazyQuery, useMutation, gql } from '@apollo/client';
 import { useNavigation } from '../ReactNavigation';
 import { useSession } from '../Session';
+import orderby from 'lodash.orderby';
 
 import * as Constants from '../Constants';
 import FastImage from 'react-native-fast-image';
 import { CastleIcon } from '../Constants';
+
+const COMMENTS_LOAD_LIMIT = 20;
 
 const styles = StyleSheet.create({
   container: {
@@ -144,7 +147,14 @@ const Comment = ({
   }
 
   if (optimisticReaction !== null) {
-    fireIsCurrentUserToggled = optimisticReaction;
+    if (fireIsCurrentUserToggled != optimisticReaction) {
+      fireIsCurrentUserToggled = optimisticReaction;
+      if (optimisticReaction) {
+        fireReactionCount++;
+      } else {
+        fireReactionCount--;
+      }
+    }
   }
 
   return (
@@ -259,15 +269,36 @@ export const CommentsList = ({ deck, isOpen, setReplyingToComment }) => {
   const [comments, setComments] = React.useState(null);
   const { showActionSheetWithOptions } = useActionSheet();
 
+  const changeComments = React.useCallback(
+    (newComments) => {
+      if (newComments) {
+        if (comments) {
+          // merge
+          let commentIdToComment = {};
+          for (const comment of comments) {
+            commentIdToComment[comment.commentId] = comment;
+          }
+          for (const comment of newComments) {
+            commentIdToComment[comment.commentId] = comment;
+          }
+
+          let sorted = orderby(Object.values(commentIdToComment), ['createdTime'], ['desc']);
+          setComments(sorted);
+        } else {
+          setComments(newComments);
+        }
+      } else {
+        setComments(null);
+      }
+    },
+    [comments]
+  );
+
   const [fetchComments, query] = useLazyQuery(
     gql`
-      query($deckId: ID!) {
-        deck(deckId: $deckId) {
-          id
-          deckId
-          comments {
-            ${Constants.COMMENTS_LIST_FRAGMENT}
-          }
+      query($deckId: ID!, $createdAtBefore: Datetime, $limit: Int) {
+        comments(deckId: $deckId, createdAtBefore: $createdAtBefore, limit: $limit) {
+          ${Constants.COMMENTS_LIST_FRAGMENT}
         }
       }
     `,
@@ -331,29 +362,43 @@ export const CommentsList = ({ deck, isOpen, setReplyingToComment }) => {
       await toggleCommentReaction({
         variables: { commentId, reactionId, enabled },
       });
-      fetchComments({ variables: { deckId: deck?.deckId } });
     },
-    [toggleCommentReaction, fetchComments, deck]
+    [toggleCommentReaction, comments]
   );
 
   React.useEffect(() => {
     if (!isOpen) {
-      setComments(null);
+      changeComments(null);
     }
-  }, [isOpen, setComments]);
+  }, [isOpen]);
 
   React.useEffect(() => {
     if (isOpen) {
-      fetchComments({ variables: { deckId: deck?.deckId } });
+      fetchComments({
+        variables: { deckId: deck?.deckId, limit: COMMENTS_LOAD_LIMIT, createdAtBefore: null },
+      });
     }
   }, [isOpen, deck]);
+
+  const onEndReached = React.useCallback(() => {
+    if (!query.loading && comments?.length) {
+      const lastComment = comments[comments.length - 1];
+      fetchComments({
+        variables: {
+          deckId: deck?.deckId,
+          limit: COMMENTS_LOAD_LIMIT,
+          createdAtBefore: lastComment.createdTime,
+        },
+      });
+    }
+  }, [query.loading, comments]);
 
   React.useEffect(() => {
     if (query.called && !query.loading) {
       if (query.data) {
-        const comments = query.data.deck.comments.comments;
+        const comments = query.data.comments.comments;
         if (comments) {
-          setComments(comments);
+          changeComments(comments);
         }
       }
     }
@@ -496,6 +541,9 @@ export const CommentsList = ({ deck, isOpen, setReplyingToComment }) => {
       data={comments}
       renderItem={renderItem}
       keyExtractor={(item, index) => item.commentId.toString()}
+      onEndReached={onEndReached}
+      onEndReachedThreshold={2}
+      refreshing={query.loading}
       inverted
     />
   );

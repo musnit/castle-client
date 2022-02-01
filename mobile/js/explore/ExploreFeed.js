@@ -102,7 +102,7 @@ export const ExploreFeed = ({ route }) => {
           refreshing={lastFetched.time && query.loading}
           onRefresh={onRefresh}
           onEndReached={onEndReached}
-          onEndReachedThreshold={0.15}
+          onEndReachedThreshold={2}
           onPressDeck={(deck, index) =>
             navigate(
               'PlayDeck',
