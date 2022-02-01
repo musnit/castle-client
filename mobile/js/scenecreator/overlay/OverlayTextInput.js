@@ -84,7 +84,7 @@ export const OverlayTextInput = ({ textComponent, sendAction }) => {
   const baseFontSize = 16;
   const fontSizeReady = containerWidth && emWidth;
   const fontSize = fontSizeReady
-    ? (1.0215 * (baseFontSize * (containerWidth / emWidth))) / textComponent.props.emsPerLine
+    ? (1.0281 * (baseFontSize * (containerWidth / emWidth))) / textComponent.props.emsPerLine
     : baseFontSize;
 
   return (
