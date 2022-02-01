@@ -69,23 +69,23 @@ export const OverlayTextInput = ({ textComponent, sendAction }) => {
 
   const hexColor = tinycolor.fromRatio(textComponent.props.color).toHexString();
 
-  const [containerWidthInitialized, setContainerWidthInitialized] = React.useState(false);
-  const [containerWidth, setContainerWidth] = React.useState(800);
+  const [containerWidth, setContainerWidth] = React.useState(null);
   const onContainerLayout = React.useCallback((event) => {
     const { width } = event.nativeEvent.layout;
     setContainerWidth(width);
-    setContainerWidthInitialized(true);
   }, []);
 
-  const [emWidthInitialized, setEmWidthInitialized] = React.useState(false);
-  const [emWidth, setEmWidth] = React.useState(16);
+  const [emWidth, setEmWidth] = React.useState(null);
   const onEmLayout = React.useCallback((event) => {
     const { width } = event.nativeEvent.layout;
     setEmWidth(width);
-    setEmWidthInitialized(true);
   }, []);
 
   const baseFontSize = 16;
+  const fontSizeReady = containerWidth && emWidth;
+  const fontSize = fontSizeReady
+    ? (1.0215 * (baseFontSize * (containerWidth / emWidth))) / textComponent.props.emsPerLine
+    : baseFontSize;
 
   return (
     <View style={styles.paddingContainer}>
@@ -103,7 +103,7 @@ export const OverlayTextInput = ({ textComponent, sendAction }) => {
             </Text>
           </View>
         </View>
-        {containerWidthInitialized && emWidthInitialized ? (
+        {fontSizeReady ? (
           <InspectorTextInput
             style={styles.textInputContainer}
             optimistic
@@ -118,9 +118,7 @@ export const OverlayTextInput = ({ textComponent, sendAction }) => {
               {
                 color: hexColor,
                 fontFamily: postScriptNames[textComponent.props.fontName],
-                fontSize:
-                  (1.04 * (baseFontSize * (containerWidth / emWidth))) /
-                  textComponent.props.emsPerLine,
+                fontSize: fontSize,
                 textAlign: textComponent.props.alignment,
               },
             ]}
