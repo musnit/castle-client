@@ -9,8 +9,33 @@ Drums::~Drums() {
 
 void Drums::write(Writer &writer) const {
   Instrument::write(writer);
-  // TODO: sparse based on use* params
-  writer.write("params", params);
+  writer.obj("params", [&]() {
+    // sparse write only the used drums
+    writer.boolean("useKick", params.useKick());
+    if (params.useKick()) {
+      writer.write("kick", params.kick());
+    }
+    writer.boolean("useClosedHat", params.useClosedHat());
+    if (params.useClosedHat()) {
+      writer.write("closedHat", params.closedHat());
+    }
+    writer.boolean("useOpenHat", params.useOpenHat());
+    if (params.useOpenHat()) {
+      writer.write("openHat", params.openHat());
+    }
+    writer.boolean("useSnare", params.useSnare());
+    if (params.useSnare()) {
+      writer.write("snare", params.snare());
+    }
+    writer.boolean("useHiTom", params.useHiTom());
+    if (params.useHiTom()) {
+      writer.write("hiTom", params.hiTom());
+    }
+    writer.boolean("useLoTom", params.useLoTom());
+    if (params.useLoTom()) {
+      writer.write("loTom", params.loTom());
+    }
+  });
 }
 
 void Drums::read(Reader &reader) {
