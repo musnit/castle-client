@@ -29,6 +29,9 @@ void Drums::playKick(Sound &sound, Params::Kick &kick, float amplitude) {
     kickKey = archive.toJson();
   }
 
+  auto kickClickKey = kickKey + "-click";
+
+  // main kick tone
   sound.getOrMakeSfxrSourceForKey(kickKey, [&](SoLoud::Sfxr *source) {
     // big sine
     source->mParams.wave_type = 2;
@@ -49,12 +52,34 @@ void Drums::playKick(Sound &sound, Params::Kick &kick, float amplitude) {
     // base kick freq
     source->mParams.p_base_freq = SoundUtil::hzToSfxrFreq(kick.freq(), source->mBaseSamplerate);
 
-    // sfxr freq ramp is -1 to 1, we want zero (no sweep) to some negative ramp (more sweep)
-    source->mParams.p_freq_ramp = kick.sweep() * -0.3f;
-    source->mParams.p_freq_limit = SoundUtil::hzToSfxrFreq(20.0f, source->mBaseSamplerate);
+    // sweep down from base
+    constexpr auto minFreq = 40.0f;
+    auto finalFreq = SoundUtil::hzToSfxrFreq(minFreq, source->mBaseSamplerate);
+    auto delta = finalFreq - source->mParams.p_base_freq;
+    source->mParams.p_freq_ramp = delta * kick.sweep() * 3.0f;
+    source->mParams.p_freq_limit = finalFreq;
+  });
+
+  // subnoise click
+  sound.getOrMakeSfxrSourceForKey(kickClickKey, [&](SoLoud::Sfxr *source) {
+    source->mParams.wave_type = 3;
+    source->mParams.p_base_freq = 0.7f;
+    source->mParams.sound_vol = 0.2f + kick.punch() * 0.2f;
+
+    // fixed very short decay
+    source->mParams.p_env_sustain = 0;
+    source->mParams.p_env_decay = 0.04f;
+    source->mParams.p_env_punch = 0.75f;
+
+    // open up filter if punch is higher
+    source->mParams.filter_on = true;
+    source->mParams.p_lpf_freq = std::pow(0.1f, 1.0f - kick.punch()) * std::pow(0.5f, kick.punch());
+    source->mParams.p_lpf_ramp = -0.8f;
+    source->mParams.p_lpf_resonance = 0.5f;
   });
 
   sound.playSfxr(kickKey, amplitude);
+  sound.playSfxr(kickClickKey, amplitude);
 }
 
 void Drums::playHat(Sound &sound, bool closed, Params::Hat &hat, float amplitude) {
