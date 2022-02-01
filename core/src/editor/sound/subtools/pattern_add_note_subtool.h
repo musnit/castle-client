@@ -98,8 +98,12 @@ public:
     }
   }
 
-  bool highlightAxis(int key) {
-    return hasTouch && key == tempNote.key;
+  bool highlightAxis() {
+    return hasTouch;
+  }
+
+  int highlightAxisKey() {
+    return tempNote.key;
   }
 
 private:

@@ -157,3 +157,55 @@ void Drums::play(Sound &sound, Pattern::Note note) {
     };
   }
 }
+
+void Drums::drawEditorKeyAxis(
+    Lv &lv, love::Font *font, float width, bool highlightKey, int keyPressed) {
+  // grey out most of the axis
+  lv.graphics.setColor({ 0.8f, 0.8f, 0.8f, 1.0f });
+  lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, 0.0f, -60.0f, width, 120.0f);
+
+  // draw keys where there are drums
+  for (auto zero = getZeroKey(), note = zero; note < zero + 12; note++) {
+    auto y = ((note - zero) * -1.0f) - 1.0f;
+    std::string name;
+    bool hasDrum = false;
+
+    switch (note) {
+    case 36: {
+      if (params.useKick()) {
+        hasDrum = true;
+        name = "KK";
+      }
+      break;
+    }
+    case 39: {
+      if (params.useSnare()) {
+        hasDrum = true;
+        name = "SD";
+      }
+      break;
+    }
+    case 40: {
+      if (params.useClosedHat()) {
+        hasDrum = true;
+        name = "HH";
+      }
+      break;
+    }
+    }
+
+    if (hasDrum) {
+      constexpr auto shittyFontScale = 24.0f / 800.0f;
+      lv.graphics.setColor({ 1.0f, 1.0f, 1.0f, 1.0f });
+      if (highlightKey && note == keyPressed) {
+        lv.graphics.setColor({ 0.8f, 0.0f, 0.0f, 1.0f });
+      }
+      lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, 0.0f, y, width, 1.0f);
+      lv.graphics.setColor({ 0.0f, 0.0f, 0.0f, 1.0f });
+      lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_LINE, 0.0f, y, width, 1.0f);
+
+      lv.graphics.print({ { name, { 1, 1, 1, 1 } } }, font,
+          love::Matrix4(0.1f, y + 0.25f, 0, shittyFontScale, shittyFontScale, 0, 0, 0, 0));
+    }
+  }
+}

@@ -106,8 +106,12 @@ public:
     }
   }
 
-  bool highlightAxis(int key) {
-    return hasTouch && key == selectedNote.key;
+  bool highlightAxis() {
+    return hasTouch;
+  }
+
+  int highlightAxisKey() {
+    return selectedNote.key;
   }
 
 private:

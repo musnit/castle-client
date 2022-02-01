@@ -60,11 +60,15 @@ private:
   };
   Grid grid;
   void drawGrid(float viewScale, love::Vector2 &viewOffset);
+  float getNoteAxisWidth();
   void drawNoteAxis(Song::Track *track);
   mutable love::Transform viewTransform;
   love::Vector2 viewPosition;
   float viewWidth = PATTERN_DEFAULT_VIEW_WIDTH;
   void zoomToFit();
+
+  std::unique_ptr<love::Font> axisFont { lv.graphics.newDefaultFont(
+      16.0f, love::TrueTypeRasterizer::HINTING_NORMAL) };
 };
 
 inline SoundSubtool *TrackTool::getCurrentSubtool() {

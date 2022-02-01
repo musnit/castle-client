@@ -68,8 +68,12 @@ public:
     }
   }
 
-  bool highlightAxis(int key) {
+  bool highlightAxis() {
     return false;
+  }
+
+  int highlightAxisKey() {
+    return 0;
   }
 
 private:

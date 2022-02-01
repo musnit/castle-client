@@ -47,3 +47,25 @@ std::unique_ptr<Instrument> Instrument::readVirtual(Reader &reader) {
   }
   return result;
 }
+
+void Instrument::drawEditorKeyAxis(
+    Lv &lv, love::Font *font, float width, bool highlightKey, int keyPressed) {
+  // instrument's zero key is y = 0
+  for (auto zero = getZeroKey(), note = zero - 60; note < zero + 36; note++) {
+    auto y = ((note - zero) * -1.0f) - 1.0f;
+    auto scaleDegree = note % 12;
+    auto isBlack = scaleDegree == 1 || scaleDegree == 3 || scaleDegree == 6 || scaleDegree == 8
+        || scaleDegree == 10;
+    if (isBlack) {
+      lv.graphics.setColor({ 0.1f, 0.1f, 0.1f, 1.0f });
+    } else {
+      lv.graphics.setColor({ 1.0f, 1.0f, 1.0f, 1.0f });
+    }
+    if (highlightKey && note == keyPressed) {
+      lv.graphics.setColor({ 0.8f, 0.0f, 0.0f, 1.0f });
+    }
+    lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, 0.0f, y, width, 1.0f);
+    lv.graphics.setColor({ 0.0f, 0.0f, 0.0f, 1.0f });
+    lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_LINE, 0.0f, y, width, 1.0f);
+  }
+}

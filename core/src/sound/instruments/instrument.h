@@ -1,5 +1,6 @@
 #pragma once
 
+#include "lv.h"
 #include "archive.h"
 #include "sound/sound.h"
 #include "sound/pattern.h"
@@ -17,13 +18,20 @@ public:
   virtual std::unique_ptr<Instrument> clone() const = 0;
 
   virtual std::string getType() const;
-  virtual int getZeroKey() = 0;
+  virtual int getZeroKey() {
+    // midi middle C
+    return 60;
+  }
   virtual void play(Sound &sound, Pattern::Note note) = 0;
 
   struct Props {
     PROP(std::string, name);
     PROP(bool, muted) = false;
   } props;
+
+  // editor functionality
+  virtual void drawEditorKeyAxis(
+      Lv &lv, love::Font *font, float width, bool highlightKey, int keyPressed);
 };
 
 inline std::string Instrument::getType() const {

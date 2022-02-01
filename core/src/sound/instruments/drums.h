@@ -50,6 +50,8 @@ public:
     return std::make_unique<Drums>(*this);
   }
 
+  void drawEditorKeyAxis(
+      Lv &lv, love::Font *font, float width, bool highlightKey, int keyPressed) override;
   void dirtyCache();
 
 private:

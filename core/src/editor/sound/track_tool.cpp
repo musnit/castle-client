@@ -173,27 +173,18 @@ void TrackTool::drawGrid(float viewScale, love::Vector2 &viewOffset) {
   grid.draw(gridCellSize, gridSize, viewScale, viewPosition, viewOffset, gridDotRadius, true);
 };
 
-void TrackTool::drawNoteAxis(Song::Track *track) {
-  auto x = viewPosition.x - gridCellSize; // always on left edge of view
+float TrackTool::getNoteAxisWidth() {
+  return gridCellSize * 1.5f;
+}
 
-  // instrument's zero key is y = 0
-  for (auto zero = track->instrument->getZeroKey(), note = zero - 60; note < zero + 36; note++) {
-    auto y = ((note - zero) * -gridCellSize) - gridCellSize;
-    auto scaleDegree = note % 12;
-    auto isBlack = scaleDegree == 1 || scaleDegree == 3 || scaleDegree == 6 || scaleDegree == 8
-        || scaleDegree == 10;
-    if (isBlack) {
-      lv.graphics.setColor({ 0.1f, 0.1f, 0.1f, 1.0f });
-    } else {
-      lv.graphics.setColor({ 1.0f, 1.0f, 1.0f, 1.0f });
-    }
-    if (getCurrentSubtool()->highlightAxis(note)) {
-      lv.graphics.setColor({ 0.8f, 0.0f, 0.0f, 1.0f });
-    }
-    lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, x, y, gridCellSize, gridCellSize);
-    lv.graphics.setColor({ 0.0f, 0.0f, 0.0f, 1.0f });
-    lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_LINE, x, y, gridCellSize, gridCellSize);
-  }
+void TrackTool::drawNoteAxis(Song::Track *track) {
+  auto x = viewPosition.x - getNoteAxisWidth(); // always on left edge of view
+  lv.graphics.push();
+  lv.graphics.translate(x, 0.0f);
+  lv.graphics.scale(gridCellSize, gridCellSize);
+  track->instrument->drawEditorKeyAxis(lv, axisFont.get(), 1.5f,
+      getCurrentSubtool()->highlightAxis(), getCurrentSubtool()->highlightAxisKey());
+  lv.graphics.pop();
 }
 
 void TrackTool::drawOverlay() {
@@ -204,7 +195,7 @@ void TrackTool::drawOverlay() {
   float windowWidth = 800.0f;
   auto viewScale = windowWidth / viewWidth;
   love::Vector2 viewOffset;
-  viewOffset.x = gridCellSize; // 1-cell x offset to accommodate axis
+  viewOffset.x = getNoteAxisWidth(); // x offset to accommodate axis
   constexpr auto viewHeightToWidthRatio = 7.0f / 5.0f;
   viewOffset.y = 0.5f * (viewWidth * viewHeightToWidthRatio - ((50 + 44) / viewScale));
 

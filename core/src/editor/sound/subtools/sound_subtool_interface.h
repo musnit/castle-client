@@ -33,7 +33,8 @@ public:
   virtual void onReset() = 0;
   virtual void onTouch(SoundSubtoolTouch &touch) = 0;
   virtual void drawOverlay(Lv &lv) = 0;
-  virtual bool highlightAxis(int key) = 0;
+  virtual bool highlightAxis() = 0;
+  virtual int highlightAxisKey() = 0;
 
 protected:
   SoundTool &soundTool;
