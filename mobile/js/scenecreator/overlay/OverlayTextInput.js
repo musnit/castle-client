@@ -69,16 +69,20 @@ export const OverlayTextInput = ({ textComponent, sendAction }) => {
 
   const hexColor = tinycolor.fromRatio(textComponent.props.color).toHexString();
 
+  const [containerWidthInitialized, setContainerWidthInitialized] = React.useState(false);
   const [containerWidth, setContainerWidth] = React.useState(800);
   const onContainerLayout = React.useCallback((event) => {
     const { width } = event.nativeEvent.layout;
     setContainerWidth(width);
+    setContainerWidthInitialized(true);
   }, []);
 
+  const [emWidthInitialized, setEmWidthInitialized] = React.useState(false);
   const [emWidth, setEmWidth] = React.useState(16);
   const onEmLayout = React.useCallback((event) => {
     const { width } = event.nativeEvent.layout;
     setEmWidth(width);
+    setEmWidthInitialized(true);
   }, []);
 
   const baseFontSize = 16;
@@ -99,28 +103,30 @@ export const OverlayTextInput = ({ textComponent, sendAction }) => {
             </Text>
           </View>
         </View>
-        <InspectorTextInput
-          style={styles.textInputContainer}
-          optimistic
-          lastNativeValue={lastNativeValue}
-          value={textContentValue}
-          onChangeText={onChangeTextContentValue}
-          placeholder="Once upon a time..."
-          multiline
-          autoFocus
-          inputStyle={[
-            styles.textInput,
-            {
-              color: hexColor,
-              fontFamily: postScriptNames[textComponent.props.fontName],
-              fontSize:
-                (1.03 * (baseFontSize * (containerWidth / emWidth))) /
-                textComponent.props.emsPerLine,
-              textAlign: textComponent.props.alignment,
-            },
-          ]}
-          keyboardType={Platform.OS === 'ios' ? 'ascii-capable' : 'visible-password'}
-        />
+        {containerWidthInitialized && emWidthInitialized ? (
+          <InspectorTextInput
+            style={styles.textInputContainer}
+            optimistic
+            lastNativeValue={lastNativeValue}
+            value={textContentValue}
+            onChangeText={onChangeTextContentValue}
+            placeholder="Once upon a time..."
+            multiline
+            autoFocus
+            inputStyle={[
+              styles.textInput,
+              {
+                color: hexColor,
+                fontFamily: postScriptNames[textComponent.props.fontName],
+                fontSize:
+                  (1.04 * (baseFontSize * (containerWidth / emWidth))) /
+                  textComponent.props.emsPerLine,
+                textAlign: textComponent.props.alignment,
+              },
+            ]}
+            keyboardType={Platform.OS === 'ios' ? 'ascii-capable' : 'visible-password'}
+          />
+        ) : null}
       </View>
     </View>
   );
