@@ -56,7 +56,7 @@ public:
       Track::Sequence &sequence, Track::Sequence::iterator &current, Clock &clock);
 
   static Track::Sequence::iterator sequenceElemAtTime(Track &track, double timeInSong);
-  static std::unique_ptr<Track> makeDefaultTrack();
+  static std::unique_ptr<Track> makeDefaultTrack(const std::string &type);
 };
 
 inline Song::Track::Sequence::iterator Song::sequenceElemAtTime(

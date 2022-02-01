@@ -5,11 +5,14 @@
 
 #include <unordered_set>
 
-std::unique_ptr<Song::Track> Song::makeDefaultTrack() {
-  // default sampler
-  // TODO: BEN
+std::unique_ptr<Song::Track> Song::makeDefaultTrack(const std::string &type) {
   auto track = std::make_unique<Song::Track>();
-  track->instrument = std::make_unique<Drums>();
+  if (type == "drums") {
+    track->instrument = std::make_unique<Drums>();
+  } else {
+    // default sampler
+    track->instrument = std::make_unique<Sampler>();
+  }
   track->instrument->props.name() = track->instrument->getType();
   return track;
 }

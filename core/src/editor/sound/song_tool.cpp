@@ -61,7 +61,6 @@ void SongTool::update(double dt) {
           auto current = sequence.begin();
           while (current != sequence.end()) {
             auto &[startTime, sequenceElem] = *current;
-            auto &pattern = soundTool.song->patterns[sequenceElem.patternId()];
             auto startTimeBars = stepsToBars(startTime);
             auto patternLength = soundTool.song->getSequenceElemLength(sequence, current, clock);
             if (bar >= startTimeBars && bar < startTimeBars + stepsToBars(patternLength)) {
@@ -119,16 +118,8 @@ void SongTool::update(double dt) {
             soundTool.setTrackIndex(track);
             soundTool.sendUIEvent();
           } else if (bar < 0 && track == int(soundTool.song->tracks.size())) {
-            // touched the N+1th track axis, add new track and pattern
-            auto emptyPattern = Pattern::makeEmptyPattern();
-            auto defaultTrack = Song::makeDefaultTrack();
-            Song::Track::SequenceElem firstElem { emptyPattern->patternId(), true };
-            defaultTrack->sequence.emplace(0, firstElem);
-            soundTool.song->patterns.emplace(emptyPattern->patternId(), *emptyPattern);
-            soundTool.song->tracks.push_back(std::move(defaultTrack));
-            soundTool.setPatternId(emptyPattern->patternId(), 0);
-            soundTool.setTrackIndex(soundTool.song->tracks.size() - 1);
-            soundTool.updateSelectedComponent("add track");
+            // touched the N+1th track axis, prompt to add track
+            soundTool.sendNewTrackEvent();
           } else {
             soundTool.clearSelection();
             soundTool.sendUIEvent();

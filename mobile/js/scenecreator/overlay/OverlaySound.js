@@ -1,6 +1,6 @@
 import React from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
-import { useCoreState, sendGlobalAction, sendAsync } from '../../core/CoreEvents';
+import { useCoreState, useListen, sendGlobalAction, sendAsync } from '../../core/CoreEvents';
 
 import * as Constants from '../../Constants';
 const { CastleIcon } = Constants;
@@ -95,6 +95,11 @@ export const OverlaySound = ({ setActiveSheet, activeSheet }) => {
       setActiveSheet({ sound: null });
     }
   }, [selectedTrackIndex, setActiveSheet, activeSheet.sound]);
+
+  useListen({
+    eventName: 'SHOW_ADD_TRACK_SHEET',
+    handler: () => setTimeout(() => setActiveSheet({ sound: 'soundNewTrack' }), 0.125),
+  });
 
   const onPressClose = React.useCallback(() => {
     if (mode === 'track') {

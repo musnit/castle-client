@@ -28,6 +28,7 @@ public:
   bool hasSong();
 
   void sendUIEvent();
+  void sendNewTrackEvent();
 
   // play/pause currently edited song
   void stopPlayback();
@@ -48,6 +49,7 @@ public:
   Scene &getScene();
   Song::Track *getSelectedTrack();
   Pattern *getSelectedPattern();
+  void addTrack(const std::string &type);
   void updateSelectedComponent(std::string commandDescription);
   void discardChanges();
 

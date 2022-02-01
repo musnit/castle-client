@@ -6,7 +6,7 @@ void MusicBehavior::handleEnableComponent(ActorId actorId, MusicComponent &compo
   auto &song = component.props.song();
   if (song.tracks.size() == 0) {
     auto emptyPattern = Pattern::makeEmptyPattern();
-    auto defaultTrack = Song::makeDefaultTrack();
+    auto defaultTrack = Song::makeDefaultTrack("sampler");
     Song::Track::SequenceElem firstElem { emptyPattern->patternId(), true };
     defaultTrack->sequence.emplace(0, firstElem);
     song.patterns.emplace(emptyPattern->patternId(), *emptyPattern);

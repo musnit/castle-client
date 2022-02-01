@@ -106,6 +106,7 @@ private:
   friend struct SoundToolSceneMusicReceiver;
   friend struct SoundToolActionReceiver;
   friend struct SoundToolSetSubtoolReceiver;
+  friend struct SoundToolAddTrackReceiver;
   friend struct TrackToolChangeInstrumentReceiver;
   friend struct TrackToolChangePatternReceiver;
 

@@ -401,6 +401,46 @@ void SoundTool::sendUIEvent() {
   editor.getBridge().sendEvent("EDITOR_SOUND_TOOL", e);
 }
 
+struct SoundToolAddTrackReceiver {
+  inline static const BridgeRegistration<SoundToolAddTrackReceiver> registration {
+    "EDITOR_SOUND_TOOL_ADD_TRACK"
+  };
+
+  struct Params {
+    PROP(std::string, type);
+  } params;
+
+  void receive(Engine &engine) {
+    auto editor = engine.maybeGetEditor();
+    if (!editor)
+      return;
+
+    auto &soundTool = editor->soundTool;
+    editor->soundTool.addTrack(params.type());
+  }
+};
+
+void SoundTool::addTrack(const std::string &type) {
+  if (hasSong()) {
+    auto emptyPattern = Pattern::makeEmptyPattern();
+    auto defaultTrack = Song::makeDefaultTrack(type);
+    Song::Track::SequenceElem firstElem { emptyPattern->patternId(), true };
+    defaultTrack->sequence.emplace(0, firstElem);
+    song->patterns.emplace(emptyPattern->patternId(), *emptyPattern);
+    song->tracks.push_back(std::move(defaultTrack));
+    setPatternId(emptyPattern->patternId(), 0);
+    setTrackIndex(song->tracks.size() - 1);
+    updateSelectedComponent("add track");
+  }
+}
+
+struct NewTrackEvent {};
+
+void SoundTool::sendNewTrackEvent() {
+  NewTrackEvent e;
+  editor.getBridge().sendEvent("SHOW_ADD_TRACK_SHEET", e);
+};
+
 struct SoundToolSetSubtoolReceiver {
   inline static const BridgeRegistration<SoundToolSetSubtoolReceiver> registration {
     "EDITOR_SOUND_TOOL_SET_SUBTOOL"
