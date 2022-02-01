@@ -345,6 +345,13 @@ export const Drums = ({ instrument }) => {
           onChange={(kick) => onChangeDrum('kick', kick)}
           lastNativeUpdate={lastNativeUpdate}
         />
+        <Snare
+          enabled={instrument.params.useSnare}
+          onSetEnabled={(enabled) => onChangeDrum('useSnare', enabled)}
+          value={instrument.params.snare}
+          onChange={(snare) => onChangeDrum('snare', snare)}
+          lastNativeUpdate={lastNativeUpdate}
+        />
         <Hat
           enabled={instrument.params.useClosedHat}
           onSetEnabled={(enabled) => onChangeDrum('useClosedHat', enabled)}
@@ -352,11 +359,11 @@ export const Drums = ({ instrument }) => {
           onChange={(closedHat) => onChangeDrum('closedHat', closedHat)}
           lastNativeUpdate={lastNativeUpdate}
         />
-        <Snare
-          enabled={instrument.params.useSnare}
-          onSetEnabled={(enabled) => onChangeDrum('useSnare', enabled)}
-          value={instrument.params.snare}
-          onChange={(snare) => onChangeDrum('snare', snare)}
+        <Hat
+          enabled={instrument.params.useOpenHat}
+          onSetEnabled={(enabled) => onChangeDrum('useOpenHat', enabled)}
+          value={instrument.params.openHat}
+          onChange={(openHat) => onChangeDrum('openHat', openHat)}
           lastNativeUpdate={lastNativeUpdate}
         />
       </View>

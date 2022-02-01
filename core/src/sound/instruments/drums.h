@@ -29,6 +29,9 @@ public:
     PROP(bool, useClosedHat) = true;
     PROP(Hat, closedHat);
 
+    PROP(bool, useOpenHat) = true;
+    PROP(Hat, openHat);
+
     struct Snare {
       PROP(float, decay, .min(0.05) .max(0.5)) = 0.2f;
       PROP(float, freq, .label("tone") .min(0) .max(1)) = 0.5f;
@@ -57,14 +60,16 @@ public:
 private:
   std::string kickKey;
   std::string closedHatKey;
+  std::string openHatKey;
   std::string snareKey;
   void playKick(Sound &sound, Params::Kick &kick, float amplitude);
-  void playHat(Sound &sound, Params::Hat &hat, float amplitude);
+  void playHat(Sound &sound, bool closed, Params::Hat &hat, float amplitude);
   void playSnare(Sound &sound, Params::Snare &snare, float amplitude);
 };
 
 inline void Drums::dirtyCache() {
   kickKey = "";
   closedHatKey = "";
+  openHatKey = "";
   snareKey = "";
 }

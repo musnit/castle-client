@@ -57,23 +57,36 @@ void Drums::playKick(Sound &sound, Params::Kick &kick, float amplitude) {
   sound.playSfxr(kickKey, amplitude);
 }
 
-void Drums::playHat(Sound &sound, Params::Hat &hat, float amplitude) {
-  if (closedHatKey == "") {
-    Archive archive;
-    archive.write([&](Archive::Writer &w) {
-      w.write("closedHat", hat);
-    });
-    closedHatKey = archive.toJson();
+void Drums::playHat(Sound &sound, bool closed, Params::Hat &hat, float amplitude) {
+  std::string key;
+  if (closed) {
+    if (closedHatKey == "") {
+      Archive archive;
+      archive.write([&](Archive::Writer &w) {
+        w.write("closedHat", hat);
+      });
+      closedHatKey = archive.toJson();
+    }
+    key = closedHatKey;
+  } else {
+    if (openHatKey == "") {
+      Archive archive;
+      archive.write([&](Archive::Writer &w) {
+        w.write("openHat", hat);
+      });
+      openHatKey = archive.toJson();
+    }
+    key = openHatKey;
   }
 
-  sound.getOrMakeSfxrSourceForKey(closedHatKey, [&](SoLoud::Sfxr *source) {
+  sound.getOrMakeSfxrSourceForKey(key, [&](SoLoud::Sfxr *source) {
     // noise
     source->mParams.wave_type = 3;
     source->mParams.sound_vol = 0.75f;
 
     // decay
     source->mParams.p_env_decay = hat.decay();
-    source->mParams.p_env_sustain = 0;
+    source->mParams.p_env_sustain = closed ? 0 : 0.1f;
     source->mParams.p_env_punch = 0.3f;
 
     // noise freq
@@ -87,7 +100,7 @@ void Drums::playHat(Sound &sound, Params::Hat &hat, float amplitude) {
     source->mParams.p_hpf_ramp = 0.2f;
   });
 
-  sound.playSfxr(closedHatKey, amplitude);
+  sound.playSfxr(key, amplitude);
 }
 
 void Drums::playSnare(Sound &sound, Params::Snare &snare, float amplitude) {
@@ -150,7 +163,13 @@ void Drums::play(Sound &sound, Pattern::Note note) {
     }
     case 40: {
       if (params.useClosedHat()) {
-        playHat(sound, params.closedHat(), amplitude);
+        playHat(sound, true, params.closedHat(), amplitude);
+      }
+      break;
+    }
+    case 41: {
+      if (params.useOpenHat()) {
+        playHat(sound, false, params.openHat(), amplitude);
       }
       break;
     }
@@ -189,6 +208,13 @@ void Drums::drawEditorKeyAxis(
       if (params.useClosedHat()) {
         hasDrum = true;
         name = "HH";
+      }
+      break;
+    }
+    case 41: {
+      if (params.useOpenHat()) {
+        hasDrum = true;
+        name = "OH";
       }
       break;
     }
