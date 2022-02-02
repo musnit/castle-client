@@ -4,11 +4,21 @@ import { TextInput, View } from 'react-native';
 import * as Constants from '../../../Constants';
 
 const InternalTextInput = ({ style, inputStyle, ...props }) => {
+  const textInputRef = React.useRef(null);
+
+  const onBlurRefocus = React.useCallback(() => {
+    if (textInputRef) {
+      textInputRef.focus();
+    }
+  });
+
   return (
     <View style={[Constants.styles.textInputWrapperOnWhite, style]}>
       <TextInput
+        ref={textInputRef}
         style={[Constants.styles.textInputOnWhite, inputStyle]}
         placeholderTextColor={Constants.colors.grayText}
+        onBlur={props.alwaywsFocus ? onBlurRefocus : null}
         {...props}
       />
     </View>
