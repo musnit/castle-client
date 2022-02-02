@@ -41,7 +41,9 @@ export const PlayDeckActions = ({
   disabled,
   onBlockUser,
   onReportDeck,
+  onSetIsMuted,
   isMe = false,
+  isMuted = false,
   isAnonymous = false,
 }) => {
   const { creator } = deck;
@@ -82,10 +84,19 @@ export const PlayDeckActions = ({
       name: `Block @${creator.username}`,
     });
   }
+  dropdownItems.push({
+    id: 'mute',
+    icon: isMuted ? 'volume-up' : 'volume-off',
+    name: isMuted ? 'Turn on sound' : 'Mute',
+  });
 
   const onSelectDropdownAction = React.useCallback(
     (id) => {
       switch (id) {
+        case 'mute': {
+          onSetIsMuted(!isMuted);
+          break;
+        }
         case 'view-source': {
           push('ViewSource', { deckIdToEdit: deck.deckId });
           break;
@@ -124,7 +135,7 @@ export const PlayDeckActions = ({
         }
       }
     },
-    [deck?.deckId, onBlockUser, onReportDeck]
+    [deck?.deckId, onBlockUser, onReportDeck, onSetIsMuted, isMuted]
   );
 
   return (

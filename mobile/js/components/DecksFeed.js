@@ -123,8 +123,6 @@ const CurrentDeckCell = ({
   playingTransition,
   paused,
   onRefreshFeed,
-  isMe = false,
-  isAnonymous = false,
   onPressComments = () => {},
   onCloseComments = () => {},
   isCommentsOpen,
@@ -133,6 +131,8 @@ const CurrentDeckCell = ({
   const [ready, setReady] = React.useState(false);
   const isFocused = useIsFocused();
   const insets = useSafeAreaInsets();
+  const { userId: signedInUserId, isAnonymous, isMuted, setIsMuted } = useSession();
+  const isMe = deck?.creator?.userId === signedInUserId;
 
   React.useEffect(() => {
     let timeout;
@@ -182,6 +182,16 @@ const CurrentDeckCell = ({
       onRefreshFeed();
     }
   }, [onRefreshFeed, deck]);
+  const onSetIsMutedWhilePlaying = React.useCallback(
+    (isMuted) => {
+      setIsMuted(isMuted);
+      if (ready) {
+        // update state on playing deck
+        sendAsync('SET_SOUND_ENABLED', { enabled: isMuted ? false : true });
+      }
+    },
+    [setIsMuted, ready]
+  );
 
   const playingFooterY = playingTransition.interpolate({
     inputRange: [0, 1],
@@ -220,6 +230,8 @@ const CurrentDeckCell = ({
           onPressBack={onPressBack}
           isMe={isMe}
           isAnonymous={isAnonymous}
+          isMuted={isMuted}
+          onSetIsMuted={onSetIsMutedWhilePlaying}
           onBlockUser={onBlockUser}
           onReportDeck={onReportDeck}
         />
@@ -277,7 +289,6 @@ export const DecksFeed = ({
 }) => {
   const [currentCardIndex, setCurrentCardIndex] = React.useState(0);
   const [paused, setPaused] = React.useState(false);
-  const { userId: signedInUserId, isAnonymous } = useSession();
 
   // state from expanding/collapsing a deck to play it
   // note: non-native duplicate is needed for just the background color fade (not supported by native)
@@ -323,8 +334,6 @@ export const DecksFeed = ({
             isCommentsOpen={isCommentsOpen}
             playingTransition={playingTransition}
             paused={paused || isCommentsOpen}
-            isMe={deck?.creator?.userId === signedInUserId}
-            isAnonymous={isAnonymous}
             onRefreshFeed={props.onRefresh}
           />
         );

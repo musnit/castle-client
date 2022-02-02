@@ -64,6 +64,7 @@ public:
   void playSfxr(const std::string &sfxrKey, float amplitude);
 
 private:
+  friend struct SoundEnabledReceiver;
   void initialize();
   void playUrl(float playbackRate, float amplitude, const std::string &url);
   void playEffect(float playbackRate, float amplitude, const std::string &category, int seed,

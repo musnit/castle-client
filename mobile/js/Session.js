@@ -21,7 +21,8 @@ const SKIP_NUX = false;
 let gAuthToken,
   gUserId,
   gIsAnonymous = false,
-  gIsNuxCompleted = false;
+  gIsNuxCompleted = false,
+  gIsMuted = false;
 let gNotificationState = {};
 const TEST_AUTH_TOKEN = null;
 let gIsAdmin = false;
@@ -37,7 +38,7 @@ const SessionContext = React.createContext(EMPTY_SESSION);
 
 export const isAdmin = () => {
   return gIsAdmin;
-}
+};
 
 PushNotifications.addTokenListener(async (token) => {
   if (!gAuthToken) {
@@ -85,6 +86,8 @@ export async function loadAuthTokenAsync() {
     gIsNuxCompleted = isNuxCompletedStorageValue === 'true' || isNuxCompletedStorageValue === true;
     const isAnonStorageValue = await CastleAsyncStorage.getItem('USER_IS_ANONYMOUS');
     gIsAnonymous = isAnonStorageValue === 'true' || isAnonStorageValue === true;
+    const isMutedStorageValue = await CastleAsyncStorage.getItem('IS_MUTED');
+    gIsMuted = isMutedStorageValue === 'true' || isMutedStorageValue === true;
     Amplitude.getInstance().setUserId(gUserId);
     AdjustEvents.setUserId(gUserId);
   }
@@ -99,6 +102,7 @@ export class Provider extends React.Component {
       isSignedIn: false,
       userId: null,
       isAnonymous: false,
+      isMuted: false,
       initialized: false,
       signInAsync: this.signInAsync,
       signOutAsync: this.signOutAsync,
@@ -107,6 +111,7 @@ export class Provider extends React.Component {
       markNotificationsReadAsync: this.markNotificationsReadAsync,
       markFollowingFeedRead: this.markFollowingFeedRead,
       setIsNuxCompleted: this.setIsNuxCompleted,
+      setIsMuted: this.setIsMuted,
       ...gNotificationState,
     };
   }
@@ -122,6 +127,7 @@ export class Provider extends React.Component {
           isSignedIn: !!gAuthToken,
           isAnonymous: gIsAnonymous,
           isNuxCompleted: gIsNuxCompleted,
+          isMuted: gIsMuted,
           userId: gUserId,
           initialized: true,
         });
@@ -152,6 +158,16 @@ export class Provider extends React.Component {
     }
     await CastleAsyncStorage.setItem('IS_NUX_COMPLETED', gIsNuxCompleted.toString());
     return this.setState({ isNuxCompleted: gIsNuxCompleted });
+  };
+
+  /**
+    This only sets the storage flag, doesn't tell the engine to mute/unmute.
+    `CardScene` reads the storage flag and sets engine muted state on mount.
+  */
+  setIsMuted = async (isMuted) => {
+    gIsMuted = !!isMuted;
+    await CastleAsyncStorage.setItem('IS_MUTED', gIsMuted.toString());
+    return this.setState({ isMuted: gIsMuted });
   };
 
   useNewAuthTokenAsync = async ({ userId, token, isAnonymous, isAdmin }) => {

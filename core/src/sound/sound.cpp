@@ -365,5 +365,9 @@ struct SoundEnabledReceiver {
   void receive(Engine &engine) {
     Debug::log("Core: Sound enabled: {}", params.enabled());
     Sound::isEnabled = params.enabled();
+    if (!Sound::isEnabled && Sound::hasInitializedSoloud) {
+      Sound::soloud.stopAll();
+      // don't Sound::stopAll() or clear streams - time continues to pass in streams
+    }
   }
 };

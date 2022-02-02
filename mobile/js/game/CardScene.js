@@ -46,7 +46,7 @@ export const CardScene = ({
   const onLoaded = React.useCallback(async () => {
     setLoaded(true);
     const isMuted = await CastleAsyncStorage.getItem('IS_MUTED');
-    sendAsync('SET_SOUND_ENABLED', isMuted && !isEditable ? false : true);
+    sendAsync('SET_SOUND_ENABLED', { enabled: isMuted && !isEditable ? false : true });
   }, [isEditable]);
 
   const [shouldDisplay, setShouldDisplay] = useState(false);
