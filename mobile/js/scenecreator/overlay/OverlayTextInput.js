@@ -105,6 +105,7 @@ export const OverlayTextInput = ({ textComponent, sendAction }) => {
         </View>
         {fontSizeReady ? (
           <InspectorTextInput
+            alwaysFocus
             style={styles.textInputContainer}
             optimistic
             lastNativeValue={lastNativeValue}

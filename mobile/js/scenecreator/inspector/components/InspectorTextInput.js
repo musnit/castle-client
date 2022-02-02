@@ -18,7 +18,7 @@ const InternalTextInput = ({ style, inputStyle, ...props }) => {
         ref={textInputRef}
         style={[Constants.styles.textInputOnWhite, inputStyle]}
         placeholderTextColor={Constants.colors.grayText}
-        onBlur={props.alwaywsFocus ? onBlurRefocus : null}
+        onBlur={props.alwaysFocus ? onBlurRefocus : null}
         {...props}
       />
     </View>
