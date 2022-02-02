@@ -8,7 +8,7 @@ Screenshot::Screenshot(int width) {
 
 Screenshot::~Screenshot() {
   if (canvas) {
-    delete canvas;
+    canvas->release();
     canvas = nullptr;
   }
 }
