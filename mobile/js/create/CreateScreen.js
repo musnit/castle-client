@@ -196,6 +196,12 @@ const EditDeckCell = (props) => {
 };
 
 const CreateHelpLinks = () => {
+  const onPressHelpLink = React.useCallback((url) => {
+    Amplitude.getInstance().logEvent('OPEN_CREATE_HELP_LINK', {
+      url,
+    });
+    Linking.openURL(url);
+  }, []);
   return (
     <View style={styles.help}>
       <View style={styles.helpHeader}>
@@ -209,7 +215,7 @@ const CreateHelpLinks = () => {
         <Text style={styles.helpRowLabel}>Read through our official written tutorials</Text>
         <Pressable
           style={[Constants.styles.secondaryButton, styles.helpRowButton]}
-          onPress={() => Linking.openURL(Constants.DOCS_LINK)}>
+          onPress={() => onPressHelpLink(Constants.DOCS_LINK)}>
           <Text style={Constants.styles.secondaryButtonLabel}>Browse Docs</Text>
         </Pressable>
       </View>
@@ -217,7 +223,7 @@ const CreateHelpLinks = () => {
         <Text style={styles.helpRowLabel}>Ask questions, leave feedback, hang out</Text>
         <Pressable
           style={[Constants.styles.secondaryButton, styles.helpRowButton]}
-          onPress={() => Linking.openURL(Constants.DISCORD_INVITE_LINK)}>
+          onPress={() => onPressHelpLink(Constants.DISCORD_INVITE_LINK)}>
           <Text style={Constants.styles.secondaryButtonLabel}>Join Discord</Text>
         </Pressable>
       </View>
