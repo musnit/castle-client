@@ -6,7 +6,7 @@ import { UserAvatar } from '../components/UserAvatar';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import { useLazyQuery, useMutation, gql } from '@apollo/client';
 import { useNavigation } from '../ReactNavigation';
-import { useSession } from '../Session';
+import { useSession, getIsAdmin, isAdmin } from '../Session';
 import orderby from 'lodash.orderby';
 
 import * as Constants from '../Constants';
@@ -326,6 +326,24 @@ export const CommentsList = ({ deck, isOpen, setReplyingToComment }) => {
     [reportComment]
   );
 
+  const [shadowbanUser] = useMutation(
+    gql`
+      mutation ($userId: ID!) {
+        setIsShadowbanned(userId: $userId, isShadowbanned: true) {
+          userId
+        }
+      }
+    `
+  );
+
+  const onShadowbanUser = React.useCallback(
+    (userId) =>
+      shadowbanUser({
+        variables: { userId },
+      }),
+    [shadowbanUser]
+  );
+
   const [deleteComment] = useMutation(
     gql`
       mutation ($commentId: ID!) {
@@ -426,7 +444,7 @@ export const CommentsList = ({ deck, isOpen, setReplyingToComment }) => {
       const isOwnComment = signedInUserId === comment.fromUser.userId;
       const isDeckOwner = signedInUserId === deck.creator.userId;
 
-      if (isOwnComment || isDeckOwner) {
+      if (isOwnComment || isDeckOwner || isAdmin()) {
         options.unshift({
           name: 'Delete',
           action: () =>
@@ -445,7 +463,7 @@ export const CommentsList = ({ deck, isOpen, setReplyingToComment }) => {
             ),
         });
       }
-      if (!isOwnComment) {
+      if (!isOwnComment && !isAdmin()) {
         options.unshift({
           name: 'Report',
           action: () =>
@@ -464,6 +482,26 @@ export const CommentsList = ({ deck, isOpen, setReplyingToComment }) => {
             ),
         });
       }
+      if (isAdmin()) {
+        options.unshift({
+          name: 'Shadowban',
+          action: () =>
+            showActionSheetWithOptions(
+              {
+                title: `Shadowban @${comment.fromUser.username}?`,
+                options: ['Shadowban', 'Cancel'],
+                destructiveButtonIndex: 0,
+                cancelButtonIndex: 1,
+              },
+              (buttonIndex) => {
+                if (buttonIndex === 0) {
+                  onShadowbanUser(comment.fromUser.userId);
+                }
+              }
+            ),
+        });
+      }
+
       return showActionSheetWithOptions(
         {
           title: `@${comment.fromUser.username}'s comment`,
@@ -483,6 +521,7 @@ export const CommentsList = ({ deck, isOpen, setReplyingToComment }) => {
       setReplyingToComment,
       onReportComment,
       onDeleteComment,
+      onShadowbanUser,
       signedInUserId,
       isAnonymous,
       deck,

@@ -24,6 +24,7 @@ let gAuthToken,
   gIsNuxCompleted = false;
 let gNotificationState = {};
 const TEST_AUTH_TOKEN = null;
+let gIsAdmin = false;
 
 const EMPTY_SESSION = {
   authToken: null,
@@ -33,6 +34,10 @@ const EMPTY_SESSION = {
 };
 
 const SessionContext = React.createContext(EMPTY_SESSION);
+
+export const isAdmin = () => {
+  return gIsAdmin;
+}
 
 PushNotifications.addTokenListener(async (token) => {
   if (!gAuthToken) {
@@ -972,6 +977,7 @@ export const maybeFetchNotificationsAsync = async (force = true) => {
     query: gql`
     query {
       notificationsV2(limit: 64) {
+        isAdmin
         newFollowingDecks
         notifications {
           notificationId
@@ -999,7 +1005,8 @@ export const maybeFetchNotificationsAsync = async (force = true) => {
     fetchPolicy: 'no-cache',
   });
   const data = result?.data?.notificationsV2 ?? {};
-  const { notifications, newFollowingDecks } = data;
+  const { notifications, newFollowingDecks, isAdmin } = data;
+  gIsAdmin = isAdmin;
   const notificationsBadgeCount = notifications
     ? notifications.reduce((accum, n) => accum + (n.status === 'unseen'), 0)
     : 0;
