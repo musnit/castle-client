@@ -13,8 +13,10 @@ import { useActionSheet } from '@expo/react-native-action-sheet';
 import { gql } from '@apollo/client';
 import Viewport from '../common/viewport';
 
+import { AutocompleteTextInput } from '../components/AutocompleteTextInput';
 import { BottomSheetHeader } from '../components/BottomSheetHeader';
 import { BottomSheet } from '../components/BottomSheet';
+import { formatMessage } from '../common/chat-utilities';
 import { MiscLinks } from './MiscLinks';
 import { sanitizeUrl } from '@braintree/sanitize-url';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -53,7 +55,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const updateUserAsync = async ({ user }) => {
+const updateUserAsync = async ({ user, aboutBodyCache = {} }) => {
   const clean = sanitizeUrl(user.websiteUrl);
   if (!clean || clean === 'about:blank') {
     user.websiteUrl = '';
@@ -78,6 +80,9 @@ const updateUserAsync = async ({ user }) => {
         },
       });
     }
+  }
+  if (user.about) {
+    user.about = formatMessage(user.about, aboutBodyCache);
   }
   const result = await Session.apolloClient.mutate({
     mutation: gql`
@@ -158,9 +163,19 @@ export const ProfileSettingsSheet = ({ me = {}, isOpen, onClose }) => {
     }
   }, [isOpen]);
 
+  // maintain cache of entities (e.g. user mentions) to help assemble the about body when
+  // sending it to the server
+  const aboutBodyCache = React.useRef({});
+  const updateCache = React.useCallback((action) => {
+    if (action.type === 'addUser') {
+      const { user } = action;
+      aboutBodyCache.current[user.username] = user;
+    }
+  }, []);
+
   const saveUserAndClose = React.useCallback(async () => {
     await setLoading(true);
-    const updatedUser = await updateUserAsync({ user });
+    const updatedUser = await updateUserAsync({ user, aboutBodyCache: aboutBodyCache.current });
     if (updatedUser) {
       onClose(true);
     }
@@ -287,15 +302,13 @@ export const ProfileSettingsSheet = ({ me = {}, isOpen, onClose }) => {
         <View style={styles.row}>
           <Text style={Constants.styles.textInputLabelOnWhite}>About me</Text>
           <View style={Constants.styles.textInputWrapperOnWhite}>
-            <TextInput
-              value={user.about}
-              editable={!loading}
-              autoCapitalize="none"
-              autoCorrect={false}
-              onChangeText={(about) => changeUser({ about })}
+            <AutocompleteTextInput
+              updateCache={updateCache}
               style={Constants.styles.textInputOnWhite}
               placeholder="I like turtles"
               placeholderTextColor={Constants.colors.grayText}
+              value={user.about}
+              onChangeText={(about) => changeUser({ about })}
             />
           </View>
         </View>
