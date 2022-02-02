@@ -13,6 +13,7 @@ const data = {
   triggerCategoryOrder: ['general', 'controls', 'state', 'motion', 'camera', 'draw'],
   responseCategoryOrder: [
     'general',
+    'order',
     'behavior',
     'tell other actors',
     'logic',
@@ -300,6 +301,12 @@ const data = {
     },
     ['remove tag']: {
       category: 'general',
+    },
+    ['move to back']: {
+      category: 'order',
+    },
+    ['move to front']: {
+      category: 'order',
     },
     ['move toward own angle']: {
       category: 'motion',

@@ -1213,6 +1213,42 @@ struct FollowWithCameraResponse : BaseResponse {
   }
 };
 
+//
+// Order responses
+//
+
+struct MoveToFrontResponse : BaseResponse {
+  inline static const RuleRegistration<MoveToFrontResponse, RulesBehavior> registration {
+    "move to front"
+  };
+  static constexpr auto description = "Move this actor to the front";
+
+  struct Params {
+  } params;
+
+  void run(RuleContext &ctx) override {
+    Scene::DrawOrderParams params;
+    params.relativity = Scene::DrawOrderParams::FrontOfAll;
+    ctx.getScene().setDrawOrder(ctx.actorId, params);
+  }
+};
+
+struct MoveToBackResponse : BaseResponse {
+  inline static const RuleRegistration<MoveToBackResponse, RulesBehavior> registration {
+    "move to back"
+  };
+  static constexpr auto description = "Move this actor to the back";
+
+  struct Params {
+  } params;
+
+  void run(RuleContext &ctx) override {
+    Scene::DrawOrderParams params;
+    params.relativity = Scene::DrawOrderParams::BehindAll;
+    ctx.getScene().setDrawOrder(ctx.actorId, params);
+  }
+};
+
 
 //
 // Constructor, destructor

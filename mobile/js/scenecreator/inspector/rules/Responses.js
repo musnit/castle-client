@@ -1321,6 +1321,24 @@ const IsInCameraViewport = () => {
   ];
 };
 
+const MoveToBack = () => {
+  return [
+    {
+      type: 'showEntryOptions',
+      label: 'Move this actor to the back',
+    },
+  ];
+};
+
+const MoveToFront = () => {
+  return [
+    {
+      type: 'showEntryOptions',
+      label: 'Move this actor to the front',
+    },
+  ];
+};
+
 const Note = ({ response, isPreview }) => {
   const cells = [
     {
@@ -1404,6 +1422,8 @@ export const Responses = {
   ['stop song']: StopSong,
   ['follow with camera']: FollowWithCamera,
   ['is in camera viewport']: IsInCameraViewport,
+  ['move to back']: MoveToBack,
+  ['move to front']: MoveToFront,
   ['animation frame meets condition']: AnimationFrameMeetsCondition,
   create: Create,
   ['create text']: CreateText,
