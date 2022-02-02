@@ -16,6 +16,7 @@ import Viewport from '../common/viewport';
 import { BottomSheetHeader } from '../components/BottomSheetHeader';
 import { BottomSheet } from '../components/BottomSheet';
 import { MiscLinks } from './MiscLinks';
+import { sanitizeUrl } from '@braintree/sanitize-url';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { UserAvatar } from '../components/UserAvatar';
 
@@ -53,6 +54,10 @@ const styles = StyleSheet.create({
 });
 
 const updateUserAsync = async ({ user }) => {
+  const clean = sanitizeUrl(user.websiteUrl);
+  if (!clean || clean === 'about:blank') {
+    user.websiteUrl = '';
+  }
   if (user.photo.isChanged) {
     // upload new avatar
     const uploadedFile = await Session.uploadFile({ uri: user.photo.url });
