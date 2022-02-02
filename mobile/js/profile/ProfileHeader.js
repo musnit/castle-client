@@ -72,17 +72,19 @@ const makeProfileLinks = ({ user }) => {
     });
   }
   if (user?.twitterUsername) {
+    const twitterUsername = Utilities.validateThirdPartyUsername(user.twitterUsername);
     linksItems.push({
-      label: `twitter.com/${user.twitterUsername}`,
-      onPress: () => Linking.openURL(`https://twitter.com/${user.twitterUsername}`),
+      label: `twitter.com/${twitterUsername}`,
+      onPress: () => Linking.openURL(`https://twitter.com/${twitterUsername}`),
       iconType: Entypo,
       icon: 'twitter',
     });
   }
   if (user?.itchUsername) {
+    const itchUsername = Utilities.validateThirdPartyUsername(user.itchUsername);
     linksItems.push({
-      label: `${user.itchUsername}.itch.io`,
-      onPress: () => Linking.openURL(`https://${user.itchUsername}.itch.io`),
+      label: `${itchUsername}.itch.io`,
+      onPress: () => Linking.openURL(`https://${itchUsername}.itch.io`),
       iconType: Entypo,
       icon: 'game-controller',
     });
@@ -98,7 +100,15 @@ const ProfileLoadingSkeleton = () => (
   </View>
 );
 
-export const ProfileHeader = ({ user, isMe, isAnonymous, onRefresh, loading, error, onPressSettings }) => {
+export const ProfileHeader = ({
+  user,
+  isMe,
+  isAnonymous,
+  onRefresh,
+  loading,
+  error,
+  onPressSettings,
+}) => {
   let linksItems = makeProfileLinks({ user });
 
   return (
@@ -129,14 +139,12 @@ export const ProfileHeader = ({ user, isMe, isAnonymous, onRefresh, loading, err
                     );
                   })
                 : null}
-                {isMe ? (
+              {isMe ? (
                 <Pressable style={styles.profileItem} onPress={onPressSettings}>
-                  <Feather name='settings' color='#aaa' size={14} style={{ marginRight: 8 }} />
-                  <Text style={{ fontSize: 16, color: Constants.colors.grayText }}>
-                    Settings
-                  </Text>
+                  <Feather name="settings" color="#aaa" size={14} style={{ marginRight: 8 }} />
+                  <Text style={{ fontSize: 16, color: Constants.colors.grayText }}>Settings</Text>
                 </Pressable>
-                ) : null}
+              ) : null}
             </View>
           </View>
         )}
@@ -148,20 +156,20 @@ export const ProfileHeader = ({ user, isMe, isAnonymous, onRefresh, loading, err
               <View style={styles.profileRow}>
                 {!isAnonymous ? <FollowButton user={user} onPress={onRefresh} /> : null}
                 {user.connections.includes('followedBy') ? (
-                  <View style={[styles.followedBy, {marginLeft: 12}]}>
+                  <View style={[styles.followedBy, { marginLeft: 12 }]}>
                     <Text style={styles.followedByLabel}>Follows You</Text>
                   </View>
                 ) : null}
               </View>
               <ProfileConnections connections={user?.connectionsYouKnow} />
             </>
-          ) : 
+          ) : (
             <View style={styles.profileRow}>
               <View style={styles.followedBy}>
                 <Text style={styles.followedByLabel}>{user?.followersCount} Followers</Text>
               </View>
             </View>
-          }
+          )}
           {user?.badges?.length ? (
             <View style={styles.profileRow}>
               {user.badges.map((badge, ii) => (

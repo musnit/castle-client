@@ -58,6 +58,8 @@ const updateUserAsync = async ({ user }) => {
   if (!clean || clean === 'about:blank') {
     user.websiteUrl = '';
   }
+  user.twitterUsername = Utilities.validateThirdPartyUsername(user.twitterUsername);
+  user.itchUsername = Utilities.validateThirdPartyUsername(user.itchUsername);
   if (user.photo.isChanged) {
     // upload new avatar
     const uploadedFile = await Session.uploadFile({ uri: user.photo.url });

@@ -181,6 +181,11 @@ export const useKeyboard = (config = {}) => {
   return [keyboardState, dismiss];
 };
 
+export const validateThirdPartyUsername = (username) => {
+  // alphanumeric and max length
+  return username ? username.replace(/[\W]+/g, '').substring(0, 32) : username;
+};
+
 // return { urlToDisplay, urlToOpen }
 //   urlToDisplay guarantees no scheme
 //   urlToOpen guarantees some valid scheme
