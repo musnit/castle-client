@@ -7,8 +7,8 @@ const InternalTextInput = ({ style, inputStyle, ...props }) => {
   const textInputRef = React.useRef(null);
 
   const onBlurRefocus = React.useCallback(() => {
-    if (textInputRef) {
-      textInputRef.focus();
+    if (textInputRef && textInputRef.current) {
+      textInputRef.current.focus();
     }
   });
 
