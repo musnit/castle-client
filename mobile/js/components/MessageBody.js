@@ -1,5 +1,6 @@
 import React from 'react';
 import { Linking, Pressable, StyleSheet, Text, TouchableWithoutFeedback } from 'react-native';
+import * as Utilities from '../common/utilities';
 
 const defaultStyles = StyleSheet.create({
   text: {
@@ -25,18 +26,20 @@ const LinkableText = ({ styles, children, ...props }) => {
     startIdx = 0;
   let components = [];
   while ((match = pattern.exec(children)) != null) {
-    const urlToOpen = match.toString();
+    const { urlToDisplay, urlToOpen } = Utilities.canonizeUserProvidedUrl(match.toString());
     components.push(
       <Text key={`${components.length}`} {...props}>
         {children.substring(startIdx, match.index)}
       </Text>
     );
     components.push(
-      <Pressable key={`${components.length}}`} onPress={() => Linking.openURL(urlToOpen)}>
-        <Text {...props} style={styles.link}>
-          {match}
-        </Text>
-      </Pressable>
+      <Text
+        key={`${components.length}}`}
+        onPress={() => Linking.openURL(urlToOpen)}
+        {...props}
+        style={styles.link}>
+        {urlToDisplay}
+      </Text>
     );
     startIdx = pattern.lastIndex;
   }

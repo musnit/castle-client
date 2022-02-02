@@ -81,7 +81,7 @@ const updateUserAsync = async ({ user }) => {
   }
   const result = await Session.apolloClient.mutate({
     mutation: gql`
-      mutation ($userId: ID!, $username: String!, $websiteUrl: String, $twitterUsername: String, $itchUsername: String) {
+      mutation ($userId: ID!, $username: String!, $websiteUrl: String, $twitterUsername: String, $itchUsername: String, $about: String) {
        updateUser(
          userId: $userId
          user: {
@@ -89,6 +89,7 @@ const updateUserAsync = async ({ user }) => {
            websiteUrl: $websiteUrl,
            twitterUsername: $twitterUsername,
            itchUsername: $itchUsername,
+           about: $about,
          }
        ) {
          ${Constants.USER_PROFILE_FRAGMENT}
@@ -108,6 +109,20 @@ const updateUserAsync = async ({ user }) => {
   }
 };
 
+const flattenMessageBody = (body) => {
+  if (body?.message) {
+    return body.message.reduce((accum, token) => {
+      if (token.text) {
+        return accum + token.text;
+      }
+      if (token.username) {
+        return accum + `@${token.username}`;
+      }
+    }, '');
+  }
+  return body;
+};
+
 export const ProfileSettingsSheet = ({ me = {}, isOpen, onClose }) => {
   if (Platform.OS === 'android') {
     const { navigatorWindowHeight } = React.useContext(AndroidNavigationContext);
@@ -120,8 +135,12 @@ export const ProfileSettingsSheet = ({ me = {}, isOpen, onClose }) => {
       ...user,
       ...changes,
     }),
-    me
+    {
+      ...me,
+      about: flattenMessageBody(me.about),
+    }
   );
+
   const [loading, setLoading] = useState(false);
   const [resetPassword, setResetPassword] = useState({
     sent: false,
@@ -132,7 +151,10 @@ export const ProfileSettingsSheet = ({ me = {}, isOpen, onClose }) => {
     if (isOpen) {
       setLoading(false);
       setResetPassword({ sent: false });
-      changeUser(me);
+      changeUser({
+        ...me,
+        about: flattenMessageBody(me.about),
+      });
     }
   }, [isOpen]);
 
@@ -258,6 +280,21 @@ export const ProfileSettingsSheet = ({ me = {}, isOpen, onClose }) => {
               onChangeText={(itchUsername) => changeUser({ itchUsername })}
               style={Constants.styles.textInputOnWhite}
               placeholder="Your itch username"
+              placeholderTextColor={Constants.colors.grayText}
+            />
+          </View>
+        </View>
+        <View style={styles.row}>
+          <Text style={Constants.styles.textInputLabelOnWhite}>About me</Text>
+          <View style={Constants.styles.textInputWrapperOnWhite}>
+            <TextInput
+              value={user.about}
+              editable={!loading}
+              autoCapitalize="none"
+              autoCorrect={false}
+              onChangeText={(about) => changeUser({ about })}
+              style={Constants.styles.textInputOnWhite}
+              placeholder="I like turtles"
               placeholderTextColor={Constants.colors.grayText}
             />
           </View>

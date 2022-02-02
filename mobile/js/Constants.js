@@ -278,6 +278,7 @@ export const USER_PROFILE_FRAGMENT = `
   websiteUrl
   twitterUsername
   itchUsername
+  about
   photo {
     url
   }

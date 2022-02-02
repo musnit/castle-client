@@ -1,9 +1,11 @@
 import React from 'react';
 import { Linking, StyleSheet, Text, Pressable, View } from 'react-native';
 import { FollowButton } from '../components/FollowButton';
+import { MessageBody } from '../components/MessageBody';
 import { ProfileBadge } from './ProfileBadge';
 import { ProfileConnections } from './ProfileConnections';
 import { UserAvatar } from '../components/UserAvatar';
+import { useNavigation } from '../ReactNavigation';
 
 import Entypo from 'react-native-vector-icons/Entypo';
 import Feather from 'react-native-vector-icons/Feather';
@@ -25,7 +27,7 @@ const styles = StyleSheet.create({
     marginTop: 4,
     marginRight: 16,
   },
-  right: { paddingTop: 4 },
+  right: { paddingTop: 4, width: '100%', flexShrink: 1 },
   username: {
     fontSize: 20,
     color: Constants.colors.white,
@@ -51,12 +53,39 @@ const styles = StyleSheet.create({
     fontSize: 13,
     letterSpacing: 1,
   },
+  about: {
+    marginTop: 8,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    width: '100%',
+    flexShrink: 1,
+  },
   skeletonRow: {
     width: '50%',
     height: 22,
     borderRadius: 2,
     backgroundColor: '#333',
     marginBottom: 12,
+  },
+});
+
+const aboutStyles = StyleSheet.create({
+  text: {
+    fontSize: 16,
+    color: '#fff',
+    lineHeight: 19,
+  },
+  highlight: {
+    fontSize: 16,
+    color: '#fff',
+    fontWeight: 'bold',
+    lineHeight: 19,
+  },
+  link: {
+    color: '#fff',
+    fontSize: 16,
+    lineHeight: 19,
+    fontWeight: 'bold',
   },
 });
 
@@ -109,7 +138,20 @@ export const ProfileHeader = ({
   error,
   onPressSettings,
 }) => {
+  const { push } = useNavigation();
   let linksItems = makeProfileLinks({ user });
+
+  const navigateToUser = React.useCallback(
+    (user) =>
+      push(
+        'Profile',
+        { userId: user.userId },
+        {
+          isFullscreen: true,
+        }
+      ),
+    [push]
+  );
 
   return (
     <View style={styles.container}>
@@ -122,6 +164,15 @@ export const ProfileHeader = ({
         ) : (
           <View style={styles.right}>
             <Text style={styles.username}>{user?.username}</Text>
+            {user?.about ? (
+              <View style={styles.about}>
+                <MessageBody
+                  body={user.about}
+                  navigateToUser={navigateToUser}
+                  styles={aboutStyles}
+                />
+              </View>
+            ) : null}
             <View style={styles.profileItems}>
               {linksItems.length > 0
                 ? linksItems.map((item, ii) => {
