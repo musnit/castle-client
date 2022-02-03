@@ -20,6 +20,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { enableAndroidFontFix } from './AndroidFontFix';
 import { ExploreScreen } from './explore/ExploreScreen';
 import { ExploreFeed } from './explore/ExploreFeed';
+import { FeedbackScreen } from './feedback/FeedbackScreen';
 import { HomeScreen } from './home/HomeScreen';
 import { FeaturedDecks } from './home/FeaturedDecks';
 import { RecentDecks } from './home/RecentDecks';
@@ -225,6 +226,7 @@ if (Platform.OS === 'android') {
     WrapComponent(ExploreScreen, { addTabBarPadding: true })
   );
   AppRegistry.registerComponent('ExploreFeed', WrapComponent(ExploreFeed));
+  AppRegistry.registerComponent('FeedbackScreen', WrapComponent(FeedbackScreen));
   AppRegistry.registerComponent('InitialAuthScreen', WrapComponent(InitialAuthScreen));
   AppRegistry.registerComponent('NuxScreen', WrapComponent(NuxScreen));
   AppRegistry.registerComponent('CreateChooseKitScreen', WrapComponent(CreateChooseKitScreen));

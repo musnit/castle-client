@@ -15,6 +15,7 @@ import { useAppState } from './ghost/GhostAppState';
 import { HomeScreen } from './home/HomeScreen';
 import { ExploreScreen } from './explore/ExploreScreen';
 import { ExploreFeed } from './explore/ExploreFeed';
+import { FeedbackScreen } from './feedback/FeedbackScreen';
 import { NotificationsScreen } from './notifications/NotificationsScreen';
 import { NuxScreen } from './nux/NuxScreen';
 import { PlayDeckScreen } from './play/PlayDeckScreen';
@@ -77,6 +78,7 @@ const ExploreNavigator = () => (
     <Stack.Screen name="ExploreFeed" component={ExploreFeed} />
     <Stack.Screen name="PlayDeck" component={PlayDeckScreen} options={{ gestureEnabled: false }} />
     <Stack.Screen name="Profile" component={ProfileScreen} />
+    <Stack.Screen name="Feedback" component={FeedbackScreen} />
     <Stack.Screen
       name="ViewSource"
       component={ViewSourceNavigator}
@@ -407,14 +409,11 @@ export const RootNavigator = () => {
 
   // fetch notifs when the app foregrounds
   useAppState(
-    React.useCallback(
-      (state) => {
-        if (state === 'active') {
-          maybeFetchNotificationsAsync();
-        }
-      },
-      []
-    )
+    React.useCallback((state) => {
+      if (state === 'active') {
+        maybeFetchNotificationsAsync();
+      }
+    }, [])
   );
 
   let navigator;

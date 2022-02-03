@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StatusBar, ScrollView, View, StyleSheet, Text } from 'react-native';
+import { StatusBar, ScrollView, View, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import { Amplitude } from '@amplitude/react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { SearchInput } from './SearchInput';
@@ -32,10 +32,33 @@ const styles = StyleSheet.create({
   tabTitleAction: {
     flex: 0,
   },
+  feedbackRow: {
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: Constants.colors.grayOnBlackBorder,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  feedbackLabel: {
+    fontSize: 16,
+    color: Constants.colors.white,
+  },
 });
 
+const FeedbackPromptRow = ({ onPress }) => {
+  return (
+    <View style={styles.feedbackRow}>
+      <Text style={styles.feedbackLabel}>How can we make Castle better?</Text>
+      <TouchableOpacity style={Constants.styles.primaryButton} onPress={onPress}>
+        <Text style={Constants.styles.primaryButtonLabel}>Leave feedback</Text>
+      </TouchableOpacity>
+    </View>
+  );
+};
+
 export const ExploreScreen = ({ route }) => {
-  useNavigation();
+  const { push } = useNavigation();
 
   const [lastFetchedTime, setLastFetchedTime] = React.useState(null);
   const [feeds, setFeeds] = React.useState(undefined);
@@ -92,7 +115,15 @@ export const ExploreScreen = ({ route }) => {
 
   React.useEffect(() => {
     if (query.called && !query.loading && !query.error && query.data) {
-      setFeeds(query.data.exploreFeeds);
+      // hackily splice in feedback row sentinel amidst regular feeds
+      let feeds = [...query.data.exploreFeeds];
+      if (feeds && feeds.length >= 2) {
+        feeds.splice(2, 0, { isFeedbackRow: true });
+      } else {
+        feeds = feeds || [];
+        feeds.push({ isFeedbackRow: true });
+      }
+      setFeeds(feeds);
       setPreloadSearchResults(query.data.exploreSearch);
     }
   }, [query.called, query.loading, query.error, query.data]);
@@ -103,6 +134,8 @@ export const ExploreScreen = ({ route }) => {
     setSearchQuery(undefined);
   }, []);
   const onChangeSearchQuery = React.useCallback((text) => setSearchQuery(text), []);
+
+  const onPressFeedback = React.useCallback(() => push('Feedback'), [push]);
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={['top']}>
@@ -130,13 +163,19 @@ export const ExploreScreen = ({ route }) => {
             </>
           )}
           {feeds &&
-            feeds.map((feed, i) => (
-              <ExploreRow
-                feed={feed}
-                key={feed.feedId}
-                last={i === feeds.length - 1 ? true : false}
-              />
-            ))}
+            feeds.map((feed, i) => {
+              if (feed.isFeedbackRow) {
+                return <FeedbackPromptRow key={`feedback-${i}`} onPress={onPressFeedback} />;
+              } else {
+                return (
+                  <ExploreRow
+                    feed={feed}
+                    key={feed.feedId}
+                    last={i === feeds.length - 1 ? true : false}
+                  />
+                );
+              }
+            })}
         </ScrollView>
       )}
     </SafeAreaView>
