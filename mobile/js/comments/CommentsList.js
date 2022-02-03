@@ -6,7 +6,7 @@ import { UserAvatar } from '../components/UserAvatar';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import { useLazyQuery, useMutation, gql } from '@apollo/client';
 import { useNavigation } from '../ReactNavigation';
-import { useSession, getIsAdmin, isAdmin } from '../Session';
+import { useSession, isAdmin } from '../Session';
 import orderby from 'lodash.orderby';
 
 import * as Constants from '../Constants';
@@ -490,7 +490,7 @@ export const CommentsList = ({ deck, isOpen, setReplyingToComment, newComment })
       }
       if (isAdmin()) {
         options.unshift({
-          name: 'Shadowban',
+          name: '(Admin) Shadowban',
           action: () =>
             showActionSheetWithOptions(
               {

@@ -4,6 +4,8 @@ import { Dropdown } from '../components/Dropdown';
 import { shareDeck } from '../common/utilities';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import { useNavigation } from '../ReactNavigation';
+import { isAdmin } from '../Session';
+import { useMutation, gql } from '@apollo/client';
 
 import * as Constants from '../Constants';
 const CastleIcon = Constants.CastleIcon;
@@ -50,6 +52,46 @@ export const PlayDeckActions = ({
   const { push } = useNavigation();
   const { showActionSheetWithOptions } = useActionSheet();
 
+  const [addCurationPolicy] = useMutation(
+    gql`
+      mutation ($deckId: ID!, $type: DeckCurationPolicyType!) {
+        adminAddDeckCurationPolicy(deckId: $deckId, type: $type, platform: all)
+      }
+    `
+  );
+
+  const onBlacklistDeck = React.useCallback(
+    () =>
+      addCurationPolicy({
+        variables: { deckId: deck.deckId, type: 'blacklist' },
+      }),
+    [addCurationPolicy, deck]
+  );
+
+  const onBlacklistDeckFromFeatured = React.useCallback(
+    () =>
+      addCurationPolicy({
+        variables: { deckId: deck.deckId, type: 'blacklistFeaturedOnly' },
+      }),
+    [addCurationPolicy, deck]
+  );
+
+  const [addStaffPick] = useMutation(
+    gql`
+      mutation ($deckId: ID!) {
+        adminAddStaffPick(deckId: $deckId)
+      }
+    `
+  );
+
+  const onAddStaffPick = React.useCallback(
+    () =>
+      addStaffPick({
+        variables: { deckId: deck.deckId },
+      }),
+    [addStaffPick, deck]
+  );
+
   let playingTransition = React.useRef(new Animated.Value(0)).current;
 
   React.useEffect(() => {
@@ -77,6 +119,23 @@ export const PlayDeckActions = ({
       name: 'Report and hide this deck',
     });
   }
+
+  if (isAdmin()) {
+    dropdownItems.push({
+      id: 'blacklist',
+      icon: 'flag',
+      name: '(Admin) Blacklist',
+    });
+  }
+
+  if (isAdmin()) {
+    dropdownItems.push({
+      id: 'blacklistFeatured',
+      icon: 'flag',
+      name: '(Admin) Blacklist from featured',
+    });
+  }
+
   if (!isMe && onBlockUser) {
     dropdownItems.push({
       id: 'block',
@@ -89,6 +148,14 @@ export const PlayDeckActions = ({
     icon: isMuted ? 'volume-up' : 'volume-off',
     name: isMuted ? 'Turn on sound' : 'Mute',
   });
+
+  if (isAdmin()) {
+    dropdownItems.push({
+      id: 'staffPick',
+      icon: 'star',
+      name: '(Admin) Add to staff picks',
+    });
+  }
 
   const onSelectDropdownAction = React.useCallback(
     (id) => {
@@ -128,6 +195,53 @@ export const PlayDeckActions = ({
             (buttonIndex) => {
               if (buttonIndex === 0) {
                 onReportDeck();
+              }
+            }
+          );
+          break;
+        }
+        case 'blacklist': {
+          showActionSheetWithOptions(
+            {
+              title: `Hides this deck everywhere in the app`,
+              options: ['Blacklist', 'Cancel'],
+              destructiveButtonIndex: 0,
+              cancelButtonIndex: 1,
+            },
+            (buttonIndex) => {
+              if (buttonIndex === 0) {
+                onBlacklistDeck();
+              }
+            }
+          );
+          break;
+        }
+        case 'blacklistFeatured': {
+          showActionSheetWithOptions(
+            {
+              title: `Hides this deck only on the main feed`,
+              options: ['Blacklist from featured', 'Cancel'],
+              destructiveButtonIndex: 0,
+              cancelButtonIndex: 1,
+            },
+            (buttonIndex) => {
+              if (buttonIndex === 0) {
+                onBlacklistDeckFromFeatured();
+              }
+            }
+          );
+          break;
+        }
+        case 'staffPick': {
+          showActionSheetWithOptions(
+            {
+              title: `Add this deck to the staff picks feed`,
+              options: ['Add', 'Cancel'],
+              cancelButtonIndex: 1,
+            },
+            (buttonIndex) => {
+              if (buttonIndex === 0) {
+                onAddStaffPick();
               }
             }
           );
