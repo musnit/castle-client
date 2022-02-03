@@ -83,3 +83,4 @@ Troubleshooting:
 - Wait until it's reviewed, then go to https://play.google.com/console/u/1/developers/6774483098390213048/app/4973889594505423194/publishing to publish
 - Once it's ready for full release, go to https://play.google.com/console/u/1/developers/6774483098390213048/app/4973889594505423194/tracks/open-testing and do "Promote release"
 - Run `./tools/android-set-app-version.sh` to trigger the in-app update banner
+- Release web?
