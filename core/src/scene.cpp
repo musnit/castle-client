@@ -218,27 +218,28 @@ ActorId Scene::addActor(const ActorDesc &params) {
     });
   };
 
-  // Find parent components reader
-  if (maybeParentEntry) {
-    maybeParentEntry->read([&](Reader &parentReader) {
-      parentReader.obj("actorBlueprint", [&]() {
-        parentReader.obj("components", [&]() {
-          // PERF: We can cache the component reader in the `LibraryEntry` to reuse the reader
-          //       lookup cache when we add one
-          if (params.reader) {
-            // Have an actor reader, just set the parent reader to fallback to
-            maybeFallbackComponentsReader = Reader(*parentReader.jsonValue());
-          } else {
-            // No actor reader given, read directly from parent
-            parentReader.setScene(this); // New reader so make sure to associate with scene
-            readComponents(parentReader);
-          }
-        });
+  // Read directly from parent, or set fallback and read from actor reader
+  const auto readParent = [&](Reader &parentReader) {
+    parentReader.obj("actorBlueprint", [&]() {
+      parentReader.obj("components", [&]() {
+        // PERF: We can cache the component reader in the `LibraryEntry` to reuse the reader
+        //       lookup cache when we add one
+        if (params.reader) {
+          // Have an actor reader, just set the parent reader to fallback to
+          maybeFallbackComponentsReader = Reader(*parentReader.jsonValue());
+        } else {
+          // No actor reader given, read directly from parent
+          parentReader.setScene(this); // New reader so make sure to associate with scene
+          readComponents(parentReader);
+        }
       });
     });
+  };
+  if (params.parentReader) {
+    readParent(*params.parentReader);
+  } else if (maybeParentEntry) {
+    maybeParentEntry->read(readParent);
   }
-
-  // Read from actor reader
   if (params.reader) {
     params.reader->obj("components", [&]() {
       readComponents(*params.reader);
@@ -334,7 +335,26 @@ void Scene::writeActor(ActorId actorId, Writer &writer, WriteActorParams params)
       if (auto maybeTextComponent
           = getBehaviors().byType<TextBehavior>().maybeGetComponent(actorId)) {
         writer.obj("Text", [&]() {
-          writer.str("content", maybeTextComponent->props.content());
+          auto &actorContent = maybeTextComponent->props.content();
+          auto skipContent = false;
+          if (auto entryIdCStr = maybeGetParentEntryId(actorId)) {
+            if (auto entry = library->maybeGetEntry(entryIdCStr)) {
+              entry->read([&](Reader &reader) {
+                reader.obj("actorBlueprint", [&]() {
+                  reader.obj("components", [&]() {
+                    reader.obj("Text", [&]() {
+                      if (auto content = reader.str("content")) {
+                        skipContent = actorContent == *content;
+                      }
+                    });
+                  });
+                });
+              });
+            }
+          }
+          if (!skipContent) {
+            writer.str("content", actorContent);
+          }
           writer.num("fontSizeScale", maybeTextComponent->props.fontSizeScale());
         });
       }

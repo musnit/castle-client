@@ -84,8 +84,8 @@ public:
     bool applyLayout = false;
   };
   void updateBlueprint(ActorId actorId, UpdateBlueprintParams params);
-  void updateActorsWithEntryId(
-      const std::string &entryId, UpdateBlueprintParams params, ActorId skipActorId = nullActor);
+  void updateActorsWithEntryId(const std::string &entryId, UpdateBlueprintParams params,
+      ActorId skipActorId = nullActor, Reader *parentReader = nullptr);
 
   void triggerAutoSave();
   bool isInspectorOpen = false;

@@ -581,13 +581,17 @@ void Editor::updateBlueprint(ActorId actorId, UpdateBlueprintParams params) {
     // scope here
   }
 
+  // Update all other non-ghost actors that have this entry, using the new entry reader as parent.
+  // We do this before saving the new entry so we can compare against the old entry within the
+  // update step.
+  entryArchive.read([&](Reader &reader) {
+    updateActorsWithEntryId(entryId, params, actorId, &reader);
+  });
+
   // Save new entry to library. This destroys and re-creates the associated ghost actor too.
   entryArchive.read([&](Reader &reader) {
     library.readEntry(reader);
   });
-
-  // Update all other non-ghost actors that have this entry
-  updateActorsWithEntryId(entryId, params, actorId);
 
   if (params.newTitle || params.updateBase64Png) {
     // if we updated the selected actor, need to send new data to JS
@@ -597,8 +601,8 @@ void Editor::updateBlueprint(ActorId actorId, UpdateBlueprintParams params) {
   }
 }
 
-void Editor::updateActorsWithEntryId(
-    const std::string &entryId, UpdateBlueprintParams params, ActorId skipActorId) {
+void Editor::updateActorsWithEntryId(const std::string &entryId, UpdateBlueprintParams params,
+    ActorId skipActorId, Reader *parentReader) {
   scene->forEachActor([&](ActorId otherActorId) {
     if ((skipActorId == nullActor || otherActorId != skipActorId)
         && scene->maybeGetParentEntryId(otherActorId) == entryId) {
@@ -614,6 +618,7 @@ void Editor::updateActorsWithEntryId(
         Scene::ActorDesc actorDesc;
         actorDesc.requestedActorId = otherActorId;
         actorDesc.reader = &reader;
+        actorDesc.parentReader = parentReader;
         actorDesc.parentEntryId = entryId.c_str(); // PERF: Could point to entry in `ActorDesc`,
                                                    //       avoid library lookup
         if (auto drawOrder = scene->maybeGetDrawOrder(otherActorId)) {

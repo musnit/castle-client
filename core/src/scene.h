@@ -77,6 +77,7 @@ public:
   struct ActorDesc {
     ActorId requestedActorId = nullActor;
     Reader *reader = nullptr;
+    Reader *parentReader = nullptr;
     const char *parentEntryId = nullptr;
     bool inherit = true; // `false` when loading old scenes that stored data duplicated on actors
     DrawOrderParams drawOrderParams = {};
