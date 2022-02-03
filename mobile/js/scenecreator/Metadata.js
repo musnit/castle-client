@@ -327,10 +327,6 @@ const data = {
               name: 'generated effect',
             },
             {
-              id: 'tone',
-              name: 'tone',
-            },
-            {
               id: 'microphone',
               name: 'recorded from my microphone',
             },
@@ -568,6 +564,10 @@ if (USE_CLOCK) {
   data.triggerCategoryOrder.splice(-2, 0, 'clock');
   data.responseCategoryOrder.splice(-2, 0, 'clock');
   data.expressionCategoryOrder.splice(-1, 0, 'clock');
+  data.responses['play sound'].props.type.labeledItems.splice(1, 0, {
+    id: 'tone',
+    name: 'tone',
+  });
 }
 
 export default data;
