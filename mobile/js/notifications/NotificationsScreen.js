@@ -20,7 +20,7 @@ import { ScreenHeader } from '../components/ScreenHeader';
 import { toRecentDate } from '../common/date-utilities';
 import { useAppState } from '../ghost/GhostAppState';
 import { useNavigation, useFocusEffect, useIsFocused } from '../ReactNavigation';
-import { useSession, maybeFetchNotificationsAsync, setNotifBadge } from '../Session';
+import { useSession, maybeFetchNotificationsAsync, setNotifBadge, fetchMoreNotifications } from '../Session';
 import { UserAvatar } from '../components/UserAvatar';
 
 import * as Constants from '../Constants';
@@ -318,6 +318,18 @@ export const NotificationsScreen = () => {
     setRefresh(false);
   }, []);
 
+  const onEndReached = React.useCallback(async () => {
+    if (refresh) {
+      return;
+    }
+
+    setRefresh(true);
+    try {
+      await fetchMoreNotifications(notifications);
+    } catch (_) {}
+    setRefresh(false);
+  }, [refresh]);
+
   const renderItem = React.useCallback(
     ({ item, index }) => {
       const notif = item;
@@ -371,6 +383,8 @@ export const NotificationsScreen = () => {
             keyExtractor={(item, index) => item.notificationId}
             showsVerticalScrollIndicator={false}
             refreshControl={refreshControl}
+            onEndReached={onEndReached}
+            onEndReachedThreshold={1}
             getItemLayout={(data, index) => ({
               length: NOTIF_HEIGHT,
               offset: NOTIF_HEIGHT * index,

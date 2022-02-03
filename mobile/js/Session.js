@@ -1034,3 +1034,48 @@ export const maybeFetchNotificationsAsync = async (force = true) => {
 
   setNotifBadge(notificationsBadgeCount);
 };
+
+export const fetchMoreNotifications = async (oldNotifications) => {
+  if (!oldNotifications || !oldNotifications.length) {
+    return;
+  }
+
+  const result = await apolloClient.query({
+    query: gql`
+    query($beforeId: ID) {
+      notificationsV2(limit: 64, beforeId: $beforeId) {
+        isAdmin
+        newFollowingDecks
+        notifications {
+          notificationId
+          type
+          status
+          body
+          userIds
+          users {
+            userId
+            username
+            connections
+            photo {
+              url
+            }
+          }
+          deckId
+          deck {
+            ${Constants.FEED_ITEM_DECK_FRAGMENT}
+          }
+          updatedTime
+        }
+      }
+    }
+  `,
+    fetchPolicy: 'no-cache',
+    variables: { beforeId: oldNotifications[oldNotifications.length - 1].notificationId}
+  });
+  const data = result?.data?.notificationsV2 ?? {};
+  const { notifications } = data;
+
+  EventEmitter.sendEvent('notifications', {
+    notifications: [...oldNotifications, ...notifications],
+  });
+}
