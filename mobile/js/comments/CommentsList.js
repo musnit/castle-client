@@ -263,7 +263,7 @@ const Comment = ({
   );
 };
 
-export const CommentsList = ({ deck, isOpen, setReplyingToComment }) => {
+export const CommentsList = ({ deck, isOpen, setReplyingToComment, newComment }) => {
   const { push } = useNavigation();
   const { userId: signedInUserId, isAnonymous } = useSession();
   const [comments, setComments] = React.useState(null);
@@ -293,6 +293,12 @@ export const CommentsList = ({ deck, isOpen, setReplyingToComment }) => {
     },
     [comments]
   );
+
+  React.useEffect(() => {
+    if (newComment) {
+      changeComments([newComment]);
+    }
+  }, [newComment]);
 
   const [fetchComments, query] = useLazyQuery(
     gql`

@@ -26,6 +26,7 @@ const needsTabBarHeight = ({ isFullScreen }) => {
 export const CommentsSheet = ({ isOpen, onClose, deck, isFullScreen, ...props }) => {
   const { dangerouslyGetState } = useNavigation();
   const { isAnonymous } = useSession();
+  const [newComment, setNewComment] = React.useState(null);
 
   const insets = useSafeAreaInsets();
   const navigationIndex = dangerouslyGetState().index;
@@ -46,32 +47,19 @@ export const CommentsSheet = ({ isOpen, onClose, deck, isFullScreen, ...props })
   const [addComment] = useMutation(
     gql`
       mutation ($deckId: ID!, $message: String!, $parentCommentId: ID, $imageFileId: ID) {
-        addDeckComment(deckId: $deckId, message: $message, parentCommentId: $parentCommentId, imageFileId: $imageFileId) {
-          ${Constants.COMMENTS_LIST_FRAGMENT}
+        addDeckComment2(deckId: $deckId, message: $message, parentCommentId: $parentCommentId, imageFileId: $imageFileId) {
+          ${Constants.COMMENT_FRAGMENT}
+          childComments {
+            threadId
+            count
+            comments { ${Constants.COMMENT_FRAGMENT} }
+          }
         }
       }
     `,
     {
       update: (cache, { data }) => {
-        // https://www.apollographql.com/docs/react/caching/cache-interaction/#example-updating-the-cache-after-a-mutation
-        cache.modify({
-          id: cache.identify(deck),
-          fields: {
-            comments(_, { DELETE }) {
-              const newCommentsList = data.addDeckComment;
-              const newCommentsListRef = cache.writeFragment({
-                data: newCommentsList,
-                fragment: gql`
-                  fragment NewCommentsList on CommentsList {
-                    threadId
-                    count
-                  }
-                `,
-              });
-              return newCommentsListRef;
-            },
-          },
-        });
+        setNewComment(data.addDeckComment2);
       },
     }
   );
@@ -97,6 +85,7 @@ export const CommentsSheet = ({ isOpen, onClose, deck, isFullScreen, ...props })
         isOpen={isOpen}
         deck={deck}
         setReplyingToComment={setReplyingToComment}
+        newComment={newComment}
         {...props}
       />
       {!isAnonymous && isOpen && deck?.commentsEnabled ? (
