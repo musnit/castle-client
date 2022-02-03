@@ -239,10 +239,17 @@ class CreateCardScreenDataProvider extends React.Component {
   };
 
   _goToDeck = (deckId = null) => {
-    if (!deckId && this.state.deck) {
-      deckId = this.state.deck.deckId;
+    if (!deckId) {
+      if (this.state.deck?.deckId) {
+        deckId = this.state.deck.deckId;
+      } else {
+        // user tapped back before the deck was finished loading,
+        // but we can possibly still get it from existing navigation params
+        const params = this.props.route.params || {};
+        deckId = params.deckIdToEdit;
+      }
     }
-    if (!LocalId.isLocalId(deckId)) {
+    if (deckId && !LocalId.isLocalId(deckId)) {
       // go to deck screen for this existing deck
       this.props.navigation.navigate('CreateDeck', {
         deckIdToEdit: deckId,
