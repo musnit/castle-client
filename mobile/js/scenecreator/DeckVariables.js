@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
   variableName: {
     flexGrow: 1,
     fontWeight: '700',
-    marginRight: 16,
+    marginRight: 8,
   },
   input: {
     color: '#000',
@@ -92,11 +92,11 @@ const styles = StyleSheet.create({
 const validateVariableName = (name) => name.replace(/\s/g, '');
 
 function lifetimeDescriptionToEnum(l) {
-  return l == 'until the deck ends' ? 'deck' : 'user';
+  return l == 'resets each deck play' ? 'deck' : 'user';
 }
 
 function lifetimeEnumToDescription(l) {
-  return l == 'deck' ? 'until the deck ends' : 'persistent for each player';
+  return l == 'deck' ? 'resets each deck play' : 'persistent per player';
 }
 
 const VariableInput = ({ name, type, lifetime, autoFocus, onChange, onDelete, ...props }) => {
@@ -111,7 +111,7 @@ const VariableInput = ({ name, type, lifetime, autoFocus, onChange, onDelete, ..
   };
   return (
     <View style={styles.variableInputContainer}>
-      <View style={{ flexDirection: 'row', alignItems: 'center', width: '25%' }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', width: '35%' }}>
         <Text style={styles.variablePrefix}>$</Text>
         <InspectorTextInput
           optimistic
@@ -125,7 +125,7 @@ const VariableInput = ({ name, type, lifetime, autoFocus, onChange, onDelete, ..
         />
       </View>
       <InspectorNumberInput
-        style={[styles.input, { width: '25%', paddingRight: 10 }]}
+        style={[styles.input, { width: '30%', paddingRight: 8 }]}
         placeholderTextColor="#666"
         autoCompleteType="off"
         autoCorrect={false}
@@ -134,11 +134,12 @@ const VariableInput = ({ name, type, lifetime, autoFocus, onChange, onDelete, ..
         {...valueInputProps}
       />
       <InspectorDropdown
-        style={[styles.input, { marginBottom: 0, width: '50%', marginRight: 20 }]}
+        style={[styles.input, { marginBottom: 0, width: '35%' }]}
         value={lifetimeEnumToDescription(lifetime)}
         onChange={(value) => onChange({ lifetime: lifetimeDescriptionToEnum(value) })}
         label="Font name"
-        allowedValues={['until the deck ends', 'persistent for each player']}
+        allowedValues={['resets each deck play', 'persistent per player']}
+        shortAllowedValues={['deck play', 'persistent']}
       />
       <View style={{ width: 20, position: 'absolute', right: 0 }}>
         <TouchableOpacity onPress={onDelete}>
@@ -202,9 +203,9 @@ export const DeckVariables = () => {
         </TouchableOpacity>
       </View>
       <View style={styles.labels}>
-        <Text style={[styles.label, { width: '25%' }]}>Name</Text>
-        <Text style={[styles.label, { width: '25%' }]}>Initial Value</Text>
-        <Text style={[styles.label, { width: '50%' }]}>Lifetime</Text>
+        <Text style={[styles.label, { width: '35%' }]}>Name</Text>
+        <Text style={[styles.label, { width: '30%' }]}>Initial Value</Text>
+        <Text style={[styles.label, { width: '35%' }]}>Lifetime</Text>
       </View>
       <View style={{ flexDirection: 'column-reverse' }}>
         {variables &&

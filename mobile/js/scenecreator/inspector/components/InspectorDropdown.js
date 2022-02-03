@@ -145,7 +145,11 @@ export const InspectorDropdown = ({ value, onChange, style, ...props }) => {
     onSelectItem: (item) => onChange(item.id),
   };
 
-  const valueLabel = selectedItem ? selectedItem.name : '(none)';
+  let valueLabel = selectedItem ? selectedItem.name : '(none)';
+  if (props?.shortAllowedValues) {
+    valueLabel = props.shortAllowedValues[items.indexOf(selectedItem)];
+  }
+
   return (
     <View style={[styles.container, style]} {...props}>
       <PopoverButton
