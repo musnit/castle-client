@@ -279,6 +279,13 @@ class CreateCardScreenDataProvider extends React.Component {
     if (!LocalId.isLocalId(cardId)) {
       nextCard = this.state.deck.cards.find((card) => card.cardId == cardId);
     }
+    if (!nextCard.scene) {
+      // confused by #CASTLE-MOBILE-1ZD
+      console.warn(
+        `Tried to navigate to card: ${cardId} but it had no scene data, isPlaying = ${isPlaying}`
+      );
+      return;
+    }
     const nextSnapshotJson = {
       variables: this._variables, // engine will ignore if already playing
       sceneData: {
