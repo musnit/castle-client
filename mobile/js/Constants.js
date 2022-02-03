@@ -276,6 +276,7 @@ export const USER_PROFILE_FRAGMENT = `
   username
   email
   websiteUrl
+  tiktokUsername
   twitterUsername
   itchUsername
   about

@@ -101,6 +101,15 @@ const makeProfileLinks = ({ user }) => {
       icon: 'globe',
     });
   }
+  if (user?.tiktokUsername) {
+    const tiktokUsername = Utilities.validateThirdPartyUsername(user.tiktokUsername);
+    linksItems.push({
+      label: `tiktok.com/@${tiktokUsername}`,
+      onPress: () => Linking.openURL(`https://www.tiktok.com/@${tiktokUsername}`),
+      iconType: Feather,
+      icon: 'video',
+    });
+  }
   if (user?.twitterUsername) {
     const twitterUsername = Utilities.validateThirdPartyUsername(user.twitterUsername);
     linksItems.push({

@@ -60,6 +60,7 @@ const updateUserAsync = async ({ user, aboutBodyCache = {} }) => {
   if (!clean || clean === 'about:blank') {
     user.websiteUrl = '';
   }
+  user.tiktokUsername = Utilities.validateThirdPartyUsername(user.tiktokUsername);
   user.twitterUsername = Utilities.validateThirdPartyUsername(user.twitterUsername);
   user.itchUsername = Utilities.validateThirdPartyUsername(user.itchUsername);
   if (user.photo.isChanged) {
@@ -86,12 +87,13 @@ const updateUserAsync = async ({ user, aboutBodyCache = {} }) => {
   }
   const result = await Session.apolloClient.mutate({
     mutation: gql`
-      mutation ($userId: ID!, $username: String!, $websiteUrl: String, $twitterUsername: String, $itchUsername: String, $about: String) {
+      mutation ($userId: ID!, $username: String!, $websiteUrl: String, $tiktokUsername: String, $twitterUsername: String, $itchUsername: String, $about: String) {
        updateUser(
          userId: $userId
          user: {
            username: $username,
            websiteUrl: $websiteUrl,
+           tiktokUsername: $tiktokUsername,
            twitterUsername: $twitterUsername,
            itchUsername: $itchUsername,
            about: $about,
@@ -251,6 +253,21 @@ export const ProfileSettingsSheet = ({ me = {}, isOpen, onClose }) => {
               onChangeText={(websiteUrl) => changeUser({ websiteUrl })}
               style={Constants.styles.textInputOnWhite}
               placeholder="http://geocities.com"
+              placeholderTextColor={Constants.colors.grayText}
+            />
+          </View>
+        </View>
+        <View style={styles.row}>
+          <Text style={Constants.styles.textInputLabelOnWhite}>Tiktok</Text>
+          <View style={Constants.styles.textInputWrapperOnWhite}>
+            <TextInput
+              value={user.tiktokUsername}
+              editable={!loading}
+              autoCapitalize="none"
+              autoCorrect={false}
+              onChangeText={(tiktokUsername) => changeUser({ tiktokUsername })}
+              style={Constants.styles.textInputOnWhite}
+              placeholder="Your Tiktok username"
               placeholderTextColor={Constants.colors.grayText}
             />
           </View>
