@@ -29,18 +29,22 @@ const styles = StyleSheet.create({
   },
 });
 
-const recordDeckPlay = (deckId, cardId) =>
-  Session.apolloClient.mutate({
-    mutation: gql`
-      mutation RecordDeckPlay($deckId: ID!, $cardId: ID) {
-        recordDeckPlay(deckId: $deckId, cardId: $cardId)
-      }
-    `,
-    variables: {
-      deckId,
-      cardId,
-    },
-  });
+const recordDeckPlay = (deckId, cardId) => {
+  if (cardId) {
+    // this may fire before cardId ref was set
+    Session.apolloClient.mutate({
+      mutation: gql`
+        mutation RecordDeckPlay($deckId: ID!, $cardId: ID) {
+          recordDeckPlay(deckId: $deckId, cardId: $cardId)
+        }
+      `,
+      variables: {
+        deckId,
+        cardId,
+      },
+    });
+  }
+};
 
 export const PlayDeck = ({ deck, visibility, route, paused }) => {
   const playingCardId = React.useRef(deck.initialCard?.cardId);
