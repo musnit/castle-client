@@ -288,6 +288,7 @@ export const CreateCardScreen = ({
   const contextValue = {
     deck,
     cardId,
+    editMode,
     isSceneLoaded,
     isPlaying,
     selectedActorId,

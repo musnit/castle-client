@@ -38,7 +38,7 @@ export const CardCreatorBottomSheet = React.memo(
         snapPoints={snapPoints}
         initialSnap={1}
         headerHeight={headerHeight}
-        onCloseEnd={Keyboard.dismiss}
+        onCloseEnd={props.onCloseEnd ?? Keyboard.dismiss}
         style={{
           backgroundColor: '#fff',
           borderTopLeftRadius: Constants.CARD_BORDER_RADIUS,

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Keyboard } from 'react-native';
 import { useCardCreator } from '../CreateCardContext';
 import { CardCreatorBottomSheet } from '../sheets/CardCreatorBottomSheet';
 import { InspectorHeader } from './InspectorHeader';
@@ -23,7 +24,7 @@ const TAB_ITEMS = [
 ];
 
 export const InspectorSheet = ({ isOpen, addChildSheet }) => {
-  const { isSceneLoaded, isTextActorSelected } = useCardCreator();
+  const { isSceneLoaded, editMode, isTextActorSelected } = useCardCreator();
 
   const [selectedTab, setSelectedTab] = React.useState(TAB_ITEMS[0].value);
   const scrollViewRef = React.useRef(null);
@@ -54,6 +55,12 @@ export const InspectorSheet = ({ isOpen, addChildSheet }) => {
     setSelectedTab(TAB_ITEMS[0].value);
   }, [isTextActorSelected]);
 
+  const onCloseEnd = React.useCallback(() => {
+    if (editMode !== 'text') {
+      Keyboard.dismiss();
+    }
+  }, [editMode]);
+
   if (isSceneLoaded) {
     const renderHeader = () => (
       <InspectorHeader
@@ -71,6 +78,7 @@ export const InspectorSheet = ({ isOpen, addChildSheet }) => {
     return (
       <CardCreatorBottomSheet
         isOpen={isOpen}
+        onCloseEnd={onCloseEnd}
         headerHeight={88}
         contentKey={`tab-${selectedTab}`}
         renderHeader={renderHeader}
