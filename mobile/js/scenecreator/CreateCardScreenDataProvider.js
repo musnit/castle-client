@@ -254,6 +254,7 @@ class CreateCardScreenDataProvider extends React.Component {
       this.props.navigation.navigate('CreateDeck', {
         deckIdToEdit: deckId,
         cardIdToEdit: undefined,
+        kitDeckId: undefined,
       });
     } else {
       // there is no deck, go back to create index

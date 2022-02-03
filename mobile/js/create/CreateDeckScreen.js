@@ -389,6 +389,7 @@ export const CreateDeckScreen = (props) => {
         navigation.navigate('CreateDeck', {
           deckIdToEdit: deck.deckId,
           cardIdToEdit: card.cardId,
+          kitDeckId: undefined,
         });
       }
     },
