@@ -58,7 +58,7 @@ struct TextComponent : BaseComponent {
     PROP(std::string, alignment,
         .label("Alignment")
         .allowedValues("left", "right", "center", "justify")
-        ) = "left";
+        ) = "center";
     PROP(love::Color, color,
         .label("Color")
         ) = { 0x24, 0x22, 0x34, 0xff };
