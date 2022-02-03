@@ -88,3 +88,17 @@ export const formatMessage = (message, cache) => {
     });
   }
 };
+
+export const flattenMessageBody = (body) => {
+  if (body?.message) {
+    return body.message.reduce((accum, token) => {
+      if (token.text) {
+        return accum + token.text;
+      }
+      if (token.username) {
+        return accum + `@${token.username}`;
+      }
+    }, '');
+  }
+  return body;
+};

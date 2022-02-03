@@ -1,5 +1,6 @@
 import React from 'react';
 import { Linking, StyleSheet, Text, Pressable, View } from 'react-native';
+import { flattenMessageBody } from '../common/chat-utilities';
 import { FollowButton } from '../components/FollowButton';
 import { MessageBody } from '../components/MessageBody';
 import { ProfileBadge } from './ProfileBadge';
@@ -153,6 +154,9 @@ export const ProfileHeader = ({
     [push]
   );
 
+  // server may still return `message: [ { text: '' } ]` when this field is empty
+  const flatAboutMe = flattenMessageBody(user?.about);
+
   return (
     <View style={styles.container}>
       <View style={styles.profileRow}>
@@ -164,7 +168,7 @@ export const ProfileHeader = ({
         ) : (
           <View style={styles.right}>
             <Text style={styles.username}>{user?.username}</Text>
-            {user?.about ? (
+            {flatAboutMe && flatAboutMe.length ? (
               <View style={styles.about}>
                 <MessageBody
                   body={user.about}

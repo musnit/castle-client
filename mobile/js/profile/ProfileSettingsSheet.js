@@ -16,7 +16,7 @@ import Viewport from '../common/viewport';
 import { AutocompleteTextInput } from '../components/AutocompleteTextInput';
 import { BottomSheetHeader } from '../components/BottomSheetHeader';
 import { BottomSheet } from '../components/BottomSheet';
-import { formatMessage } from '../common/chat-utilities';
+import { flattenMessageBody, formatMessage } from '../common/chat-utilities';
 import { MiscLinks } from './MiscLinks';
 import { sanitizeUrl } from '@braintree/sanitize-url';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -112,20 +112,6 @@ const updateUserAsync = async ({ user, aboutBodyCache = {} }) => {
   } else {
     console.warn(`Issue updating profile: ${JSON.stringify(result.errors ?? result)}`);
   }
-};
-
-const flattenMessageBody = (body) => {
-  if (body?.message) {
-    return body.message.reduce((accum, token) => {
-      if (token.text) {
-        return accum + token.text;
-      }
-      if (token.username) {
-        return accum + `@${token.username}`;
-      }
-    }, '');
-  }
-  return body;
 };
 
 export const ProfileSettingsSheet = ({ me = {}, isOpen, onClose }) => {
