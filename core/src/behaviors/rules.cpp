@@ -578,7 +578,7 @@ struct InfiniteRepeatResponse : BaseResponse {
             = evalInterval(params.interval(), params.intervalType(), scene.getClock(), false);
         auto performTime = interval < 0.02
             ? 0
-            : ctx.repeatStack.back().startTime + (interval * ctx.repeatStack.back().repeated);
+            : ctx.repeatStack.back().startTime + (interval * (ctx.repeatStack.back().repeated + 1));
         if (params.intervalType() == "second") {
           rulesBehavior.schedule(ctx.suspend(), performTime);
         } else {
