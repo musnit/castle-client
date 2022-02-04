@@ -10,6 +10,7 @@ import { useFocusEffect, useNavigation } from '../ReactNavigation';
 import { useLazyQuery, gql } from '@apollo/client';
 
 import * as Constants from '../Constants';
+import FastImage from 'react-native-fast-image';
 
 const REFETCH_FEED_INTERVAL_MS = 60 * 1000;
 
@@ -49,7 +50,13 @@ const styles = StyleSheet.create({
 const FeedbackPromptRow = ({ onPress }) => {
   return (
     <View style={styles.feedbackRow}>
-      <Text style={styles.feedbackLabel}>How can we make Castle better?</Text>
+      <FastImage
+        style={{ width: 26, height: 30 }}
+        source={require('../../assets/images/emoji/chair-white.png')}
+      />
+      <View style={{ paddingHorizontal: 16, flex: 1 }}>
+        <Text style={styles.feedbackLabel}>How can we make Castle better?</Text>
+      </View>
       <TouchableOpacity style={Constants.styles.primaryButton} onPress={onPress}>
         <Text style={Constants.styles.primaryButtonLabel}>Leave feedback</Text>
       </TouchableOpacity>

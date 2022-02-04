@@ -18,17 +18,48 @@ const styles = StyleSheet.create({
     backgroundColor: Constants.colors.black,
   },
   feedbackForm: {
-    padding: 16,
     margin: 16,
-    backgroundColor: '#fff',
-    minHeight: 256,
-    alignItems: 'center',
-    borderRadius: 8,
+    borderColor: '#888',
+    borderWidth: 1,
   },
-  feedbackInputWrapper: { width: '100%', flexShrink: 1, marginBottom: 16 },
-  thanks: {
+  feedbackHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderColor: '#888',
+    borderBottomWidth: 1,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+  },
+  feedbackInputWrapper: {
+    padding: 12,
+    paddingTop: 6,
+    alignItems: 'flex-end',
+  },
+  feedbackInput: {
+    width: '100%',
     fontSize: 16,
-    color: '#000',
+    minHeight: 72,
+    color: '#fff',
+  },
+  header: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#fff',
+  },
+  thanks: {
+    width: '100%',
+    height: 220,
+    padding: 36,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  thanksLabel: {
+    textAlign: 'center',
+    fontFamily: 'Basteleur-Bold',
+    fontSize: 24,
+    color: '#fff',
+    marginTop: 24,
+    textTransform: 'uppercase',
   },
 });
 
@@ -64,26 +95,40 @@ export const FeedbackScreen = () => {
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
-      <ScreenHeader title="Feedback" />
+      <ScreenHeader title="Leave Feedback" />
       <View style={styles.feedbackForm}>
         {feedbackSent ? (
-          <Text style={styles.thanks}>Thank you for your feedback!</Text>
+          <View style={styles.thanks}>
+            <FastImage
+              style={{ width: 48, height: 48 }}
+              source={require('../../assets/images/emoji/coin-white.png')}
+            />
+            <Text style={styles.thanksLabel}>Thank you for the feedback!</Text>
+          </View>
         ) : (
           <>
-            <View style={[Constants.styles.textInputWrapperOnWhite, styles.feedbackInputWrapper]}>
+            <View style={styles.feedbackHeader}>
+              <FastImage
+                style={{ width: 22, height: 25, marginRight: 12 }}
+                source={require('../../assets/images/emoji/chair-white.png')}
+              />
+              <Text style={styles.header}>How can we make Castle better?</Text>
+            </View>
+            <View style={styles.feedbackInputWrapper}>
               <TextInput
                 value={feedback}
-                placeholder="How can we improve Castle?"
+                placeholder="Leave your feedback here..."
                 multiline
                 editable={!loading}
                 onChangeText={setFeedback}
-                style={[Constants.styles.textInputOnWhite, { minHeight: 72 }]}
-                placeholderTextColor={Constants.colors.grayText}
+                style={styles.feedbackInput}
+                placeholderTextColor={Constants.colors.grayOnBlackText}
+                autoFocus
               />
+              <TouchableOpacity style={Constants.styles.buttonOnWhite} onPress={maybeSendFeedback}>
+                <Text style={Constants.styles.buttonLabelOnWhite}>Send</Text>
+              </TouchableOpacity>
             </View>
-            <TouchableOpacity style={Constants.styles.secondaryButton} onPress={maybeSendFeedback}>
-              <Text style={Constants.styles.secondaryButtonLabel}>Leave feedback</Text>
-            </TouchableOpacity>
           </>
         )}
       </View>
