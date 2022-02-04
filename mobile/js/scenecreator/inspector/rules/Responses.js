@@ -131,6 +131,53 @@ const ActOn = ({ response }) => {
   }
 };
 
+const ActOnClosest = ({ response }) => {
+  const hasTag = response.params.tag && response.params.tag.length;
+  if (hasTag) {
+    return [
+      {
+        type: 'showEntryOptions',
+        label: 'Tell',
+      },
+      {
+        type: 'text',
+        label: 'closest actor with tag',
+      },
+      {
+        type: 'selectParamSheet',
+        label: formatTag(response.params.tag),
+        paramName: 'tag',
+        paramValue: response.params.tag,
+      },
+      {
+        type: 'text',
+        label: 'to perform',
+      },
+    ];
+  } else {
+    return [
+      {
+        type: 'showEntryOptions',
+        label: 'Tell',
+      },
+      {
+        type: 'text',
+        label: 'closest actor with tag',
+      },
+      {
+        type: 'selectParamSheetPlaceholder',
+        label: 'Select tag',
+        paramName: 'tag',
+        paramValue: '',
+      },
+      {
+        type: 'text',
+        label: 'to perform',
+      },
+    ];
+  }
+};
+
 const Repeat = ({ response, context }) => {
   return [
     {
@@ -1389,6 +1436,7 @@ const makeCells = (props) => {
 
 export const Responses = {
   ['act on']: ActOn,
+  ['act on closest']: ActOnClosest,
   ['act on other']: ActOnOther,
   if: If,
   repeat: Repeat,

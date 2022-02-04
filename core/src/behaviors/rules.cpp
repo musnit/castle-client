@@ -663,6 +663,84 @@ struct ActOnResponse : BaseResponse {
   }
 };
 
+struct ActOnClosestResponse : BaseResponse {
+  inline static const RuleRegistration<ActOnClosestResponse, RulesBehavior> registration {
+    "act on closest"
+  };
+  static constexpr auto description = "Tell closest actor with a tag to perform a response";
+
+  struct Params {
+    PROP(Tag, tag);
+    PROP(ResponseRef, body) = nullptr;
+  } params;
+
+  void linearize(ResponseRef continuation) override {
+    // Same as `RepeatResponse::linearize`
+    BaseResponse::linearize(next, continuation);
+    BaseResponse::linearize(params.body(), this);
+  }
+
+  void run(RuleContext &ctx) override {
+    // Check if we're in progress (are at the top of the act-on stack)
+    if (ctx.actOnStack.size() > 0) {
+      if (auto &top = ctx.actOnStack.back(); top.response == this) {
+        // Return to original actor, pop off stack, continue with `next`
+        ctx.actorId = top.returnActorId;
+        ctx.actOnStack.pop_back();
+        return;
+      }
+    }
+
+    auto &tagsBehavior = ctx.getScene().getBehaviors().byType<TagsBehavior>();
+    auto &bodyBehavior = ctx.getScene().getBehaviors().byType<BodyBehavior>();
+    auto tag = params.tag();
+    ActorId otherActorId = nullActor;
+    if (auto numActors = tagsBehavior.numActorsWithTag(tag); numActors == 0) {
+      return;
+    } else if (numActors == 1) {
+      // Only one actor with this tag -- avoid extra logic and just return it
+      otherActorId = tagsBehavior.indexActorWithTag(tag, 0);
+    } else {
+      // Multiple actors with this tag
+      auto actorId = ctx.actorId;
+      if (auto body = bodyBehavior.maybeGetPhysicsBody(actorId)) {
+        // Current actor has a body -- return closest with tag
+        auto pos = body->GetPosition();
+        auto closestActorId = nullActor;
+        auto closestSqDist = std::numeric_limits<float>::max();
+        tagsBehavior.forEachActorWithTag(tag, [&](ActorId taggedActorId) {
+          if (taggedActorId != actorId) {
+            if (auto taggedBody = bodyBehavior.maybeGetPhysicsBody(taggedActorId)) {
+              // Has a body -- check if closer
+              auto sqDist = (taggedBody->GetPosition() - pos).LengthSquared();
+              if (sqDist < closestSqDist) {
+                closestActorId = taggedActorId;
+                closestSqDist = sqDist;
+              }
+            } else {
+              // Doesn't have a body -- assume it's at infinity
+              if (closestSqDist == std::numeric_limits<float>::max()) {
+                closestActorId = taggedActorId;
+              }
+            }
+          }
+        });
+        otherActorId = closestActorId;
+      } else {
+        // Current actor doesn't have a body -- return first actor with tag
+        otherActorId = tagsBehavior.indexActorWithTag(tag, 0);
+      }
+    }
+
+    // Not in progress -- if `otherActorId` exists, add ourselves to the act-on stack and visit it
+    if (ctx.getScene().hasActor(otherActorId)) {
+      ctx.actOnStack.push_back({ this, 1, ctx.actorId }); // We don't really use `index`
+      ctx.actorId = otherActorId;
+      ctx.setNext(params.body());
+    }
+  }
+};
+
 struct ActOnOtherResponse : BaseResponse {
   inline static const RuleRegistration<ActOnOtherResponse, RulesBehavior> registration {
     "act on other"

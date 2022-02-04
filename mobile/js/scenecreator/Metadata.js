@@ -227,6 +227,9 @@ const data = {
     ['act on']: {
       category: 'tell other actors',
     },
+    ['act on closest']: {
+      category: 'tell other actors',
+    },
     ['act on other']: {
       category: 'tell other actors',
       triggerFilter: { collide: true },

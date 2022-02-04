@@ -322,6 +322,7 @@ const RESPONSE_COMPONENTS = {
   repeat: Repeat,
   ['infinite repeat']: Repeat,
   ['act on other']: ActOn,
+  ['act on closest']: ActOn,
   ['act on']: ActOn,
   ['create text']: CreateText,
   ['set behavior property']: BehaviorPropertyRule,
