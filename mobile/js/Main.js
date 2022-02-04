@@ -226,7 +226,7 @@ if (Platform.OS === 'android') {
     WrapComponent(ExploreScreen, { addTabBarPadding: true })
   );
   AppRegistry.registerComponent('ExploreFeed', WrapComponent(ExploreFeed));
-  AppRegistry.registerComponent('FeedbackScreen', WrapComponent(FeedbackScreen));
+  AppRegistry.registerComponent('Feedback', WrapComponent(FeedbackScreen));
   AppRegistry.registerComponent('InitialAuthScreen', WrapComponent(InitialAuthScreen));
   AppRegistry.registerComponent('NuxScreen', WrapComponent(NuxScreen));
   AppRegistry.registerComponent('CreateChooseKitScreen', WrapComponent(CreateChooseKitScreen));
