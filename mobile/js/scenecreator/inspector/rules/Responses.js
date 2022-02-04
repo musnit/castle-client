@@ -1021,6 +1021,13 @@ const FaceDirectionOfMotion = () => {
   ];
 };
 
+const StopAllSound = () => [
+  {
+    type: 'showEntryOptions',
+    label: 'Stop all sound',
+  },
+];
+
 const PlaySound = ({ response }) => {
   let soundType = response.params.type ?? 'sfxr';
   const typeItems = Metadata.responses['play sound'].props.type.labeledItems;
@@ -1413,6 +1420,7 @@ export const Responses = {
   ['move toward actor']: MoveTowardActor,
   ['face direction of motion']: FaceDirectionOfMotion,
   ['play sound']: PlaySound,
+  ['stop all sound']: StopAllSound,
   ['play pattern']: PlayPattern,
   ['play pattern step']: PlayPatternStep,
   ['mute track']: MuteTrack,

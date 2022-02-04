@@ -907,6 +907,20 @@ struct PlaySoundResponse : BaseResponse {
   }
 };
 
+struct StopAllSoundResponse : BaseResponse {
+  inline static const RuleRegistration<StopAllSoundResponse, RulesBehavior> registration {
+    "stop all sound"
+  };
+  static constexpr auto description = "Stop all sound";
+
+  struct Params {
+  } params;
+  void run(RuleContext &ctx) override {
+    auto &sound = ctx.getScene().getSound();
+    sound.stopAll();
+  }
+};
+
 
 struct EditorChangeSoundReceiver {
   inline static const BridgeRegistration<EditorChangeSoundReceiver> registration {

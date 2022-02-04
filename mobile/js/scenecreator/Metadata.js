@@ -338,6 +338,9 @@ const data = {
         },
       },
     },
+    ['stop all sound']: {
+      category: 'sound',
+    },
     ['play song']: {
       category: USE_CLOCK ? 'sound' : 'clock',
     },
