@@ -49,6 +49,11 @@ public class GhostViewManager extends SimpleViewManager<ViewGroup> implements Li
     CoreGameActivity.ghostApplyScreenScaling = applyScreenScaling;
   }
 
+  @ReactProp(name = "coreViews")
+  public void setCoreViews(ViewGroup view, String coreViews) {
+    CoreGameActivity.castleCoreViewSetCoreViews(coreViews);
+  }
+
   @ReactProp(name = "paused")
   public void setPaused(ViewGroup view, boolean paused) {
     CoreGameActivity.castleCoreViewSetPaused(paused);

@@ -28,6 +28,8 @@ public class CoreGameActivity extends SDLActivity {
 
     public static native void castleCoreViewSetInitialParams(String s);
 
+    public static native void castleCoreViewSetCoreViews(String s);
+
     public static native void castleCoreViewSetBeltHeightFraction(double f);
 
     public static native void castleCoreViewSetPaused(boolean f);
