@@ -1,6 +1,7 @@
 #include "text.h"
 
 #include "behaviors/all.h"
+#include "data/fonts.h"
 
 
 struct EmbeddedFontData : love::Data {
@@ -44,23 +45,22 @@ const char *getAssetsDirectoryPath() {
 #endif
 
 void TextBehavior::loadFontResources(Lv &lv) {
-  const auto loadFontResource = [&](const std::string &name) {
+  const auto loadFontResource = [&](const std::string &name, auto &xxdData) {
     TextFontResource resource;
-    auto fullPath = CastleCore::getAssetsDirectoryPath() + std::string("/") + name + ".ttf";
-    resource.data = love::StrongRef<love::Data>(
-        lv.filesystem.read(fullPath.c_str()), love::Acquire::NORETAIN);
+    resource.data
+        = love::StrongRef<love::Data>(new EmbeddedFontData(xxdData), love::Acquire::NORETAIN);
     fontResources[name] = std::move(resource);
   };
 
-  loadFontResource("Overlay");
+  loadFontResource("Overlay", Overlay_ttf);
 
-  loadFontResource("BreiteGrotesk");
-  loadFontResource("Compagnon");
-  loadFontResource("Glacier");
-  loadFontResource("HelicoCentrica");
-  loadFontResource("Piazzolla");
-  loadFontResource("YatraOne");
-  loadFontResource("Bore");
-  loadFontResource("Synco");
-  loadFontResource("Tektur");
+  loadFontResource("BreiteGrotesk", BreiteGrotesk_ttf);
+  loadFontResource("Compagnon", Compagnon_ttf);
+  loadFontResource("Glacier", Glacier_ttf);
+  loadFontResource("HelicoCentrica", HelicoCentrica_ttf);
+  loadFontResource("Piazzolla", Piazzolla_ttf);
+  loadFontResource("YatraOne", YatraOne_ttf);
+  loadFontResource("Bore", Bore_ttf);
+  loadFontResource("Synco", Synco_ttf);
+  loadFontResource("Tektur", Tektur_ttf);
 }
