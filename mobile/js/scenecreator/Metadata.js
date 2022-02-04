@@ -503,6 +503,9 @@ const data = {
     ['angle of motion']: {
       category: 'spatial relationships',
     },
+    ['speed']: {
+      category: 'spatial relationships',
+    },
     abs: {
       category: 'functions',
     },

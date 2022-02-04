@@ -200,6 +200,10 @@ export const makeExpressionSummary = (expression, context, depth = 0) => {
       const actorRef = makeActorRefSummary(expression.params.actorRef);
       return maybeExpressionParens(`${actorRef}: angle of motion`);
     }
+    case 'speed': {
+      const actorRef = makeActorRefSummary(expression.params.actorRef);
+      return maybeExpressionParens(`${actorRef}: speed`);
+    }
     default: {
       if (context?.expressions) {
         if (context.expressions[expression.expressionType]) {

@@ -244,3 +244,22 @@ struct NumberOfRepeatsFinishedExpression : BaseExpression {
     return 0;
   }
 };
+
+struct SpeedExpression : BaseExpression {
+  inline static const RuleRegistration<SpeedExpression> registration { "speed" };
+  static constexpr auto description = "the speed of an actor";
+
+  struct Params {
+    PROP(ActorRef, actorRef, .label("actor type"));
+  } params;
+
+  ExpressionValue eval(RuleContext &ctx) override {
+    auto &bodyBehavior = ctx.getScene().getBehaviors().byType<BodyBehavior>();
+    if (auto body = bodyBehavior.maybeGetPhysicsBody(params.actorRef().eval(ctx))) {
+      if (auto [vx, vy] = body->GetLinearVelocity(); !(vx == 0 && vy == 0)) {
+        return sqrtf(powf(vx, 2.0) + powf(vy, 2.0));
+      }
+    }
+    return 0;
+  }
+};
