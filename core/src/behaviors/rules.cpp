@@ -1209,6 +1209,7 @@ struct ShowLeaderboardResponse : BaseResponse {
     PROP(Variable, variableId, .label("variable"));
     PROP(
          std::string, type,
+         .label("sort")
          .allowedValues(
              "high",
              "low"

@@ -861,10 +861,18 @@ const ShowLeaderboard = ({ response, context }) => {
       label: formatVariableName(getVariableName(response.params?.variableId, context.variables)),
     },
     {
+      type: 'text',
+      label: ',',
+    },
+    {
       type: 'selectParamSheet',
       paramName: 'type',
       paramValue: response.params?.type ?? 0,
-      label: `${response.params?.type ?? 'high'} on top`,
+      label: response.params?.type ?? 'high',
+    },
+    {
+      type: 'text',
+      label: 'values on top,',
     },
     {
       type: 'selectParamSheet',
@@ -874,7 +882,7 @@ const ShowLeaderboard = ({ response, context }) => {
     },
     {
       type: 'text',
-      label: 'with label',
+      label: ', with label',
     },
     {
       type: 'selectParamSheet',
