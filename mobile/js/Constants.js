@@ -266,7 +266,6 @@ export const FEED_ITEM_DECK_FRAGMENT = `
   }
   commentsEnabled
   lastModified
-  variables
 `;
 
 export const USER_PROFILE_FRAGMENT = `
