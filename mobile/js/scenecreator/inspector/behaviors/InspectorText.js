@@ -64,7 +64,10 @@ export default InspectorText = () => {
   return (
     <View style={styles.container}>
       <TouchableOpacity
-        style={[Constants.styles.textInputWrapperOnWhite, { marginBottom: 16 }]}
+        style={[
+          Constants.styles.textInputWrapperOnWhite,
+          { marginBottom: 16, backgroundColor: '#ccc' },
+        ]}
         onPress={selectTextTool}>
         <View style={Constants.styles.textInputOnWhite}>
           <Text
