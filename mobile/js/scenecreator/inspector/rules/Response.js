@@ -260,7 +260,7 @@ const ActOn = ({ response, onChangeResponse, children, order, ...props }) => {
   );
 };
 
-const CreateText = ({ response, onChangeResponse, children, order, ...props }) => {
+const CreateAndActOn = ({ response, onChangeResponse, children, order, ...props }) => {
   const onChangeBody = React.useCallback(
     (body) =>
       onChangeResponse({
@@ -324,7 +324,8 @@ const RESPONSE_COMPONENTS = {
   ['act on other']: ActOn,
   ['act on closest']: ActOn,
   ['act on']: ActOn,
-  ['create text']: CreateText,
+  ['create']: CreateAndActOn,
+  ['create text']: CreateAndActOn,
   ['set behavior property']: BehaviorPropertyRule,
   ['change behavior property']: BehaviorPropertyRule,
   ['set variable']: SetVariable,

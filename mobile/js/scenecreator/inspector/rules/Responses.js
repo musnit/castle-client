@@ -494,6 +494,18 @@ const Create = ({ response, context }) => {
     )}, y: ${makeExpressionSummary(response.params?.yAbsolute ?? 0, context)}`;
   }
 
+  let actionLabel;
+  switch (response.params?.action) {
+    case 'none':
+      actionLabel = 'nothing';
+      break;
+    case 'perform response':
+      actionLabel = 'perform response:';
+      break;
+    default:
+      actionLabel = '(choose)';
+  }
+
   return [
     {
       type: 'showEntryOptions',
@@ -520,6 +532,16 @@ const Create = ({ response, context }) => {
       paramNames,
       paramValues,
       label,
+    },
+    {
+      type: 'text',
+      label: ', tell the created actor:',
+    },
+    {
+      type: 'selectParamSheet',
+      paramName: 'action',
+      paramValue: response.params?.action ?? 'none',
+      label: actionLabel,
     },
   ];
 };

@@ -54,6 +54,11 @@ struct CreateResponse : BaseResponse {
   inline static const RuleRegistration<CreateResponse, RulesBehavior> registration { "create" };
   static constexpr auto description = "Create a new actor from blueprint";
 
+  void linearize(ResponseRef continuation) override {
+    BaseResponse::linearize(next, continuation);
+    BaseResponse::linearize(params.body(), nullptr);
+  }
+
   struct Params {
     PROP(
          std::string, entryId,
@@ -96,6 +101,12 @@ struct CreateResponse : BaseResponse {
            )
          )
             = "in front of all actors";
+    PROP(
+         std::string, action,
+         .label("tell the created actor")
+         .allowedValues("none", "perform response")
+         ) = "none";
+    PROP(ResponseRef, body) = nullptr;
   } params;
 
   void run(RuleContext &ctx) override {
@@ -170,6 +181,22 @@ struct CreateResponse : BaseResponse {
         newPos = { xAbsolute, yAbsolute };
       }
       bodyBehavior.setPosition(newActorId, newPos);
+    }
+
+    if (params.action()[0] == 'p') { // tell created actor to perform response
+      if (ctx.actOnStack.size() > 0) {
+        // TODO: returning to main rule stack won't happen for 'create' response right now
+        if (auto &top = ctx.actOnStack.back(); top.response == this) {
+          ctx.actorId = top.returnActorId;
+          ctx.actOnStack.pop_back();
+          return;
+        }
+      }
+      if (ctx.getScene().hasActor(newActorId)) {
+        ctx.actOnStack.push_back({ this, 1, ctx.actorId });
+        ctx.actorId = newActorId;
+        ctx.setNext(params.body());
+      }
     }
   }
 };
