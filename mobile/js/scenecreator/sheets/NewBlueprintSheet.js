@@ -9,6 +9,7 @@ import * as CoreEvents from '../../core/CoreEvents';
 
 import FastImage from 'react-native-fast-image';
 import NewBlueprintSheetData from './NewBlueprintSheetData.json';
+import tinycolor from 'tinycolor2';
 
 const styles = StyleSheet.create({
   container: {
@@ -159,9 +160,72 @@ const entries = NewBlueprintSheetData.templates.map((entry, i) => ({
   entry,
 }));
 
+const textOptions = [
+  {
+    content: 'Bun',
+    color: 'B1784F',
+    fontName: 'Bore',
+  },
+  {
+    content: 'Ketchup',
+    color: 'A52F30',
+    fontName: 'Compagnon',
+  },
+  {
+    content: 'Mustard',
+    color: 'FEFC66',
+    fontName: 'Glacier',
+  },
+  {
+    content: 'Lettuce',
+    color: 'A9D95C',
+    fontName: 'HelicoCentrica',
+  },
+  {
+    content: 'Patty',
+    color: '6A433D',
+    fontName: 'BreiteGrotesk',
+  },
+  {
+    content: 'Cheese',
+    color: 'F8D65E',
+    fontName: 'Synco',
+  },
+  {
+    content: 'Onion',
+    color: '713D7C',
+    fontName: 'YatraOne',
+  },
+  {
+    content: 'Pickle',
+    color: '36654F',
+    fontName: 'Tektur',
+  },
+  {
+    content: 'Tomato',
+    color: 'CE4B31',
+    fontName: 'Piazzolla',
+  },
+];
+
 export const NewBlueprintSheet = ({ element, isOpen, onClose, ...props }) => {
   const blanks = entries.filter(({ entry }) => entry.isBlank);
   const templates = entries.filter(({ entry }) => !entry.isBlank);
+
+  let textBlank = entries.find(({ entry }) => entry.isBlankText);
+
+  let textChoice = textOptions[Math.floor(Math.random() * textOptions.length)];
+  let colorChoice = tinycolor(textChoice.color).toRgb();
+  colorChoice.r = colorChoice.r / 255.0;
+  colorChoice.g = colorChoice.g / 255.0;
+  colorChoice.b = colorChoice.b / 255.0;
+
+  if (textBlank) {
+    let textComponent = textBlank.entry.actorBlueprint.components.Text;
+    textComponent.content = textChoice.content;
+    textComponent.fontName = textChoice.fontName;
+    textComponent.color = colorChoice;
+  }
 
   const renderHeader = () => <BottomSheetHeader title="Add a blueprint" onClose={onClose} />;
 
