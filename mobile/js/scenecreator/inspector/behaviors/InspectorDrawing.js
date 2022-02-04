@@ -262,7 +262,9 @@ export default InspectorDrawing = ({ drawing2 }) => {
         component={component}
         propName="framesPerSecond"
         label="Frames per second"
-        decimalDigits={0}
+        decimalDigits={2}
+        min={-30}
+        max={30}
         sendAction={sendAction}
       />
       {bodyComponent ? (
