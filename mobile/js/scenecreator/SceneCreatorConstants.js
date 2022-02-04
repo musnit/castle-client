@@ -93,4 +93,5 @@ export const EMPTY_VARIABLE = {
   variableId: 0,
   name: '',
   initialValue: 0,
+  lifetime: 'deck',
 };
