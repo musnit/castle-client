@@ -28,6 +28,9 @@ void CoreViewRenderer::render() {
 }
 
 void CoreViewRenderer::renderView(CoreView *view) {
+  if (!view) {
+    return;
+  }
   if (!view->isVisible) {
     return;
   }
