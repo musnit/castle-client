@@ -478,6 +478,7 @@ struct RepeatResponse : BaseResponse {
         if (top.count > 0 && ctx.getScene().hasActor(ctx.actorId)) {
           // Continue -- decrement count and enter body
           --top.count;
+          ++top.repeated;
           ctx.setNext(params.body());
         } else {
           // Stop -- pop ourselves off repeat stack and continue with `next` normally
@@ -490,7 +491,7 @@ struct RepeatResponse : BaseResponse {
     // Not in progress -- add ourselves to repeat stack
     if (auto count = std::max(0, params.count().eval<int>(ctx)); count > 0) {
       // We're about to do one repetition right away, so save `count - 1` to the stack
-      ctx.repeatStack.push_back({ this, std::min(count, maxCount) - 1 });
+      ctx.repeatStack.push_back({ this, std::min(count, maxCount) - 1, 0 });
       ctx.setNext(params.body());
     }
   }

@@ -226,3 +226,21 @@ struct AngleOfMotionExpression : BaseExpression {
     return 0;
   }
 };
+
+struct NumberOfRepeatsFinishedExpression : BaseExpression {
+  inline static const RuleRegistration<NumberOfRepeatsFinishedExpression> registration {
+    "repeats finished"
+  };
+  static constexpr auto description = "the number of repeats finished";
+
+  struct Params {
+  } params;
+
+  ExpressionValue eval(RuleContext &ctx) override {
+    if (ctx.repeatStack.size()) {
+      auto &top = ctx.repeatStack.back();
+      return top.repeated;
+    }
+    return 0;
+  }
+};

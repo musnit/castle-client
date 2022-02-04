@@ -464,6 +464,9 @@ const data = {
     variable: {
       category: 'values',
     },
+    ['repeats finished']: {
+      category: 'arithmetic',
+    },
     ['+']: {
       category: 'arithmetic',
     },
