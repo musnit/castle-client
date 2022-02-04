@@ -111,7 +111,6 @@ struct SceneLoadedEvent {
 
 void Engine::setInitialParams(const char *initialParamsJson) {
   const char *deckId = nullptr;
-  const char *deckVariables = nullptr;
   const char *initialSnapshotJson = nullptr;
   const char *initialCardId = nullptr;
   const char *initialCardSceneDataUrl = nullptr;
@@ -121,7 +120,6 @@ void Engine::setInitialParams(const char *initialParamsJson) {
   archive.read([&](Reader &reader) {
     isEditing = reader.boolean("isEditable", false);
     deckId = reader.str("deckId", nullptr);
-    deckVariables = reader.str("deckVariables", nullptr);
     initialCardId = reader.str("initialCardId", nullptr);
     initialCardSceneDataUrl = reader.str("initialCardSceneDataUrl", nullptr);
     initialSnapshotJson = reader.str("initialSnapshotJson", nullptr);
@@ -148,7 +146,7 @@ void Engine::setInitialParams(const char *initialParamsJson) {
     // no network request, expect all needed data from json blob
     loadSceneFromJson(initialSnapshotJson, false);
   } else if (deckId) {
-    loadSceneFromDeckId(deckId, deckVariables, initialCardId, initialCardSceneDataUrl);
+    loadSceneFromDeckId(deckId, initialCardId, initialCardSceneDataUrl);
   } else if (useNativeFeed) {
     feed = std::make_unique<Feed>(bridge);
     feed->fetchInitialDecks();
@@ -216,11 +214,11 @@ void Engine::loadSceneFromJson(const char *json, bool skipScene) {
   });
 }
 
-void Engine::loadSceneFromDeckId(const char *deckId, const char *variables,
-    const char *initialCardId, const char *initialCardSceneDataUrl) {
+void Engine::loadSceneFromDeckId(
+    const char *deckId, const char *initialCardId, const char *initialCardSceneDataUrl) {
   std::string deckIdStr = deckId;
   API::loadDeck(
-      deckId, variables, initialCardId, initialCardSceneDataUrl,
+      deckId, initialCardId, initialCardSceneDataUrl,
       !isEditing, // don't use cache when editing
       [=](APIResponse &response) {
         if (response.success) {
@@ -475,14 +473,12 @@ struct PreloadDeckReceiver {
 
   struct Params {
     PROP(std::string, deckId);
-    PROP(std::string, deckVariables);
     PROP(std::string, initialCardId);
     PROP(std::string, initialCardSceneDataUrl);
   } params;
 
   void receive(Engine &engine) {
-    API::preloadDeck(params.deckId(), params.deckVariables(), params.initialCardId(),
-        params.initialCardSceneDataUrl());
+    API::preloadDeck(params.deckId(), params.initialCardId(), params.initialCardSceneDataUrl());
   }
 };
 

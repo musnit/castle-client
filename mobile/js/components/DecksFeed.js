@@ -159,9 +159,6 @@ const CurrentDeckCell = ({
     if (deck && deck.deckId) {
       sendAsync('PRELOAD_DECK', {
         deckId: deck.deckId,
-        deckVariables: JSON.stringify({
-          variables: deck?.variables || [],
-        }),
         initialCardId: deck?.initialCard?.cardId,
         initialCardSceneDataUrl: deck?.initialCard?.sceneDataUrl,
       });

@@ -45,8 +45,8 @@ public:
 
   bool hasInitialDeck() const;
   void loadSceneFromFile(const char *path);
-  void loadSceneFromDeckId(const char *deckId, const char *variables, const char *initialCardId,
-      const char *initialCardSceneDataUrl);
+  void loadSceneFromDeckId(
+      const char *deckId, const char *initialCardId, const char *initialCardSceneDataUrl);
   void loadSceneFromCardId(const char *cardId, std::optional<std::string> deckId);
   void loadSceneFromJson(const char *json, bool skipScene);
 

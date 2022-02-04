@@ -62,9 +62,6 @@ export const CardScene = ({
     setInitialParams(
       JSON.stringify({
         deckId: deck?.deckId,
-        deckVariables: JSON.stringify({
-          variables: deck?.variables || [],
-        }),
         initialCardId: deck?.initialCard?.cardId,
         initialCardSceneDataUrl: deck?.initialCard?.sceneDataUrl,
         initialSnapshotJson,

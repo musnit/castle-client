@@ -135,10 +135,10 @@ private:
   }
 
 public:
-  static void preloadDeck(const std::string &deckId, const std::string &variables,
-      const std::string &initialCardId, const std::string &initialCardSceneDataUrl) {
+  static void preloadDeck(const std::string &deckId, const std::string &initialCardId,
+      const std::string &initialCardSceneDataUrl) {
     loadDeck(
-        deckId, variables.c_str(), initialCardId.c_str(), initialCardSceneDataUrl.c_str(), true,
+        deckId, initialCardId.c_str(), initialCardSceneDataUrl.c_str(), true,
         [=](APIResponse &response) {
         },
         [=](APIResponse &response) {
@@ -209,48 +209,35 @@ public:
     }
   }
 
-  static void loadDeck(const std::string &deckId, const char *variables, const char *initialCardId,
+  static void loadDeck(const std::string &deckId, const char *initialCardId,
       const char *initialCardSceneDataUrl, bool useCache,
       const std::function<void(APIResponse &)> &variablesCallback,
       const std::function<void(APIResponse &)> &snapshotCallback) {
-    if (variables && initialCardId && initialCardSceneDataUrl) {
-      cardIdToSceneDataUrl[initialCardId] = initialCardSceneDataUrl;
-      loadSceneData(initialCardSceneDataUrl, snapshotCallback);
+    graphql(deckQuery(deckId), [=](APIResponse &response) {
+      if (response.success) {
+        auto &reader = response.reader;
+        reader.obj("data", [&]() {
+          reader.obj("deck", [&]() {
+            reader.arr("variables", [&]() {
+              APIResponse variablesResponse(true, "", reader);
+              variablesCallback(variablesResponse);
+            });
+            reader.obj("initialCard", [&]() {
+              auto sceneDataUrl = reader.str("sceneDataUrl", "");
+              std::string cardId = reader.str("cardId", "");
+              cardIdToSceneDataUrl[cardId] = sceneDataUrl;
+              loadSceneData(sceneDataUrl, snapshotCallback);
 
-      auto archive = Archive::fromJson(variables);
-      archive.read([&](Reader &reader) {
-        reader.arr("variables", [&]() {
-          APIResponse variablesResponse(true, "", reader);
-          variablesCallback(variablesResponse);
-        });
-      });
-    } else {
-      graphql(deckQuery(deckId), [=](APIResponse &response) {
-        if (response.success) {
-          auto &reader = response.reader;
-          reader.obj("data", [&]() {
-            reader.obj("deck", [&]() {
-              reader.arr("variables", [&]() {
-                APIResponse variablesResponse(true, "", reader);
-                variablesCallback(variablesResponse);
-              });
-              reader.obj("initialCard", [&]() {
-                auto sceneDataUrl = reader.str("sceneDataUrl", "");
-                std::string cardId = reader.str("cardId", "");
-                cardIdToSceneDataUrl[cardId] = sceneDataUrl;
-                loadSceneData(sceneDataUrl, snapshotCallback);
-
-                preloadNextCards(cardId);
-              });
+              preloadNextCards(cardId);
             });
           });
-        } else {
-          // response has the error information already, so just use it directly
-          variablesCallback(response);
-          snapshotCallback(response);
-        }
-      });
-    }
+        });
+      } else {
+        // response has the error information already, so just use it directly
+        variablesCallback(response);
+        snapshotCallback(response);
+      }
+    });
   }
 
   static void runRequestFromQueue() {
