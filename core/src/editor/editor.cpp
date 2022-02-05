@@ -1202,8 +1202,8 @@ struct EditorModifyComponentReceiver {
             } else if constexpr (std::is_same_v<BehaviorType, Drawing2Behavior>) {
               updateBlueprint = !(propId == decltype(Drawing2Component::Props::initialFrame)::id);
             } else if constexpr (std::is_same_v<BehaviorType, TextBehavior>) {
-              updateBlueprint = !(propId == decltype(TextComponent::Props::content)::id);
-              updateBlueprint = !(propId == decltype(TextComponent::Props::fontSizeScale)::id);
+              updateBlueprint = !(propId == decltype(TextComponent::Props::content)::id
+                  || propId == decltype(TextComponent::Props::fontSizeScale)::id);
             }
           }
           auto updateBase64Png = false;
