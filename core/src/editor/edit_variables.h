@@ -44,6 +44,7 @@ public:
   // Get or update variables
 
   std::optional<Variable> get(std::string &variableId);
+  std::optional<Variable> getByName(std::string &name) const;
   bool add(std::string name, std::string variableId, ExpressionValue initialValue,
       Variables::Lifetime lifetime);
   bool remove(const std::string &variableId);
@@ -73,6 +74,15 @@ inline EditVariables::Variable::Variable(std::string name_, std::string variable
 inline std::optional<EditVariables::Variable> EditVariables::get(std::string &variableId) {
   for (auto &variable : variables) {
     if (variable.variableId == variableId) {
+      return variable;
+    }
+  }
+  return std::nullopt;
+}
+
+inline std::optional<EditVariables::Variable> EditVariables::getByName(std::string &name) const {
+  for (auto &variable : variables) {
+    if (variable.name == name) {
       return variable;
     }
   }

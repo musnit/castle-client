@@ -15,6 +15,7 @@
 class AllBehaviors; // Forward declaration otherwise this would be circular...
 class Library;
 class Screenshot;
+class EditVariables;
 
 using ActorId = entt::entity; // Is unique throughout a `Scene`'s lifetime, never recycled
 constexpr ActorId nullActor = entt::null; // An `ActorId`-compatible sentinel value
@@ -174,6 +175,9 @@ public:
 
   Variables &getVariables();
   const Variables &getVariables() const;
+  void setEditVariables(EditVariables *editVariables_);
+  EditVariables *getEditVariables();
+  const EditVariables *getEditVariables() const;
 
 
   // Bridge
@@ -253,6 +257,7 @@ public:
 private:
   Lv &lv { Lv::getInstance() };
   Variables &variables;
+  EditVariables *editVariables = nullptr;
   Bridge &bridge;
   bool isEditing;
   Sound &sound;
@@ -516,6 +521,18 @@ inline float Scene::getViewWidth() {
 
 inline Variables &Scene::getVariables() {
   return variables;
+}
+
+inline void Scene::setEditVariables(EditVariables *editVariables_) {
+  editVariables = editVariables_;
+}
+
+inline EditVariables *Scene::getEditVariables() {
+  return editVariables;
+}
+
+inline const EditVariables *Scene::getEditVariables() const {
+  return editVariables;
 }
 
 inline const Variables &Scene::getVariables() const {

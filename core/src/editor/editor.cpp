@@ -110,6 +110,7 @@ void Editor::clearState() {
 
 void Editor::readScene(Reader &reader) {
   scene = std::make_unique<Scene>(bridge, variables, sound, clock, std::nullopt, true, &reader);
+  scene->setEditVariables(&editVariables);
   clock.reset();
   isEditorStateDirty = true;
   isSelectedActorStateDirty = true;
@@ -124,6 +125,7 @@ void Editor::readVariables(Reader &reader) {
 void Editor::loadEmptyScene() {
   editVariables.clear();
   scene = std::make_unique<Scene>(bridge, variables, sound, clock, std::nullopt, true);
+  scene->setEditVariables(&editVariables);
   clock.reset();
   isEditorStateDirty = true;
   isSelectedActorStateDirty = true;

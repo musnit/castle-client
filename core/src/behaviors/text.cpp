@@ -548,11 +548,20 @@ std::string TextBehavior::formatContent(const std::string &content) const {
   std::string result;
   static std::regex re("\\$([a-zA-Z0-9_-]+)");
   auto it = content.begin(), end = content.end();
+  auto editVariables = getScene().getEditVariables();
   auto &variables = getScene().getVariables();
   for (std::smatch match; std::regex_search(it, end, match, re); it = match[0].second) {
     result += match.prefix();
     auto name = match.str(1);
-    if (auto value = variables.get(name)) {
+    std::optional<ExpressionValue> value;
+    if (editVariables) {
+      if (auto editVariable = editVariables->getByName(name)) {
+        value = editVariable->initialValue;
+      }
+    } else {
+      value = variables.get(name);
+    }
+    if (value) {
       // We want to remove trailing zeros and show at most 5 digits after the decimal point.
       // `.5f` keeps trailing zeros, while `.5g` counts digits before the decimal point. So we need
       // to work around this...
