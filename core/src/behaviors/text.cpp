@@ -442,36 +442,34 @@ std::optional<std::string> TextBehavior::handleDrawBase64PreviewPng(
 
     lv.graphics.setFont(font);
 
+    // Background
     auto color = love::toColorf(component.props.color());
-    auto luminance = 0.299 * color.r + 0.587 * color.g + 0.114 * color.b;
-    if (luminance > 0.5) {
-      lv.graphics.setColor({ 0.137, 0.133, 0.196, 1 });
-      lv.graphics.rectangle(
-          love::Graphics::DRAW_FILL, 0, 0, canvasSize, canvasSize, 1.2f * padding, 1.2f * padding);
-    }
+    lv.graphics.setColor({ 0.8, 0.8, 0.8, 1 });
+    lv.graphics.rectangle(
+        love::Graphics::DRAW_FILL, 0, 0, canvasSize, canvasSize, 1.2f * padding, 1.2f * padding);
 
+    // Text
     auto fontHeight = font->getHeight();
     auto textScale = (textHeight / float(textLines)) / fontHeight;
-
     lv.graphics.setColor(color);
     lv.graphics.push();
     lv.graphics.scale(textScale, textScale);
     std::vector<std::string> lines;
     auto &content = component.props.content();
-    font->getWrap({ { content, { 1, 1, 1, 1 } } }, canvasSize / textScale, lines);
-    for (auto i = 0; i < int(lines.size()); ++i) {
+    font->getWrap({ { content, { 1, 1, 1, 1 } } }, textHeight / textScale, lines);
+    auto numLines = std::min(3, int(lines.size()));
+    for (auto i = 0; i < numLines; ++i) {
       lv.graphics.print({ { lines[i], { 1, 1, 1, 1 } } },
           love::Matrix4(padding / textScale, padding / textScale + fontHeight * float(i), 0, 1, 1,
               0, 0, 0, 0));
     }
     lv.graphics.pop();
 
-    if (luminance > 0.5) {
-      lv.graphics.setColor({ 0.137, 0.133, 0.196, 1 });
-      lv.graphics.setLineWidth(padding);
-      lv.graphics.rectangle(love::Graphics::DRAW_FILL, canvasSize - padding, 1.22f * padding,
-          padding, canvasSize - 2 * 1.22f * padding);
-    }
+    // Cover overflow
+    lv.graphics.setColor({ 0.8, 0.8, 0.8, 1 });
+    lv.graphics.setLineWidth(padding);
+    lv.graphics.rectangle(love::Graphics::DRAW_FILL, canvasSize - padding, 1.22f * padding, padding,
+        canvasSize - 2 * 1.22f * padding);
 
     lv.graphics.pop();
   });
