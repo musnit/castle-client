@@ -9,6 +9,7 @@ static int requestId = 0;
 static std::map<int, const std::function<void(bool, std::string, std::string)>> activeRequests;
 static std::map<int, const std::function<void(bool, std::string, unsigned char *, unsigned long)>>
     activeDataRequests;
+static std::mutex requestLock;
 
 void graphqlPostRequest(
     const std::string &body, const std::function<void(bool, std::string, std::string)> callback) {
@@ -26,8 +27,12 @@ void graphqlPostRequest(
 
   jstring bodyJString = env->NewStringUTF(body.c_str());
   int currentRequestId = requestId++;
+
+  requestLock.lock();
   activeRequests.insert(std::pair<int, const std::function<void(bool, std::string, std::string)>>(
       currentRequestId, callback));
+  requestLock.unlock();
+
   env->CallStaticVoidMethod(activity, methodHandle, bodyJString, currentRequestId);
 
   env->DeleteLocalRef(activity);
@@ -49,8 +54,10 @@ void getRequest(
 
   jstring urlJString = env->NewStringUTF(url.c_str());
   int currentRequestId = requestId++;
+  requestLock.lock();
   activeRequests.insert(std::pair<int, const std::function<void(bool, std::string, std::string)>>(
       currentRequestId, callback));
+  requestLock.unlock();
   env->CallStaticVoidMethod(activity, methodHandle, urlJString, currentRequestId);
 
   env->DeleteLocalRef(activity);
@@ -72,9 +79,11 @@ void getDataRequest(const std::string &url,
 
   jstring urlJString = env->NewStringUTF(url.c_str());
   int currentRequestId = requestId++;
+  requestLock.lock();
   activeDataRequests.insert(
       std::pair<int, const std::function<void(bool, std::string, unsigned char *, unsigned long)>>(
           currentRequestId, callback));
+  requestLock.unlock();
   env->CallStaticVoidMethod(activity, methodHandle, urlJString, currentRequestId);
 
   env->DeleteLocalRef(activity);
@@ -93,14 +102,21 @@ extern "C" JNIEXPORT void JNICALL Java_xyz_castle_api_API_networkRequestComplete
     env->ReleaseStringUTFChars(jresultString, utf);
   }
 
+  CastleAPI::requestLock.lock();
   if (CastleAPI::activeRequests[requestId]) {
     if (result == "error") {
-      CastleAPI::activeRequests[requestId](false, "error", "");
+      auto callback = CastleAPI::activeRequests[requestId];
+      CastleAPI::activeRequests.erase(requestId);
+      CastleAPI::requestLock.unlock();
+      callback(false, "error", "");
     } else {
-      CastleAPI::activeRequests[requestId](true, "", result);
+      auto callback = CastleAPI::activeRequests[requestId];
+      CastleAPI::activeRequests.erase(requestId);
+      CastleAPI::requestLock.unlock();
+      callback(true, "", result);
     }
-
-    CastleAPI::activeRequests.erase(requestId);
+  } else {
+    CastleAPI::requestLock.unlock();
   }
 
   // env->DeleteLocalRef(jresultString);
@@ -110,20 +126,28 @@ extern "C" JNIEXPORT void JNICALL Java_xyz_castle_api_API_dataNetworkRequestComp
     JNIEnv *env, jclass clazz, jboolean success, jbyteArray jresultByteArray, jint jrequestId) {
   int requestId = (int)jrequestId;
 
+  CastleAPI::requestLock.lock();
   if (CastleAPI::activeDataRequests[requestId]) {
     if (success) {
       int len = env->GetArrayLength(jresultByteArray);
       unsigned char *buf = new unsigned char[len];
       env->GetByteArrayRegion(jresultByteArray, 0, len, reinterpret_cast<jbyte *>(buf));
+      auto callback = CastleAPI::activeDataRequests[requestId];
+      CastleAPI::activeDataRequests.erase(requestId);
+      CastleAPI::requestLock.unlock();
 
-      CastleAPI::activeDataRequests[requestId](true, "", buf, (unsigned long)len);
+      callback(true, "", buf, (unsigned long)len);
 
       delete[] buf;
     } else {
-      CastleAPI::activeDataRequests[requestId](false, "error", nullptr, 0);
-    }
+      auto callback = CastleAPI::activeDataRequests[requestId];
+      CastleAPI::activeDataRequests.erase(requestId);
+      CastleAPI::requestLock.unlock();
 
-    CastleAPI::activeDataRequests.erase(requestId);
+      callback(false, "error", nullptr, 0);
+    }
+  } else {
+    CastleAPI::requestLock.unlock();
   }
 }
 
