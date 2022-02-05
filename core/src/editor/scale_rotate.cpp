@@ -252,9 +252,6 @@ void ScaleRotateTool::update(double dt) {
               text->props.fontSizeScale() = oldFontSizeScale;
             }
           });
-      if (touch.released) {
-        editor.updateBlueprint(actorId, {});
-      }
     } else if (gesture.hasData<RotateMarker>(touchId)) { // Rotate
       auto &rotateHandle = handles->rotate;
       auto angle = (touch.pos - rotateHandle.pivot).getAngle();
@@ -290,9 +287,6 @@ void ScaleRotateTool::update(double dt) {
               editor.setSelectedComponentStateDirty(BodyBehavior::behaviorId);
             }
           });
-      if (touch.released) {
-        editor.updateBlueprint(actorId, {});
-      }
     } else { // Move
       editor.getGrabTool().applyTouch(touch);
     }
