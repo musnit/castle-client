@@ -1553,14 +1553,18 @@ void RulesBehavior::handlePerform(double dt) {
                        [&](Scheduled &scheduled) {
                          if (scheduled.clockTime > 0) {
                            if (clockTime >= scheduled.clockTime) {
-                             current.push_back(std::move(scheduled.ctx));
+                             if (scene.hasActor(scheduled.ctx.actorId)) {
+                               current.push_back(std::move(scheduled.ctx));
+                             }
                              return true;
                            } else {
                              return false;
                            }
                          }
                          if (performTime >= scheduled.performTime) {
-                           current.push_back(std::move(scheduled.ctx));
+                           if (scene.hasActor(scheduled.ctx.actorId)) {
+                             current.push_back(std::move(scheduled.ctx));
+                           }
                            return true;
                          }
                          return false;
