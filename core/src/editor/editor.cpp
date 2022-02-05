@@ -546,6 +546,8 @@ void Editor::updateBlueprint(ActorId actorId, UpdateBlueprintParams params) {
       writer.str("entryId", entryId);
       writer.str("entryType", "actorBlueprint");
       writer.str("title", params.newTitle ? params.newTitle : oldEntry ? oldEntry->getTitle() : "");
+      writer.boolean("titleEdited",
+          params.newTitleEdited.has_value() ? *params.newTitleEdited : oldEntry->getTitleEdited());
       writer.obj("actorBlueprint", [&]() {
         // Write inherited properties too since we want to save everything to the blueprint
         Scene::WriteActorParams params;
@@ -1214,29 +1216,53 @@ struct EditorModifyComponentReceiver {
                 || (propId == decltype(TextComponent::Props::color)::id);
           }
           if (propType == "string") {
+            std::optional<std::string> oldTitle, newTitle; // Automatic title change to text content
+            if constexpr (std::is_same_v<BehaviorType, TextBehavior>) {
+              if (propId == decltype(TextComponent::Props::content)::id) {
+                auto &scene = editor->getScene();
+                auto &library = scene.getLibrary();
+                if (auto entryIdCstr = scene.maybeGetParentEntryId(actorId)) {
+                  if (auto entry = library.maybeGetEntry(entryIdCstr)) {
+                    if (!entry->getTitleEdited()) {
+                      oldTitle = entry->getTitle();
+                      newTitle = params.stringValue().substr(0, 8);
+                      if (newTitle->size() < params.stringValue().size()) {
+                        newTitle->append("...");
+                      }
+                    }
+                  }
+                }
+              }
+            }
             auto oldValueCStr = behavior.getProperty(actorId, propId).template as<const char *>();
             if (!oldValueCStr) {
               oldValueCStr = "";
             }
             editor->getCommands().execute(
                 description, commandParams,
-                [actorId, propId, newValue = params.stringValue(), updateBlueprint,
-                    updateBase64Png](Editor &editor, bool) {
+                [actorId, propId, newValue = params.stringValue(), updateBlueprint, updateBase64Png,
+                    newTitle](Editor &editor, bool) {
                   auto &behavior = editor.getScene().getBehaviors().byType<BehaviorType>();
                   behavior.setProperty(actorId, propId, newValue.c_str(), false);
                   if (updateBlueprint) {
                     Editor::UpdateBlueprintParams params;
+                    if (newTitle) {
+                      params.newTitle = newTitle->c_str();
+                    }
                     params.updateBase64Png = updateBase64Png;
                     editor.updateBlueprint(actorId, params);
                   }
                   editor.setSelectedComponentStateDirty(BehaviorType::behaviorId);
                 },
                 [actorId, propId, oldValue = std::string(oldValueCStr), updateBlueprint,
-                    updateBase64Png](Editor &editor, bool) {
+                    updateBase64Png, oldTitle](Editor &editor, bool) {
                   auto &behavior = editor.getScene().getBehaviors().byType<BehaviorType>();
                   behavior.setProperty(actorId, propId, oldValue.c_str(), false);
                   if (updateBlueprint) {
                     Editor::UpdateBlueprintParams params;
+                    if (oldTitle) {
+                      params.newTitle = oldTitle->c_str();
+                    }
                     params.updateBase64Png = updateBase64Png;
                     editor.updateBlueprint(actorId, params);
                   }
@@ -1756,20 +1782,24 @@ struct EditorInspectorActionReceiver {
         if (auto entry = library.maybeGetEntry(entryIdCstr)) {
           auto entryId = std::string(entryIdCstr);
           auto oldTitle = entry->getTitle();
-          static const auto setTitle = [](Editor &editor, ActorId actorId,
-                                           const std::string &entryId, const std::string &title) {
-            Editor::UpdateBlueprintParams updateBlueprintParams;
-            updateBlueprintParams.newTitle = title.c_str();
-            editor.updateBlueprint(actorId, updateBlueprintParams);
-            editor.getBelt().select(entryId);
-          };
+          auto oldTitleEdited = entry->getTitleEdited();
+          static const auto setTitle
+              = [](Editor &editor, ActorId actorId, const std::string &entryId,
+                    const std::string &title, bool titleEdited) {
+                  Editor::UpdateBlueprintParams updateBlueprintParams;
+                  updateBlueprintParams.newTitle = title.c_str();
+                  updateBlueprintParams.newTitleEdited = titleEdited;
+                  editor.updateBlueprint(actorId, updateBlueprintParams);
+                  editor.getBelt().select(entryId);
+                };
           editor->getCommands().execute(
               "change title", {},
               [actorId, entryId, newTitle = params.stringValue()](Editor &editor, bool) {
-                setTitle(editor, actorId, entryId, newTitle);
+                setTitle(editor, actorId, entryId, newTitle, true);
               },
-              [actorId, entryId, oldTitle = std::move(oldTitle)](Editor &editor, bool) {
-                setTitle(editor, actorId, entryId, oldTitle);
+              [actorId, entryId, oldTitle = std::move(oldTitle), oldTitleEdited](
+                  Editor &editor, bool) {
+                setTitle(editor, actorId, entryId, oldTitle, oldTitleEdited);
               });
         }
       }

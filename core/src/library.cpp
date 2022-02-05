@@ -19,6 +19,7 @@ LibraryEntry::LibraryEntry(Library &library_, const char *entryId_, const json::
     , entryId(entryId_) {
   read([&](Reader &reader) {
     title = reader.str("title", "");
+    titleEdited = reader.boolean("titleEdited", false);
   });
   disambiguateTitle();
 }

@@ -80,6 +80,7 @@ public:
 
   struct UpdateBlueprintParams {
     const char *newTitle = nullptr;
+    std::optional<bool> newTitleEdited;
     bool updateBase64Png = false;
     bool applyLayout = false;
   };

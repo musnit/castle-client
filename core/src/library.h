@@ -24,6 +24,7 @@ public:
 
   const std::string &getEntryId() const;
   const std::string &getTitle() const;
+  bool getTitleEdited() const; // Whether the user explicitly changed the title from the default
 
   std::pair<std::optional<const char *>, int> getBase64Png() const;
   love::Image *getPreviewImage() const;
@@ -46,6 +47,7 @@ private:
 
   std::string entryId;
   std::string title;
+  bool titleEdited = false;
 
   mutable bool previewImageGenerated = false;
   mutable std::unique_ptr<love::ImageData> previewImageData;
@@ -140,6 +142,10 @@ inline const std::string &LibraryEntry::getEntryId() const {
 
 inline const std::string &LibraryEntry::getTitle() const {
   return title;
+}
+
+inline bool LibraryEntry::getTitleEdited() const {
+  return titleEdited;
 }
 
 inline std::pair<std::optional<const char *>, int> LibraryEntry::getBase64Png() const {
