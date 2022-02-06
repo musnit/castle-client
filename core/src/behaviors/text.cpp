@@ -110,6 +110,8 @@ struct HideResponse : BaseResponse {
 //
 
 void TextBehavior::handleReadComponent(ActorId actorId, TextComponent &component, Reader &reader) {
+  asciifyContent(component.props.content());
+
   if (component.props.order() == -1) {
     int maxExistingOrder = 0;
 
@@ -484,9 +486,13 @@ std::optional<std::string> TextBehavior::handleDrawBase64PreviewPng(
 void TextBehavior::handleSetProperty(
     ActorId actorId, TextComponent &component, PropId propId, const ExpressionValue &value) {
   auto &props = component.props;
-  if (propId == props.fontName.id) {
-    const char *cStrValue = value.as<const char *>();
-    if (strcmp(cStrValue, component.props.fontName().c_str()) != 0) {
+  if (propId == props.content.id) {
+    if (const char *cStrValue = value.as<const char *>(); component.props.content() != cStrValue) {
+      component.props.content() = cStrValue;
+      asciifyContent(component.props.content());
+    }
+  } else if (propId == props.fontName.id) {
+    if (const char *cStrValue = value.as<const char *>(); component.props.fontName() != cStrValue) {
       component.props.fontName() = cStrValue;
       updateFont(actorId, component);
     }
@@ -581,4 +587,11 @@ std::string TextBehavior::formatContent(const std::string &content) const {
   }
   result.append(it, end);
   return result;
+}
+
+void TextBehavior::asciifyContent(std::string &content) {
+  const auto isNotAscii = [&](char c) {
+    return !(0 <= c && c <= 127);
+  };
+  content.erase(std::remove_if(content.begin(), content.end(), isNotAscii), content.end());
 }
