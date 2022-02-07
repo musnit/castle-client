@@ -25,6 +25,7 @@ public:
   const Engine &operator=(const Engine &) = delete;
 
   explicit Engine();
+  ~Engine();
 
   // expect to set once per engine use, e.g. on mount
   void setInitialParams(const char *initialParamsJson);

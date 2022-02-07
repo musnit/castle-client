@@ -64,3 +64,7 @@ void TextBehavior::loadFontResources(Lv &lv) {
   loadFontResource("Synco", Synco_ttf);
   loadFontResource("Tektur", Tektur_ttf);
 }
+
+void TextBehavior::unloadFontResources() {
+  fontResources.clear();
+}

@@ -92,6 +92,10 @@ Engine::Engine() {
   TextBehavior::loadFontResources(lv);
 }
 
+Engine::~Engine() {
+  TextBehavior::unloadFontResources();
+}
+
 
 //
 // Deck / scene management

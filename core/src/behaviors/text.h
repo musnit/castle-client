@@ -128,6 +128,7 @@ public:
   static OverlayStyle overlayStyle;
 
   static void loadFontResources(Lv &lv);
+  static void unloadFontResources();
   static TextFontResource *getFontResource(const std::string &name);
   static love::Font *getFont(TextFontResource *fontResource, float pixelSize);
 
