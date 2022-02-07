@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Pressable, StyleSheet, Text, FlatList, View } from 'react-native';
+import { Amplitude } from '@amplitude/react-native';
 import { CardCell } from '../components/CardCell';
 import { useNavigation } from '../ReactNavigation';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -63,7 +64,12 @@ export const ExploreRow = ({ feed, last }) => {
   const { navigate } = useNavigation();
 
   const onPressDeck = React.useCallback(
-    (deck) => {
+    (deck, index) => {
+      Amplitude.getInstance().logEvent('PLAY_EXPLORE_ROW_ITEM', {
+        feedId: feed.feedId,
+        deckId: deck.deckId,
+        index,
+      });
       navigate(
         'PlayDeck',
         {
@@ -94,7 +100,7 @@ export const ExploreRow = ({ feed, last }) => {
         <CardCell
           card={deck.initialCard}
           creator={deck.creator}
-          onPress={() => onPressDeck(deck)}
+          onPress={() => onPressDeck(deck, index)}
           style={styles.itemCard}
           inGrid={true}
         />
