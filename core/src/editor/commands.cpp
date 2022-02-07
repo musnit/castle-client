@@ -1,6 +1,7 @@
 #include "commands.h"
 
 #include "editor.h"
+#include "library.h"
 
 
 constexpr auto maxUndos = 100;
@@ -99,6 +100,8 @@ void Commands::executePhase(Command &command, Phase phase, bool isLive) {
         selection.deselectActor(actorId);
       }
     }
+
+    scene.getLibrary().ensureGhostActorsExist();
 
     // Update belt selection
     auto &belt = editor.getBelt();
