@@ -264,6 +264,7 @@ struct DestroyResponse : BaseResponse {
         ctx.lastPosition = body->GetPosition();
         ctx.lastAngle = body->GetAngle();
       }
+      ctx.didDestroyOwningActor = true;
       scene.getEntityRegistry().emplace_or_replace<DestroyResponseMarker>(actorId);
     }
   }
@@ -1553,7 +1554,7 @@ void RulesBehavior::handlePerform(double dt) {
                        [&](Scheduled &scheduled) {
                          if (scheduled.clockTime > 0) {
                            if (clockTime >= scheduled.clockTime) {
-                             if (scene.hasActor(scheduled.ctx.actorId)) {
+                             if (isValidToResume(scheduled.ctx)) {
                                current.push_back(std::move(scheduled.ctx));
                              }
                              return true;
@@ -1562,7 +1563,7 @@ void RulesBehavior::handlePerform(double dt) {
                            }
                          }
                          if (performTime >= scheduled.performTime) {
-                           if (scene.hasActor(scheduled.ctx.actorId)) {
+                           if (isValidToResume(scheduled.ctx)) {
                              current.push_back(std::move(scheduled.ctx));
                            }
                            return true;

@@ -76,6 +76,7 @@ public:
   RuleContextExtras extras; // Extra information this context carries
   b2Vec2 lastPosition = { 0, 0 }; // Last position of actor if it was destroyed
   float lastAngle = 0; // Last angle of actor if it was destroyed
+  bool didDestroyOwningActor = false; // Whether this rule context destroyed this context's ActorId
 
 
   struct RepeatStackElem {
@@ -260,6 +261,7 @@ private:
   std::vector<RuleContext> current; // A temporary list of contexts to run in the current frame.
                                     // Stored as a member so we can reuse its memory.
   bool firstFrame = true; // Whether we're on the first performance frame
+  bool isValidToResume(RuleContext &context);
 
   RuleContext independent { nullptr, nullActor, {}, getScene() }; // For evaluating expressions
                                                                   // independently from any actor
@@ -531,6 +533,14 @@ inline void RulesBehavior::scheduleClock(RuleContext ctx, double clockTime) {
   if (ctx.next) {
     scheduleds.push_back({ std::move(ctx), 0, clockTime });
   }
+}
+
+inline bool RulesBehavior::isValidToResume(RuleContext &ctx) {
+  // either the actor must exist in the scene,
+  // or the actor was destroyed by the same context.
+  // allows for: `Destroy myself` -> `wait` -> `Create actor`
+  auto &scene = getScene();
+  return ctx.didDestroyOwningActor || scene.hasActor(ctx.actorId);
 }
 
 inline int RulesBehavior::getResponseIndex(ResponseRef response) const {
