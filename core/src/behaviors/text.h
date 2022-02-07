@@ -98,6 +98,7 @@ public:
   bool hasTapTrigger(ActorId actorId);
 
   inline static const TouchToken overlayTouchToken;
+  inline static const TouchToken leaderboardTouchToken;
 
   struct OverlayStyle {
     PROP(love::Colorf, regularBackgroundColor) = { 1, 1, 1, 1 };

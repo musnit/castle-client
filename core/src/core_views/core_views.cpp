@@ -59,11 +59,16 @@ struct CoreViewsGestureEvent {
 
 void CoreViewRenderer::handleGesture(Gesture &gesture) {
   gesture.withSingleTouch([&](const Touch &touch) {
+    if (touch.isUsed() && !touch.isUsed(TextBehavior::leaderboardTouchToken)) {
+      return;
+    }
+
     if (touch.pressed) {
       touchView = getViewAtPoint(layout.get(), touch.screenPos.x, touch.screenPos.y);
       if (touchView) {
         isTouchOverView = true;
         (*touchView)->baseHandleTouch(CoreView::TouchEvent::Down);
+        touch.use(TextBehavior::leaderboardTouchToken);
       }
     }
 

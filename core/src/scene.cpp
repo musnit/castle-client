@@ -393,6 +393,10 @@ void Scene::update(double dt) {
   // Update gesture first so behaviors can read it
   updateGesture();
 
+  // Leaderboard first so it can take the gesture if necessary
+  leaderboardView->update(dt);
+  leaderboardView->handleGesture(gesture);
+
   // Step physics. Do this before behavior performance to allow behaviors to make changes after.
   // We're using a fixed timestep (see https://gafferongames.com/post/fix_your_timestep/).
   {
@@ -443,9 +447,6 @@ void Scene::update(double dt) {
   });
 
   variables.update(dt);
-
-  leaderboardView->update(dt);
-  leaderboardView->handleGesture(gesture);
 }
 
 
