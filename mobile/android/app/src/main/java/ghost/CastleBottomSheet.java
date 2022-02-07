@@ -341,6 +341,9 @@ public class CastleBottomSheet extends LinearLayout {
     }
 
     public void hideKeyboard() {
+        if (activity == null) {
+            return;
+        }
         View view = activity.getCurrentFocus();
         if (view != null) {
             InputMethodManager inputManager = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
