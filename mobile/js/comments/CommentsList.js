@@ -374,11 +374,22 @@ export const CommentsList = ({ deck, isOpen, setReplyingToComment, newComment })
   );
 
   const onDeleteComment = React.useCallback(
-    (comment) =>
+    (commentToDelete) => {
       deleteComment({
-        variables: { commentId: comment.commentId },
-      }),
-    [deleteComment]
+        variables: { commentId: commentToDelete.commentId },
+      });
+
+      let newComments = comments.filter(comment => comment.commentId != commentToDelete.commentId);
+      newComments = newComments.map(comment => {
+        if (comment.childComments && comment.childComments.comments) {
+          comment.childComments.comments = comment.childComments.comments.filter(childComment => childComment.commentId != commentToDelete.commentId);
+        }
+
+        return comment;
+      });
+      setComments(newComments);
+    },
+    [deleteComment, comments]
   );
 
   const onToggleCommentReaction = React.useCallback(
