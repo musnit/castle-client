@@ -10,7 +10,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     height: '100%',
     width: '100%',
-    paddingTop: 32,
+    paddingTop: Platform.OS === 'iOS' ? 32 : 0,
     paddingHorizontal: 64,
   },
   outerContainer: {
@@ -32,6 +32,7 @@ const styles = StyleSheet.create({
     borderWidth: 0,
   },
   textInput: {
+    height: '100%',
     width: '100%',
     paddingHorizontal: 0,
     paddingVertical: 0,
@@ -97,8 +98,7 @@ export const OverlayTextInput = ({ textComponent, sendAction }) => {
                 fontFamily: Platform.OS == 'ios' ? postScriptNames[textComponent.props.fontName] : textComponent.props.fontName,
                 fontSize: baseFontSize,
                 color: 'transparent',
-              }}
-            >
+              }}>
               m
             </Text>
           </View>
