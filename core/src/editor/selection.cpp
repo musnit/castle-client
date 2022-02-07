@@ -129,7 +129,7 @@ void Selection::touchToSelect(Scene &scene) {
     }
 
     // Quick press and release without moving? Select!
-    if (touch.released && !touch.movedNear && isShortPress) {
+    if (touch.released && !touch.movedFar && isShortPress) {
       selectActorFromHits(hits);
       touch.use(touchToken);
       applySelection(scene);

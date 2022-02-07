@@ -234,7 +234,7 @@ void Belt::update(double dtDouble) {
     if (touch.pressed) {
       targetIndex = -1;
     }
-    if (touch.released && !touch.movedNear && lv.timer.getTime() - touch.pressTime < 0.2) {
+    if (touch.released && !touch.movedFar && lv.timer.getTime() - touch.pressTime < 0.2) {
       if (std::abs(touchData.initialScrollVX) > elemSize / 1.2f) {
         // Scrolling pretty fast when touch began. Likely the user just wanted to stop the scroll
         // and didn't actually explicitly tap on a particular element. So don't select anything if
