@@ -25,6 +25,7 @@ struct TextComponent : BaseComponent {
     PROP(
          bool, visible,
          .label("Visible")
+         .rulesSet(false)
          .rulesGet(false)
          ) = true;
     PROP(int, order) = -1;
@@ -48,19 +49,29 @@ struct TextComponent : BaseComponent {
             = "BreiteGrotesk";
     PROP(float, fontSize,
         .label("Font size")
+         .rulesGet(false)
+         .rulesSet(false)
         ) = 10;
     PROP(float, fontSizeScale,
         .label("Font size scale")
+         .rulesGet(false)
+         .rulesSet(false)
         ) = 1;
     PROP(float, emsPerLine,
         .label("Number of 'm's that fit per line")
+         .rulesGet(false)
+         .rulesSet(false)
         ) = 1;
     PROP(std::string, alignment,
         .label("Alignment")
+         .rulesGet(false)
+         .rulesSet(false)
         .allowedValues("left", "right", "center", "justify")
         ) = "center";
     PROP(love::Color, color,
         .label("Color")
+         .rulesGet(false)
+         .rulesSet(false)
         ) = { 0x24, 0x22, 0x34, 0xff };
   } props;
 
