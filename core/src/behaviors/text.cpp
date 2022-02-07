@@ -539,7 +539,6 @@ void TextBehavior::updateEmsPerLine(ActorId actorId, TextComponent &component) {
 
   if (!lineWidths.empty()) {
     component.props.emsPerLine() = wrap / float(lineWidths[0]);
-    Debug::log("emsPerLine: {}", component.props.emsPerLine());
   }
 }
 
