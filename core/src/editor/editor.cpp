@@ -2236,13 +2236,22 @@ struct EditorNewBlueprintReceiver {
         "add blueprint", {},
         [newEntryId = params.newEntryId, archive = std::move(params.archive)](
             Editor &editor, bool) {
-          auto &library = editor.getScene().getLibrary();
+          auto &scene = editor.getScene();
+          auto &library = scene.getLibrary();
           archive->read([&](Reader &reader) {
             library.readEntry(reader);
           });
           editor.getSelection().deselectAllActors();
           auto &belt = editor.getBelt();
           belt.select(newEntryId);
+          if (auto entry = library.maybeGetEntry(newEntryId.c_str())) {
+            auto ghostActorId = entry->getGhostActorId();
+            if (scene.getBehaviors().byType<TextBehavior>().hasComponent(ghostActorId)) {
+              Editor::UpdateBlueprintParams params;
+              params.updateBase64Png = true;
+              editor.updateBlueprint(ghostActorId, params);
+            }
+          }
         },
         [newEntryId = params.newEntryId](Editor &editor, bool) {
           editor.getSelection().deselectAllActors();
