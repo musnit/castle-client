@@ -7,3 +7,4 @@ src/behaviors/test.h
 src/behaviors/debug_draw.h
 src/behaviors/debug_draw.cpp
 src/utils/small_vector.h
+src/data/fonts.h
