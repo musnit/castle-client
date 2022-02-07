@@ -16,14 +16,6 @@ const styles = StyleSheet.create({
     padding: 8,
     justifyContent: 'space-between',
   },
-  keyboardContainer: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    padding: 8,
-  },
 });
 
 export const CreateCardOverlay = ({ activeSheet, setActiveSheet, editMode, beltHeight }) => {
@@ -45,14 +37,7 @@ export const CreateCardOverlay = ({ activeSheet, setActiveSheet, editMode, beltH
       </View>
     );
   } else if (editMode === 'text') {
-    return (
-      <KeyboardAvoidingView
-        keyboardVerticalOffset={100}
-        style={styles.keyboardContainer}
-        behavior="height">
-        <OverlayText setActiveSheet={setActiveSheet} />
-      </KeyboardAvoidingView>
-    );
+    return <OverlayText setActiveSheet={setActiveSheet} />;
   } else {
     // tools for normal scene/grid editing
     if (hasSelection) {

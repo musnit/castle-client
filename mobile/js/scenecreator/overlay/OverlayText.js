@@ -1,5 +1,5 @@
 import React from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { KeyboardAvoidingView, Pressable, StyleSheet, View } from 'react-native';
 import {
   useCoreState,
   sendAsync,
@@ -24,6 +24,14 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'space-between',
     flex: 1,
+  },
+  keyboardContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    padding: 8,
   },
   top: { flexDirection: 'row', justifyContent: 'space-between' },
   toolbar: {
@@ -149,7 +157,10 @@ export const OverlayText = () => {
   }, []);
 
   return (
-    <>
+    <KeyboardAvoidingView
+      keyboardVerticalOffset={100}
+      style={styles.keyboardContainer}
+      behavior="padding">
       <OverlayTextInput textComponent={textComponent} sendAction={sendAction} />
       <View style={styles.container} pointerEvents="box-none">
         <View style={styles.top} pointerEvents="box-none">
@@ -199,6 +210,6 @@ export const OverlayText = () => {
           </View>
         ) : null}
       </View>
-    </>
+    </KeyboardAvoidingView>
   );
 };
