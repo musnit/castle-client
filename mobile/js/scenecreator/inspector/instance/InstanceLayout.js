@@ -156,15 +156,11 @@ export const EditLayout = ({ isEditingBlueprint }) => {
           sendAction={bodySendAction}
         />
       </View>
-      <View style={styles.applyLayoutChangesContainer}>
-        <SaveBlueprintButton
-          label={
-            isEditingBlueprint
-              ? 'Apply layout changes to actors'
-              : 'Apply layout changes to blueprint'
-          }
-        />
-      </View>
+      {isEditingBlueprint ? (
+        <View style={styles.applyLayoutChangesContainer}>
+          <SaveBlueprintButton label="Apply layout changes to blueprint" />
+        </View>
+      ) : null}
     </View>
   );
 };
