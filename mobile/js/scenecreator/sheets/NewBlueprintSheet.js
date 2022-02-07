@@ -209,6 +209,20 @@ const textOptions = [
 ];
 
 export const NewBlueprintSheet = ({ element, isOpen, onClose, ...props }) => {
+  // There's a bug on android where sometimes opening this sheet will immediately select
+  // one of the blueprints and close this sheet.
+  const [isClickable, setIsClickable] = React.useState(false);
+
+  React.useEffect(() => {
+    if (isOpen) {
+      setTimeout(() => {
+        setIsClickable(true);
+      }, 10);
+    } else {
+      setIsClickable(false);
+    }
+  }, [isOpen]);
+
   const blanks = entries.filter(({ entry }) => entry.isBlank);
   const templates = entries.filter(({ entry }) => !entry.isBlank);
 
@@ -243,8 +257,10 @@ export const NewBlueprintSheet = ({ element, isOpen, onClose, ...props }) => {
                 key={index}
                 entry={entry}
                 onPress={() => {
-                  CoreEvents.sendAsync('EDITOR_NEW_BLUEPRINT', { entry });
-                  onClose();
+                  if (isClickable) {
+                    CoreEvents.sendAsync('EDITOR_NEW_BLUEPRINT', { entry });
+                    onClose();
+                  }
                 }}
               />
             );
@@ -259,8 +275,10 @@ export const NewBlueprintSheet = ({ element, isOpen, onClose, ...props }) => {
                 key={index}
                 entry={entry}
                 onPress={() => {
-                  CoreEvents.sendAsync('EDITOR_NEW_BLUEPRINT', { entry });
-                  onClose();
+                  if (isClickable) {
+                    CoreEvents.sendAsync('EDITOR_NEW_BLUEPRINT', { entry });
+                    onClose();
+                  }
                 }}
               />
             );
