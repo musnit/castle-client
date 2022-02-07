@@ -478,7 +478,8 @@ struct PreloadDeckReceiver {
   } params;
 
   void receive(Engine &engine) {
-    API::preloadDeck(params.deckId(), params.initialCardId(), params.initialCardSceneDataUrl());
+    // TODO: this doesn't make sense now that we reload variables each time a deck is opened
+    // API::preloadDeck(params.deckId(), params.initialCardId(), params.initialCardSceneDataUrl());
   }
 };
 
