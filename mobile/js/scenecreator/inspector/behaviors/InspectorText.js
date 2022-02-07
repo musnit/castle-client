@@ -77,7 +77,7 @@ export default InspectorText = () => {
               {
                 color: hexColor,
                 fontFamily:
-                  Platform.OS == 'ios'
+                  Platform.OS === 'ios'
                     ? postScriptNames[textComponent.props.fontName]
                     : textComponent.props.fontName,
               },

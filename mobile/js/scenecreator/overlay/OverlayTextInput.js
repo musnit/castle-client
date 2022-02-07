@@ -95,7 +95,10 @@ export const OverlayTextInput = ({ textComponent, sendAction }) => {
           <View onLayout={onEmLayout}>
             <Text
               style={{
-                fontFamily: Platform.OS == 'ios' ? postScriptNames[textComponent.props.fontName] : textComponent.props.fontName,
+                fontFamily:
+                  Platform.OS === 'ios'
+                    ? postScriptNames[textComponent.props.fontName]
+                    : textComponent.props.fontName,
                 fontSize: baseFontSize,
                 color: 'transparent',
               }}>
@@ -105,6 +108,7 @@ export const OverlayTextInput = ({ textComponent, sendAction }) => {
         </View>
         {fontSizeReady ? (
           <InspectorTextInput
+            key={Platform.OS === 'android' ? textComponent.props.fontName : ''}
             alwaysFocus
             style={styles.textInputContainer}
             optimistic
@@ -118,7 +122,10 @@ export const OverlayTextInput = ({ textComponent, sendAction }) => {
               styles.textInput,
               {
                 color: hexColor,
-                fontFamily: Platform.OS == 'ios' ? postScriptNames[textComponent.props.fontName] : textComponent.props.fontName,
+                fontFamily:
+                  Platform.OS === 'ios'
+                    ? postScriptNames[textComponent.props.fontName]
+                    : textComponent.props.fontName,
                 fontSize: fontSize,
                 textAlign: textComponent.props.alignment,
               },
