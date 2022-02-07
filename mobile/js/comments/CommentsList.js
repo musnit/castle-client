@@ -413,6 +413,8 @@ export const CommentsList = ({ deck, isOpen, setReplyingToComment, newComment })
         variables: { deckId: deck?.deckId, limit: COMMENTS_LOAD_LIMIT, createdAtBefore: null },
       });
     }
+
+    setReplyingToComment();
   }, [isOpen, deck]);
 
   const onEndReached = React.useCallback(() => {
