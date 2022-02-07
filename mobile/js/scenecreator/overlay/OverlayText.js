@@ -1,5 +1,5 @@
 import React from 'react';
-import { Platform, KeyboardAvoidingView, Pressable, StyleSheet, View } from 'react-native';
+import { Platform, KeyboardAvoidingView, Pressable, StyleSheet, View, StatusBar } from 'react-native';
 import {
   useCoreState,
   sendAsync,
@@ -8,7 +8,6 @@ import {
 } from '../../core/CoreEvents';
 import { useCardCreator } from '../CreateCardContext';
 import { useOptimisticBehaviorValue } from '../inspector/InspectorUtilities';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { OverlayTextInput } from './OverlayTextInput';
 
 import FeatherIcon from 'react-native-vector-icons/Feather';
@@ -75,7 +74,6 @@ const styles = StyleSheet.create({
 
 export const OverlayText = () => {
   const { isBlueprintSelected } = useCardCreator();
-  const { top } = useSafeAreaInsets();
 
   const textComponent = useCoreState('EDITOR_SELECTED_COMPONENT:Text');
   const sendAction = React.useCallback(
@@ -161,7 +159,7 @@ export const OverlayText = () => {
   return (
     <KeyboardAvoidingView
       keyboardVerticalOffset={100}
-      style={[styles.keyboardContainer, { top: Platform.OS === 'android' ? top : 0 }]}
+      style={{...styles.keyboardContainer, top: Platform.OS == 'android' ? StatusBar.currentHeight + 20 : 0}}
       behavior="padding">
       <OverlayTextInput textComponent={textComponent} sendAction={sendAction} />
       <View style={styles.container} pointerEvents="box-none">
