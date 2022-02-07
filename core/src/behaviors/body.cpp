@@ -313,7 +313,8 @@ void BodyBehavior::handlePerform(double dt) {
     auto &gesture = getGesture();
     auto currTime = lv.timer.getTime();
     gesture.forEachTouch([&](TouchId touchId, const Touch &touch) {
-      if (touch.isUsed(TextBehavior::overlayTouchToken)) {
+      if (touch.isUsed(TextBehavior::overlayTouchToken)
+          || touch.isUsed(TextBehavior::leaderboardTouchToken)) {
         return;
       }
       auto &prevHits = getActorsAtTouch(touchId);
