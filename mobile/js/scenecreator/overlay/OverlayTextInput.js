@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, Text } from 'react-native';
+import { View, StyleSheet, Text, Platform } from 'react-native';
 import { InspectorTextInput } from '../inspector/components/InspectorTextInput';
 import { useOptimisticBehaviorValue } from '../inspector/InspectorUtilities';
 import { useCoreState, sendBehaviorAction } from '../../core/CoreEvents';
@@ -94,7 +94,7 @@ export const OverlayTextInput = ({ textComponent, sendAction }) => {
           <View onLayout={onEmLayout}>
             <Text
               style={{
-                fontFamily: postScriptNames[textComponent.props.fontName],
+                fontFamily: Platform.OS == 'ios' ? postScriptNames[textComponent.props.fontName] : textComponent.props.fontName,
                 fontSize: baseFontSize,
                 color: 'transparent',
               }}
@@ -118,7 +118,7 @@ export const OverlayTextInput = ({ textComponent, sendAction }) => {
               styles.textInput,
               {
                 color: hexColor,
-                fontFamily: postScriptNames[textComponent.props.fontName],
+                fontFamily: Platform.OS == 'ios' ? postScriptNames[textComponent.props.fontName] : textComponent.props.fontName,
                 fontSize: fontSize,
                 textAlign: textComponent.props.alignment,
               },

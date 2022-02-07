@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View, Platform } from 'react-native';
 import { useOptimisticBehaviorValue } from '../InspectorUtilities';
 import { InspectorCheckbox } from '../components/InspectorCheckbox';
 import { useCoreState, sendBehaviorAction, sendGlobalAction } from '../../../core/CoreEvents';
@@ -68,16 +68,21 @@ export default InspectorText = () => {
           Constants.styles.textInputWrapperOnWhite,
           { marginBottom: 16, backgroundColor: '#ccc' },
         ]}
-        onPress={selectTextTool}>
+        onPress={selectTextTool}
+      >
         <View style={Constants.styles.textInputOnWhite}>
           <Text
             style={[
               styles.text,
               {
                 color: hexColor,
-                fontFamily: postScriptNames[textComponent.props.fontName],
+                fontFamily:
+                  Platform.OS == 'ios'
+                    ? postScriptNames[textComponent.props.fontName]
+                    : textComponent.props.fontName,
               },
-            ]}>
+            ]}
+          >
             {textComponent.props.content}
           </Text>
         </View>
