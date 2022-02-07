@@ -69,6 +69,7 @@ Troubleshooting:
 - Bump versionCode and versionName in `android/app/build.gradle`
 - `cd tools`
 - `./build-android-prod.sh` will generate a .aab file at tools/build/app-release.aab and also install it to the connected android device for testing
+- `./node_modules/@sentry/cli/bin/sentry-cli upload-dif -o castle-xyz -p castle-mobile android/app/build/intermediates/merged_native_libs/release `
 
 - QA Checklist:
   - Cold boot with nux deck
