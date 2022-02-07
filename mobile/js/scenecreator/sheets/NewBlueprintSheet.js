@@ -163,47 +163,47 @@ const entries = NewBlueprintSheetData.templates.map((entry, i) => ({
 const textOptions = [
   {
     content: 'Bun',
-    color: 'B1784F',
+    color: 'BB7547',
     fontName: 'Bore',
   },
   {
     content: 'Ketchup',
-    color: 'A52F30',
+    color: 'B4202A',
     fontName: 'Compagnon',
   },
   {
     content: 'Mustard',
-    color: 'FEFC66',
+    color: 'FFD541',
     fontName: 'Glacier',
   },
   {
     content: 'Lettuce',
-    color: 'A9D95C',
+    color: '59C135',
     fontName: 'HelicoCentrica',
   },
   {
     content: 'Patty',
-    color: '6A433D',
+    color: '71413B',
     fontName: 'BreiteGrotesk',
   },
   {
     content: 'Cheese',
-    color: 'F8D65E',
+    color: 'FA6A0A',
     fontName: 'Synco',
   },
   {
     content: 'Onion',
-    color: '713D7C',
+    color: '793A80',
     fontName: 'YatraOne',
   },
   {
     content: 'Pickle',
-    color: '36654F',
+    color: '34674E',
     fontName: 'Tektur',
   },
   {
     content: 'Tomato',
-    color: 'CE4B31',
+    color: 'DF3E23',
     fontName: 'Piazzolla',
   },
 ];
