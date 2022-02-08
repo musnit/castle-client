@@ -112,18 +112,18 @@ public:
   inline static const TouchToken leaderboardTouchToken;
 
   struct OverlayStyle {
-    PROP(love::Colorf, regularBackgroundColor) = { 1, 1, 1, 1 };
-    PROP(love::Colorf, regularForegroundColor) = { 0, 0, 0, 1 };
-    PROP(love::Colorf, tappableBackgroundColor) = { 0, 0, 0, 1 };
-    PROP(love::Colorf, tappingBackgroundColor) = { 0, 0, 0, 1 };
-    PROP(love::Colorf, tappableForegroundColor) = { 1, 1, 1, 1 };
-    PROP(float, fontSize) = 10;
-    PROP(float, horizontalPadding) = 2;
-    PROP(float, topPadding) = 2;
+    PROP(love::Colorf, regularBackgroundColor) = { 227 / 255.0, 230 / 255.0, 255 / 255.0, 1};
+    PROP(love::Colorf, regularForegroundColor) = { 36 / 255.0, 34 / 255.0, 52 / 255.0, 1};
+    PROP(love::Colorf, tappableBackgroundColor) = { 36 / 255.0, 34 / 255.0, 52 / 255.0, 1};
+    PROP(love::Colorf, tappingBackgroundColor) = { 64 / 255.0, 51 / 255.0, 83 / 255.0, 1};
+    PROP(love::Colorf, tappableForegroundColor) = { 227 / 255.0, 230 / 255.0, 255 / 255.0, 1};
+    PROP(float, fontSize) = 20;
+    PROP(float, horizontalPadding) = 4;
+    PROP(float, topPadding) = 2.75;
     PROP(float, bottomPadding) = 2;
-    PROP(float, horizontalMargin) = 2;
+    PROP(float, horizontalMargin) = 4;
     PROP(float, betweenMargin) = 2;
-    PROP(float, bottomMargin) = 2;
+    PROP(float, bottomMargin) = 4;
   };
   static OverlayStyle overlayStyle;
 
