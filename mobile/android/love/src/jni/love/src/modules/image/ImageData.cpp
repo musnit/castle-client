@@ -497,7 +497,7 @@ int ImageData::floodFillTest(int x, int y, ImageData *paths, const Pixel &p)
 		return 1;
 	}
 
-	if (paths) {
+	if (paths && paths->inside(x, y)) {
 		Pixel pathP;
 		paths->getPixel(x, y, pathP);
 		if (paths->isAlphaSet(pathP)) {
@@ -651,11 +651,13 @@ int ImageData::floodFillTest2(int x, int y, ImageData *paths, int* pixels)
 		return 1;
 	}
 
-	Pixel pathP;
-	paths->getPixel(x, y, pathP);
-	if (paths->isAlphaSet(pathP)) {
-		return 2;
-	}
+  if (paths && paths->inside(x, y)) {
+    Pixel pathP;
+    paths->getPixel(x, y, pathP);
+    if (paths->isAlphaSet(pathP)) {
+      return 2;
+    }
+  }
 
 	return 0;
 }
