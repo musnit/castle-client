@@ -3,7 +3,7 @@
 #include "behaviors/all.h"
 
 #define EDITOR_BOUNDS_MIN_SIZE 0.5
-#define SCALE_EPSILON 0.001
+#define MINIMUM_SCALE 0.001
 
 
 //
@@ -674,47 +674,52 @@ void BodyBehavior::recreateFixtures(ActorId actorId, BodyComponent &component, b
   } else {
     // Create new fixtures
     auto widthScale = component.props.widthScale(), heightScale = component.props.heightScale();
+    if (fabs(widthScale) < MINIMUM_SCALE) {
+      widthScale = MINIMUM_SCALE * widthScale / fabs(widthScale);
+    }
+    if (fabs(heightScale) < MINIMUM_SCALE) {
+      heightScale = MINIMUM_SCALE * heightScale / fabs(heightScale);
+    }
+
     // This check catches some cases that isDegeneratePoly doesn't catch that would throw an error
-    if (widthScale > SCALE_EPSILON && heightScale > SCALE_EPSILON) {
-      for (auto &fixture : component.props.fixtures()) {
-        if (fixture.shapeType() == "circle") {
-          if (std::abs(std::abs(widthScale) - std::abs(heightScale)) < 0.002) {
-            // Uniformly-scaled circle
-            b2CircleShape shape;
-            shape.m_p = { widthScale * fixture.x(), heightScale * fixture.y() };
-            shape.m_radius = std::abs(widthScale) * fixture.radius();
-            addFixture(component, &shape);
-          } else {
-            // Non-uniformly scaled circle -- approximate with a polygon
-            auto x = fixture.x(), y = fixture.y();
-            auto radius = fixture.radius();
-            std::array<b2Vec2, 8> points;
-            auto angle = 0.0f;
-            for (auto i = 0; i < 8; ++i) {
-              auto dX = radius * cos(angle), dY = radius * sin(angle);
-              points[i] = { widthScale * (x + dX), heightScale * (y + dY) };
-              angle -= 2 * M_PI / 8;
-            }
-            if (!isDegeneratePoly(points.data(), 8)) {
-              b2PolygonShape shape;
-              shape.Set(points.data(), 8);
-              addFixture(component, &shape);
-            }
-          }
-        } else if (fixture.shapeType() == "polygon") {
-          // Polygon with given points
-          auto pointsProps = fixture.points();
+    for (auto &fixture : component.props.fixtures()) {
+      if (fixture.shapeType() == "circle") {
+        if (std::abs(std::abs(widthScale) - std::abs(heightScale)) < 0.002) {
+          // Uniformly-scaled circle
+          b2CircleShape shape;
+          shape.m_p = { widthScale * fixture.x(), heightScale * fixture.y() };
+          shape.m_radius = std::abs(widthScale) * fixture.radius();
+          addFixture(component, &shape);
+        } else {
+          // Non-uniformly scaled circle -- approximate with a polygon
+          auto x = fixture.x(), y = fixture.y();
+          auto radius = fixture.radius();
           std::array<b2Vec2, 8> points;
-          auto nPoints = std::min(int(pointsProps.size() / 2), 8);
-          for (auto i = 0; i < nPoints; ++i) {
-            points[i].x = widthScale * pointsProps[2 * i];
-            points[i].y = heightScale * pointsProps[2 * i + 1];
+          auto angle = 0.0f;
+          for (auto i = 0; i < 8; ++i) {
+            auto dX = radius * cos(angle), dY = radius * sin(angle);
+            points[i] = { widthScale * (x + dX), heightScale * (y + dY) };
+            angle -= 2 * M_PI / 8;
           }
-          if (!isDegeneratePoly(points.data(), nPoints)) {
+          if (!isDegeneratePoly(points.data(), 8)) {
             b2PolygonShape shape;
-            shape.Set(points.data(), nPoints);
+            shape.Set(points.data(), 8);
             addFixture(component, &shape);
           }
+        }
+      } else if (fixture.shapeType() == "polygon") {
+        // Polygon with given points
+        auto pointsProps = fixture.points();
+        std::array<b2Vec2, 8> points;
+        auto nPoints = std::min(int(pointsProps.size() / 2), 8);
+        for (auto i = 0; i < nPoints; ++i) {
+          points[i].x = widthScale * pointsProps[2 * i];
+          points[i].y = heightScale * pointsProps[2 * i + 1];
+        }
+        if (!isDegeneratePoly(points.data(), nPoints)) {
+          b2PolygonShape shape;
+          shape.Set(points.data(), nPoints);
+          addFixture(component, &shape);
         }
       }
     }
