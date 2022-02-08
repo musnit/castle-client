@@ -1083,7 +1083,7 @@ const StopAllSound = () => [
   },
 ];
 
-const PlaySound = ({ response }) => {
+const PlaySound = ({ response, context }) => {
   let soundType = response.params.type ?? 'sfxr';
   const typeItems = Metadata.responses['play sound'].props.type.labeledItems;
   let typeLabel = typeItems ? typeItems.find((item) => item.id === soundType)?.name : null;
@@ -1115,7 +1115,7 @@ const PlaySound = ({ response }) => {
     { type: 'text', label: 'at rate' },
     {
       type: 'selectParamSheet',
-      label: response.params.playbackRate ?? '1',
+      label: makeExpressionSummary(response.params.playbackRate ?? 1, context),
       paramName: 'playbackRate',
       paramValue: response.params.playbackRate,
     },
