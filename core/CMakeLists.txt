@@ -116,8 +116,6 @@ if(WEB)
     #target_compile_options(castle-core PRIVATE "SHELL:--profiling") # Increases build size, use only for local testing
     #target_link_options(castle-core PRIVATE "SHELL:--profiling")
   endif()
-  file(GLOB MY_ASSETS CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/assets/*)
-  set_target_properties(castle-core PROPERTIES LINK_DEPENDS "${MY_ASSETS}")
 endif()
 
 # Add debug info in non-MSVC desktop release builds
@@ -722,12 +720,3 @@ target_link_libraries(castle-core PRIVATE soloud)
 
 # stduuid
 target_include_directories(castle-core PRIVATE vendor/stduuid/gsl vendor/stduuid/include)
-
-
-#
-# Assets
-#
-
-if(WEB)
-  target_link_options(castle-core PRIVATE "SHELL:--preload-file ${PROJECT_SOURCE_DIR}/assets@assets")
-endif()
