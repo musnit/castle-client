@@ -78,12 +78,14 @@ export const ExploreFeed = ({ route }) => {
       setLastQueryData(query.data);
 
       const decks = query.data.paginateFeed;
-      if (lastFetched.lastDeckId && decks[decks.length - 1].deckId !== lastFetched.lastDeckId) {
-        // append next page
-        changeDecks({ type: 'append', decks });
-      } else {
-        // clean refresh
-        changeDecks({ type: 'set', decks });
+      if (decks.length > 0) {
+        if (lastFetched.lastDeckId && decks[decks.length - 1].deckId !== lastFetched.lastDeckId) {
+          // append next page
+          changeDecks({ type: 'append', decks });
+        } else {
+          // clean refresh
+          changeDecks({ type: 'set', decks });
+        }
       }
     }
   }, [lastQueryData, query.called, query.loading, query.error, query.data, lastFetched.lastDeckId]);
