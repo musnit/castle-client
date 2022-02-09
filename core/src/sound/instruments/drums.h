@@ -40,6 +40,13 @@ public:
     PROP(bool, useSnare) = true;
     PROP(Snare, snare);
 
+    struct Clap {
+      PROP(float, decay, .min(0) .max(0.5)) = 0.35f;
+      PROP(float, freq, .label("tone") .min(0) .max(1)) = 0.3f;
+    };
+    PROP(bool, useClap) = true;
+    PROP(Clap, clap);
+
     struct Tom {
       PROP(float, decay, .min(0.1) .max(0.4)) = 0.2f;
       PROP(float, freq, .label("tone") .min(0) .max(1)) = 0.75f;
@@ -72,11 +79,13 @@ private:
   std::string closedHatKey;
   std::string openHatKey;
   std::string snareKey;
+  std::string clapKey;
   std::string loTomKey;
   std::string hiTomKey;
   void playKick(Sound &sound, Params::Kick &kick, float amplitude);
   void playHat(Sound &sound, bool closed, Params::Hat &hat, float amplitude);
   void playSnare(Sound &sound, Params::Snare &snare, float amplitude);
+  void playClap(Sound &sound, Params::Clap &clap, float amplitude);
   void playTom(Sound &sound, bool hi, Params::Tom &tom, float amplitude);
 };
 
@@ -85,6 +94,7 @@ inline void Drums::dirtyCache() {
   closedHatKey = "";
   openHatKey = "";
   snareKey = "";
+  clapKey = "";
   loTomKey = "";
   hiTomKey = "";
 }

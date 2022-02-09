@@ -312,6 +312,64 @@ const Snare = ({ value, onChange, enabled, onSetEnabled, lastNativeUpdate }) => 
   );
 };
 
+const Clap = ({ value, onChange, enabled, onSetEnabled, lastNativeUpdate }) => {
+  const onChangeFreq = React.useCallback(
+    (freq) =>
+      onChange({
+        ...value,
+        freq,
+      }),
+    [value, onChange]
+  );
+  const onChangeDecay = React.useCallback(
+    (decay) =>
+      onChange({
+        ...value,
+        decay,
+      }),
+    [value, onChange]
+  );
+
+  return (
+    <View style={styles.drumContainer}>
+      <View style={styles.row}>
+        <Text style={styles.label}>Clap</Text>
+        <InspectorCheckbox value={enabled} onChange={onSetEnabled} />
+      </View>
+      {enabled ? (
+        <View style={styles.drumParams}>
+          <View style={styles.soundInputsRow}>
+            <Text style={styles.soundInputLabel}>Decay</Text>
+            <InspectorNumberInput
+              style={styles.soundInput}
+              lastNativeUpdate={lastNativeUpdate}
+              min={0}
+              max={0.5}
+              step={0.05}
+              placeholder="Decay"
+              value={value.decay}
+              onChange={onChangeDecay}
+            />
+          </View>
+          <View style={styles.soundInputsRow}>
+            <Text style={styles.soundInputLabel}>Tone</Text>
+            <InspectorNumberInput
+              style={styles.soundInput}
+              lastNativeUpdate={lastNativeUpdate}
+              min={0}
+              max={1}
+              step={0.1}
+              placeholder="Tone"
+              value={value.freq}
+              onChange={onChangeFreq}
+            />
+          </View>
+        </View>
+      ) : null}
+    </View>
+  );
+};
+
 const Tom = ({ value, onChange, enabled, onSetEnabled, lastNativeUpdate }) => {
   const onChangeFreq = React.useCallback(
     (freq) =>
@@ -422,6 +480,13 @@ export const Drums = ({ instrument }) => {
           onSetEnabled={(enabled) => onChangeDrum('useSnare', enabled)}
           value={instrument.params.snare}
           onChange={(snare) => onChangeDrum('snare', snare)}
+          lastNativeUpdate={lastNativeUpdate}
+        />
+        <Clap
+          enabled={instrument.params.useClap}
+          onSetEnabled={(enabled) => onChangeDrum('useClap', enabled)}
+          value={instrument.params.clap}
+          onChange={(clap) => onChangeDrum('clap', clap)}
           lastNativeUpdate={lastNativeUpdate}
         />
         <Hat

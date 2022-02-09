@@ -27,6 +27,10 @@ void Drums::write(Writer &writer) const {
     if (params.useSnare()) {
       writer.write("snare", params.snare());
     }
+    writer.boolean("useClap", params.useClap());
+    if (params.useClap()) {
+      writer.write("clap", params.clap());
+    }
     writer.boolean("useHiTom", params.useHiTom());
     if (params.useHiTom()) {
       writer.write("hiTom", params.hiTom());
@@ -216,6 +220,43 @@ void Drums::playSnare(Sound &sound, Params::Snare &snare, float amplitude) {
   sound.playSfxr(snareNoiseKey, amplitude);
 }
 
+void Drums::playClap(Sound &sound, Params::Clap &clap, float amplitude) {
+  if (clapKey == "") {
+    Archive archive;
+    archive.write([&](Archive::Writer &w) {
+      w.write("clap", clap);
+    });
+    clapKey = archive.toJson();
+  }
+
+  sound.getOrMakeSfxrSourceForKey(clapKey, [&](SoLoud::Sfxr *source) {
+    // resonant noise
+    source->mParams.wave_type = 3;
+    source->mParams.sound_vol = 1.75f - clap.freq() * 0.25f;
+    source->mParams.p_base_freq = 0.2f + clap.freq() * 0.05f;
+
+    source->mParams.p_env_decay = clap.decay();
+    source->mParams.p_env_sustain = 0.025f;
+    source->mParams.p_env_punch = 0.8f;
+
+    source->mParams.p_pha_offset = 0.1f;
+    source->mParams.p_pha_ramp = -0.05f;
+
+    // bandpass
+    source->mParams.filter_on = true;
+    source->mParams.p_lpf_freq
+        = SoundUtil::hzToSfxrFreq(80.0f + 50.0f * clap.freq(), source->mBaseSamplerate);
+    source->mParams.p_lpf_resonance = 0.75f;
+    source->mParams.p_hpf_freq = 0.28f;
+    source->mParams.p_hpf_ramp = 0.1f;
+  });
+
+  // triple the exact same sound with a delay in between to achieve the clap chorus effect
+  sound.playSfxr(clapKey, amplitude * 0.8f, 0.01f);
+  sound.playSfxr(clapKey, amplitude * 0.8f, 0.015f);
+  sound.playSfxr(clapKey, amplitude * 0.8f, 0.02f);
+}
+
 void Drums::playTom(Sound &sound, bool hi, Params::Tom &tom, float amplitude) {
   std::string key;
   if (hi) {
@@ -292,12 +333,18 @@ void Drums::play(Sound &sound, Pattern::Note note) {
       break;
     }
     case 40: {
+      if (params.useClap()) {
+        playClap(sound, params.clap(), amplitude);
+      }
+      break;
+    }
+    case 41: {
       if (params.useClosedHat()) {
         playHat(sound, true, params.closedHat(), amplitude);
       }
       break;
     }
-    case 41: {
+    case 42: {
       if (params.useOpenHat()) {
         playHat(sound, false, params.openHat(), amplitude);
       }
@@ -349,13 +396,20 @@ void Drums::drawEditorKeyAxis(
       break;
     }
     case 40: {
+      if (params.useClap()) {
+        hasDrum = true;
+        name = "CP";
+      }
+      break;
+    }
+    case 41: {
       if (params.useClosedHat()) {
         hasDrum = true;
         name = "HH";
       }
       break;
     }
-    case 41: {
+    case 42: {
       if (params.useOpenHat()) {
         hasDrum = true;
         name = "OH";

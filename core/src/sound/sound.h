@@ -61,7 +61,7 @@ public:
 
   SoLoud::Sfxr *getOrMakeSfxrSourceForKey(
       const std::string &key, std::function<void(SoLoud::Sfxr *)> f);
-  void playSfxr(const std::string &sfxrKey, float amplitude);
+  void playSfxr(const std::string &sfxrKey, float amplitude, float soloudClock = 0.0f);
 
 private:
   friend struct SoundEnabledReceiver;
