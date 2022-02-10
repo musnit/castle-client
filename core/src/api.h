@@ -323,9 +323,9 @@ public:
 
   static void runCallbacks() {
     completedRequestsLock.lock();
-    for (auto it = completedRequests.cbegin(); it != completedRequests.cend();) {
-      auto url = it->first;
-      auto result = it->second;
+    for (auto it : completedRequests) {
+      auto url = it.first;
+      auto result = it.second;
 
       cacheLock.lock();
 
@@ -337,9 +337,8 @@ public:
       for (auto const &callback : callbacks) {
         result.loadAPIResponse(callback);
       }
-
-      completedRequests.erase(it++);
     }
+    completedRequests.clear();
     completedRequestsLock.unlock();
   }
 };
