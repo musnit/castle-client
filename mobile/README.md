@@ -82,8 +82,6 @@ Troubleshooting:
 - `cd ..` (to mobile)
 - `./node_modules/@sentry/cli/bin/sentry-cli upload-dif -o castle-xyz -p castle-mobile android/app/build/intermediates/merged_native_libs/release`
 - `open tools/build`
-- Upload to open testing https://play.google.com/console/u/1/developers/6774483098390213048/app/4973889594505423194/tracks/open-testing. Make sure to update the release notes.
-- Wait until it's reviewed, then go to https://play.google.com/console/u/1/developers/6774483098390213048/app/4973889594505423194/publishing to publish
-- Once it's ready for full release, go to https://play.google.com/console/u/1/developers/6774483098390213048/app/4973889594505423194/tracks/open-testing and do "Promote release"
+- Upload to play store https://play.google.com/console/u/1/developers/6774483098390213048/app/4973889594505423194/tracks/production. Make sure to update the release notes.
 - Run `./tools/android-set-app-version.sh` to trigger the in-app update banner
 - Release web?
