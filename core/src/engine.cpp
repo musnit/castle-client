@@ -468,7 +468,7 @@ struct ClearSceneReceiver {
     } else {
       engine.getPlayer().clearState();
     }
-    Sound::clearCache();
+    Sound::deinit();
   }
 };
 

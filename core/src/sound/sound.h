@@ -45,12 +45,14 @@ public:
   int play(int clockId, std::unique_ptr<Pattern> pattern, std::unique_ptr<Instrument> instrument,
       StreamOptions opts);
 
-  static void clearCache() {
+  static void deinit() {
     sfxrSounds.clear();
     urlSounds.clear();
 
     if (hasInitializedSoloud) {
       soloud.stopAll();
+      soloud.deinit();
+      hasInitializedSoloud = false;
     }
   }
 
