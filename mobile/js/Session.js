@@ -922,10 +922,7 @@ export const resolveDeepLink = async (url) => {
         resolveDeepLink(url: $url) {
           resolvedUrl
           deck {
-            ${DECK_FRAGMENT}
-            cards {
-              ${CARD_FRAGMENT}
-            }
+            ${Constants.FEED_ITEM_DECK_FRAGMENT}
           }
         }
       }
@@ -1070,7 +1067,7 @@ export const fetchMoreNotifications = async (oldNotifications) => {
     }
   `,
     fetchPolicy: 'no-cache',
-    variables: { beforeId: oldNotifications[oldNotifications.length - 1].notificationId}
+    variables: { beforeId: oldNotifications[oldNotifications.length - 1].notificationId },
   });
   const data = result?.data?.notificationsV2 ?? {};
   const { notifications } = data;
@@ -1078,4 +1075,4 @@ export const fetchMoreNotifications = async (oldNotifications) => {
   EventEmitter.sendEvent('notifications', {
     notifications: [...oldNotifications, ...notifications],
   });
-}
+};
