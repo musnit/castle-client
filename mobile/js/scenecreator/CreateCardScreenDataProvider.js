@@ -279,6 +279,13 @@ class CreateCardScreenDataProvider extends React.Component {
     if (!LocalId.isLocalId(cardId)) {
       nextCard = this.state.deck.cards.find((card) => card.cardId == cardId);
     }
+    if (!nextCard) {
+      // #CASTLE-MOBILE-3Q6
+      console.warn(
+        `Tried to navigate to card: ${cardId} but found no such card, isPlaying = ${isPlaying}`
+      );
+      return;
+    }
     if (!nextCard.scene) {
       // confused by #CASTLE-MOBILE-1ZD
       console.warn(
