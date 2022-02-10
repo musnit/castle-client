@@ -100,5 +100,5 @@ export const flattenMessageBody = (body) => {
       }
     }, '');
   }
-  return body;
+  return '';
 };
