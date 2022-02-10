@@ -675,10 +675,18 @@ void BodyBehavior::recreateFixtures(ActorId actorId, BodyComponent &component, b
     // Create new fixtures
     auto widthScale = component.props.widthScale(), heightScale = component.props.heightScale();
     if (fabs(widthScale) < MINIMUM_SCALE) {
-      widthScale = MINIMUM_SCALE * widthScale / fabs(widthScale);
+      if (widthScale > 0) {
+        widthScale = MINIMUM_SCALE;
+      } else {
+        widthScale = -MINIMUM_SCALE;
+      }
     }
     if (fabs(heightScale) < MINIMUM_SCALE) {
-      heightScale = MINIMUM_SCALE * heightScale / fabs(heightScale);
+      if (heightScale > 0) {
+        heightScale = MINIMUM_SCALE;
+      } else {
+        heightScale = -MINIMUM_SCALE;
+      }
     }
 
     // This check catches some cases that isDegeneratePoly doesn't catch that would throw an error
