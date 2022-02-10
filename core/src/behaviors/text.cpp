@@ -487,12 +487,14 @@ void TextBehavior::handleSetProperty(
     ActorId actorId, TextComponent &component, PropId propId, const ExpressionValue &value) {
   auto &props = component.props;
   if (propId == props.content.id) {
-    if (const char *cStrValue = value.as<const char *>(); component.props.content() != cStrValue) {
+    if (const char *cStrValue = value.as<const char *>();
+        cStrValue && component.props.content() != cStrValue) {
       component.props.content() = cStrValue;
       asciifyContent(component.props.content());
     }
   } else if (propId == props.fontName.id) {
-    if (const char *cStrValue = value.as<const char *>(); component.props.fontName() != cStrValue) {
+    if (const char *cStrValue = value.as<const char *>();
+        cStrValue && component.props.fontName() != cStrValue) {
       component.props.fontName() = cStrValue;
       updateFont(actorId, component);
     }
