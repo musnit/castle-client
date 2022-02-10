@@ -54,10 +54,11 @@ constexpr auto Archive::skipProp<ExpressionRef> = true; // Don't auto-read `Expr
 
 struct RuleContextExtras {
   // Extra data held in a rule context, usually passed in at the trigger site. We'll can make this
-  // more dynamically typed and extendable in the future, but for now all we've needed is
-  // `otherActorId`.
+  // more dynamically typed and extendable in the future.
 
   ActorId otherActorId = nullActor;
+  bool scheduleEvenIfDestroyed
+      = false; // Whether to resume context even if this ActorId was destroyed
 };
 
 class RuleContext {
@@ -76,7 +77,6 @@ public:
   RuleContextExtras extras; // Extra information this context carries
   b2Vec2 lastPosition = { 0, 0 }; // Last position of actor if it was destroyed
   float lastAngle = 0; // Last angle of actor if it was destroyed
-  bool didDestroyOwningActor = false; // Whether this rule context destroyed this context's ActorId
 
 
   struct RepeatStackElem {
@@ -540,7 +540,7 @@ inline bool RulesBehavior::isValidToResume(RuleContext &ctx) {
   // or the actor was destroyed by the same context.
   // allows for: `Destroy myself` -> `wait` -> `Create actor`
   auto &scene = getScene();
-  return ctx.didDestroyOwningActor || scene.hasActor(ctx.actorId);
+  return ctx.extras.scheduleEvenIfDestroyed || scene.hasActor(ctx.actorId);
 }
 
 inline int RulesBehavior::getResponseIndex(ResponseRef response) const {

@@ -264,7 +264,7 @@ struct DestroyResponse : BaseResponse {
         ctx.lastPosition = body->GetPosition();
         ctx.lastAngle = body->GetAngle();
       }
-      ctx.didDestroyOwningActor = true;
+      ctx.extras.scheduleEvenIfDestroyed = true;
       scene.getEntityRegistry().emplace_or_replace<DestroyResponseMarker>(actorId);
     }
   }
@@ -1362,7 +1362,7 @@ RulesBehavior::~RulesBehavior() {
 //
 
 void RulesBehavior::handlePreRemoveActor(ActorId actorId, RulesComponent &component) {
-  fire<DestroyTrigger>(actorId, {});
+  fire<DestroyTrigger>(actorId, { nullActor, true });
 }
 
 
