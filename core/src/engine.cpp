@@ -420,7 +420,7 @@ void Engine::update(double dt) {
 //
 
 void Engine::draw() {
-  if (isEditing) {
+  if (isEditing && editor) {
     editor->draw();
   } else {
     if (feed) {
