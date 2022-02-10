@@ -594,12 +594,14 @@ public:
     auto url = reader.str("url");
     if (url) {
       API::getData(*url, [=](APIDataResponse &response) {
-        love::data::DataModule *dataModule
-            = love::Module::getInstance<love::data::DataModule>(love::Module::M_DATA);
+        if (response.success) {
+          love::data::DataModule *dataModule
+              = love::Module::getInstance<love::data::DataModule>(love::Module::M_DATA);
 
-        byteData = dataModule->newByteData(response.data, response.length);
-        imageData = nullptr;
-        image = nullptr;
+          byteData = dataModule->newByteData(response.data, response.length);
+          imageData = nullptr;
+          image = nullptr;
+        }
       });
     }
 

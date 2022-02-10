@@ -84,6 +84,7 @@ private:
   };
 
   inline static std::mutex cacheLock;
+  inline static std::mutex completedRequestsLock;
   inline static std::unordered_map<std::string, std::list<std::function<void(APIResponse &)>>>
       urlToPendingCallbacks;
   inline static std::unordered_map<std::string, APICacheResponse> cachedResponses;
@@ -116,6 +117,9 @@ private:
       const std::string &url, const std::function<void(APIDataResponse &)> &callback) {
     CastleAPI::getDataRequest(
         url, [=](bool success, std::string error, unsigned char *result, unsigned long length) {
+          if (result == nullptr || length == 0) {
+            success = false;
+          }
           APIDataResponse response(success, error, result, length);
           callback(response);
         });
@@ -124,7 +128,9 @@ private:
   static void getThread(const std::string &url) {
     // TODO: error handling
     CastleAPI::getRequest(url, [=](bool success, std::string error, std::string result) {
+      completedRequestsLock.lock();
       completedRequests[url] = APICacheResponse(success, error, result);
+      completedRequestsLock.unlock();
     });
   }
 
@@ -316,6 +322,7 @@ public:
   }
 
   static void runCallbacks() {
+    completedRequestsLock.lock();
     for (auto it = completedRequests.cbegin(); it != completedRequests.cend();) {
       auto url = it->first;
       auto result = it->second;
@@ -333,5 +340,6 @@ public:
 
       completedRequests.erase(it++);
     }
+    completedRequestsLock.unlock();
   }
 };

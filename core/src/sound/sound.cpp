@@ -199,10 +199,12 @@ void Sound::preload(const Sample &sample) {
 
     if (Sound::urlSounds.find(url) == Sound::urlSounds.end()) {
       API::getData(url, [=](APIDataResponse &response) {
-        std::unique_ptr<SoLoud::WavStream> sound = std::make_unique<SoLoud::WavStream>();
+        if (response.success) {
+          std::unique_ptr<SoLoud::WavStream> sound = std::make_unique<SoLoud::WavStream>();
 
-        sound->loadMem(response.data, response.length, true, true);
-        Sound::urlSounds.insert(std::make_pair(url, std::move(sound)));
+          sound->loadMem(response.data, response.length, true, true);
+          Sound::urlSounds.insert(std::make_pair(url, std::move(sound)));
+        }
       });
     }
   }
@@ -239,14 +241,16 @@ void Sound::playUrl(float playbackRate, float amplitude, const std::string &url)
 
   if (Sound::urlSounds.find(url) == Sound::urlSounds.end()) {
     API::getData(url, [=](APIDataResponse &response) {
-      std::unique_ptr<SoLoud::WavStream> sound = std::make_unique<SoLoud::WavStream>();
+      if (response.success) {
+        std::unique_ptr<SoLoud::WavStream> sound = std::make_unique<SoLoud::WavStream>();
 
-      sound->loadMem(response.data, response.length, true, true);
-      Sound::urlSounds.insert(std::make_pair(url, std::move(sound)));
+        sound->loadMem(response.data, response.length, true, true);
+        Sound::urlSounds.insert(std::make_pair(url, std::move(sound)));
 
-      int handle = Sound::soloud.play(*urlSounds[url]);
-      Sound::soloud.setVolume(handle, amplitude);
-      Sound::soloud.setRelativePlaySpeed(handle, playbackRate);
+        int handle = Sound::soloud.play(*urlSounds[url]);
+        Sound::soloud.setVolume(handle, amplitude);
+        Sound::soloud.setRelativePlaySpeed(handle, playbackRate);
+      }
     });
   } else {
     int handle = Sound::soloud.play(*urlSounds[url]);

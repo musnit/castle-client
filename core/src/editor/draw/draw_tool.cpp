@@ -571,6 +571,8 @@ void DrawTool::saveDrawing(std::string commandDescription) {
   physicsBodyData->updatePreview();
 
   auto &scene = editor.getScene();
+  scene.getLibrary().ensureGhostActorsExist();
+
   auto &drawBehavior = scene.getBehaviors().byType<Drawing2Behavior>();
   auto actorId = editor.getSelection().firstSelectedActorId();
   auto component = drawBehavior.maybeGetComponent(actorId);

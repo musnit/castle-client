@@ -244,7 +244,10 @@ public class NavigationActivity extends FragmentActivity implements DefaultHardw
             String optionsString = playDeckOptions.toString();
 
             ViewUtils.runOnUiThread(() -> {
-                CastleNavigator.castleNavigatorForId("LoggedInRootStack").navigate("PlayDeck", optionsString);
+                CastleNavigator navigator = CastleNavigator.castleNavigatorForId("LoggedInRootStack");
+                if (navigator != null) {
+                    navigator.navigate("PlayDeck", optionsString);
+                }
             });
         } catch (JSONException e) {
             e.printStackTrace();
