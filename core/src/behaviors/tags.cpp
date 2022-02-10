@@ -237,9 +237,11 @@ void TagsBehavior::handleSetProperty(
     }
 
     // add new tags
-    component.tags = parseTags(value.as<const char *>());
-    for (auto tag : component.tags) {
-      addToMap(actorId, tag);
+    if (value.is<const char *>()) {
+      component.tags = parseTags(value.as<const char *>());
+      for (auto tag : component.tags) {
+        addToMap(actorId, tag);
+      }
     }
   }
   BaseBehavior::handleSetProperty(actorId, component, propId, value);

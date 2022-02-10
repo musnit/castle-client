@@ -81,7 +81,7 @@ void SlidingBehavior::handleSetProperty(
   auto &props = component.props;
   if (propId == props.direction.id) {
     const char *cStrValue = value.as<const char *>();
-    if (strcmp(cStrValue, component.props.direction().c_str()) != 0) {
+    if (cStrValue && component.props.direction() != cStrValue) {
       component.props.direction() = cStrValue;
       if (!component.disabled) {
         updateJoint(actorId, component);
