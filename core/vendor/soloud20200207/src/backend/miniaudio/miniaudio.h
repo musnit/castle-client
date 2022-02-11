@@ -19461,7 +19461,8 @@ OSStatus ma_on_output__coreaudio(void* pUserData, AudioUnitRenderActionFlags* pA
     ma_assert(pDevice != NULL);
 
 #if defined(MA_DEBUG_OUTPUT)
-    printf("INFO: Output Callback: busNumber=%d, frameCount=%d, mNumberBuffers=%d\n", busNumber, frameCount, pBufferList->mNumberBuffers);
+    // XXX(castle): commenting this out because it's too annoying when debugging other stuff
+    // printf("INFO: Output Callback: busNumber=%d, frameCount=%d, mNumberBuffers=%d\n", busNumber, frameCount, pBufferList->mNumberBuffers);
 #endif
 
     /* We need to check whether or not we are outputting interleaved or non-interleaved samples. The way we do this is slightly different for each type. */
@@ -20029,7 +20030,9 @@ static ma_result ma_device__untrack__coreaudio(ma_device* pDevice)
         } break;
     }
 
+    printf("  Castle: Old sample rate: %d\n", m_pDevice->sampleRate);
     m_pDevice->sampleRate = (ma_uint32)pSession.sampleRate;
+    printf("  Castle: New sample rate: %d\n", m_pDevice->sampleRate);
 
     if (m_pDevice->type == ma_device_type_capture || m_pDevice->type == ma_device_type_duplex) {
         m_pDevice->capture.channels = (ma_uint32)pSession.inputNumberOfChannels;
@@ -25935,11 +25938,16 @@ void ma_device__post_init_setup(ma_device* pDevice, ma_device_type deviceType)
         }
     }
 
-    if (pDevice->usingDefaultSampleRate) {
+    // XXX(castle): iOS devices can change sample rate mid-session,
+    // which occasionally causes 44.1k samples to get played at 48k and pitch up by 10%,
+    // this might force us to adopt the correct rate again?
+    if (true || pDevice->usingDefaultSampleRate) {
         if (deviceType == ma_device_type_capture || deviceType == ma_device_type_duplex) {
             pDevice->sampleRate = pDevice->capture.internalSampleRate;
+            printf("  Castle: 1. Set sample rate to %d\n", pDevice->sampleRate);
         } else {
             pDevice->sampleRate = pDevice->playback.internalSampleRate;
+            printf("  Castle: 2. Set sample rate to %d\n", pDevice->sampleRate);
         }
     }
 
