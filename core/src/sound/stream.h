@@ -49,6 +49,7 @@ inline void Stream::fastForward(double time) {
     current = pattern->lower_bound(time);
     if (!hasNext() && pattern->loop() != Pattern::Loop::None) {
       current = pattern->begin();
+      startTime += patternClockLoopLength;
     }
     startTime -= time;
   }
