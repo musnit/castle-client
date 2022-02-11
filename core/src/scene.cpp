@@ -447,6 +447,19 @@ void Scene::update(double dt) {
   });
 
   variables.update(dt);
+
+  // Debug display variables. Just doing this on web for now to test some decks in play mode, we can
+  // enable it for editor if needed.
+#ifdef __EMSCRIPTEN__
+  if (Debug::isEnabled) {
+    Debug::display("variables:");
+    variables.forEach([&](const char *name, const ExpressionValue &value) {
+      if (value.is<double>()) {
+        Debug::display("  {}: {}", name, value.as<double>());
+      }
+    });
+  }
+#endif
 }
 
 
