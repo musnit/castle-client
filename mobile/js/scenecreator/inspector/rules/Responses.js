@@ -1067,11 +1067,21 @@ const MoveTowardActor = ({ response, context }) => {
   ];
 };
 
-const FaceDirectionOfMotion = () => {
+const FaceDirectionOfMotion = ({ response, context }) => {
   return [
     {
       type: 'showEntryOptions',
-      label: 'Face direction of motion',
+      label: 'Face toward direction of motion',
+    },
+    {
+      type: 'text',
+      label: 'with amount',
+    },
+    {
+      type: 'selectParamSheet',
+      label: makeExpressionSummary(response.params?.lerp ?? 1, context),
+      paramName: 'lerp',
+      paramValue: response.params?.lerp,
     },
   ];
 };

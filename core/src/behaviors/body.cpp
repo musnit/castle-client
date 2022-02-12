@@ -119,13 +119,20 @@ struct FaceDirectionOfMotionResponse : BaseResponse {
   static constexpr auto description = "Face direction of motion";
 
   struct Params {
+    PROP(ExpressionRef, lerp, .label("lerp") .min(0) .max(1)) = 1;
   } params;
 
   void run(RuleContext &ctx) override {
     auto &bodyBehavior = ctx.getScene().getBehaviors().byType<BodyBehavior>();
     if (auto body = bodyBehavior.maybeGetPhysicsBody(ctx.actorId)) {
       if (auto [vx, vy] = body->GetLinearVelocity(); !(vx == 0 && vy == 0)) {
-        body->SetTransform(body->GetPosition(), std::atan2(vy, vx));
+        auto lerp = params.lerp().eval<double>(ctx);
+        auto initialAngle = body->GetAngle();
+        auto finalAngle = std::atan2(vy, vx);
+        constexpr auto twoPi = 2 * M_PI;
+        auto dAngle = finalAngle - initialAngle + M_PI;
+        dAngle = dAngle - std::floor(dAngle / twoPi) * twoPi - M_PI;
+        body->SetTransform(body->GetPosition(), initialAngle + dAngle * lerp);
       }
     }
   }
