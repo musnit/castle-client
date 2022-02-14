@@ -20835,11 +20835,18 @@ ma_result ma_context_init__coreaudio(const ma_context_config* pConfig, ma_contex
         #endif
 
             if ([pAudioSession setCategory: AVAudioSessionCategoryPlayAndRecord withOptions:options error:nil]) {
-                /* Using PlayAndRecord */
+              /* Using PlayAndRecord */
+              // XXX(castle): maybe required to make airpods work
+              options |= AVAudioSessionCategoryOptionAllowBluetooth;
             } else if ([pAudioSession setCategory: AVAudioSessionCategoryPlayback withOptions:options error:nil]) {
-                /* Using Playback */
+              /* Using Playback */
+              /// XXX(castle): maybe required to make airpods work
+              options |= AVAudioSessionCategoryOptionAllowBluetoothA2DP;
             } else if ([pAudioSession setCategory: AVAudioSessionCategoryRecord withOptions:options error:nil]) {
                 /* Using Record */
+              /* Using PlayAndRecord */
+              // XXX(castle): maybe required to make airpods work
+              options |= AVAudioSessionCategoryOptionAllowBluetooth;
             } else {
                 /* Leave as default? */
             }
