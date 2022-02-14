@@ -1068,20 +1068,27 @@ const MoveTowardActor = ({ response, context }) => {
 };
 
 const FaceDirectionOfMotion = ({ response, context }) => {
+  let lerpLabel;
+  if (typeof response.params?.lerp === 'number') {
+    // show percentage
+    lerpLabel = makeExpressionSummary(response.params.lerp * 100, context) + '%';
+  } else {
+    lerpLabel = makeExpressionSummary(response.params?.lerp ?? 1, context);
+  }
   return [
     {
       type: 'showEntryOptions',
-      label: 'Face toward direction of motion',
-    },
-    {
-      type: 'text',
-      label: 'with amount',
+      label: 'Turn',
     },
     {
       type: 'selectParamSheet',
-      label: makeExpressionSummary(response.params?.lerp ?? 1, context),
+      label: lerpLabel,
       paramName: 'lerp',
-      paramValue: response.params?.lerp,
+      paramValue: response.params?.lerp ?? 1,
+    },
+    {
+      type: 'text',
+      label: 'towards my direction of motion',
     },
   ];
 };
