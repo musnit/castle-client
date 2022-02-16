@@ -44,11 +44,30 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  bottomContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-end',
+  },
   patternContainer: {
     padding: 8,
+    flexGrow: 1,
     backgroundColor: Constants.colors.white,
     borderRadius: 6,
     borderColor: Constants.colors.black,
+    borderWidth: 1,
+    ...Constants.styles.dropShadow,
+  },
+  editInstrumentButton: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: Constants.colors.white,
+    marginRight: 8,
+    flexShrink: 1,
+    borderColor: Constants.colors.black,
+    borderWidth: 1,
+    ...Constants.styles.dropShadow,
   },
 });
 
@@ -87,7 +106,13 @@ const SUBTOOL_GROUPS = {
   ],
 };
 
-const OverlayPattern = ({ selectedTrackIndex, selectedPatternId, selectedSequenceStartTime }) => {
+const OverlayPattern = ({ soundToolState, isEditingInstrument, onPressEditInstrument }) => {
+  const {
+    mode: soundToolMode,
+    selectedTrackIndex,
+    selectedPatternId,
+    selectedSequenceStartTime,
+  } = soundToolState;
   const component = useCoreState('EDITOR_SELECTED_COMPONENT:Music') || {
     props: {
       song: {
@@ -96,6 +121,7 @@ const OverlayPattern = ({ selectedTrackIndex, selectedPatternId, selectedSequenc
       },
     },
   };
+
   if (selectedTrackIndex >= 0 && selectedPatternId && selectedPatternId !== '') {
     const selectedTrack = component.props.song.tracks[selectedTrackIndex];
     let pattern, sequenceElem;
@@ -107,8 +133,15 @@ const OverlayPattern = ({ selectedTrackIndex, selectedPatternId, selectedSequenc
       sequenceElem = selectedTrack.sequence[closestKey];
     }
     return (
-      <View style={styles.patternContainer}>
-        <Pattern pattern={pattern} sequenceElem={sequenceElem} />
+      <View style={styles.bottomContainer}>
+        {soundToolMode === 'track' && !isEditingInstrument ? (
+          <Pressable
+            style={styles.editInstrumentButton}
+            onPress={onPressEditInstrument}></Pressable>
+        ) : null}
+        <View style={styles.patternContainer}>
+          <Pattern pattern={pattern} sequenceElem={sequenceElem} soundToolMode={soundToolMode} />
+        </View>
       </View>
     );
   }
@@ -116,6 +149,7 @@ const OverlayPattern = ({ selectedTrackIndex, selectedPatternId, selectedSequenc
 };
 
 export const OverlaySound = ({ setActiveSheet, activeSheet }) => {
+  const soundToolState = useCoreState('EDITOR_SOUND_TOOL') || {};
   const {
     mode,
     subtool: selectedSubtool,
@@ -124,7 +158,7 @@ export const OverlaySound = ({ setActiveSheet, activeSheet }) => {
     selectedTrackIndex,
     selectedPatternId,
     selectedSequenceStartTime,
-  } = useCoreState('EDITOR_SOUND_TOOL') || {};
+  } = soundToolState;
 
   useListen({
     eventName: 'SHOW_TRACK_INSPECTOR',
@@ -139,7 +173,7 @@ export const OverlaySound = ({ setActiveSheet, activeSheet }) => {
   const onPressClose = React.useCallback(() => {
     if (mode === 'track') {
       // back out to song view
-      sendAsync('EDITOR_SOUND_TOOL_ACTION', { action: 'selectTrack', doubleValue: -1 });
+      sendAsync('EDITOR_SOUND_TOOL_ACTION', { action: 'setMode', stringValue: 'song' });
     } else {
       // exit sound tool
       sendGlobalAction('setMode', 'default');
@@ -153,6 +187,11 @@ export const OverlaySound = ({ setActiveSheet, activeSheet }) => {
     [mode]
   );
   const subtools = SUBTOOL_GROUPS[mode];
+
+  const onPressEditInstrument = React.useCallback(
+    () => setActiveSheet({ sound: 'soundTrackInspector' }),
+    [setActiveSheet]
+  );
 
   return (
     <>
@@ -205,9 +244,9 @@ export const OverlaySound = ({ setActiveSheet, activeSheet }) => {
       </View>
       {!activeSheet.sound ? (
         <OverlayPattern
-          selectedTrackIndex={selectedTrackIndex}
-          selectedPatternId={selectedPatternId}
-          selectedSequenceStartTime={selectedSequenceStartTime}
+          isEditingInstrument={activeSheet.sound === 'soundTrackInspector'}
+          onPressEditInstrument={onPressEditInstrument}
+          soundToolState={soundToolState}
         />
       ) : null}
     </>

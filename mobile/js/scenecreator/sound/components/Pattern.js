@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export const Pattern = ({ pattern, sequenceElem }) => {
+export const Pattern = ({ soundToolMode, pattern, sequenceElem }) => {
   const onChangePattern = React.useCallback(
     (props) => {
       sendAsync('TRACK_TOOL_CHANGE_PATTERN', {
@@ -66,6 +66,9 @@ export const Pattern = ({ pattern, sequenceElem }) => {
       action: 'forkSelectedPattern',
     });
   }, []);
+  const onPressEditPattern = React.useCallback(() => {
+    sendAsync('EDITOR_SOUND_TOOL_ACTION', { action: 'setMode', stringValue: 'track' });
+  }, []);
 
   if (pattern) {
     return (
@@ -85,6 +88,13 @@ export const Pattern = ({ pattern, sequenceElem }) => {
           <TouchableOpacity onPress={forkPattern} style={SceneCreatorConstants.styles.button}>
             <Text style={SceneCreatorConstants.styles.buttonLabel}>Fork</Text>
           </TouchableOpacity>
+          {soundToolMode !== 'track' ? (
+            <TouchableOpacity
+              onPress={onPressEditPattern}
+              style={SceneCreatorConstants.styles.button}>
+              <Text style={SceneCreatorConstants.styles.buttonLabel}>Edit</Text>
+            </TouchableOpacity>
+          ) : null}
         </View>
         {sequenceElem && false ? (
           <View style={styles.row}>
