@@ -117,6 +117,7 @@ void SongTool::update(double dt) {
             soundTool.setPatternId("", 0);
             soundTool.setTrackIndex(track);
             soundTool.sendUIEvent();
+            soundTool.openTrackInspector();
           } else if (bar < 0 && track == int(soundTool.song->tracks.size())) {
             // touched the N+1th track axis, prompt to add track
             soundTool.sendNewTrackEvent();

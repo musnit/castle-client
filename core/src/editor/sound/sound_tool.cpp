@@ -441,6 +441,11 @@ void SoundTool::sendNewTrackEvent() {
   editor.getBridge().sendEvent("SHOW_ADD_TRACK_SHEET", e);
 };
 
+void SoundTool::openTrackInspector() {
+  NewTrackEvent e;
+  editor.getBridge().sendEvent("SHOW_TRACK_INSPECTOR", e);
+};
+
 struct SoundToolSetSubtoolReceiver {
   inline static const BridgeRegistration<SoundToolSetSubtoolReceiver> registration {
     "EDITOR_SOUND_TOOL_SET_SUBTOOL"

@@ -11,7 +11,6 @@ import ColorPicker from '../../inspector/components/ColorPicker';
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
     maxWidth: Constants.TABLET_MAX_FORM_WIDTH,
   },
   nameInput: {
@@ -24,7 +23,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingBottom: 8,
   },
   label: {
     fontSize: 16,
@@ -88,7 +86,7 @@ export const Pattern = ({ pattern, sequenceElem }) => {
             <Text style={SceneCreatorConstants.styles.buttonLabel}>Fork</Text>
           </TouchableOpacity>
         </View>
-        {sequenceElem ? (
+        {sequenceElem && false ? (
           <View style={styles.row}>
             <Text style={styles.label}>Loop here</Text>
             <InspectorCheckbox value={sequenceElem.loop} onChange={setSequenceLoop} />

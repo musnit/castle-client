@@ -29,6 +29,7 @@ public:
 
   void sendUIEvent();
   void sendNewTrackEvent();
+  void openTrackInspector();
 
   // play/pause currently edited song
   void stopPlayback();

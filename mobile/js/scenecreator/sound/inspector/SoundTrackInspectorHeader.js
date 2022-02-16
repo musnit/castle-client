@@ -1,6 +1,5 @@
 import React from 'react';
 import { Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { SegmentedNavigation } from '../../../components/SegmentedNavigation';
 import { sendAsync } from '../../../core/CoreEvents';
 
 import * as Constants from '../../../Constants';
@@ -42,13 +41,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 4,
-  },
-  navigation: {
-    paddingTop: 16,
-    paddingLeft: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: Constants.colors.grayOnWhiteBorder,
-    flexDirection: 'row',
   },
   titleInputContainer: {
     flexDirection: 'row',
@@ -120,9 +112,7 @@ const TrackHeaderActions = ({ onRemoveTrack, isMuted, setIsMuted, onClose }) => 
 
 export const SoundTrackInspectorHeader = ({
   isOpen,
-  tabItems,
-  selectedTab,
-  setSelectedTab,
+  onClose,
   soundToolState,
   component,
 }) => {
@@ -139,10 +129,6 @@ export const SoundTrackInspectorHeader = ({
     });
     sendAsync('EDITOR_SOUND_TOOL_ACTION', { action: 'selectTrack', doubleValue: -1 });
   }, [selectedTrackIndex]);
-
-  const deselectTrack = React.useCallback(() => {
-    sendAsync('EDITOR_SOUND_TOOL_ACTION', { action: 'selectTrack', doubleValue: -1 });
-  }, []);
 
   const instrumentProps = selectedTrack?.instrument.props || {};
   const isMuted = instrumentProps.muted || false;
@@ -174,16 +160,7 @@ export const SoundTrackInspectorHeader = ({
           onRemoveTrack={removeTrack}
           isMuted={isMuted}
           setIsMuted={setIsMuted}
-          onClose={deselectTrack}
-        />
-      </View>
-      <View style={styles.navigation}>
-        <SegmentedNavigation
-          items={tabItems}
-          selectedItem={tabItems.find((i) => i.value === selectedTab)}
-          onSelectItem={(item) => setSelectedTab(item.value)}
-          isLightBackground
-          compact={true}
+          onClose={onClose}
         />
       </View>
     </View>

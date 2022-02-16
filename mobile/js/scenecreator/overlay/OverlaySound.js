@@ -1,5 +1,6 @@
 import React from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
+import { Pattern } from '../sound/components/Pattern';
 import { useCoreState, useListen, sendGlobalAction, sendAsync } from '../../core/CoreEvents';
 
 import * as Constants from '../../Constants';
@@ -43,6 +44,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  patternContainer: {
+    padding: 8,
+    backgroundColor: Constants.colors.white,
+    borderRadius: 6,
+    borderColor: Constants.colors.black,
+  },
 });
 
 const makeButtonStyles = (value, name) => {
@@ -80,6 +87,34 @@ const SUBTOOL_GROUPS = {
   ],
 };
 
+const OverlayPattern = ({ selectedTrackIndex, selectedPatternId, selectedSequenceStartTime }) => {
+  const component = useCoreState('EDITOR_SELECTED_COMPONENT:Music') || {
+    props: {
+      song: {
+        patterns: {},
+        tracks: [],
+      },
+    },
+  };
+  if (selectedTrackIndex >= 0 && selectedPatternId && selectedPatternId !== '') {
+    const selectedTrack = component.props.song.tracks[selectedTrackIndex];
+    let pattern, sequenceElem;
+    pattern = component.props.song.patterns[selectedPatternId];
+    const closestKey = Object.keys(selectedTrack.sequence).find(
+      (timeStr) => parseFloat(timeStr) === selectedSequenceStartTime
+    );
+    if (closestKey !== undefined) {
+      sequenceElem = selectedTrack.sequence[closestKey];
+    }
+    return (
+      <View style={styles.patternContainer}>
+        <Pattern pattern={pattern} sequenceElem={sequenceElem} />
+      </View>
+    );
+  }
+  return null;
+};
+
 export const OverlaySound = ({ setActiveSheet, activeSheet }) => {
   const {
     mode,
@@ -87,14 +122,14 @@ export const OverlaySound = ({ setActiveSheet, activeSheet }) => {
     isPlaying,
     viewFollowsPlayhead,
     selectedTrackIndex,
+    selectedPatternId,
+    selectedSequenceStartTime,
   } = useCoreState('EDITOR_SOUND_TOOL') || {};
-  React.useEffect(() => {
-    if (selectedTrackIndex >= 0 && activeSheet.sound !== 'soundTrackInspector') {
-      setActiveSheet({ sound: 'soundTrackInspector' });
-    } else if (selectedTrackIndex < 0 && activeSheet.sound == 'soundTrackInspector') {
-      setActiveSheet({ sound: null });
-    }
-  }, [selectedTrackIndex, setActiveSheet, activeSheet.sound]);
+
+  useListen({
+    eventName: 'SHOW_TRACK_INSPECTOR',
+    handler: () => setTimeout(() => setActiveSheet({ sound: 'soundTrackInspector' }), 0.125),
+  });
 
   useListen({
     eventName: 'SHOW_ADD_TRACK_SHEET',
@@ -120,52 +155,61 @@ export const OverlaySound = ({ setActiveSheet, activeSheet }) => {
   const subtools = SUBTOOL_GROUPS[mode];
 
   return (
-    <View style={styles.container} pointerEvents="box-none">
-      <View style={styles.leftContainer}>
-        <View style={[styles.close, styles.button]}>
-          <Pressable onPress={onPressClose}>
-            <CastleIcon name="close" size={22} color="#000" />
-          </Pressable>
+    <>
+      <View style={styles.container} pointerEvents="box-none">
+        <View style={styles.leftContainer}>
+          <View style={[styles.close, styles.button]}>
+            <Pressable onPress={onPressClose}>
+              <CastleIcon name="close" size={22} color="#000" />
+            </Pressable>
+          </View>
+        </View>
+        <View style={styles.rightContainer}>
+          <View style={styles.toolbar}>
+            <Pressable
+              style={[styles.button, isPlaying ? { backgroundColor: '#000' } : null]}
+              onPress={() => sendAsync('EDITOR_SOUND_TOOL_ACTION', { action: 'play' })}>
+              <CastleIcon
+                name={isPlaying ? 'rewind' : 'play'}
+                size={22}
+                color={isPlaying ? '#fff' : '#000'}
+              />
+            </Pressable>
+          </View>
+          <View style={styles.toolbar}>
+            <Pressable
+              style={[styles.button, viewFollowsPlayhead ? { backgroundColor: '#000' } : null]}
+              onPress={() =>
+                sendAsync('EDITOR_SOUND_TOOL_ACTION', {
+                  action: 'setViewFollowsPlayhead',
+                  doubleValue: viewFollowsPlayhead ? 0 : 1,
+                })
+              }>
+              <MCIcon name="arrow-right" size={22} color={viewFollowsPlayhead ? '#fff' : '#000'} />
+            </Pressable>
+          </View>
+          <View style={styles.toolbar}>
+            {subtools.map((tool, ii) => {
+              const { name, icon } = tool;
+              return (
+                <Pressable
+                  key={`toolgroup-${mode}-${ii}`}
+                  style={makeButtonStyles(selectedSubtool, name)}
+                  onPress={() => onChangeSubtool(name)}>
+                  <CastleIcon name={icon} size={22} color={makeIconColor(selectedSubtool, name)} />
+                </Pressable>
+              );
+            })}
+          </View>
         </View>
       </View>
-      <View style={styles.rightContainer}>
-        <View style={styles.toolbar}>
-          <Pressable
-            style={[styles.button, isPlaying ? { backgroundColor: '#000' } : null]}
-            onPress={() => sendAsync('EDITOR_SOUND_TOOL_ACTION', { action: 'play' })}>
-            <CastleIcon
-              name={isPlaying ? 'rewind' : 'play'}
-              size={22}
-              color={isPlaying ? '#fff' : '#000'}
-            />
-          </Pressable>
-        </View>
-        <View style={styles.toolbar}>
-          <Pressable
-            style={[styles.button, viewFollowsPlayhead ? { backgroundColor: '#000' } : null]}
-            onPress={() =>
-              sendAsync('EDITOR_SOUND_TOOL_ACTION', {
-                action: 'setViewFollowsPlayhead',
-                doubleValue: viewFollowsPlayhead ? 0 : 1,
-              })
-            }>
-            <MCIcon name="arrow-right" size={22} color={viewFollowsPlayhead ? '#fff' : '#000'} />
-          </Pressable>
-        </View>
-        <View style={styles.toolbar}>
-          {subtools.map((tool, ii) => {
-            const { name, icon } = tool;
-            return (
-              <Pressable
-                key={`toolgroup-${mode}-${ii}`}
-                style={makeButtonStyles(selectedSubtool, name)}
-                onPress={() => onChangeSubtool(name)}>
-                <CastleIcon name={icon} size={22} color={makeIconColor(selectedSubtool, name)} />
-              </Pressable>
-            );
-          })}
-        </View>
-      </View>
-    </View>
+      {!activeSheet.sound ? (
+        <OverlayPattern
+          selectedTrackIndex={selectedTrackIndex}
+          selectedPatternId={selectedPatternId}
+          selectedSequenceStartTime={selectedSequenceStartTime}
+        />
+      ) : null}
+    </>
   );
 };
