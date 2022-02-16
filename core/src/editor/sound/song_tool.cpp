@@ -174,14 +174,6 @@ void SongTool::drawGrid(float viewScale, love::Vector2 &viewOffset) {
   auto gridDotRadius = 3.5f;
   auto gridSize = 0.0f; // indicates infinite grid
   grid.draw(gridCellSize, gridSize, viewScale, viewPosition, viewOffset, gridDotRadius, false);
-
-  // hack: cover up unwanted grid-y because grid shader only has 1 size param
-  lv.graphics.setColor({ 0.2f, 0.2f, 0.2f, 1.0f });
-  lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, viewPosition.x, -2048.0f / viewScale,
-      2048.0f / viewScale, (2048.0f / viewScale) - (gridCellSize * 0.5f));
-  lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, viewPosition.x,
-      gridCellSize * (soundTool.song->tracks.size() + 1.5f), 2048.0f / viewScale,
-      2048.0f / viewScale);
 };
 
 void SongTool::drawSequence(Song::Track::Sequence &sequence, int zeroKey, float unit) {
@@ -387,8 +379,19 @@ void SongTool::drawOverlay() {
   viewTransform.translate(viewOffset.x, viewOffset.y);
   lv.graphics.applyTransform(&viewTransform);
 
-  love::Colorf clearColor { 0.2f, 0.2f, 0.2f, 1.0f };
+  // draw background
+  constexpr auto clearGrey = 204.0f / 255.0f;
+  love::Colorf clearColor { clearGrey, clearGrey, clearGrey, 1.0f };
   lv.graphics.clear(clearColor, {}, {});
+
+  // draw different background behind current loop endpoints
+  constexpr auto selectedGrey = 221.0f / 255.0f;
+  auto [playStartTimeInSong, playEndTimeInSong] = soundTool.getPlaybackEndpoints();
+  lv.graphics.setColor({ selectedGrey, selectedGrey, selectedGrey, 1.0f });
+  lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL,
+      stepsToBars(playStartTimeInSong) * gridCellSize, viewPosition.y + (-1024.0f / viewScale),
+      stepsToBars(playEndTimeInSong - playStartTimeInSong) * gridCellSize, 3000.0f / viewScale);
+
   lv.graphics.setLineWidth(0.1f);
 
   drawGrid(viewScale, viewOffset);

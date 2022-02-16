@@ -20,9 +20,8 @@ void SoundTool::resetState() {
   trackTool.resetState();
   lastHash = "";
   playStartTime = 0;
-  playStartTimeInSong = 0;
-  playEndTimeInSong = 0;
   playbackMonitor.clear();
+  clearPlaybackEndpoints();
   computeSongLength();
 }
 
@@ -83,6 +82,7 @@ void SoundTool::computeSongLength() {
   } else {
     songTotalLength = 0;
   }
+  clearPlaybackEndpoints();
 }
 
 MusicComponent *SoundTool::maybeGetSelectedActorMusicComponent() {
@@ -99,6 +99,7 @@ void SoundTool::clearSelection() {
   selectedPatternId = "";
   selectedSequenceStartTime = 0;
   selectedTrackIndex = -1;
+  clearPlaybackEndpoints();
 }
 
 void SoundTool::validateSelection() {
@@ -141,7 +142,19 @@ void SoundTool::setSelectedSequenceLoops(bool loop) {
   }
 }
 
+void SoundTool::clearPlaybackEndpoints() {
+  playStartTimeInSong = -1;
+  playEndTimeInSong = 0;
+}
+
 std::pair<double, double> SoundTool::getPlaybackEndpoints() {
+  if (playStartTimeInSong < 0) {
+    computePlaybackEndpoints();
+  }
+  return { playStartTimeInSong, playEndTimeInSong };
+}
+
+void SoundTool::computePlaybackEndpoints() {
   auto &scene = getScene();
   double songStartTime = 0, songEndTime = songTotalLength;
   if (selectedPatternId != "") {
@@ -164,7 +177,8 @@ std::pair<double, double> SoundTool::getPlaybackEndpoints() {
       }
     }
   }
-  return { songStartTime, songEndTime };
+  playStartTimeInSong = songStartTime;
+  playEndTimeInSong = songEndTime;
 }
 
 void SoundTool::scheduleSongForPlayback(
@@ -198,11 +212,9 @@ void SoundTool::togglePlayback() {
       stopPlayback();
     } else {
       // schedule current song to play now
-      auto [songStartTime, songEndTime] = getPlaybackEndpoints();
-      scheduleSongForPlayback(songStartTime, songEndTime, 0);
+      auto [playStartTimeInSong, playEndTimeInSong] = getPlaybackEndpoints();
+      scheduleSongForPlayback(playStartTimeInSong, playEndTimeInSong, 0);
       playStartTime = scene.getClock().getTime();
-      playStartTimeInSong = songStartTime;
-      playEndTimeInSong = songEndTime;
       isPlaying = true;
     }
   }
@@ -218,12 +230,14 @@ void SoundTool::updatePlaybackStreams() {
 
     // maintain existing `isPlaying` and `playStartTime` and song endpoints,
     // schedule latest song data to play now, but fast forward the amount we already played
+    auto [playStartTimeInSong, playEndTimeInSong] = getPlaybackEndpoints();
     auto timePlaying = scene.getClock().getTime() - playStartTime;
     scheduleSongForPlayback(playStartTimeInSong, playEndTimeInSong, timePlaying);
   }
 }
 
 double SoundTool::getPlaybackTimeInSong() {
+  auto [playStartTimeInSong, playEndTimeInSong] = getPlaybackEndpoints();
   auto timePlaying = getScene().getClock().getTime() - playStartTime;
   auto songLoopLength = playEndTimeInSong - playStartTimeInSong;
   while (songLoopLength > 0 && timePlaying > songLoopLength) {

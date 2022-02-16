@@ -81,10 +81,9 @@ private:
   bool isPlaying = false;
   bool viewFollowsPlayhead = false;
   double playStartTime = 0;
-  double playStartTimeInSong = 0, playEndTimeInSong = 0;
+  double playStartTimeInSong = -1, playEndTimeInSong = 0;
   double songTotalLength = 0;
   PlaybackMonitor playbackMonitor;
-  std::pair<double, double> getPlaybackEndpoints();
   void updatePlaybackStreams();
   void scheduleSongForPlayback(double songStartTime, double songEndTime, double initialTimeInSong);
   double getPlaybackTimeInSong();
@@ -92,6 +91,9 @@ private:
       Song::Track::Sequence::iterator startSeq, double timeInSong);
 
   void computeSongLength();
+  void clearPlaybackEndpoints();
+  std::pair<double, double> getPlaybackEndpoints();
+  void computePlaybackEndpoints();
 };
 
 inline void SoundTool::setTrackIndex(int trackIndex) {
@@ -101,6 +103,7 @@ inline void SoundTool::setTrackIndex(int trackIndex) {
 inline void SoundTool::setPatternId(std::string patternId, double sequenceStartTime) {
   selectedPatternId = patternId;
   selectedSequenceStartTime = sequenceStartTime;
+  clearPlaybackEndpoints();
 }
 
 inline bool SoundTool::hasSong() {
