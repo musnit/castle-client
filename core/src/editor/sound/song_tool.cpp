@@ -305,25 +305,12 @@ double SongTool::stepsToBars(double steps) {
 
 void SongTool::drawTrackAxis(Song *song, double timeInSong) {
   auto x = viewPosition.x - gridCellSize; // always on left edge of view
-  auto axisY = viewPosition.y - viewWidth; // idk
-  auto axisHeight = viewWidth * 3.0f;
-
-  lv.graphics.setColor({ 0.2f, 0.2f, 0.2f, 1.0f });
-  lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, x, axisY, gridCellSize, axisHeight);
-
-  lv.graphics.setColor({ 1.0f, 1.0f, 1.0f, 0.4f });
-  lv.graphics.rectangle(
-      love::Graphics::DrawMode::DRAW_FILL, x + gridCellSize - 0.05f, axisY, 0.05f, axisHeight);
 
   auto y = 0.0f;
-  auto fontInvScale = viewWidth / 800.0f;
   int trackIndex = 0;
+  constexpr auto shittyFontScale = 12.0f / 800.0f;
   for (auto &track : song->tracks) {
     auto power = soundTool.playbackMonitor.getPower(trackIndex);
-    if (trackIndex == soundTool.selectedTrackIndex) {
-      lv.graphics.setColor({ 0.4f, 0.4f, 0.4f, 1.0f });
-      lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, x, y, gridCellSize, gridCellSize);
-    }
     if (power > 0) {
       // light up track axis when tracks play sound
       if (soundTool.isPlaying) {
@@ -337,10 +324,10 @@ void SongTool::drawTrackAxis(Song *song, double timeInSong) {
       }
       lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, x, y, gridCellSize, gridCellSize);
     }
-    lv.graphics.setColor({ 1.0f, 1.0f, 1.0f, 1.0f });
+    lv.graphics.setColor({ 0.0f, 0.0f, 0.0f, 1.0f });
     lv.graphics.print({ { track->instrument->props.name(), { 1, 1, 1, 1 } } }, tempFont.get(),
-        love::Matrix4(x + gridCellSize * 0.1f, y + gridCellSize * 0.4f, 0, fontInvScale,
-            fontInvScale, 0, 0, 0, 0));
+        love::Matrix4(x + gridCellSize * 0.1f, y + gridCellSize * 0.4f, 0, shittyFontScale,
+            shittyFontScale, 0, 0, 0, 0));
     y += gridCellSize;
     trackIndex++;
   }
@@ -348,8 +335,8 @@ void SongTool::drawTrackAxis(Song *song, double timeInSong) {
   // draw 'new track' region
   lv.graphics.setColor({ 1.0f, 1.0f, 1.0f, 1.0f });
   lv.graphics.print({ { "+ track", { 1, 1, 1, 1 } } }, tempFont.get(),
-      love::Matrix4(x + gridCellSize * 0.1f, y + gridCellSize * 0.4f, 0, fontInvScale, fontInvScale,
-          0, 0, 0, 0));
+      love::Matrix4(x + gridCellSize * 0.1f, y + gridCellSize * 0.4f, 0, shittyFontScale,
+          shittyFontScale, 0, 0, 0, 0));
 }
 
 void SongTool::drawOverlay() {
@@ -398,8 +385,9 @@ void SongTool::drawOverlay() {
 
   // highlight selected track if applicable
   if (soundTool.selectedTrackIndex >= 0) {
-    lv.graphics.setColor({ 0.4f, 0.4f, 0.4f, 1.0f });
-    lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, viewPosition.x,
+    constexpr auto selectedTrackGrey = 187.0f / 255.0f;
+    lv.graphics.setColor({ selectedTrackGrey, selectedTrackGrey, selectedTrackGrey, 1.0f });
+    lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, viewPosition.x - gridCellSize,
         gridCellSize * soundTool.selectedTrackIndex, viewWidth, gridCellSize);
   }
 
