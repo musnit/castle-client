@@ -164,7 +164,7 @@ let coreViews = {
     top: '10%',
     width: '80%',
     height: '80%',
-    backgroundColor: '#151F1F',
+    backgroundColor: '#242234',
     borderRadius: 24,
     touch: 'enabled',
     children: [
