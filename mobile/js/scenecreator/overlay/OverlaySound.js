@@ -160,6 +160,13 @@ export const OverlaySound = ({ setActiveSheet, activeSheet }) => {
     selectedSequenceStartTime,
   } = soundToolState;
 
+  React.useEffect(() => {
+    if (selectedTrackIndex < 0 && activeSheet.sound === 'soundTrackInspector') {
+      // autoclose sheet if track deselected from engine
+      setActiveSheet({ sound: null });
+    }
+  }, [selectedTrackIndex, activeSheet, setActiveSheet]);
+
   useListen({
     eventName: 'SHOW_TRACK_INSPECTOR',
     handler: () => setTimeout(() => setActiveSheet({ sound: 'soundTrackInspector' }), 0.125),
