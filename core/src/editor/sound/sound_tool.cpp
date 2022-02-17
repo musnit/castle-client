@@ -27,7 +27,10 @@ void SoundTool::resetState() {
 
 void SoundTool::onSetActive() {
   playbackMonitor.clear();
+  clearSelection();
   useSelectedActorMusicComponent();
+  songTool.resetState();
+  trackTool.resetState();
   setMode(Mode::Song, true);
   sendUIEvent();
 }
@@ -429,7 +432,6 @@ struct SoundToolAddTrackReceiver {
     if (!editor)
       return;
 
-    auto &soundTool = editor->soundTool;
     editor->soundTool.addTrack(params.type());
   }
 };

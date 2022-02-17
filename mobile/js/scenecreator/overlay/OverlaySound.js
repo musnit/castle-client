@@ -122,7 +122,12 @@ const OverlayPattern = ({ soundToolState, isEditingInstrument, onPressEditInstru
     },
   };
 
-  if (selectedTrackIndex >= 0 && selectedPatternId && selectedPatternId !== '') {
+  if (
+    selectedTrackIndex >= 0 &&
+    selectedTrackIndex < component.props.song.tracks.length &&
+    selectedPatternId &&
+    selectedPatternId !== ''
+  ) {
     const selectedTrack = component.props.song.tracks[selectedTrackIndex];
     let pattern, sequenceElem;
     pattern = component.props.song.patterns[selectedPatternId];
