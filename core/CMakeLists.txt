@@ -190,11 +190,10 @@ elseif(NOT IOS)
   target_link_libraries(castle-core PRIVATE Threads::Threads)
 endif()
 
-# fmt
+# fmt -- embed souce files rather than use library because 'libfmtd' vs. 'libfmt' name causes issues for Xcode
 add_subdirectory(vendor/fmt EXCLUDE_FROM_ALL)
 target_include_directories(castle-core PRIVATE vendor/fmt/include)
 target_sources(castle-core PRIVATE vendor/fmt/src/format.cc)
-#target_link_libraries(castle-core PRIVATE fmt::fmt)
 
 # love
 set(LOVE_SRC ../love/src)
