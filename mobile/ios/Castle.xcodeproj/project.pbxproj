@@ -217,7 +217,6 @@
 		91CCEBA626D6FC0C00C6B016 /* API_ios.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = API_ios.mm; sourceTree = "<group>"; };
 		91CCEBB326D7082500C6B016 /* API_ios.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = API_ios.h; sourceTree = "<group>"; };
 		956F681C9C244344BADB9924 /* Foundation.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Foundation.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Foundation.ttf"; sourceTree = "<group>"; };
-		A101D71F26D9ABD200A515E6 /* src */ = {isa = PBXFileReference; lastKnownFileType = folder; name = src; path = ../../core/src; sourceTree = SOURCE_ROOT; };
 		A12CFEDF23CC30F600D721BC /* references.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = references.cpp; path = "../../ghost-extensions/tove2d/src/cpp/references.cpp"; sourceTree = "<group>"; };
 		A12CFEE023CC30F600D721BC /* warn.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = warn.cpp; path = "../../ghost-extensions/tove2d/src/cpp/warn.cpp"; sourceTree = "<group>"; };
 		A12CFEE123CC30F600D721BC /* subpath.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = subpath.cpp; path = "../../ghost-extensions/tove2d/src/cpp/subpath.cpp"; sourceTree = "<group>"; };
@@ -465,7 +464,6 @@
 			children = (
 				A187915D27BE477600FB2D53 /* castle-core.xcodeproj */,
 				A14FE3B92355CE21003B7EA0 /* ghost-extensions */,
-				A101D71726D9AB3F00A515E6 /* core-src-for-debugging */,
 				A14FE3952355CA7B003B7EA0 /* liblove.xcodeproj */,
 				A14FE3892355CA44003B7EA0 /* SDL.xcodeproj */,
 				13B07FAE1A68108700A75B9A /* Castle */,
@@ -504,14 +502,6 @@
 				16D68450ECD63C37DADEDCAB /* Pods-CastleTests.release.xcconfig */,
 			);
 			path = Pods;
-			sourceTree = "<group>";
-		};
-		A101D71726D9AB3F00A515E6 /* core-src-for-debugging */ = {
-			isa = PBXGroup;
-			children = (
-				A101D71F26D9ABD200A515E6 /* src */,
-			);
-			path = "core-src-for-debugging";
 			sourceTree = "<group>";
 		};
 		A12CFED723CC305400D721BC /* tove2d */ = {
