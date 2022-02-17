@@ -79,11 +79,13 @@ void SongTool::update(double dt) {
       if (touch.released) {
         bool touchedLoopButton = false;
         if (patternId != "") {
-          auto yInTrack = transformedTouchPosition.y - (std::floor(track) * gridCellSize);
           auto buttonSize = noZoomUnits(36.0f + 8.0f);
-          auto buttonX = (stepsToBars(patternEndTime) * gridCellSize) - buttonSize;
-          if (transformedTouchPosition.x >= buttonX && yInTrack <= buttonSize) {
-            touchedLoopButton = true;
+          if (buttonSize <= gridCellSize * 0.4f) {
+            auto yInTrack = transformedTouchPosition.y - (std::floor(track) * gridCellSize);
+            auto buttonX = (stepsToBars(patternEndTime) * gridCellSize) - buttonSize;
+            if (transformedTouchPosition.x >= buttonX && yInTrack <= buttonSize) {
+              touchedLoopButton = true;
+            }
           }
         }
 
