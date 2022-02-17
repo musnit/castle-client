@@ -17,6 +17,7 @@
 
 - Make sure Xcode is up to date and Xcode Command Line Tools are installed
 - `npx react-native start` in this directory to start the packager
+- Run `./run.sh ios-xcode` in '../core'.
 - Open `Castle.xcworkspace` in Xcode (not the Xcode Project)
 - Run on arm device (if you want to use x86 simulator, you'll need to set up `../core`)
 
