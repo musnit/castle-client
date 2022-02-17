@@ -123,40 +123,9 @@ case "$1" in
     $CMAKE --build build/xcode
     ;;
 
-  # iOS - device release
-  ios-release)
+  # iOS - Generate Xcode project
+  ios-xcode)
     $CMAKE -DIOS=ON -DCMAKE_SYSTEM_NAME=iOS -H. -Bbuild/ios -GXcode
-    $CMAKE --build build/ios --config Release
-    cp \
-      build/ios/Release-iphoneos/libsoloud.a \
-      build/ios/Release-iphoneos/libcastle-core.a \
-      build/ios/vendor/fmt/Release-iphoneos/libfmt.a \
-      build/ios/vendor/box2d/bin/Release/libbox2d.a \
-      binaries/ios
-    ;;
-
-  # iOS - device debug
-  ios-debug)
-    $CMAKE -DIOS=ON -DCMAKE_SYSTEM_NAME=iOS -H. -Bbuild/ios -GXcode
-    $CMAKE --build build/ios --config Debug
-    cp \
-      build/ios/Debug-iphoneos/libsoloud.a \
-      build/ios/Debug-iphoneos/libcastle-core.a \
-      build/ios/vendor/box2d/bin/Debug/libbox2d.a \
-      binaries/ios
-    cp build/ios/vendor/fmt/Debug-iphoneos/libfmtd.a binaries/ios/libfmt.a
-    ;;
-
-  # iOS - simulator debug
-  ios-simulator-debug)
-    $CMAKE -DIOS=ON -DCMAKE_SYSTEM_NAME=iOS -DCMAKE_APPLE_ARCH_SYSROOTS="/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/;/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/" -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64" -H. -Bbuild/ios -GXcode
-    $CMAKE --build build/ios --config Debug -- -sdk iphonesimulator
-    cp \
-      build/ios/Debug-iphonesimulator/libsoloud.a \
-      build/ios/Debug-iphonesimulator/libcastle-core.a \
-      build/ios/vendor/box2d/bin/Debug/libbox2d.a \
-      binaries/ios
-    cp build/ios/vendor/fmt/Debug-iphonesimulator/libfmtd.a binaries/ios/libfmt.a
     ;;
 
   # Web
