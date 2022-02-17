@@ -176,6 +176,63 @@ void SongTool::drawGrid(float viewScale, love::Vector2 &viewOffset) {
   grid.draw(gridCellSize, gridSize, viewScale, viewPosition, viewOffset, gridDotRadius, false);
 };
 
+void SongTool::drawPattern(const std::string &patternId, Pattern &pattern, float startTime,
+    float patternLength, bool isLoop, int zeroKey, float unit) {
+  auto startTimeUnits = stepsToBars(startTime) * unit;
+  auto widthUnits = stepsToBars(patternLength) * unit;
+
+  // draw pattern rectangle
+  if (isLoop) {
+    auto &color = pattern.color();
+    lv.graphics.setColor({ color.r, color.g, color.b, 0.4f });
+  } else {
+    lv.graphics.setColor(pattern.color());
+  }
+  auto rad = isLoop ? 0.0f : unit * 0.05f;
+  lv.graphics.rectangle(
+      love::Graphics::DrawMode::DRAW_FILL, startTimeUnits, 0, widthUnits, unit, rad, rad);
+
+  // summarize notes
+  // TODO: editor maintains min/max per track
+  auto luminance = DrawUtil::luminance((float *)&pattern.color());
+  auto noteAlpha = (isLoop) ? 0.4f : 1.0f;
+  if (luminance < 0.5f) {
+    lv.graphics.setColor({ 1.0f, 1.0f, 1.0f, noteAlpha });
+  } else {
+    lv.graphics.setColor({ 0.0f, 0.0f, 0.0f, noteAlpha });
+  }
+  constexpr auto maxKey = 24.0f, minKey = -24.0f;
+  auto keyHeight = unit / (maxKey - minKey);
+  auto noteWidth = stepsToBars(unit);
+  auto centerY = unit * 0.5f - keyHeight;
+  for (auto &[time, notes] : pattern) {
+    if (time > patternLength) {
+      break;
+    }
+    auto x = startTimeUnits + stepsToBars(time) * unit;
+    for (auto &note : notes) {
+      auto y = ((note.key - zeroKey) * -keyHeight) + centerY;
+      lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, x, y, noteWidth, keyHeight);
+    }
+  }
+
+  // draw pattern outline
+  if (!isLoop) {
+    float innerPadding = 0.0f;
+    lv.graphics.push(love::Graphics::STACK_ALL);
+    if (patternId == soundTool.selectedPatternId) {
+      lv.graphics.setLineWidth(6.0f / (800.0f / viewWidth));
+      lv.graphics.setColor({ 1.0f, 1.0f, 1.0f, 1.0f });
+      innerPadding = 3.0f / (800.0f / viewWidth);
+    } else {
+      lv.graphics.setColor({ 0.0f, 0.0f, 0.0f, 1.0f });
+    }
+    lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_LINE, startTimeUnits + innerPadding,
+        innerPadding, widthUnits - innerPadding * 2.0f, unit - innerPadding * 2.0f, rad, rad);
+    lv.graphics.pop();
+  }
+}
+
 void SongTool::drawSequence(Song::Track::Sequence &sequence, int zeroKey, float unit) {
   auto &clock = getScene().getClock();
 
@@ -185,23 +242,12 @@ void SongTool::drawSequence(Song::Track::Sequence &sequence, int zeroKey, float 
     auto next = std::next(current);
     auto &patternId = sequenceElem.patternId();
     auto &pattern = soundTool.song->patterns[patternId];
-    auto startTimeBars = stepsToBars(startTime) * unit;
 
-    // draw pattern rectangle
-    lv.graphics.setColor(pattern.color());
+    // draw main pattern
     auto patternLength = soundTool.song->getSequenceElemLength(sequence, current, clock);
+    drawPattern(patternId, pattern, startTime, patternLength, false, zeroKey, unit);
 
-    lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, startTimeBars, 0.025f * unit,
-        stepsToBars(patternLength) * unit, 0.95f * unit);
-
-    // draw pattern outline
-    if (patternId == soundTool.selectedPatternId) {
-      lv.graphics.setColor({ 1.0f, 1.0f, 1.0f, 1.0f });
-      lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_LINE, startTimeBars, 0.025f * unit,
-          stepsToBars(patternLength) * unit, 0.95f * unit);
-    }
-
-    // draw loop arrows
+    // draw loops
     if (sequenceElem.loop()) {
       double endTime = startTime + patternLength, currentTime = endTime;
       if (next != sequence.end()) {
@@ -210,37 +256,10 @@ void SongTool::drawSequence(Song::Track::Sequence &sequence, int zeroKey, float 
         endTime = soundTool.songTotalLength;
       }
       while (currentTime < endTime) {
-        // arrow start: currentTime
-        // arrow end: min(currentTime + loopLength, endTime)
         auto loopEndTime = std::min(currentTime + patternLength, endTime);
-        lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, stepsToBars(currentTime) * unit,
-            0.475f * unit, stepsToBars(loopEndTime - currentTime) * unit, 0.05f * unit);
-        lv.graphics.circle(love::Graphics::DrawMode::DRAW_FILL, stepsToBars(loopEndTime) * unit,
-            0.5f * unit, 0.07f * unit);
+        drawPattern(
+            patternId, pattern, currentTime, loopEndTime - currentTime, true, zeroKey, unit);
         currentTime = loopEndTime;
-      }
-    }
-
-    // summarize notes
-    // TODO: editor maintains min/max per track
-    auto luminance = DrawUtil::luminance((float *)&pattern.color());
-    if (luminance < 0.5f) {
-      lv.graphics.setColor({ 0.8f, 0.8f, 0.8f, 1.0f });
-    } else {
-      lv.graphics.setColor({ 0.3f, 0.3f, 0.3f, 1.0f });
-    }
-    constexpr auto maxKey = 24.0f, minKey = -24.0f;
-    auto keyHeight = unit / (maxKey - minKey);
-    auto noteWidth = stepsToBars(unit);
-    auto centerY = unit * 0.5f - keyHeight;
-    for (auto &[time, notes] : pattern) {
-      if (time > patternLength) {
-        break;
-      }
-      auto x = startTimeBars + stepsToBars(time) * unit;
-      for (auto &note : notes) {
-        auto y = ((note.key - zeroKey) * -keyHeight) + centerY;
-        lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, x, y, noteWidth, keyHeight);
       }
     }
     current++;
@@ -379,7 +398,7 @@ void SongTool::drawOverlay() {
       stepsToBars(playStartTimeInSong) * gridCellSize, viewPosition.y + (-1024.0f / viewScale),
       stepsToBars(playEndTimeInSong - playStartTimeInSong) * gridCellSize, 3000.0f / viewScale);
 
-  lv.graphics.setLineWidth(0.1f);
+  lv.graphics.setLineWidth(1.0f / viewScale);
 
   drawGrid(viewScale, viewOffset);
 

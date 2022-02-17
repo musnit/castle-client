@@ -60,6 +60,8 @@ private:
   void drawSong(Song *song, double timePlaying);
   void drawTrack(Song::Track *track, int index, double timePlaying, float unit);
   void drawSequence(Song::Track::Sequence &sequence, int zeroKey, float unit);
+  void drawPattern(const std::string &patternId, Pattern &pattern, float startTime,
+      float patternLength, bool isLoop, int zeroKey, float unit);
   void drawTrackAxis(Song *song, double timePlaying);
   void drawDragPattern(float unit);
   mutable love::Transform viewTransform;
