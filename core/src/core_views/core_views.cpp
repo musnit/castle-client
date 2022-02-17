@@ -2,6 +2,7 @@
 #include "editor/draw/util.h"
 #include "api.h"
 #include "behaviors/text.h"
+#include "data/images.h"
 
 #ifdef __EMSCRIPTEN__
 #include "core_views_json.h"
@@ -11,6 +12,31 @@
 
 namespace CastleCore {
 const char *getAssetsDirectoryPath();
+}
+
+love::Data *loadEmbeddedImage(std::string filename) {
+  unsigned char *data = nullptr;
+  unsigned int len = 0;
+
+  if (filename == "comment-selected.png") {
+    data = comment_selected_png;
+    len = comment_selected_png_len;
+  } else if (filename == "comment.png") {
+    data = comment_png;
+    len = comment_png_len;
+  } else if (filename == "fire-selected.png") {
+    data = fire_selected_png;
+    len = fire_selected_png_len;
+  } else if (filename == "fire.png") {
+    data = fire_png;
+    len = fire_png_len;
+  }
+
+  if (data) {
+    love::data::DataModule *dataModule
+        = love::Module::getInstance<love::data::DataModule>(love::Module::M_DATA);
+    return dataModule->newByteData(data, len);
+  }
 }
 
 //
@@ -607,8 +633,12 @@ public:
 
     auto filename = reader.str("filename");
     if (filename) {
-      auto fullPath = CastleCore::getAssetsDirectoryPath() + std::string("/") + *filename;
-      byteData = lv.filesystem.read(fullPath.c_str());
+      byteData = loadEmbeddedImage(*filename);
+
+      if (!byteData) {
+        auto fullPath = CastleCore::getAssetsDirectoryPath() + std::string("/") + *filename;
+        byteData = lv.filesystem.read(fullPath.c_str());
+      }
     }
 
     if (reader.has("resizeMode")) {

@@ -121,6 +121,7 @@ void Engine::setInitialParams(const char *initialParamsJson) {
   auto useNativeFeed = false;
   auto isNewScene = false;
   auto archive = Archive::fromJson(initialParamsJson);
+  std::vector<std::string> nativeFeedDeckIds;
   archive.read([&](Reader &reader) {
     isEditing = reader.boolean("isEditable", false);
     deckId = reader.str("deckId", nullptr);
@@ -133,6 +134,16 @@ void Engine::setInitialParams(const char *initialParamsJson) {
       reader.read(TextBehavior::overlayStyle);
     });
     useNativeFeed = reader.boolean("useNativeFeed", false);
+    if (reader.has("nativeFeedDeckIds")) {
+      reader.arr("nativeFeedDeckIds", [&]() {
+        reader.each([&]() {
+          auto deckId = reader.str();
+          if (deckId) {
+            nativeFeedDeckIds.push_back(*deckId);
+          }
+        });
+      });
+    }
   });
   if (isEditing) {
     editor = std::make_unique<Editor>(bridge);
@@ -153,7 +164,7 @@ void Engine::setInitialParams(const char *initialParamsJson) {
     loadSceneFromDeckId(deckId, initialCardId, initialCardSceneDataUrl);
   } else if (useNativeFeed) {
     feed = std::make_unique<Feed>(bridge);
-    feed->fetchInitialDecks();
+    feed->fetchInitialDecks(nativeFeedDeckIds);
   }
   if (isEditing) {
     getLibraryClipboard().sendClipboardData(editor->getBridge(), editor->getScene());

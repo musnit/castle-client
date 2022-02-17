@@ -182,6 +182,13 @@ void Feed::update(double dt) {
             multiplier = 0.0;
           }
           offset += (touch.screenPos.x - lastTouchPosition) * multiplier;
+        } else if (usingFixedDecksList && offset < -FEED_ITEM_WIDTH * decks.size()) {
+          // Scrolling past the last deck
+          float multiplier = (200.0 - (FEED_ITEM_WIDTH * decks.size() - offset)) / 150.0;
+          if (multiplier < 0.0) {
+            multiplier = 0.0;
+          }
+          offset += (touch.screenPos.x - lastTouchPosition) * multiplier;
         } else {
           offset += (touch.screenPos.x - lastTouchPosition) * SCROLL_MULTIPLIER;
         }
@@ -276,7 +283,7 @@ void Feed::update(double dt) {
       }
     }
 
-    if (decks.size() > 0 && idx > (int)decks.size() - 4) {
+    if (decks.size() > 0 && idx > (int)decks.size() - 4 && !usingFixedDecksList) {
       fetchMoreDecks();
     }
 
@@ -439,34 +446,44 @@ void Feed::draw() {
   renderCardAtPosition(idx + 2, offset + FEED_ITEM_WIDTH * (idx + 2) + padding, false);
 }
 
-void Feed::fetchInitialDecks() {
-  fetchingDecks = true;
-  API::graphql(
-      "{\n  infiniteFeed {\n    sessionId\n    decks {" + GRAPHQL_DECK_FIELDS + "}\n  }\n}",
-      [=](APIResponse &response) {
-        if (response.success) {
-          auto &reader = response.reader;
+void Feed::fetchInitialDecks(std::vector<std::string> deckIds) {
+  if (deckIds.size() > 0) {
+    usingFixedDecksList = true;
+    for (size_t i = 0; i < deckIds.size(); i++) {
+      FeedItem feedItem;
+      feedItem.deckId = deckIds[i];
+      decks.push_back(std::move(feedItem));
+    }
+  } else {
+    usingFixedDecksList = false;
+    fetchingDecks = true;
+    API::graphql(
+        "{\n  infiniteFeed {\n    sessionId\n    decks {" + GRAPHQL_DECK_FIELDS + "}\n  }\n}",
+        [=](APIResponse &response) {
+          if (response.success) {
+            auto &reader = response.reader;
 
-          reader.obj("data", [&]() {
-            reader.obj("infiniteFeed", [&]() {
-              sessionId = reader.str("sessionId", "");
+            reader.obj("data", [&]() {
+              reader.obj("infiniteFeed", [&]() {
+                sessionId = reader.str("sessionId", "");
 
-              reader.arr("decks", [&]() {
-                reader.each([&]() {
-                  std::string deckId = reader.str("deckId", "");
+                reader.arr("decks", [&]() {
+                  reader.each([&]() {
+                    std::string deckId = reader.str("deckId", "");
 
-                  FeedItem feedItem;
-                  feedItem.deckJson = reader.toJson();
-                  deckIds.insert(deckId);
-                  decks.push_back(std::move(feedItem));
+                    FeedItem feedItem;
+                    feedItem.deckJson = reader.toJson();
+                    seenDeckIds.insert(deckId);
+                    decks.push_back(std::move(feedItem));
+                  });
                 });
               });
             });
-          });
 
-          fetchingDecks = false;
-        }
-      });
+            fetchingDecks = false;
+          }
+        });
+  }
 }
 
 void Feed::fetchMoreDecks() {
@@ -487,10 +504,10 @@ void Feed::fetchMoreDecks() {
                 reader.each([&]() {
                   std::string deckId = reader.str("deckId", "");
 
-                  if (deckIds.find(deckId) == deckIds.end()) {
+                  if (seenDeckIds.find(deckId) == seenDeckIds.end()) {
                     FeedItem feedItem;
                     feedItem.deckJson = reader.toJson();
-                    deckIds.insert(deckId);
+                    seenDeckIds.insert(deckId);
                     decks.push_back(std::move(feedItem));
                   }
                 });
@@ -512,76 +529,93 @@ void Feed::loadDeckAtIndex(int i) {
     return;
   }
 
+  if (decks[i].deckJson) {
+    loadDeckFromDeckJson(i);
+  } else {
+    API::graphql(
+        "{\n  deck(deckId: \"" + *decks[i].deckId + "\") {\n" + GRAPHQL_DECK_FIELDS + "\n}\n}",
+        [=](APIResponse &response) {
+          if (response.success) {
+            auto &reader = response.reader;
+
+            reader.obj("data", [&]() {
+              reader.obj("deck", [&]() {
+                decks[i].deckJson = reader.toJson();
+              });
+            });
+          }
+        });
+  }
+}
+
+void Feed::loadDeckFromDeckJson(int i) {
   decks[i].player = std::make_shared<Player>(bridge);
   decks[i].coreView = CoreViews::getInstance().getRenderer("FEED");
 
-  std::thread t([=] {
-    auto deckArchive = Archive::fromJson(decks[i].deckJson.c_str());
-    deckArchive.read([&](Reader &reader) {
-      std::string deckId = reader.str("deckId", "");
-      decks[i].coreView->updateJSGestureProp("deckId", deckId);
+  auto deckArchive = Archive::fromJson(decks[i].deckJson->c_str());
+  deckArchive.read([&](Reader &reader) {
+    std::string deckId = reader.str("deckId", "");
+    decks[i].coreView->updateJSGestureProp("deckId", deckId);
 
-      reader.arr("variables", [&]() {
-        decks[i].player->readVariables(reader);
+    reader.arr("variables", [&]() {
+      decks[i].player->readVariables(reader);
+    });
+
+    reader.obj("creator", [&]() {
+      decks[i].coreView->updateProp("username", "text", reader.str("username", ""));
+      decks[i].coreView->updateJSGestureProp("userId", reader.str("userId", ""));
+
+      reader.obj("photo", [&]() {
+        decks[i].coreView->updateProp(
+            "avatar", "url", reader.str("smallAvatarUrl", DEFAULT_AVATAR_URL));
       });
+    });
 
-      reader.obj("creator", [&]() {
-        decks[i].coreView->updateProp("username", "text", reader.str("username", ""));
-        decks[i].coreView->updateJSGestureProp("userId", reader.str("userId", ""));
-
-        reader.obj("photo", [&]() {
-          decks[i].coreView->updateProp(
-              "avatar", "url", reader.str("smallAvatarUrl", DEFAULT_AVATAR_URL));
-        });
+    bool commentsEnabled = reader.boolean("commentsEnabled", false);
+    decks[i].coreView->updateJSGestureProp("commentsEnabled", commentsEnabled ? "true" : "false");
+    if (commentsEnabled) {
+      reader.obj("comments", [&]() {
+        int count = reader.num("count", 0);
+        if (count > 0) {
+          decks[i].coreView->updateProp("comment-count", "text", std::to_string(count));
+        }
       });
+    }
 
-      bool commentsEnabled = reader.boolean("commentsEnabled", false);
-      decks[i].coreView->updateJSGestureProp("commentsEnabled", commentsEnabled ? "true" : "false");
-      if (commentsEnabled) {
-        reader.obj("comments", [&]() {
+    reader.arr("reactions", [&]() {
+      reader.each([&]() {
+        std::string reactionId = reader.str("reactionId", "");
+
+        if (reactionId == "fire") {
           int count = reader.num("count", 0);
           if (count > 0) {
-            decks[i].coreView->updateProp("comment-count", "text", std::to_string(count));
+            decks[i].coreView->updateProp("reaction-count", "text", std::to_string(count));
           }
-        });
-      }
 
-      reader.arr("reactions", [&]() {
-        reader.each([&]() {
-          std::string reactionId = reader.str("reactionId", "");
-
-          if (reactionId == "fire") {
-            int count = reader.num("count", 0);
-            if (count > 0) {
-              decks[i].coreView->updateProp("reaction-count", "text", std::to_string(count));
-            }
-
-            bool isCurrentUserToggled = reader.boolean("isCurrentUserToggled", false);
-            if (isCurrentUserToggled) {
-              decks[i].coreView->updateProp("reaction-icon", "filename", "fire-selected.png");
-            }
+          bool isCurrentUserToggled = reader.boolean("isCurrentUserToggled", false);
+          if (isCurrentUserToggled) {
+            decks[i].coreView->updateProp("reaction-icon", "filename", "fire-selected.png");
           }
-        });
+        }
       });
+    });
 
-      reader.obj("initialCard", [&]() {
-        auto sceneDataUrl = reader.str("sceneDataUrl", "");
-        API::loadSceneData(sceneDataUrl, [=](APIResponse &response) {
-          if (response.success) {
-            const std::string readerJson = response.reader.toJson();
-            std::thread t2([=] {
-              decks[i].player->readScene(readerJson, deckId);
-              decks[i].player->getScene().getGesture().setBounds(
-                  0, TOP_PADDING, CARD_WIDTH, CARD_HEIGHT);
-              decks[i].isLoaded = true;
-            });
-            t2.detach();
-          }
-        });
+    reader.obj("initialCard", [&]() {
+      auto sceneDataUrl = reader.str("sceneDataUrl", "");
+      API::loadSceneData(sceneDataUrl, [=](APIResponse &response) {
+        if (response.success) {
+          const std::string readerJson = response.reader.toJson();
+          std::thread t2([=] {
+            decks[i].player->readScene(readerJson, deckId);
+            decks[i].player->getScene().getGesture().setBounds(
+                0, TOP_PADDING, CARD_WIDTH, CARD_HEIGHT);
+            decks[i].isLoaded = true;
+          });
+          t2.detach();
+        }
       });
     });
   });
-  t.detach();
 }
 
 void Feed::unloadDeckAtIndex(int i) {

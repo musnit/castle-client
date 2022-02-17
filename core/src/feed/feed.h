@@ -7,7 +7,8 @@
 #include "core_views/core_views.h"
 
 struct FeedItem {
-  std::string deckJson;
+  std::optional<std::string> deckId;
+  std::optional<std::string> deckJson;
   std::shared_ptr<Player> player;
   std::shared_ptr<love::graphics::Canvas> canvas;
   std::shared_ptr<CoreViewRenderer> coreView;
@@ -25,7 +26,7 @@ public:
 
   void update(double dt);
   void draw();
-  void fetchInitialDecks();
+  void fetchInitialDecks(std::vector<std::string> deckIds);
   void setWindowSize(int w, int h);
   Scene *getScene(); // for screenshot
   void setPaused(bool paused);
@@ -36,6 +37,7 @@ private:
   int windowWidth = 800;
   int windowHeight = 1120;
 
+  bool usingFixedDecksList = false;
   bool paused = false;
   Gesture gesture { nullptr };
   std::unique_ptr<love::Shader> shader;
@@ -56,7 +58,7 @@ private:
   float elapsedTime = 0.0;
   float dragVelocity = 0.0;
 
-  std::set<std::string> deckIds;
+  std::set<std::string> seenDeckIds;
   std::vector<FeedItem> decks;
   std::string sessionId;
 
@@ -64,6 +66,7 @@ private:
   void fetchMoreDecks();
   int getCurrentIndex();
   void loadDeckAtIndex(int i);
+  void loadDeckFromDeckJson(int i);
   void unloadDeckAtIndex(int i);
   void renderCardAtPosition(int idx, float position, bool isActive);
   love::graphics::Canvas *newCanvas(int width, int height);
