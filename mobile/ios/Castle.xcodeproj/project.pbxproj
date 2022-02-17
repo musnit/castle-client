@@ -39,10 +39,6 @@
 		A12CFF0423CC318400D721BC /* clipper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A12CFF0323CC318400D721BC /* clipper.cpp */; };
 		A12CFF0623CC31AB00D721BC /* polypartition.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A12CFF0523CC31AB00D721BC /* polypartition.cpp */; };
 		A12CFF0823CC31C100D721BC /* tinyxml2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A12CFF0723CC31C100D721BC /* tinyxml2.cpp */; };
-		A1376B3226717D3B0095021E /* libbox2d.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A1376B2E26717D3B0095021E /* libbox2d.a */; };
-		A1376B3326717D3B0095021E /* libcastle-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A1376B2F26717D3B0095021E /* libcastle-core.a */; };
-		A1376B3426717D3B0095021E /* libfmt.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A1376B3026717D3B0095021E /* libfmt.a */; };
-		A1376B3526717D3B0095021E /* libsoloud.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A1376B3126717D3B0095021E /* libsoloud.a */; };
 		A14FE39F2355CB83003B7EA0 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A14FE39E2355CB83003B7EA0 /* AudioToolbox.framework */; };
 		A14FE3A12355CB8B003B7EA0 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A14FE3A02355CB8B003B7EA0 /* AVFoundation.framework */; };
 		A14FE3A32355CB93003B7EA0 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A14FE3A22355CB93003B7EA0 /* CoreGraphics.framework */; };
@@ -74,6 +70,9 @@
 		A14FE3F22355CF2D003B7EA0 /* lpvm.c in Sources */ = {isa = PBXBuildFile; fileRef = A14FE3E92355CF2D003B7EA0 /* lpvm.c */; };
 		A14FE3F32355CF2D003B7EA0 /* lpprint.c in Sources */ = {isa = PBXBuildFile; fileRef = A14FE3EA2355CF2D003B7EA0 /* lpprint.c */; };
 		A14FE3F42355CF2D003B7EA0 /* lpcap.c in Sources */ = {isa = PBXBuildFile; fileRef = A14FE3EB2355CF2D003B7EA0 /* lpcap.c */; };
+		A187917627BE490F00FB2D53 /* libbox2d.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A187916827BE477700FB2D53 /* libbox2d.a */; };
+		A187917727BE490F00FB2D53 /* libcastle-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A187916A27BE477700FB2D53 /* libcastle-core.a */; };
+		A187917927BE490F00FB2D53 /* libsoloud.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A187916E27BE477700FB2D53 /* libsoloud.a */; };
 		A1959DF42410A026000C61E0 /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1959DEC2410A026000C61E0 /* CoreTelephony.framework */; };
 		A1959DF62410A032000C61E0 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1959DF52410A032000C61E0 /* WebKit.framework */; };
 		A1959DF82410A0CC000C61E0 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1959DF72410A0CC000C61E0 /* Accelerate.framework */; };
@@ -126,6 +125,34 @@
 			proxyType = 2;
 			remoteGlobalIDString = FA0B78DD1A958B90000E1D17;
 			remoteInfo = "liblove-ios";
+		};
+		A187916727BE477700FB2D53 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A187915D27BE477600FB2D53 /* castle-core.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = CDE2D5B6903F4129B2362408;
+			remoteInfo = box2d;
+		};
+		A187916927BE477700FB2D53 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A187915D27BE477600FB2D53 /* castle-core.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = D2D90668E22E4836A962D0E8;
+			remoteInfo = "castle-core";
+		};
+		A187916B27BE477700FB2D53 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A187915D27BE477600FB2D53 /* castle-core.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 4EC959DAF22545E58436DB35;
+			remoteInfo = fmt;
+		};
+		A187916D27BE477700FB2D53 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A187915D27BE477600FB2D53 /* castle-core.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 23A63D93D14F4EBCA5E2DA0A;
+			remoteInfo = soloud;
 		};
 		B55942152534C97A00BD34E7 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -264,6 +291,7 @@
 		A14FE3EE2355CF2D003B7EA0 /* lpvm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = lpvm.h; path = "../../ghost-extensions/lpeg/lpvm.h"; sourceTree = "<group>"; };
 		A14FE3EF2355CF2D003B7EA0 /* lpcode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = lpcode.h; path = "../../ghost-extensions/lpeg/lpcode.h"; sourceTree = "<group>"; };
 		A14FE3F52355D09D003B7EA0 /* package.love */ = {isa = PBXFileReference; lastKnownFileType = file; name = package.love; path = ../package.love; sourceTree = "<group>"; };
+		A187915D27BE477600FB2D53 /* castle-core.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "castle-core.xcodeproj"; path = "../../core/build/ios/castle-core.xcodeproj"; sourceTree = "<group>"; };
 		A1959DEC2410A026000C61E0 /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
 		A1959DF52410A032000C61E0 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 		A1959DF72410A0CC000C61E0 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
@@ -308,11 +336,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A1376B3226717D3B0095021E /* libbox2d.a in Frameworks */,
-				A1376B3326717D3B0095021E /* libcastle-core.a in Frameworks */,
-				A1376B3426717D3B0095021E /* libfmt.a in Frameworks */,
+				A187917627BE490F00FB2D53 /* libbox2d.a in Frameworks */,
+				A187917727BE490F00FB2D53 /* libcastle-core.a in Frameworks */,
+				A187917927BE490F00FB2D53 /* libsoloud.a in Frameworks */,
 				B56CFBE7273AE2AC0015B910 /* StoreKit.framework in Frameworks */,
-				A1376B3526717D3B0095021E /* libsoloud.a in Frameworks */,
 				A14FE3AE2355CC0E003B7EA0 /* libssl.a in Frameworks */,
 				A14FE3AB2355CBE3003B7EA0 /* libbz2.tbd in Frameworks */,
 				A14FE3B52355CC39003B7EA0 /* QuartzCore.framework in Frameworks */,
@@ -436,6 +463,7 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				A187915D27BE477600FB2D53 /* castle-core.xcodeproj */,
 				A14FE3B92355CE21003B7EA0 /* ghost-extensions */,
 				A101D71726D9AB3F00A515E6 /* core-src-for-debugging */,
 				A14FE3952355CA7B003B7EA0 /* liblove.xcodeproj */,
@@ -621,6 +649,17 @@
 			name = lpeg;
 			sourceTree = "<group>";
 		};
+		A187915E27BE477600FB2D53 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A187916827BE477700FB2D53 /* libbox2d.a */,
+				A187916A27BE477700FB2D53 /* libcastle-core.a */,
+				A187916C27BE477700FB2D53 /* libfmtd.a */,
+				A187916E27BE477700FB2D53 /* libsoloud.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		B55942102534C97A00BD34E7 /* CastleNotificationService */ = {
 			isa = PBXGroup;
 			children = (
@@ -746,6 +785,10 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
+					ProductGroup = A187915E27BE477600FB2D53 /* Products */;
+					ProjectRef = A187915D27BE477600FB2D53 /* castle-core.xcodeproj */;
+				},
+				{
 					ProductGroup = A14FE3962355CA7B003B7EA0 /* Products */;
 					ProjectRef = A14FE3952355CA7B003B7EA0 /* liblove.xcodeproj */;
 				},
@@ -789,6 +832,34 @@
 			fileType = archive.ar;
 			path = liblove.a;
 			remoteRef = A14FE39C2355CA7B003B7EA0 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		A187916827BE477700FB2D53 /* libbox2d.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libbox2d.a;
+			remoteRef = A187916727BE477700FB2D53 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		A187916A27BE477700FB2D53 /* libcastle-core.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = "libcastle-core.a";
+			remoteRef = A187916927BE477700FB2D53 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		A187916C27BE477700FB2D53 /* libfmtd.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libfmtd.a;
+			remoteRef = A187916B27BE477700FB2D53 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		A187916E27BE477700FB2D53 /* libsoloud.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libsoloud.a;
+			remoteRef = A187916D27BE477700FB2D53 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */

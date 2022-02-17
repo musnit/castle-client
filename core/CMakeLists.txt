@@ -192,7 +192,9 @@ endif()
 
 # fmt
 add_subdirectory(vendor/fmt EXCLUDE_FROM_ALL)
-target_link_libraries(castle-core PRIVATE fmt::fmt)
+target_include_directories(castle-core PRIVATE vendor/fmt/include)
+target_sources(castle-core PRIVATE vendor/fmt/src/format.cc)
+#target_link_libraries(castle-core PRIVATE fmt::fmt)
 
 # love
 set(LOVE_SRC ../love/src)
