@@ -54,7 +54,8 @@ void SongTool::update(double dt) {
       bool selectedExistingTrack
           = track >= 0 && soundTool.hasSong() && track < int(soundTool.song->tracks.size());
       std::string patternId;
-      double patternStartTime = 0;
+      double patternStartTime = 0, patternEndTime = 0;
+      Song::Track::SequenceElem *selectedSequenceElem = nullptr;
       if (selectedExistingTrack && bar >= 0) {
         if (auto &selectedTrack = soundTool.song->tracks[track]; selectedTrack) {
           auto &sequence = selectedTrack->sequence;
@@ -66,6 +67,8 @@ void SongTool::update(double dt) {
             if (bar >= startTimeBars && bar < startTimeBars + stepsToBars(patternLength)) {
               patternId = sequenceElem.patternId();
               patternStartTime = startTime;
+              patternEndTime = startTime + patternLength;
+              selectedSequenceElem = &sequenceElem;
               break;
             }
             current++;
@@ -74,6 +77,16 @@ void SongTool::update(double dt) {
       }
 
       if (touch.released) {
+        bool touchedLoopButton = false;
+        if (patternId != "") {
+          auto yInTrack = transformedTouchPosition.y - (std::floor(track) * gridCellSize);
+          auto buttonSize = noZoomUnits(36.0f + 8.0f);
+          auto buttonX = (stepsToBars(patternEndTime) * gridCellSize) - buttonSize;
+          if (transformedTouchPosition.x >= buttonX && yInTrack <= buttonSize) {
+            touchedLoopButton = true;
+          }
+        }
+
         switch (selectedSubtool) {
         case Subtool::Select: {
           // touch grid on existing track/pattern?
@@ -97,6 +110,10 @@ void SongTool::update(double dt) {
               soundTool.setTrackIndex(track);
               soundTool.setPatternId(dragPatternId, newPatternStartTime);
               soundTool.updateSelectedComponent("clone pattern");
+            } else if (touchedLoopButton && selectedSequenceElem) {
+              // selected loop button on a sequence elem, toggle loop
+              selectedSequenceElem->loop = !selectedSequenceElem->loop();
+              soundTool.updateSelectedComponent("change loop");
             } else if (patternId == "") {
               // selected a valid track but no pattern, so add a new pattern here
               soundTool.setTrackIndex(track);
@@ -242,8 +259,8 @@ void SongTool::drawPattern(const std::string &patternId, Pattern &pattern, float
     }
   }
 
-  // draw pattern outline
   if (!isLoop) {
+    // draw pattern outline
     float innerPadding = 0.0f;
     lv.graphics.push(love::Graphics::STACK_ALL);
     if (patternId == soundTool.selectedPatternId) {
@@ -256,6 +273,21 @@ void SongTool::drawPattern(const std::string &patternId, Pattern &pattern, float
     lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_LINE, startTimeUnits + innerPadding,
         innerPadding, widthUnits - innerPadding * 2.0f, unit - innerPadding * 2.0f, rad, rad);
     lv.graphics.pop();
+
+    // draw loop button
+    float buttonSize = noZoomUnits(36.0f);
+    if (buttonSize <= unit * 0.4f) {
+      float buttonMargin = noZoomUnits(8.0f);
+      float buttonRadius = noZoomUnits(3.0f);
+      lv.graphics.setColor({ 1.0f, 1.0f, 1.0f, 1.0f });
+      lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL,
+          startTimeUnits + widthUnits - buttonSize - buttonMargin, buttonMargin, buttonSize,
+          buttonSize, buttonRadius, buttonRadius);
+      lv.graphics.setColor({ 0.0f, 0.0f, 0.0f, 1.0f });
+      lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_LINE,
+          startTimeUnits + widthUnits - buttonSize - buttonMargin, buttonMargin, buttonSize,
+          buttonSize, buttonRadius, buttonRadius);
+    }
   }
 }
 
