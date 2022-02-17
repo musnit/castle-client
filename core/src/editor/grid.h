@@ -7,11 +7,16 @@
 
 class Grid {
 public:
+  enum class Style {
+    Dot,
+    Cross,
+  };
+
   Grid(const Grid &) = delete; // Prevent accidental copies
   const Grid &operator=(const Grid &) = delete;
 
-  Grid();
-
+  explicit Grid(Style style);
+  Style style = Style::Dot;
 
   static float quantize(float value, float divisor, float start = 0);
 
@@ -23,6 +28,8 @@ private:
   Lv &lv { Lv::getInstance() };
 
   std::unique_ptr<love::Shader> shader;
+  void makeDotShader();
+  void makeCrossShader();
 };
 
 

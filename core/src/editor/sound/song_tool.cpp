@@ -212,11 +212,12 @@ void SongTool::drawTimeAxis() {
 }
 
 void SongTool::drawGrid(float viewScale, love::Vector2 &viewOffset) {
-  lv.graphics.setColor({ 1.0f, 1.0f, 1.0f, 0.4f });
-  // auto gridDotRadius = 3.5f;
-  // auto gridSize = 0.0f; // indicates infinite grid
+  constexpr auto gridGrey = 136.0f / 255.0f;
+  lv.graphics.setColor({ gridGrey, gridGrey, gridGrey, 1.0f });
+  auto gridDotRadius = 12.0f;
+  auto gridSize = 0.0f; // indicates infinite grid
   // TODO: new grid shader
-  // grid.draw(gridCellSize, gridSize, viewScale, viewPosition, viewOffset, gridDotRadius, false);
+  grid.draw(gridCellSize, gridSize, viewScale, viewPosition, viewOffset, gridDotRadius, false);
 };
 
 void SongTool::drawPattern(const std::string &patternId, Pattern &pattern, float startTime,

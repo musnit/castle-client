@@ -55,7 +55,7 @@ private:
     { -SONG_DEFAULT_VIEW_BOUND, -SONG_DEFAULT_VIEW_BOUND },
     { SONG_DEFAULT_VIEW_BOUND, SONG_DEFAULT_VIEW_BOUND },
   };
-  Grid grid;
+  Grid grid { Grid::Style::Cross };
   void drawGrid(float viewScale, love::Vector2 &viewOffset);
   void drawSong(Song *song, double timePlaying);
   void drawTrack(Song::Track *track, int index, double timePlaying, float unit);

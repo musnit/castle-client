@@ -130,7 +130,7 @@ private:
   // 'Default'-mode members
   Belt belt { *this };
   Selection selection { *this, belt };
-  Grid grid;
+  Grid grid { Grid::Style::Dot };
 
   Tool currentTool = Tool::Grab;
   GrabTool grab { *this };

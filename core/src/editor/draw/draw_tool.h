@@ -103,7 +103,7 @@ private:
     { -DRAW_MAX_SIZE, -DRAW_MAX_SIZE },
     { DRAW_MAX_SIZE, DRAW_MAX_SIZE },
   };
-  Grid grid;
+  Grid grid { Grid::Style::Dot };
   void drawGrid(float windowWidth, float topOffset);
 
   void makeNewLayer();

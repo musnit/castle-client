@@ -58,7 +58,7 @@ private:
     { 0.0f, -7.0f },
     { PATTERN_DEFAULT_VIEW_X_BOUND, 9.0f },
   };
-  Grid grid;
+  Grid grid { Grid::Style::Dot };
   void drawGrid(float viewScale, love::Vector2 &viewOffset);
   float getNoteAxisWidth();
   void drawNoteAxis(Song::Track *track);

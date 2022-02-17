@@ -5,7 +5,19 @@
 // Constructor, destructor
 //
 
-Grid::Grid() {
+Grid::Grid(Style style_)
+    : style(style_) {
+  switch (style) {
+  case Style::Dot:
+    makeDotShader();
+    break;
+  case Style::Cross:
+    makeCrossShader();
+    break;
+  }
+}
+
+void Grid::makeDotShader() {
   static const char vert[] = R"(
     vec4 position(mat4 transformProjection, vec4 vertexPosition) {
       return transformProjection * vertexPosition;
@@ -37,6 +49,41 @@ Grid::Grid() {
         }
       } else {
         return vec4(color.rgb, s * color.a);
+      }
+    }
+  )";
+  shader.reset(
+      lv.graphics.newShader(lv.wrapVertexShaderCode(vert), lv.wrapFragmentShaderCode(frag)));
+}
+
+void Grid::makeCrossShader() {
+  static const char vert[] = R"(
+    vec4 position(mat4 transformProjection, vec4 vertexPosition) {
+      return transformProjection * vertexPosition;
+    }
+  )";
+  static const char frag[] = R"(
+    uniform float gridCellSize;
+    uniform float gridSize;
+    uniform float dotRadius;
+    uniform vec2 offset;
+    uniform vec2 viewOffset;
+
+    vec4 effect(vec4 color, Image tex, vec2 texCoords, vec2 screenCoords) {
+      vec2 f = mod(screenCoords + offset, gridCellSize);
+      vec2 distToAxis = screenCoords - viewOffset;
+
+      if (gridSize > 0.0 && (abs(distToAxis.x) > gridSize || abs(distToAxis.y) > gridSize)) {
+        discard;
+      }
+
+      vec2 posTarget = 1.0 - step(dotRadius, f);
+      vec2 negTarget = step(-dotRadius, f - gridCellSize);
+      float target = min(posTarget.x, posTarget.y) + max(negTarget.x, negTarget.y);
+      if (f.x <= 4.0 || f.y <= 4.0) {
+        return vec4(color.rgb, target * color.a);
+      } else {
+        discard;
       }
     }
   )";
@@ -90,7 +137,7 @@ void Grid::draw(float gridCellSize, float gridSize, float viewScale, love::Vecto
       info->floats[1] = viewOffset.y;
       shader->updateUniform(info, 1);
     }
-    {
+    if (style == Style::Dot) {
       auto info = shader->getUniformInfo("onlyAxes");
       info->ints[0] = onlyAxes ? 1 : 0;
       shader->updateUniform(info, 1);
