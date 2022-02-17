@@ -6,6 +6,7 @@
 #include "props.h"
 #include "gesture.h"
 #include "variables.h"
+#include "leaderboards.h"
 #include "clock.h"
 #include "sound/sound.h"
 #include "bridge.h"
@@ -179,6 +180,8 @@ public:
   EditVariables *getEditVariables();
   const EditVariables *getEditVariables() const;
 
+  // Leaderboards
+  Leaderboards &getLeaderboards();
 
   // Bridge
 
@@ -257,6 +260,7 @@ public:
 private:
   Lv &lv { Lv::getInstance() };
   Variables &variables;
+  Leaderboards leaderboards;
   EditVariables *editVariables = nullptr;
   Bridge &bridge;
   bool isEditing;
@@ -537,6 +541,10 @@ inline const EditVariables *Scene::getEditVariables() const {
 
 inline const Variables &Scene::getVariables() const {
   return variables;
+}
+
+inline Leaderboards &Scene::getLeaderboards() {
+  return leaderboards;
 }
 
 inline Bridge &Scene::getBridge() {

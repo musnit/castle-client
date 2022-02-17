@@ -447,6 +447,7 @@ void Scene::update(double dt) {
   });
 
   variables.update(dt);
+  leaderboards.update(dt);
 
   // Debug display variables. Just doing this on web for now to test some decks in play mode, we can
   // enable it for editor if needed.

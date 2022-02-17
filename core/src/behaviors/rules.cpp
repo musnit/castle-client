@@ -1189,13 +1189,10 @@ struct SaveVariableToLeaderboardResponse : BaseResponse {
 
     auto &variables = ctx.getScene().getVariables();
     auto name = variables.getName(params.variableId());
-    auto value = std::to_string(variables.get(params.variableId()).as<double>());
+    auto value = variables.get(params.variableId()).as<double>();
     auto deckId = ctx.getScene().getDeckId();
     if (name && deckId) {
-      API::enqueueGraphQLRequest("mutation {\n  saveVariableToLeaderboard(deckId: \"" + *deckId
-              + "\", variable: \"" + *name + "\", score: " + value + ")\n}",
-          [=](APIResponse &response) {
-          });
+      ctx.getScene().getLeaderboards().saveVariable(*deckId, *name, value);
     }
   }
 };
@@ -1256,30 +1253,22 @@ struct ShowLeaderboardResponse : BaseResponse {
     auto deckId = ctx.getScene().getDeckId();
 
     if (name && deckId) {
-      API::enqueueGraphQLRequest("{\n  leaderboard(deckId: \"" + *deckId + "\", variable: \""
-              + *name + "\", type: " + type + ", filter: " + filter
-              + ") {\n    list {\n place\n score\n user {\n username\n photo {\n "
-                "smallAvatarUrl}}}\n  }\n}",
-          [&](APIResponse &response) {
-            auto &reader = response.reader;
+      ctx.getScene().getLeaderboards().getLeaderboard(
+          *deckId, *name, type, filter, [&](Reader &reader) {
             leaderboardView.updateProp("leaderboard", "visibility", "visible");
             leaderboardView.updateProp("editorText", "visibility", "hidden");
 
-            reader.obj("data", [&]() {
-              reader.obj("leaderboard", [&]() {
-                reader.arr("list", [&]() {
-                  int iNum = 1;
-                  reader.each([&]() {
-                    if (iNum > 10) {
-                      return;
-                    }
+            reader.arr("list", [&]() {
+              int iNum = 1;
+              reader.each([&]() {
+                if (iNum > 10) {
+                  return;
+                }
 
-                    auto i = std::to_string(iNum);
-                    readLeaderboardRow(leaderboardView, reader, i);
+                auto i = std::to_string(iNum);
+                readLeaderboardRow(leaderboardView, reader, i);
 
-                    iNum++;
-                  });
-                });
+                iNum++;
               });
             });
           });
