@@ -307,8 +307,10 @@ void ScaleRotateTool::drawOverlay() const {
   auto gridSize = props.gridSize();
   if (props.gridEnabled() && gridSize > 0) {
     lv.graphics.setColor({ 0, 0, 0, 0.5 });
-    editor.getGrid().draw(gridSize, -1, scene.getViewScale(), scene.getCameraPosition(),
-        { 0.5f * scene.getCameraSize().x, scene.getViewYOffset() }, 2, false);
+    love::Vector2 gridBounds { 0.0f, 0.0f };
+    editor.getGrid().draw(gridSize, gridBounds, gridBounds, scene.getViewScale(),
+        scene.getCameraPosition(), { 0.5f * scene.getCameraSize().x, scene.getViewYOffset() }, 2,
+        false);
   }
 
   if (auto handles = getHandles()) {

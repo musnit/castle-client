@@ -215,9 +215,23 @@ void SongTool::drawGrid(float viewScale, love::Vector2 &viewOffset) {
   constexpr auto gridGrey = 136.0f / 255.0f;
   lv.graphics.setColor({ gridGrey, gridGrey, gridGrey, 1.0f });
   auto gridDotRadius = 12.0f;
-  auto gridSize = 0.0f; // indicates infinite grid
-  // TODO: new grid shader
-  grid.draw(gridCellSize, gridSize, viewScale, viewPosition, viewOffset, gridDotRadius, false);
+
+  // grid bounds
+  int numTracks = 1;
+  float songLengthBars = 0.0f;
+  if (soundTool.hasSong()) {
+    numTracks = soundTool.song->tracks.size();
+    songLengthBars = stepsToBars(soundTool.songTotalLength);
+  }
+  songLengthBars += 10.5f; // go beyond the end of the song a bit
+  love::Vector2 gridMin { gridCellSize * -0.5f, gridCellSize * -0.5f };
+  love::Vector2 gridMax {
+    songLengthBars * gridCellSize,
+    (float(numTracks) + 0.5f) * gridCellSize,
+  };
+
+  grid.draw(
+      gridCellSize, gridMin, gridMax, viewScale, viewPosition, viewOffset, gridDotRadius, false);
 };
 
 void SongTool::drawPattern(const std::string &patternId, Pattern &pattern, float startTime,

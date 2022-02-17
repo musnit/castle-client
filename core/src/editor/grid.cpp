@@ -25,7 +25,8 @@ void Grid::makeDotShader() {
   )";
   static const char frag[] = R"(
     uniform float gridCellSize;
-    uniform float gridSize;
+    uniform vec2 gridMin;
+    uniform vec2 gridMax;
     uniform float dotRadius;
     uniform vec2 offset;
     uniform vec2 viewOffset;
@@ -37,7 +38,10 @@ void Grid::makeDotShader() {
       float s = 1.0 - smoothstep(dotRadius - 1.0, dotRadius + 1.0, l);
       vec2 distToAxis = screenCoords - viewOffset;
 
-      if (gridSize > 0.0 && (abs(distToAxis.x) > gridSize || abs(distToAxis.y) > gridSize)) {
+      if (gridMin.x < gridMax.x && (distToAxis.x < gridMin.x || distToAxis.x > gridMax.x)) {
+        discard;
+      }
+      if (gridMin.y < gridMax.y && (distToAxis.y < gridMin.y || distToAxis.y > gridMax.y)) {
         discard;
       }
 
@@ -64,7 +68,8 @@ void Grid::makeCrossShader() {
   )";
   static const char frag[] = R"(
     uniform float gridCellSize;
-    uniform float gridSize;
+    uniform vec2 gridMin;
+    uniform vec2 gridMax;
     uniform float dotRadius;
     uniform vec2 offset;
     uniform vec2 viewOffset;
@@ -73,7 +78,10 @@ void Grid::makeCrossShader() {
       vec2 f = mod(screenCoords + offset, gridCellSize);
       vec2 distToAxis = screenCoords - viewOffset;
 
-      if (gridSize > 0.0 && (abs(distToAxis.x) > gridSize || abs(distToAxis.y) > gridSize)) {
+      if (gridMin.x < gridMax.x && (distToAxis.x < gridMin.x || distToAxis.x > gridMax.x)) {
+        discard;
+      }
+      if (gridMin.y < gridMax.y && (distToAxis.y < gridMin.y || distToAxis.y > gridMax.y)) {
         discard;
       }
 
@@ -100,8 +108,8 @@ static float luaMod(float lhs, float rhs) {
   return rhs != 0 ? lhs - std::floor(lhs / rhs) * rhs : 0;
 }
 
-void Grid::draw(float gridCellSize, float gridSize, float viewScale, love::Vector2 view,
-    love::Vector2 offset, float dotRadius, bool onlyAxes) const {
+void Grid::draw(float gridCellSize, love::Vector2 gridMin, love::Vector2 gridMax, float viewScale,
+    love::Vector2 view, love::Vector2 offset, float dotRadius, bool onlyAxes) const {
   if (gridCellSize > 0) {
     lv.graphics.push(love::Graphics::STACK_ALL);
 
@@ -115,8 +123,15 @@ void Grid::draw(float gridCellSize, float gridSize, float viewScale, love::Vecto
       shader->updateUniform(info, 1);
     }
     {
-      auto info = shader->getUniformInfo("gridSize");
-      info->floats[0] = dpiScale * gridSize * viewScale;
+      auto info = shader->getUniformInfo("gridMin");
+      info->floats[0] = dpiScale * gridMin.x * viewScale;
+      info->floats[1] = dpiScale * gridMin.y * viewScale;
+      shader->updateUniform(info, 1);
+    }
+    {
+      auto info = shader->getUniformInfo("gridMax");
+      info->floats[0] = dpiScale * gridMax.x * viewScale;
+      info->floats[1] = dpiScale * gridMax.y * viewScale;
       shader->updateUniform(info, 1);
     }
     {

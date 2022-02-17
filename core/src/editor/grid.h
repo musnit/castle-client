@@ -21,8 +21,8 @@ public:
   static float quantize(float value, float divisor, float start = 0);
 
 
-  void draw(float gridCellSize, float gridSize, float viewScale, love::Vector2 view,
-      love::Vector2 offset, float dotRadius, bool onlyAxes) const;
+  void draw(float gridCellSize, love::Vector2 gridMin, love::Vector2 gridMax, float viewScale,
+      love::Vector2 view, love::Vector2 offset, float dotRadius, bool onlyAxes) const;
 
 private:
   Lv &lv { Lv::getInstance() };

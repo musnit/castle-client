@@ -1127,12 +1127,20 @@ void DrawTool::drawGrid(float windowWidth, float topOffset) {
   lv.graphics.setColor(tmpGridColor);
   auto gridCellSize = drawData->gridCellSize();
   love::Vector2 gridOffset(0.5f * viewWidth, topOffset);
-  grid.draw(gridCellSize, DRAW_MAX_SIZE + gridCellSize * 0.5f, windowWidth / viewWidth,
-      viewPosition, gridOffset, tmpGridDotRadius, false);
+  love::Vector2 gridMin {
+    -DRAW_MAX_SIZE + gridCellSize * 0.5f,
+    -DRAW_MAX_SIZE + gridCellSize * 0.5f,
+  };
+  love::Vector2 gridMax {
+    DRAW_MAX_SIZE + gridCellSize * 0.5f,
+    DRAW_MAX_SIZE + gridCellSize * 0.5f,
+  };
+  grid.draw(gridCellSize, gridMin, gridMax, windowWidth / viewWidth, viewPosition, gridOffset,
+      tmpGridDotRadius, false);
 
   lv.graphics.setColor(tmpAxisColor);
-  grid.draw(gridCellSize, DRAW_MAX_SIZE + gridCellSize * 0.5f, windowWidth / viewWidth,
-      viewPosition, gridOffset, tmpGridDotRadius, true);
+  grid.draw(gridCellSize, gridMin, gridMax, windowWidth / viewWidth, viewPosition, gridOffset,
+      tmpGridDotRadius, true);
 };
 
 void DrawTool::drawOverlay() {

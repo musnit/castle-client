@@ -166,11 +166,13 @@ void TrackTool::drawGrid(float viewScale, love::Vector2 &viewOffset) {
   // draw normal grid dots
   lv.graphics.setColor({ 0.0f, 0.0f, 0.0f, 0.4f });
   auto gridDotRadius = 3.5f;
-  auto gridSize = 0.0f; // indicates infinite grid
-  grid.draw(gridCellSize, gridSize, viewScale, viewPosition, viewOffset, gridDotRadius, false);
+  love::Vector2 gridBounds = { 0.0f, 0.0f }; // infinite grid
+  grid.draw(gridCellSize, gridBounds, gridBounds, viewScale, viewPosition, viewOffset,
+      gridDotRadius, false);
 
   lv.graphics.setColor({ 1.0f, 1.0f, 1.0f, 1.0f });
-  grid.draw(gridCellSize, gridSize, viewScale, viewPosition, viewOffset, gridDotRadius, true);
+  grid.draw(gridCellSize, gridBounds, gridBounds, viewScale, viewPosition, viewOffset,
+      gridDotRadius, true);
 };
 
 float TrackTool::getNoteAxisWidth() {
