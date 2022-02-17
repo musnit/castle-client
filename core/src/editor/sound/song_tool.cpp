@@ -381,15 +381,25 @@ double SongTool::stepsToBars(double steps) {
 }
 
 void SongTool::drawTrackAxis(Song *song, double timeInSong) {
-  auto x = viewPosition.x - gridCellSize; // always on left edge of view
+  lv.graphics.push(love::Graphics::STACK_ALL);
+  // always on left edge of view
+  lv.graphics.translate(viewPosition.x - gridCellSize * 0.5f, gridCellSize * 0.45f);
 
-  auto y = 0.0f;
   int trackIndex = 0;
-  constexpr auto shittyFontScale = 12.0f / 800.0f;
+  constexpr auto shittyFontScale = 8.0f / 800.0f;
+  auto radius = gridCellSize * 0.25f;
   for (auto &track : song->tracks) {
+    // draw track medallion
+    if (trackIndex == soundTool.selectedTrackIndex) {
+      lv.graphics.setColor({ 0.0f, 0.0f, 0.0f, 1.0f });
+    } else {
+      lv.graphics.setColor({ 1.0f, 1.0f, 1.0f, 1.0f });
+    }
+    lv.graphics.circle(love::Graphics::DrawMode::DRAW_FILL, 0, 0, radius);
+
+    // light up when track plays sound
     auto power = soundTool.playbackMonitor.getPower(trackIndex);
     if (power > 0) {
-      // light up track axis when tracks play sound
       if (soundTool.isPlaying) {
         auto startSeq = Song::sequenceElemAtTime(*track, timeInSong);
         if (startSeq != track->sequence.end()) {
@@ -399,21 +409,31 @@ void SongTool::drawTrackAxis(Song *song, double timeInSong) {
       } else {
         lv.graphics.setColor({ 1.0f, 1.0f, 1.0f, power });
       }
-      lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, x, y, gridCellSize, gridCellSize);
+      lv.graphics.circle(love::Graphics::DrawMode::DRAW_FILL, 0, 0, radius);
     }
+
+    // draw medallion outline
     lv.graphics.setColor({ 0.0f, 0.0f, 0.0f, 1.0f });
+    lv.graphics.circle(love::Graphics::DrawMode::DRAW_LINE, 0, 0, radius);
+
+    auto textX = (tempFont->getWidth(track->instrument->props.name()) * -0.5f) * 0.01f;
     lv.graphics.print({ { track->instrument->props.name(), { 1, 1, 1, 1 } } }, tempFont.get(),
-        love::Matrix4(x + gridCellSize * 0.1f, y + gridCellSize * 0.4f, 0, shittyFontScale,
-            shittyFontScale, 0, 0, 0, 0));
-    y += gridCellSize;
+        love::Matrix4(textX, gridCellSize * 0.3f, 0, shittyFontScale, shittyFontScale, 0, 0, 0, 0));
+
+    lv.graphics.translate(0, gridCellSize);
     trackIndex++;
   }
 
   // draw 'new track' region
   lv.graphics.setColor({ 1.0f, 1.0f, 1.0f, 1.0f });
-  lv.graphics.print({ { "+ track", { 1, 1, 1, 1 } } }, tempFont.get(),
-      love::Matrix4(x + gridCellSize * 0.1f, y + gridCellSize * 0.4f, 0, shittyFontScale,
-          shittyFontScale, 0, 0, 0, 0));
+  lv.graphics.circle(love::Graphics::DrawMode::DRAW_FILL, 0, 0, radius);
+  lv.graphics.setColor({ 0.0f, 0.0f, 0.0f, 1.0f });
+  lv.graphics.circle(love::Graphics::DrawMode::DRAW_LINE, 0, 0, radius);
+
+  auto textX = (tempFont->getWidth("ADD") * -0.5f) * 0.01f;
+  lv.graphics.print({ { "ADD", { 1, 1, 1, 1 } } }, tempFont.get(),
+      love::Matrix4(textX, gridCellSize * 0.3f, 0, shittyFontScale, shittyFontScale, 0, 0, 0, 0));
+  lv.graphics.pop();
 }
 
 void SongTool::drawOverlay() {
