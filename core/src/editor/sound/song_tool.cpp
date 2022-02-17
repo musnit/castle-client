@@ -169,11 +169,37 @@ void SongTool::update(double dt) {
   }
 }
 
+void SongTool::drawTimeAxis() {
+  auto &clock = getScene().getClock();
+  unsigned int stepsPerBeat = clock.getStepsPerBeat();
+  unsigned int stepsPerBar = stepsPerBeat * clock.getBeatsPerBar();
+
+  // TODO: don't draw outside viewport
+  auto ix = 0.0f;
+  auto y = gridCellSize * -0.5f;
+  constexpr auto axisGrey = 136.0f / 255.0f;
+  lv.graphics.setColor({ axisGrey, axisGrey, axisGrey, 1.0f });
+
+  unsigned int step = 0;
+  while (step < soundTool.songTotalLength) {
+    float radius;
+    if (step % stepsPerBar == 0) {
+      radius = noZoomUnits(6.0f);
+    } else {
+      radius = noZoomUnits(3.0f);
+    }
+    float x = stepsToBars(double(step)) * gridCellSize;
+    lv.graphics.circle(love::Graphics::DrawMode::DRAW_FILL, ix + x, y, radius);
+    step += stepsPerBeat;
+  }
+}
+
 void SongTool::drawGrid(float viewScale, love::Vector2 &viewOffset) {
   lv.graphics.setColor({ 1.0f, 1.0f, 1.0f, 0.4f });
-  auto gridDotRadius = 3.5f;
-  auto gridSize = 0.0f; // indicates infinite grid
-  grid.draw(gridCellSize, gridSize, viewScale, viewPosition, viewOffset, gridDotRadius, false);
+  // auto gridDotRadius = 3.5f;
+  // auto gridSize = 0.0f; // indicates infinite grid
+  // TODO: new grid shader
+  // grid.draw(gridCellSize, gridSize, viewScale, viewPosition, viewOffset, gridDotRadius, false);
 };
 
 void SongTool::drawPattern(const std::string &patternId, Pattern &pattern, float startTime,
@@ -221,9 +247,9 @@ void SongTool::drawPattern(const std::string &patternId, Pattern &pattern, float
     float innerPadding = 0.0f;
     lv.graphics.push(love::Graphics::STACK_ALL);
     if (patternId == soundTool.selectedPatternId) {
-      lv.graphics.setLineWidth(6.0f / (800.0f / viewWidth));
+      lv.graphics.setLineWidth(noZoomUnits(6.0f));
       lv.graphics.setColor({ 1.0f, 1.0f, 1.0f, 1.0f });
-      innerPadding = 3.0f / (800.0f / viewWidth);
+      innerPadding = noZoomUnits(3.0f);
     } else {
       lv.graphics.setColor({ 0.0f, 0.0f, 0.0f, 1.0f });
     }
@@ -401,6 +427,7 @@ void SongTool::drawOverlay() {
   lv.graphics.setLineWidth(1.0f / viewScale);
 
   drawGrid(viewScale, viewOffset);
+  drawTimeAxis();
 
   // highlight selected track if applicable
   if (soundTool.selectedTrackIndex >= 0) {

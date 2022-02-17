@@ -62,6 +62,7 @@ private:
   void drawSequence(Song::Track::Sequence &sequence, int zeroKey, float unit);
   void drawPattern(const std::string &patternId, Pattern &pattern, float startTime,
       float patternLength, bool isLoop, int zeroKey, float unit);
+  void drawTimeAxis();
   void drawTrackAxis(Song *song, double timePlaying);
   void drawDragPattern(float unit);
   mutable love::Transform viewTransform;
@@ -79,4 +80,8 @@ private:
       16.0f, love::TrueTypeRasterizer::HINTING_NORMAL) };
 
   bool hasTouch = false;
+
+  inline float noZoomUnits(float units) {
+    return units / (800.0f / viewWidth);
+  };
 };
