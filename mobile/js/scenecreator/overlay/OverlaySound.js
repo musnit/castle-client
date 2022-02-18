@@ -101,7 +101,7 @@ const SUBTOOL_GROUPS = {
     },
     {
       name: 'note_velocity',
-      icon: 'draw-line',
+      icon: 'velocity',
     },
   ],
 };
@@ -221,7 +221,7 @@ export const OverlaySound = ({ setActiveSheet, activeSheet }) => {
               style={[styles.button, isPlaying ? { backgroundColor: '#000' } : null]}
               onPress={() => sendAsync('EDITOR_SOUND_TOOL_ACTION', { action: 'play' })}>
               <CastleIcon
-                name={isPlaying ? 'rewind' : 'play'}
+                name={isPlaying ? 'rewind' : 'play-music'}
                 size={22}
                 color={isPlaying ? '#fff' : '#000'}
               />
@@ -236,7 +236,11 @@ export const OverlaySound = ({ setActiveSheet, activeSheet }) => {
                   doubleValue: viewFollowsPlayhead ? 0 : 1,
                 })
               }>
-              <MCIcon name="arrow-right" size={22} color={viewFollowsPlayhead ? '#fff' : '#000'} />
+              <CastleIcon
+                name="playhead-follow"
+                size={22}
+                color={viewFollowsPlayhead ? '#fff' : '#000'}
+              />
             </Pressable>
           </View>
           <View style={styles.toolbar}>
