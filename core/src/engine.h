@@ -27,6 +27,8 @@ public:
   explicit Engine();
   ~Engine();
 
+  static Engine &getEngine();
+
   // expect to set once per engine use, e.g. on mount
   void setInitialParams(const char *initialParamsJson);
 
@@ -64,6 +66,7 @@ public:
   LibraryClipboard &getLibraryClipboard();
 
 private:
+  inline static Engine *instance = nullptr;
   Bridge bridge { *this };
   CoreViews coreViews { bridge };
   Lv lv { 800 / 2, 1120 / 2 };
@@ -103,6 +106,10 @@ private:
 
 
 // Inlined implementations
+
+inline Engine &Engine::getEngine() {
+  return *instance;
+}
 
 inline Bridge &Engine::getBridge() {
   return bridge;

@@ -1223,7 +1223,7 @@ struct ShowLeaderboardResponse : BaseResponse {
     PROP(std::string, label, .label("label")) = "Score";
   } params;
 
-  void readLeaderboardRow(CoreViewRenderer &leaderboardView, Reader &reader, std::string i) {
+  static void readLeaderboardRow(CoreViewRenderer &leaderboardView, Reader &reader, std::string i) {
     leaderboardView.updateProp("place-" + i, "text", "#" + std::string(reader.str("place", "")));
     leaderboardView.updateProp("score-" + i, "text", reader.str("score", ""));
 
@@ -1246,15 +1246,16 @@ struct ShowLeaderboardResponse : BaseResponse {
     } else {
       filter = "none";
     }
-    auto &leaderboardView = ctx.getScene().getLeaderboardView();
-    leaderboardView.reset();
-    leaderboardView.updateProp("label", "text", params.label());
 
     auto deckId = ctx.getScene().getDeckId();
+    auto label = params.label();
 
     if (name && deckId) {
       ctx.getScene().getLeaderboards().getLeaderboard(
-          *deckId, *name, type, filter, [&](Reader &reader) {
+          *deckId, *name, type, filter, [label](Reader &reader) {
+            auto &leaderboardView = Engine::getEngine().getScene().getLeaderboardView();
+            leaderboardView.reset();
+            leaderboardView.updateProp("label", "text", label);
             leaderboardView.updateProp("leaderboard", "visibility", "visible");
             leaderboardView.updateProp("editorText", "visibility", "hidden");
 
@@ -1273,6 +1274,9 @@ struct ShowLeaderboardResponse : BaseResponse {
             });
           });
     } else {
+      auto &leaderboardView = ctx.getScene().getLeaderboardView();
+      leaderboardView.reset();
+      leaderboardView.updateProp("label", "text", params.label());
       leaderboardView.updateProp("leaderboard", "visibility", "visible");
       leaderboardView.updateProp("editorText", "visibility", "visible");
     }

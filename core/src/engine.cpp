@@ -81,6 +81,8 @@ Engine::PreInit::PreInit() {
 //
 
 Engine::Engine() {
+  instance = this;
+
   // First timer step
   lv.timer.step();
 
