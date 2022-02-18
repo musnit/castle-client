@@ -152,11 +152,7 @@ void TextBehavior::handlePrePerform() {
 
   // Fire tap triggers
   auto &rulesBehavior = getBehaviors().byType<RulesBehavior>();
-  auto fired = false; // Fire on at most one actor
   getGesture().forEachTouch([&](TouchId touchId, const Touch &touch) {
-    if (fired) {
-      return;
-    }
     if (touch.isUsed() && !touch.isUsed(TextBehavior::overlayTouchToken)) {
       return;
     }
@@ -181,9 +177,6 @@ void TextBehavior::handlePrePerform() {
     }
     rulesBehavior.fireAllIf<TextTapTrigger, TextComponent>(
         {}, [&](ActorId actorId, const TextTapTrigger &trigger, const TextComponent &component) {
-          if (fired) {
-            return false;
-          }
           if (!component.props.visible()) {
             return false;
           }
@@ -199,10 +192,10 @@ void TextBehavior::handlePrePerform() {
           if (inRect) {
             touch.use(TextBehavior::overlayTouchToken);
             if (component.lastTouchId == touchId && touch.released) {
-              fired = true;
+              return true;
             }
           }
-          return fired;
+          return false;
         });
   });
 }
