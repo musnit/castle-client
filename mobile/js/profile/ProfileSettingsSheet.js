@@ -60,6 +60,7 @@ const updateUserAsync = async ({ user, aboutBodyCache = {} }) => {
   if (!clean || clean === 'about:blank') {
     user.websiteUrl = '';
   }
+  user.websiteUrl = user.websiteUrl.substring(0, 128);
   user.tiktokUsername = Utilities.validateThirdPartyUsername(user.tiktokUsername);
   user.twitterUsername = Utilities.validateThirdPartyUsername(user.twitterUsername);
   user.itchUsername = Utilities.validateThirdPartyUsername(user.itchUsername);
@@ -83,6 +84,7 @@ const updateUserAsync = async ({ user, aboutBodyCache = {} }) => {
     }
   }
   if (user.about) {
+    user.about = user.about.substring(0, 128);
     user.about = formatMessage(user.about, aboutBodyCache);
   }
   const result = await Session.apolloClient.mutate({
