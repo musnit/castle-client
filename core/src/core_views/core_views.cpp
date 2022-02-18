@@ -165,10 +165,6 @@ void CoreViewRenderer::reset() {
 }
 
 void CoreViewRenderer::updateProp(std::string viewId, std::string key, std::string value) {
-  if (props.find(viewId) == props.end()) {
-    props[viewId] = std::unordered_map<std::string, std::string>();
-  }
-
   props[viewId][key] = value;
 
   auto view = getViewForId(layout.get(), viewId);
