@@ -303,6 +303,8 @@ private:
   template<typename K>
   json::Value makeStr(K &&key);
 
+  double checkNaN(double val);
+
   template<typename F>
   void runLambdaOrCallWrite(F &&f);
 
@@ -833,15 +835,15 @@ inline void Writer::setNum(int val) {
 
 template<typename K>
 void Writer::num(K &&key, double val) {
-  cur->AddMember(makeStr(std::forward<K>(key)), json::Value(val), alloc);
+  cur->AddMember(makeStr(std::forward<K>(key)), json::Value(checkNaN(val)), alloc);
 }
 
 inline void Writer::num(double val) {
-  cur->PushBack(val, alloc);
+  cur->PushBack(checkNaN(val), alloc);
 }
 
 inline void Writer::setNum(double val) {
-  *cur = json::Value(val);
+  *cur = json::Value(checkNaN(val));
 }
 
 template<typename K, typename V>
@@ -950,6 +952,13 @@ json::Value Writer::makeStr(K &&key) {
   }
 }
 
+inline double Writer::checkNaN(double val) {
+  if (std::isnan(val)) {
+    return 0;
+  }
+  return val;
+}
+
 template<typename F>
 void Writer::runLambdaOrCallWrite(F &&f) {
   if constexpr (std::is_invocable<F>::value) {
@@ -968,7 +977,7 @@ inline json::Value Writer::write_(const float &f) {
 }
 
 inline json::Value Writer::write_(const double &f) {
-  return json::Value(f);
+  return json::Value(checkNaN(f));
 }
 
 inline json::Value Writer::write_(const bool &b) {
