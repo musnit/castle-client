@@ -35,16 +35,17 @@ const postScriptNames = {
 
 export default InspectorText = () => {
   const textComponent = useCoreState('EDITOR_SELECTED_COMPONENT:Text');
-  const sendAction = React.useCallback(
-    (...args) => sendBehaviorAction('Text', ...args),
+  const bodyComponent = useCoreState('EDITOR_SELECTED_COMPONENT:Body');
+  const sendBodyAction = React.useCallback(
+    (...args) => sendBehaviorAction('Body', ...args),
     [sendBehaviorAction]
   );
 
   const [visibleValue, setVisibleValueAndSendAction] = useOptimisticBehaviorValue({
-    component: textComponent,
+    component: bodyComponent,
     propName: 'visible',
     propType: 'b',
-    sendAction,
+    sendAction: sendBodyAction,
   });
   const onChangeVisibleValue = React.useCallback(
     (visible) => {

@@ -125,6 +125,14 @@ void TextBehavior::handleReadComponent(ActorId actorId, TextComponent &component
   }
 
   updateFont(actorId, component);
+
+  // If we're invisible according to legacy prop, propagate to body prop
+  if (!component.props.visible()) {
+    auto &bodyBehavior = getBehaviors().byType<BodyBehavior>();
+    if (auto bodyComponent = bodyBehavior.maybeGetComponent(actorId)) {
+      bodyComponent->props.visible() = false;
+    }
+  }
 }
 
 
@@ -237,9 +245,6 @@ love::Font *TextBehavior::getOverlayFont() const {
 
 bool TextBehavior::handleDrawComponent(ActorId actorId, const TextComponent &component,
     std::optional<SceneDrawingOptions> options) const {
-  if (!component.props.visible()) {
-    return false;
-  }
   auto &scene = getScene();
   auto cameraScale = 800.0f / scene.getCameraSize().x;
   auto fontPixelScale = float(lv.window.getDPIScale()) * cameraScale;
