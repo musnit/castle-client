@@ -25,6 +25,30 @@ jobs:
           command: cd mobile && ./tools/upload-beta-build.sh
       - store_artifacts:
           path: output
+
+  build_beta_android:
+    docker:
+      - image: 'reactnativecommunity/react-native-android:5.1'
+    resource_class: xlarge
+    steps:
+      - checkout:
+      - run:
+          name: Submodules
+          command: git submodule update --init --recursive
+      - restore_cache:
+          key: dependency-cache-{{ checksum "mobile/package-lock.json" }}
+      - run:
+          name: Install Dependencies
+          command: cd mobile && npm install
+      - save_cache:
+          key: dependency-cache-{{ checksum "mobile/package-lock.json" }}
+          paths:
+            - ./mobile/node_modules
+      - run:
+          name: Build
+          command: cd mobile && /bin/bash tools/build-android-beta.sh
+          no_output_timeout: 30m
+
 workflows:
   version: 2
   build:
@@ -34,3 +58,13 @@ workflows:
             branches:
               only:
                 - beta/ios
+  nightly:
+    triggers:
+      - schedule:
+          cron: "0 17 * * *"
+          filters:
+            branches:
+              only:
+                - master
+    jobs:
+      - build_beta_android
