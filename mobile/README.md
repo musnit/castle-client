@@ -83,11 +83,11 @@ Troubleshooting:
   - Open deck from deep link (app already open)
   - Open deck from push notification (cold boot)
   - Open deck from push notification (app already open)
-  - Play initial five pinned decks
+  - Play initial 4 pinned decks
 
 - `cd ..` (to mobile)
 - `./node_modules/@sentry/cli/bin/sentry-cli upload-dif -o castle-xyz -p castle-mobile android/app/build/intermediates/merged_native_libs/release`
 - `open tools/build`
-- Upload to play store https://play.google.com/console/u/1/developers/6774483098390213048/app/4973889594505423194/tracks/production. Make sure to update the release notes.
+- Upload to play store https://play.google.com/console/u/1/developers/6774483098390213048/app/4973889594505423194/tracks/open-testing. Make sure to update the release notes.
 - Run `./tools/android-set-app-version.sh` to trigger the in-app update banner
 - Release web?
