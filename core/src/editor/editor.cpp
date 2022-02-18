@@ -96,8 +96,10 @@ void Editor::clearState() {
   soundTool.resetState();
   textTool.resetState();
   commands.clear();
-  auto &drawingBehavior = scene->getBehaviors().byType<Drawing2Behavior>();
-  drawingBehavior.clearEditorDataCache();
+  if (scene) { // scene can be null if we never loaded / finished reading a scene
+    auto &drawingBehavior = scene->getBehaviors().byType<Drawing2Behavior>();
+    drawingBehavior.clearEditorDataCache();
+  }
   if (capture) {
     capture = nullptr;
   }
