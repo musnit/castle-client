@@ -537,7 +537,7 @@ void TextBehavior::updateEmsPerLine(ActorId actorId, TextComponent &component) {
   std::vector<int> lineWidths;
   font->getWrap({ { "m", { 1, 1, 1, 1 } } }, wrap, lines, &lineWidths);
 
-  if (!lineWidths.empty()) {
+  if (!lineWidths.empty() && float(lineWidths[0]) > 0.0f) {
     component.props.emsPerLine() = wrap / float(lineWidths[0]);
   }
 }
