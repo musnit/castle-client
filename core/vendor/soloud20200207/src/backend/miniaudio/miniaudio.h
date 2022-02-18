@@ -19981,52 +19981,38 @@ static ma_result ma_device__untrack__coreaudio(ma_device* pDevice)
     {
         case AVAudioSessionRouteChangeReasonOldDeviceUnavailable:
         {
-        #if defined(MA_DEBUG_OUTPUT)
             printf("[Core Audio] Route Changed: AVAudioSessionRouteChangeReasonOldDeviceUnavailable\n");
-        #endif
         } break;
 
         case AVAudioSessionRouteChangeReasonNewDeviceAvailable:
         {
-        #if defined(MA_DEBUG_OUTPUT)
             printf("[Core Audio] Route Changed: AVAudioSessionRouteChangeReasonNewDeviceAvailable\n");
-        #endif
         } break;
 
         case AVAudioSessionRouteChangeReasonNoSuitableRouteForCategory:
         {
-        #if defined(MA_DEBUG_OUTPUT)
             printf("[Core Audio] Route Changed: AVAudioSessionRouteChangeReasonNoSuitableRouteForCategory\n");
-        #endif
         } break;
 
         case AVAudioSessionRouteChangeReasonWakeFromSleep:
         {
-        #if defined(MA_DEBUG_OUTPUT)
             printf("[Core Audio] Route Changed: AVAudioSessionRouteChangeReasonWakeFromSleep\n");
-        #endif
         } break;
 
         case AVAudioSessionRouteChangeReasonOverride:
         {
-        #if defined(MA_DEBUG_OUTPUT)
             printf("[Core Audio] Route Changed: AVAudioSessionRouteChangeReasonOverride\n");
-        #endif
         } break;
 
         case AVAudioSessionRouteChangeReasonCategoryChange:
         {
-        #if defined(MA_DEBUG_OUTPUT)
             printf("[Core Audio] Route Changed: AVAudioSessionRouteChangeReasonCategoryChange\n");
-        #endif
         } break;
 
         case AVAudioSessionRouteChangeReasonUnknown:
         default:
         {
-        #if defined(MA_DEBUG_OUTPUT)
             printf("[Core Audio] Route Changed: AVAudioSessionRouteChangeReasonUnknown\n");
-        #endif
         } break;
     }
 
@@ -20838,21 +20824,26 @@ ma_result ma_context_init__coreaudio(const ma_context_config* pConfig, ma_contex
               /* Using PlayAndRecord */
               // XXX(castle): maybe required to make airpods work
               options |= AVAudioSessionCategoryOptionAllowBluetooth;
+              printf("Castle: Use PlayAndRecord audio session\n");
             } else if ([pAudioSession setCategory: AVAudioSessionCategoryPlayback withOptions:options error:nil]) {
               /* Using Playback */
               /// XXX(castle): maybe required to make airpods work
               options |= AVAudioSessionCategoryOptionAllowBluetoothA2DP;
+              printf("Castle: Use Playback audio session\n");
             } else if ([pAudioSession setCategory: AVAudioSessionCategoryRecord withOptions:options error:nil]) {
                 /* Using Record */
               /* Using PlayAndRecord */
               // XXX(castle): maybe required to make airpods work
               options |= AVAudioSessionCategoryOptionAllowBluetooth;
+              printf("Castle: Use Record audio session\n");
             } else {
                 /* Leave as default? */
+              printf("Castle: Use default audio session\n");
             }
         } else {
             if (category != ma_ios_session_category_none) {
                 if (![pAudioSession setCategory: ma_to_AVAudioSessionCategory(category) withOptions:options error:nil]) {
+                  printf("Castle: Failed to set audio session category\n");
                     return MA_INVALID_OPERATION;    /* Failed to set session category. */
                 }
             }
