@@ -216,7 +216,7 @@ void SongTool::drawTimeAxis() {
 void SongTool::drawGrid(float viewScale, love::Vector2 &viewOffset) {
   constexpr auto gridGrey = 136.0f / 255.0f;
   lv.graphics.setColor({ gridGrey, gridGrey, gridGrey, 1.0f });
-  auto gridDotRadius = 12.0f;
+  auto gridDotRadius = 12.0f * 0.01f;
 
   // grid bounds
   int numTracks = 1;
@@ -226,10 +226,10 @@ void SongTool::drawGrid(float viewScale, love::Vector2 &viewOffset) {
     songLengthBars = stepsToBars(soundTool.songTotalLength);
   }
   songLengthBars += 10.5f; // go beyond the end of the song a bit
-  love::Vector2 gridMin { gridCellSize * -0.5f, gridCellSize * -0.5f };
+  love::Vector2 gridMin { -gridDotRadius, -gridDotRadius };
   love::Vector2 gridMax {
     songLengthBars * gridCellSize,
-    (float(numTracks) + 0.5f) * gridCellSize,
+    (float(numTracks) * gridCellSize) + gridDotRadius,
   };
 
   grid.draw(

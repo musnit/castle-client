@@ -73,6 +73,8 @@ void Grid::makeCrossShader() {
     uniform float dotRadius;
     uniform vec2 offset;
     uniform vec2 viewOffset;
+    uniform float dashSpacing;
+    uniform float dashRadius;
 
     vec4 effect(vec4 color, Image tex, vec2 texCoords, vec2 screenCoords) {
       vec2 f = mod(screenCoords + offset, gridCellSize);
@@ -87,7 +89,9 @@ void Grid::makeCrossShader() {
 
       vec2 posTarget = 1.0 - step(dotRadius, f);
       vec2 negTarget = step(-dotRadius, f - gridCellSize);
-      float target = min(posTarget.x, posTarget.y) + max(negTarget.x, negTarget.y);
+      vec2 dashMod = mod(f, dashSpacing);
+      float dashes = min(step(dashMod.x, dashRadius), step(dashMod.y, dashRadius));
+      float target = dashes + min(posTarget.x, posTarget.y) + max(negTarget.x, negTarget.y);
       if (f.x <= 4.0 || f.y <= 4.0) {
         return vec4(color.rgb, target * color.a);
       } else {
@@ -137,6 +141,9 @@ void Grid::draw(float gridCellSize, love::Vector2 gridMin, love::Vector2 gridMax
     {
       auto info = shader->getUniformInfo("dotRadius");
       info->floats[0] = dpiScale * dotRadius;
+      if (style == Style::Cross) {
+        info->floats[0] *= viewScale;
+      }
       shader->updateUniform(info, 1);
     }
     {
@@ -156,6 +163,18 @@ void Grid::draw(float gridCellSize, love::Vector2 gridMin, love::Vector2 gridMax
       auto info = shader->getUniformInfo("onlyAxes");
       info->ints[0] = onlyAxes ? 1 : 0;
       shader->updateUniform(info, 1);
+    }
+    if (style == Style::Cross) {
+      {
+        auto info = shader->getUniformInfo("dashRadius");
+        info->floats[0] = dpiScale * viewScale * 2.0f * 0.01f;
+        shader->updateUniform(info, 1);
+      }
+      {
+        auto info = shader->getUniformInfo("dashSpacing");
+        info->floats[0] = dpiScale * viewScale * 9.0f * 0.01f;
+        shader->updateUniform(info, 1);
+      }
     }
     lv.graphics.setShader(shader.get());
 
