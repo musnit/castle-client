@@ -11,7 +11,7 @@ struct Sample;
 class SoundTool;
 
 #define PATTERN_DEFAULT_VIEW_WIDTH 12.0f
-#define PATTERN_MIN_VIEW_WIDTH 4.0f
+#define PATTERN_MIN_VIEW_WIDTH 6.0f
 #define PATTERN_MAX_VIEW_WIDTH 36.0f
 #define PATTERN_DEFAULT_VIEW_X_BOUND 5.0f
 
@@ -54,7 +54,7 @@ private:
   GesturePanZoom panZoom {
     PATTERN_MIN_VIEW_WIDTH,
     PATTERN_MAX_VIEW_WIDTH,
-    { 0.0f, -7.0f },
+    { -10.0f, -7.0f },
     { PATTERN_DEFAULT_VIEW_X_BOUND, 9.0f },
   };
   void drawGrid(Song::Track *track, love::Vector2 &viewOffset);

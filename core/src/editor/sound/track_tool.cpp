@@ -231,24 +231,25 @@ void TrackTool::drawGrid(Song::Track *track, love::Vector2 &viewOffset) {
 };
 
 float TrackTool::getNoteAxisWidth() {
-  return gridCellSize * 4.0f;
+  return std::max(gridCellSize * 2.0f, noZoomUnits(72.0f));
 }
 
 void TrackTool::drawNoteAxis(Song::Track *track) {
-  auto x = viewPosition.x - getNoteAxisWidth(); // always on left edge of view
+  auto x = std::max(viewPosition.x, 0.0f) - getNoteAxisWidth(); // always on left edge of view
   lv.graphics.push();
   lv.graphics.translate(x, 0.0f);
+  auto noteAxisWidth = getNoteAxisWidth() / gridCellSize;
   lv.graphics.scale(gridCellSize, gridCellSize);
 
   // instrument controls axis appearance
-  track->instrument->drawEditorKeyAxis(lv, axisFont.get(), 4.0f,
+  track->instrument->drawEditorKeyAxis(lv, axisFont.get(), noteAxisWidth,
       getCurrentSubtool()->highlightAxis(), getCurrentSubtool()->highlightAxisKey());
 
   // draw border line on edge of axis
   constexpr auto darkGrey = 0x55 / 255.0f;
   lv.graphics.setColor({ darkGrey, darkGrey, darkGrey, 1.0f });
-  lv.graphics.rectangle(
-      love::Graphics::DrawMode::DRAW_FILL, 4.0f, noZoomUnits(-1024.0f), 0.1f, noZoomUnits(2048.0f));
+  lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, noteAxisWidth, noZoomUnits(-1024.0f),
+      0.1f, noZoomUnits(2048.0f));
 
   lv.graphics.pop();
 }
