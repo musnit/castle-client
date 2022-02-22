@@ -50,6 +50,10 @@ void SongTool::update(double dt) {
       auto bar = double(transformedTouchPosition.x / gridCellSize);
       auto track = floor(transformedTouchPosition.y / gridCellSize);
       auto dragDeltaBars = floor((dragPatternTouchDelta.x / gridCellSize) + 0.5f);
+      if (bar >= 0 && transformedTouchPosition.x < viewPosition.x) {
+        // touched the floating track axis when the view was panned
+        bar = -1;
+      }
 
       bool selectedExistingTrack
           = track >= 0 && soundTool.hasSong() && track < int(soundTool.song->tracks.size());
@@ -400,7 +404,7 @@ double SongTool::stepsToBars(double steps) {
 void SongTool::drawTrackAxis(Song *song, double timeInSong) {
   lv.graphics.push(love::Graphics::STACK_ALL);
   // always on left edge of view
-  lv.graphics.translate(viewPosition.x - gridCellSize * 0.5f, gridCellSize * 0.45f);
+  lv.graphics.translate(std::max(viewPosition.x, 0.0f) - gridCellSize * 0.5f, gridCellSize * 0.45f);
 
   int trackIndex = 0;
   constexpr auto shittyFontScale = 8.0f / 800.0f;
