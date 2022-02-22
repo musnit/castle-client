@@ -76,29 +76,28 @@ public:
     if (!track) {
       return;
     }
-    auto gridCellSize = soundTool.trackTool.gridCellSize;
     auto zeroKey = track->instrument->getZeroKey();
 
     // draw full note boxes in white
     lv.graphics.setColor({ 1.0f, 1.0f, 1.0f, 1.0f });
     for (auto &[time, notes] : *pattern) {
-      auto x = time * gridCellSize;
+      auto x = time;
       for (auto &note : notes) {
-        auto y = ((note.key - zeroKey) * -gridCellSize) - gridCellSize;
+        auto y = ((note.key - zeroKey) * -1.0f) - 1.0f;
         lv.graphics.rectangle(
-            love::Graphics::DrawMode::DRAW_FILL, x, y, gridCellSize, gridCellSize);
+            love::Graphics::DrawMode::DRAW_FILL, x + 0.05f, y + 0.05f, 0.95f, 0.95f);
       }
     }
 
     // draw inner note boxes in pattern color, according to velocity
     lv.graphics.setColor(pattern->color());
     for (auto &[time, notes] : *pattern) {
-      auto x = (time + 0.5f) * gridCellSize;
+      auto x = (time + 0.5f);
       for (auto &note : notes) {
-        auto y = ((note.key - zeroKey) * -gridCellSize) - gridCellSize * 0.5f;
-        auto boxSize = (float(note.vel) / 128.0f) * gridCellSize;
-        lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, x - boxSize * 0.5f,
-            y - boxSize * 0.5f, boxSize, boxSize);
+        auto y = ((note.key - zeroKey) * -1.0f) - 0.5f;
+        auto boxSize = (float(note.vel) / 128.0f) * 0.95f;
+        lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, (x + 0.025f) - boxSize * 0.5f,
+            (y + 0.025f) - boxSize * 0.5f, boxSize, boxSize);
       }
     }
 

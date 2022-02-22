@@ -295,7 +295,10 @@ void TrackTool::drawOverlay() {
   lv.graphics.setLineWidth(noZoomUnits(1.0f));
 
   drawGrid(track, viewOffset);
+  lv.graphics.push();
+  lv.graphics.scale(gridCellSize, gridCellSize);
   getCurrentSubtool()->drawOverlay(lv);
+  lv.graphics.pop();
 
   // draw playhead
   if (soundTool.isPlaying) {

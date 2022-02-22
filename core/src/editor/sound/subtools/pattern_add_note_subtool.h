@@ -77,24 +77,24 @@ public:
     if (!track) {
       return;
     }
-    auto gridCellSize = soundTool.trackTool.gridCellSize;
     auto zeroKey = track->instrument->getZeroKey();
     lv.graphics.setColor(pattern->color());
 
     for (auto &[time, notes] : *pattern) {
-      auto x = time * gridCellSize;
+      auto x = time;
       for (auto &note : notes) {
-        auto y = ((note.key - zeroKey) * -gridCellSize) - gridCellSize;
+        auto y = ((note.key - zeroKey) * -1.0f) - 1.0f;
         lv.graphics.rectangle(
-            love::Graphics::DrawMode::DRAW_FILL, x, y, gridCellSize, gridCellSize);
+            love::Graphics::DrawMode::DRAW_FILL, x + 0.05f, y + 0.05f, 0.95f, 0.95f);
       }
     }
 
     if (hasTouch) {
       // draw temp note
-      auto x = tempNoteTime * gridCellSize;
-      auto y = ((tempNote.key - zeroKey) * -gridCellSize) - gridCellSize;
-      lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, x, y, gridCellSize, gridCellSize);
+      auto x = tempNoteTime;
+      auto y = ((tempNote.key - zeroKey) * -1.0f) - 1.0f;
+      lv.graphics.rectangle(
+          love::Graphics::DrawMode::DRAW_FILL, x + 0.05f, y + 0.05f, 0.95f, 0.95f);
     }
   }
 
