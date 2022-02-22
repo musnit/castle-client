@@ -176,7 +176,7 @@ void TrackTool::drawGrid(float viewScale, love::Vector2 &viewOffset) {
 };
 
 float TrackTool::getNoteAxisWidth() {
-  return gridCellSize * 1.5f;
+  return gridCellSize * 4.0f;
 }
 
 void TrackTool::drawNoteAxis(Song::Track *track) {
@@ -184,7 +184,7 @@ void TrackTool::drawNoteAxis(Song::Track *track) {
   lv.graphics.push();
   lv.graphics.translate(x, 0.0f);
   lv.graphics.scale(gridCellSize, gridCellSize);
-  track->instrument->drawEditorKeyAxis(lv, axisFont.get(), 1.5f,
+  track->instrument->drawEditorKeyAxis(lv, axisFont.get(), 4.0f,
       getCurrentSubtool()->highlightAxis(), getCurrentSubtool()->highlightAxisKey());
   lv.graphics.pop();
 }
@@ -227,7 +227,7 @@ void TrackTool::drawOverlay() {
 
   love::Colorf clearColor { 0.8f, 0.8f, 0.8f, 1.0f };
   lv.graphics.clear(clearColor, {}, {});
-  lv.graphics.setLineWidth(0.1f);
+  lv.graphics.setLineWidth(noZoomUnits(1.0f));
 
   drawGrid(viewScale, viewOffset);
   getCurrentSubtool()->drawOverlay(lv);

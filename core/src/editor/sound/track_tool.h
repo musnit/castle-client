@@ -69,6 +69,10 @@ private:
 
   std::unique_ptr<love::Font> axisFont { lv.graphics.newDefaultFont(
       16.0f, love::TrueTypeRasterizer::HINTING_NORMAL) };
+
+  inline float noZoomUnits(float units) {
+    return units / (800.0f / viewWidth);
+  };
 };
 
 inline SoundSubtool *TrackTool::getCurrentSubtool() {

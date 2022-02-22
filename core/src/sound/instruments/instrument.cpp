@@ -57,15 +57,28 @@ void Instrument::drawEditorKeyAxis(
     auto isBlack = scaleDegree == 1 || scaleDegree == 3 || scaleDegree == 6 || scaleDegree == 8
         || scaleDegree == 10;
     if (isBlack) {
-      lv.graphics.setColor({ 0.1f, 0.1f, 0.1f, 1.0f });
+      constexpr auto darkGrey = 0x55 / 255.0f;
+      lv.graphics.setColor({ darkGrey, darkGrey, darkGrey, 1.0f });
     } else {
-      lv.graphics.setColor({ 1.0f, 1.0f, 1.0f, 1.0f });
+      constexpr auto lightGrey = 0xee / 255.0f;
+      lv.graphics.setColor({ lightGrey, lightGrey, lightGrey, 1.0f });
     }
     if (highlightKey && note == keyPressed) {
       lv.graphics.setColor({ 0.8f, 0.0f, 0.0f, 1.0f });
     }
     lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, 0.0f, y, width, 1.0f);
-    lv.graphics.setColor({ 0.0f, 0.0f, 0.0f, 1.0f });
-    lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_LINE, 0.0f, y, width, 1.0f);
+
+    // draw bottom divider if we have two white keys in a row
+    if (scaleDegree == 0 || scaleDegree == 5) {
+      if (scaleDegree == 0) {
+        constexpr auto darkGrey = 0x55 / 255.0f;
+        lv.graphics.setColor({ darkGrey, darkGrey, darkGrey, 1.0f });
+      }
+      if (scaleDegree == 5) {
+        constexpr auto dividerGrey = 0xbb / 255.0f;
+        lv.graphics.setColor({ dividerGrey, dividerGrey, dividerGrey, 1.0f });
+      }
+      lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, 0.0f, y + 0.95f, width, 0.1f);
+    }
   }
 }
