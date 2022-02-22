@@ -127,7 +127,7 @@ void TrackTool::update(double dt) {
   }
 }
 
-void TrackTool::drawGrid(float viewScale, love::Vector2 &viewOffset) {
+void TrackTool::drawGrid(Song::Track *track, love::Vector2 &viewOffset) {
   auto &scene = getScene();
   unsigned int initialStepIndexVisible
       = int(std::floor(std::max(viewPosition.x, 0.0f) / gridCellSize));
@@ -150,6 +150,10 @@ void TrackTool::drawGrid(float viewScale, love::Vector2 &viewOffset) {
   auto lineHeight = gridHeight;
   auto lineX = 0.0f;
   auto lineWidth = gridWidth;
+
+  // instrument has a chance to control grid cell color here
+  track->instrument->drawEditorGridCellColors(
+      lv, initialStepIndexVisible, initialNoteIndexVisible, gridWidth, gridHeight);
 
   // draw light grid on every step and note
   {
@@ -290,7 +294,7 @@ void TrackTool::drawOverlay() {
   lv.graphics.clear(clearColor, {}, {});
   lv.graphics.setLineWidth(noZoomUnits(1.0f));
 
-  drawGrid(viewScale, viewOffset);
+  drawGrid(track, viewOffset);
   getCurrentSubtool()->drawOverlay(lv);
 
   // draw playhead

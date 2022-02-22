@@ -32,6 +32,16 @@ public:
   // editor functionality
   virtual void drawEditorKeyAxis(
       Lv &lv, love::Font *font, float width, bool highlightKey, int keyPressed);
+  virtual void drawEditorGridCellColors(
+      Lv &lv, unsigned int initialStepIndex, int initialNoteIndex, float width, float height);
+
+  inline bool isBlack(int scaleDegree) {
+    while (scaleDegree < 0) {
+      scaleDegree += 12;
+    }
+    return scaleDegree == 1 || scaleDegree == 3 || scaleDegree == 6 || scaleDegree == 8
+        || scaleDegree == 10;
+  }
 };
 
 inline std::string Instrument::getType() const {

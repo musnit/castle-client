@@ -354,6 +354,65 @@ void Drums::play(Sound &sound, Pattern::Note note) {
   }
 }
 
+std::string Drums::getActiveDrumName(int note) {
+  switch (note) {
+  case 36: {
+    if (params.useKick()) {
+      return "KK";
+    }
+  }
+  case 37: {
+    if (params.useLoTom()) {
+      return "LT";
+    }
+  }
+  case 38: {
+    if (params.useHiTom()) {
+      return "HT";
+    }
+  }
+  case 39: {
+    if (params.useSnare()) {
+      return "SD";
+    }
+  }
+  case 40: {
+    if (params.useClap()) {
+      return "CP";
+    }
+  }
+  case 41: {
+    if (params.useClosedHat()) {
+      return "HH";
+    }
+  }
+  case 42: {
+    if (params.useOpenHat()) {
+      return "OH";
+    }
+  }
+  }
+  return "";
+}
+
+void Drums::drawEditorGridCellColors(
+    Lv &lv, unsigned int initialStepIndex, int initialNoteIndex, float width, float height) {
+  // rows outside of the usable drums are drawn as inactive
+  constexpr auto inactive = 0xcc / 255.0f;
+  lv.graphics.setColor({ inactive, inactive, inactive, 1.0f });
+
+  int noteIndexVisible = initialNoteIndex;
+  float gridY = 0.0f;
+  while (gridY < height) {
+    int key = getZeroKey() - noteIndexVisible - 1;
+    if (getActiveDrumName(key) == "") {
+      lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, 0.0f, gridY, width, 1.0f);
+    }
+    noteIndexVisible++;
+    gridY += 1.0f;
+  }
+}
+
 void Drums::drawEditorKeyAxis(
     Lv &lv, love::Font *font, float width, bool highlightKey, int keyPressed) {
   // grey out most of the axis
@@ -363,62 +422,8 @@ void Drums::drawEditorKeyAxis(
   // draw keys where there are drums
   for (auto zero = getZeroKey(), note = zero; note < zero + 12; note++) {
     auto y = ((note - zero) * -1.0f) - 1.0f;
-    std::string name;
-    bool hasDrum = false;
-
-    switch (note) {
-    case 36: {
-      if (params.useKick()) {
-        hasDrum = true;
-        name = "KK";
-      }
-      break;
-    }
-    case 37: {
-      if (params.useLoTom()) {
-        hasDrum = true;
-        name = "LT";
-      }
-      break;
-    }
-    case 38: {
-      if (params.useHiTom()) {
-        hasDrum = true;
-        name = "HT";
-      }
-      break;
-    }
-    case 39: {
-      if (params.useSnare()) {
-        hasDrum = true;
-        name = "SD";
-      }
-      break;
-    }
-    case 40: {
-      if (params.useClap()) {
-        hasDrum = true;
-        name = "CP";
-      }
-      break;
-    }
-    case 41: {
-      if (params.useClosedHat()) {
-        hasDrum = true;
-        name = "HH";
-      }
-      break;
-    }
-    case 42: {
-      if (params.useOpenHat()) {
-        hasDrum = true;
-        name = "OH";
-      }
-      break;
-    }
-    }
-
-    if (hasDrum) {
+    std::string name = getActiveDrumName(note);
+    if (name != "") {
       constexpr auto shittyFontScale = 24.0f / 800.0f;
       lv.graphics.setColor({ 1.0f, 1.0f, 1.0f, 1.0f });
       if (highlightKey && note == keyPressed) {

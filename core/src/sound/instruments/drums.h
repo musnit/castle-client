@@ -72,6 +72,8 @@ public:
 
   void drawEditorKeyAxis(
       Lv &lv, love::Font *font, float width, bool highlightKey, int keyPressed) override;
+  void drawEditorGridCellColors(Lv &lv, unsigned int initialStepIndex, int initialNoteIndex,
+      float width, float height) override;
   void dirtyCache();
 
 private:
@@ -87,6 +89,8 @@ private:
   void playSnare(Sound &sound, Params::Snare &snare, float amplitude);
   void playClap(Sound &sound, Params::Clap &clap, float amplitude);
   void playTom(Sound &sound, bool hi, Params::Tom &tom, float amplitude);
+
+  std::string getActiveDrumName(int note);
 };
 
 inline void Drums::dirtyCache() {

@@ -57,7 +57,7 @@ private:
     { 0.0f, -7.0f },
     { PATTERN_DEFAULT_VIEW_X_BOUND, 9.0f },
   };
-  void drawGrid(float viewScale, love::Vector2 &viewOffset);
+  void drawGrid(Song::Track *track, love::Vector2 &viewOffset);
   float getNoteAxisWidth();
   void drawNoteAxis(Song::Track *track);
   mutable love::Transform viewTransform;

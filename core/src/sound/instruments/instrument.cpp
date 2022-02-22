@@ -48,15 +48,31 @@ std::unique_ptr<Instrument> Instrument::readVirtual(Reader &reader) {
   return result;
 }
 
+void Instrument::drawEditorGridCellColors(
+    Lv &lv, unsigned int initialStepIndex, int initialNoteIndex, float width, float height) {
+  // darken rows for black keys
+  constexpr auto darkGrey = 0xd2 / 255.0f;
+  lv.graphics.setColor({ darkGrey, darkGrey, darkGrey, 1.0f });
+
+  int noteIndexVisible = initialNoteIndex;
+  float gridY = 0.0f;
+  while (gridY < height) {
+    int key = getZeroKey() - noteIndexVisible - 1;
+    if (isBlack(key % 12)) {
+      lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, 0.0f, gridY, width, 1.0f);
+    }
+    noteIndexVisible++;
+    gridY += 1.0f;
+  }
+}
+
 void Instrument::drawEditorKeyAxis(
     Lv &lv, love::Font *font, float width, bool highlightKey, int keyPressed) {
   // instrument's zero key is y = 0
   for (auto zero = getZeroKey(), note = zero - 60; note < zero + 36; note++) {
     auto y = ((note - zero) * -1.0f) - 1.0f;
     auto scaleDegree = note % 12;
-    auto isBlack = scaleDegree == 1 || scaleDegree == 3 || scaleDegree == 6 || scaleDegree == 8
-        || scaleDegree == 10;
-    if (isBlack) {
+    if (isBlack(scaleDegree)) {
       constexpr auto darkGrey = 0x55 / 255.0f;
       lv.graphics.setColor({ darkGrey, darkGrey, darkGrey, 1.0f });
     } else {
