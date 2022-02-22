@@ -358,37 +358,37 @@ std::string Drums::getActiveDrumName(int note) {
   switch (note) {
   case 36: {
     if (params.useKick()) {
-      return "KK";
+      return "KICK";
     }
   }
   case 37: {
     if (params.useLoTom()) {
-      return "LT";
+      return "LOW TOM";
     }
   }
   case 38: {
     if (params.useHiTom()) {
-      return "HT";
+      return "HIGH TOM";
     }
   }
   case 39: {
     if (params.useSnare()) {
-      return "SD";
+      return "SNARE";
     }
   }
   case 40: {
     if (params.useClap()) {
-      return "CP";
+      return "CLAP";
     }
   }
   case 41: {
     if (params.useClosedHat()) {
-      return "HH";
+      return "HAT";
     }
   }
   case 42: {
     if (params.useOpenHat()) {
-      return "OH";
+      return "OPEN HAT";
     }
   }
   }
@@ -416,7 +416,8 @@ void Drums::drawEditorGridCellColors(
 void Drums::drawEditorKeyAxis(
     Lv &lv, love::Font *font, float width, bool highlightKey, int keyPressed) {
   // grey out most of the axis
-  lv.graphics.setColor({ 0.8f, 0.8f, 0.8f, 1.0f });
+  constexpr auto inactive = 0xdd / 255.0f;
+  lv.graphics.setColor({ inactive, inactive, inactive, 1.0f });
   lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, 0.0f, -60.0f, width, 120.0f);
 
   // draw keys where there are drums
@@ -425,14 +426,18 @@ void Drums::drawEditorKeyAxis(
     std::string name = getActiveDrumName(note);
     if (name != "") {
       constexpr auto shittyFontScale = 24.0f / 800.0f;
-      lv.graphics.setColor({ 1.0f, 1.0f, 1.0f, 1.0f });
+      constexpr auto active = 0xee / 255.0f;
+      lv.graphics.setColor({ active, active, active, 1.0f });
       if (highlightKey && note == keyPressed) {
         lv.graphics.setColor({ 0.8f, 0.0f, 0.0f, 1.0f });
       }
       lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, 0.0f, y, width, 1.0f);
-      lv.graphics.setColor({ 0.0f, 0.0f, 0.0f, 1.0f });
+      constexpr auto divider = 0xbb / 255.0f;
+      lv.graphics.setColor({ divider, divider, divider, 1.0f });
       lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_LINE, 0.0f, y, width, 1.0f);
 
+      constexpr auto dark = 0x55 / 255.0f;
+      lv.graphics.setColor({ dark, dark, dark, 1.0f });
       lv.graphics.print({ { name, { 1, 1, 1, 1 } } }, font,
           love::Matrix4(0.1f, y + 0.25f, 0, shittyFontScale, shittyFontScale, 0, 0, 0, 0));
     }
