@@ -3,7 +3,6 @@
 #include "precomp.h"
 #include "lv.h"
 #include "editor/gesture_pan_zoom.h"
-#include "editor/grid.h"
 #include "sound/song.h"
 #include "sound/pattern.h"
 #include "subtools/sound_subtool_interface.h"
@@ -58,7 +57,6 @@ private:
     { 0.0f, -7.0f },
     { PATTERN_DEFAULT_VIEW_X_BOUND, 9.0f },
   };
-  Grid grid { Grid::Style::Dot };
   void drawGrid(float viewScale, love::Vector2 &viewOffset);
   float getNoteAxisWidth();
   void drawNoteAxis(Song::Track *track);

@@ -128,51 +128,102 @@ void TrackTool::update(double dt) {
 }
 
 void TrackTool::drawGrid(float viewScale, love::Vector2 &viewOffset) {
-  // draw lines on each beat and bar
   auto &scene = getScene();
-  unsigned int stepIndexVisible = int(std::floor(std::max(viewPosition.x, 0.0f) / gridCellSize));
-  float gridX = float(stepIndexVisible) * gridCellSize;
+  unsigned int initialStepIndexVisible
+      = int(std::floor(std::max(viewPosition.x, 0.0f) / gridCellSize));
+  float initialGridX = float(initialStepIndexVisible) * gridCellSize;
+  float gridWidth = (viewPosition.x + viewWidth) - initialGridX;
+  int initialNoteIndexVisible = int(std::floor((viewPosition.y - viewOffset.y) / gridCellSize));
+  float initialGridY = float(initialNoteIndexVisible) * gridCellSize;
+  float gridHeight = (viewPosition.y - viewOffset.y + viewWidth * (7.0f / 5.0f)) - initialGridY;
+
+  lv.graphics.push();
+  lv.graphics.translate(initialGridX, initialGridY);
+
+  gridWidth /= gridCellSize;
+  gridHeight /= gridCellSize;
+  lv.graphics.scale(gridCellSize, gridCellSize);
+
   unsigned int stepsPerBeat = scene.getClock().getStepsPerBeat(),
                stepsPerBar = stepsPerBeat * scene.getClock().getBeatsPerBar();
-  auto lineY = -1024.0f / viewScale;
-  auto lineHeight = 2048.0f / viewScale;
-  while (gridX < viewPosition.x + viewWidth) {
-    if (stepIndexVisible % stepsPerBar == 0) {
-      lv.graphics.setColor({ 0.0f, 0.0f, 0.0f, 1.0f });
+  auto lineY = 0.0f;
+  auto lineHeight = gridHeight;
+  auto lineX = 0.0f;
+  auto lineWidth = gridWidth;
+
+  // draw light grid on every step and note
+  {
+    float gridX = 0.0f;
+    unsigned int stepIndexVisible = initialStepIndexVisible;
+    constexpr auto stepGrey = 0xbb / 255.0f;
+    lv.graphics.setColor({ stepGrey, stepGrey, stepGrey, 1.0f });
+    while (gridX < gridWidth) {
       lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, gridX, lineY, 0.05f, lineHeight);
-    } else if (stepIndexVisible % stepsPerBeat == 0) {
-      lv.graphics.setColor({ 1.0f, 1.0f, 1.0f, 1.0f });
-      lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, gridX, lineY, 0.05f, lineHeight);
+      stepIndexVisible++;
+      gridX += 1.0f;
     }
-    stepIndexVisible++;
-    gridX += gridCellSize;
+
+    int noteIndexVisible = initialNoteIndexVisible;
+    float gridY = 0.0f;
+    while (gridY < gridHeight) {
+      lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, lineX, gridY, lineWidth, 0.05f);
+      noteIndexVisible++;
+      gridY += 1.0f;
+    }
+  }
+
+  // draw darker lines on each beat
+  {
+    float gridX = 0;
+    unsigned int stepIndexVisible = initialStepIndexVisible;
+    while (stepIndexVisible % stepsPerBeat != 0) {
+      stepIndexVisible++;
+      gridX += 1.0f;
+    }
+    constexpr auto beatGrey = 0x99 / 255.0f;
+    lv.graphics.setColor({ beatGrey, beatGrey, beatGrey, 1.0f });
+    while (gridX < gridWidth) {
+      lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, gridX, lineY, 0.05f, lineHeight);
+      stepIndexVisible += stepsPerBeat;
+      gridX += stepsPerBeat;
+    }
+  }
+
+  // draw even darker lines on each bar
+  {
+    float gridX = 0;
+    unsigned int stepIndexVisible = initialStepIndexVisible;
+    while (stepIndexVisible % stepsPerBar != 0) {
+      stepIndexVisible++;
+      gridX += 1.0f;
+    }
+    constexpr auto darkGrey = 0x55 / 255.0f;
+    lv.graphics.setColor({ darkGrey, darkGrey, darkGrey, 1.0f });
+    while (gridX < gridWidth) {
+      lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, gridX, lineY, 0.05f, lineHeight);
+      stepIndexVisible += stepsPerBar;
+      gridX += stepsPerBar;
+    }
   }
 
   // draw lines on each octave
-  lv.graphics.setColor({ 0.4f, 0.4f, 0.4f, 1.0f });
-  int noteIndexVisible = int(std::floor((viewPosition.y - viewOffset.y) / gridCellSize));
-  float gridY = float(noteIndexVisible) * gridCellSize;
-  auto lineX = viewPosition.x;
-  auto lineWidth = viewWidth;
-  auto viewBottom = viewPosition.y - viewOffset.y + viewWidth * (7.0f / 5.0f);
-  while (gridY < viewBottom) {
-    if (noteIndexVisible % 12 == 0) {
-      lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, lineX, gridY, lineWidth, 0.05f);
+  {
+    int noteIndexVisible = initialNoteIndexVisible;
+    float gridY = 0.0f;
+    constexpr auto darkGrey = 0x55 / 255.0f;
+    lv.graphics.setColor({ darkGrey, darkGrey, darkGrey, 1.0f });
+    while (noteIndexVisible % 12 != 0) {
+      noteIndexVisible++;
+      gridY += 1.0f;
     }
-    noteIndexVisible++;
-    gridY += gridCellSize;
+    while (gridY < gridHeight) {
+      lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, lineX, gridY, lineWidth, 0.05f);
+      noteIndexVisible += 12;
+      gridY += 12.0f;
+    }
   }
 
-  // draw normal grid dots
-  lv.graphics.setColor({ 0.0f, 0.0f, 0.0f, 0.4f });
-  auto gridDotRadius = 3.5f;
-  love::Vector2 gridBounds = { 0.0f, 0.0f }; // infinite grid
-  grid.draw(gridCellSize, gridBounds, gridBounds, viewScale, viewPosition, viewOffset,
-      gridDotRadius, false);
-
-  lv.graphics.setColor({ 1.0f, 1.0f, 1.0f, 1.0f });
-  grid.draw(gridCellSize, gridBounds, gridBounds, viewScale, viewPosition, viewOffset,
-      gridDotRadius, true);
+  lv.graphics.pop();
 };
 
 float TrackTool::getNoteAxisWidth() {
@@ -184,8 +235,17 @@ void TrackTool::drawNoteAxis(Song::Track *track) {
   lv.graphics.push();
   lv.graphics.translate(x, 0.0f);
   lv.graphics.scale(gridCellSize, gridCellSize);
+
+  // instrument controls axis appearance
   track->instrument->drawEditorKeyAxis(lv, axisFont.get(), 4.0f,
       getCurrentSubtool()->highlightAxis(), getCurrentSubtool()->highlightAxisKey());
+
+  // draw border line on edge of axis
+  constexpr auto darkGrey = 0x55 / 255.0f;
+  lv.graphics.setColor({ darkGrey, darkGrey, darkGrey, 1.0f });
+  lv.graphics.rectangle(
+      love::Graphics::DrawMode::DRAW_FILL, 4.0f, noZoomUnits(-1024.0f), 0.1f, noZoomUnits(2048.0f));
+
   lv.graphics.pop();
 }
 
@@ -225,7 +285,8 @@ void TrackTool::drawOverlay() {
   viewTransform.translate(viewOffset.x, viewOffset.y);
   lv.graphics.applyTransform(&viewTransform);
 
-  love::Colorf clearColor { 0.8f, 0.8f, 0.8f, 1.0f };
+  constexpr auto bgGrey = 0xdd / 255.0f;
+  love::Colorf clearColor { bgGrey, bgGrey, bgGrey, 1.0f };
   lv.graphics.clear(clearColor, {}, {});
   lv.graphics.setLineWidth(noZoomUnits(1.0f));
 
