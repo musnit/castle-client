@@ -7,4 +7,7 @@ rm -f ../src/data/images.h
 for f in *.png; do
   xxd -i $f >> ../src/data/images.h
 done
+for f in **/*.png; do
+  xxd -i $f >> ../src/data/images.h
+done
 popd > /dev/null

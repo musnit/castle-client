@@ -22,4 +22,8 @@ public:
   inline std::unique_ptr<Instrument> clone() const override {
     return std::make_unique<Sampler>(*this);
   }
+
+  inline std::string getEditorIconName() override {
+    return "tone";
+  }
 };

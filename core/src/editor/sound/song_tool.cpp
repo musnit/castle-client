@@ -433,7 +433,17 @@ void SongTool::drawTrackAxis(Song *song, double timeInSong) {
       lv.graphics.circle(love::Graphics::DrawMode::DRAW_FILL, 0, 0, radius);
     }
 
-    // draw medallion outline
+    // draw medallion outline and icon
+    lv.graphics.push();
+    lv.graphics.scale(radius, radius);
+    lv.graphics.translate(-0.5f, -0.5f);
+    if (trackIndex == soundTool.selectedTrackIndex) {
+      lv.graphics.setColor({ 1.0f, 1.0f, 1.0f, 1.0f });
+    } else {
+      lv.graphics.setColor({ 0.0f, 0.0f, 0.0f, 1.0f });
+    }
+    track->instrument->drawEditorIcon(lv, 1.0f, 1.0f);
+    lv.graphics.pop();
     lv.graphics.setColor({ 0.0f, 0.0f, 0.0f, 1.0f });
     lv.graphics.circle(love::Graphics::DrawMode::DRAW_LINE, 0, 0, radius);
 

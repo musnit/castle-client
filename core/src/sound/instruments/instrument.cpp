@@ -1,6 +1,7 @@
 #include "instrument.h"
 #include "sampler.h"
 #include "drums.h"
+#include "utils/embedded_image.h"
 
 Instrument::Instrument(const Instrument &other) {
   *this = other;
@@ -97,4 +98,42 @@ void Instrument::drawEditorKeyAxis(
       lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, 0.0f, y + 0.95f, width, 0.1f);
     }
   }
+}
+
+love::graphics::Image *Instrument::loadEditorIcon(Lv &lv, const std::string &name) {
+  if (editorIcons.find(name) == editorIcons.end()) {
+    std::string filename = "sound/instrument-" + name + "-white.png";
+    auto byteData = EmbeddedImage::load(filename);
+    love::image::ImageData *imageData = lv.image.newImageData(byteData);
+
+    love::graphics::Image::Settings settings;
+    love::graphics::Image::Slices slices(love::graphics::TEXTURE_2D);
+    slices.set(0, 0, imageData);
+
+    love::graphics::Image *image = lv.graphics.newImage(slices, settings);
+    love::graphics::Texture::Filter f = image->getFilter();
+    f.min = love::graphics::Texture::FILTER_NEAREST;
+    f.mag = love::graphics::Texture::FILTER_NEAREST;
+    image->setFilter(f);
+
+    editorIcons.emplace(name, image);
+  }
+  return editorIcons[name];
+}
+
+void Instrument::drawEditorIcon(Lv &lv, float width, float height) {
+  auto image = Instrument::loadEditorIcon(lv, getEditorIconName());
+  static auto quad = [&]() {
+    std::vector<love::graphics::Vertex> quadVerts {
+      { 0, 0, 0, 0, { 0xff, 0xff, 0xff, 0xff } },
+      { 1, 0, 1, 0, { 0xff, 0xff, 0xff, 0xff } },
+      { 1, 1, 1, 1, { 0xff, 0xff, 0xff, 0xff } },
+      { 0, 1, 0, 1, { 0xff, 0xff, 0xff, 0xff } },
+    };
+    return lv.graphics.newMesh(
+        quadVerts, love::graphics::PRIMITIVE_TRIANGLE_FAN, love::graphics::vertex::USAGE_STATIC);
+  }();
+
+  quad->setTexture(image);
+  quad->draw(&lv.graphics, love::Matrix4(0, 0, 0, width, height, 0, 0, 0, 0));
 }

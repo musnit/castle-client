@@ -74,6 +74,9 @@ public:
       Lv &lv, love::Font *font, float width, bool highlightKey, int keyPressed) override;
   void drawEditorGridCellColors(Lv &lv, unsigned int initialStepIndex, int initialNoteIndex,
       float width, float height) override;
+  inline std::string getEditorIconName() override {
+    return "drum";
+  }
   void dirtyCache();
 
 private:

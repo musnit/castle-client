@@ -42,6 +42,12 @@ public:
     return scaleDegree == 1 || scaleDegree == 3 || scaleDegree == 6 || scaleDegree == 8
         || scaleDegree == 10;
   }
+  virtual std::string getEditorIconName() = 0;
+  void drawEditorIcon(Lv &lv, float width, float height);
+
+private:
+  static love::graphics::Image *loadEditorIcon(Lv &lv, const std::string &name);
+  static inline std::unordered_map<std::string, love::graphics::Image *> editorIcons;
 };
 
 inline std::string Instrument::getType() const {
