@@ -66,6 +66,9 @@ public:
   void updateProp(std::string viewId, std::string key, std::string value);
   void updateJSGestureProp(std::string key, std::string value);
 
+  void lock();
+  void unlock();
+
 private:
   void renderView(CoreView *view);
 
@@ -80,6 +83,7 @@ private:
   std::unordered_map<std::string, std::unordered_map<std::string, std::string>> props;
   std::unordered_map<std::string, std::string> jsGestureProps;
   std::optional<std::function<void(std::string)>> tapHandler;
+  std::mutex mutex;
 
   std::optional<CoreView *> getViewForId(CoreView *root, std::string id);
   std::optional<CoreView *> getViewAtPoint(CoreView *root, float x, float y);

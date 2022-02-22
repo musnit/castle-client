@@ -1254,6 +1254,7 @@ struct ShowLeaderboardResponse : BaseResponse {
       ctx.getScene().getLeaderboards().getLeaderboard(
           *deckId, *name, type, filter, [label](Reader &reader) {
             auto &leaderboardView = Engine::getEngine().getScene().getLeaderboardView();
+            leaderboardView.lock();
             leaderboardView.reset();
             leaderboardView.updateProp("label", "text", label);
             leaderboardView.updateProp("leaderboard", "visibility", "visible");
@@ -1272,13 +1273,16 @@ struct ShowLeaderboardResponse : BaseResponse {
                 iNum++;
               });
             });
+            leaderboardView.unlock();
           });
     } else {
       auto &leaderboardView = ctx.getScene().getLeaderboardView();
+      leaderboardView.lock();
       leaderboardView.reset();
       leaderboardView.updateProp("label", "text", params.label());
       leaderboardView.updateProp("leaderboard", "visibility", "visible");
       leaderboardView.updateProp("editorText", "visibility", "visible");
+      leaderboardView.unlock();
     }
   }
 };

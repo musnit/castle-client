@@ -164,6 +164,14 @@ void CoreViewRenderer::reset() {
   isTouchOverView = false;
 }
 
+void CoreViewRenderer::lock() {
+  mutex.lock();
+}
+
+void CoreViewRenderer::unlock() {
+  mutex.unlock();
+}
+
 void CoreViewRenderer::updateProp(std::string viewId, std::string key, std::string value) {
   props[viewId][key] = value;
 
