@@ -48,6 +48,16 @@ export const SoundTrackInspectorSheet = ({ isOpen, onClose }) => {
     },
   };
 
+  // TODO: not sure in which way this is going to generalize, special case for now
+  const { selectedTrackIndex } = soundToolState;
+  let isDrums = false;
+  if (selectedTrackIndex >= 0) {
+    const selectedTrack = component.props.song.tracks[selectedTrackIndex];
+    if (selectedTrack?.instrument?.type === 'drums') {
+      isDrums = true;
+    }
+  }
+
   const renderHeader = () => (
     <SoundTrackInspectorHeader
       isOpen={isOpen}
@@ -65,7 +75,7 @@ export const SoundTrackInspectorSheet = ({ isOpen, onClose }) => {
       isOpen={isOpen}
       headerHeight={88}
       extraTopInset={8}
-      useViewInsteadOfScrollview
+      useViewInsteadOfScrollview={isDrums}
       renderContent={renderContent}
       renderHeader={renderHeader}
       persistLastSnapWhenOpened
