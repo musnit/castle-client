@@ -58,18 +58,14 @@ export const SoundTrackInspectorSheet = ({ isOpen, onClose }) => {
   );
 
   const renderContent = () =>
-    !isOpen ? null : (
-      <TrackInspector
-        soundToolState={soundToolState}
-        component={component}
-      />
-    );
+    !isOpen ? null : <TrackInspector soundToolState={soundToolState} component={component} />;
 
   return (
     <CardCreatorBottomSheet
       isOpen={isOpen}
       headerHeight={88}
       extraTopInset={8}
+      useViewInsteadOfScrollview
       renderContent={renderContent}
       renderHeader={renderHeader}
       persistLastSnapWhenOpened

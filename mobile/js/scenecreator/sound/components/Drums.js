@@ -1,7 +1,8 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { InspectorCheckbox } from '../../inspector/components/InspectorCheckbox';
 import { InspectorDropdown } from '../../inspector/components/InspectorDropdown';
+import { InspectorKnob } from '../../inspector/components/InspectorKnob';
 import { InspectorNumberInput } from '../../inspector/components/InspectorNumberInput';
 import { SAMPLE_COMPONENTS } from './Sample';
 import { sendAsync } from '../../../core/CoreEvents';
@@ -13,7 +14,6 @@ import * as Constants from '../../../Constants';
 const styles = StyleSheet.create({
   container: {
     padding: 16,
-    maxWidth: Constants.TABLET_MAX_FORM_WIDTH,
   },
   drumContainer: {
     backgroundColor: '#fff',
@@ -99,7 +99,7 @@ const Kick = ({ value, onChange, enabled, onSetEnabled, lastNativeUpdate }) => {
         <View style={styles.drumParams}>
           <View style={styles.soundInputsRow}>
             <Text style={styles.soundInputLabel}>Decay</Text>
-            <InspectorNumberInput
+            <InspectorKnob
               style={styles.soundInput}
               lastNativeUpdate={lastNativeUpdate}
               min={0.05}
@@ -453,7 +453,7 @@ export const Drums = ({ instrument }) => {
 
   if (instrument?.params) {
     return (
-      <View style={styles.container}>
+      <ScrollView style={styles.container} horizontal>
         <Kick
           enabled={instrument.params.useKick}
           onSetEnabled={(enabled) => onChangeDrum('useKick', enabled)}
@@ -503,7 +503,7 @@ export const Drums = ({ instrument }) => {
           onChange={(openHat) => onChangeDrum('openHat', openHat)}
           lastNativeUpdate={lastNativeUpdate}
         />
-      </View>
+      </ScrollView>
     );
   }
   return null;
