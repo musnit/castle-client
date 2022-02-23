@@ -39,7 +39,8 @@ const numberToText = (number, decimalDigits = 3) => {
   return parseFloat(number.toFixed(decimalDigits)).toString();
 };
 
-const ZERO_ANGLE_BUFFER = 20;
+// knob doesn't spin all 360 degrees, it has some dead space to either side of zero
+const ZERO_ANGLE_BUFFER = 30;
 
 // RN rotation:
 //
@@ -53,10 +54,11 @@ const modAngle = (angle) => {
   return angle;
 };
 
-const clampAngle = (angle) => {
+const addAngleClamp = (angle, addAngle) => {
   const minAngle = ZERO_ANGLE_BUFFER,
     maxAngle = 360 - ZERO_ANGLE_BUFFER;
   angle = modAngle(angle);
+  angle += addAngle;
   if (angle < minAngle) angle = minAngle;
   if (angle > maxAngle) angle = maxAngle;
   return angle;
@@ -72,7 +74,7 @@ const valueToAngle = (value, min, max) => {
 const angleToValue = (angle, min, max) => {
   const minAngle = ZERO_ANGLE_BUFFER,
     maxAngle = 360 - ZERO_ANGLE_BUFFER;
-  angle = clampAngle(angle);
+  angle = addAngleClamp(angle, 0);
   const angleInterp = (angle - minAngle) / (maxAngle - minAngle);
   return min + angleInterp * (max - min);
 };
@@ -88,7 +90,7 @@ export const InspectorKnob = ({ value, lastNativeUpdate, onChange, min, max, sty
   // don't spam owning component with tons of updates when dragging
   const updateValueDebounce = React.useRef();
   React.useEffect(() => {
-    updateValueDebounce.current = debounce((newValue) => onChange(newValue), 100);
+    updateValueDebounce.current = debounce((newValue) => onChange(newValue), 333);
   }, [onChange]);
 
   const updateValue = React.useCallback(
@@ -107,7 +109,7 @@ export const InspectorKnob = ({ value, lastNativeUpdate, onChange, min, max, sty
     (state, action) => {
       if (action.type === 'move') {
         // add 90 when displaying to orient zero downward
-        const total = clampAngle(state.total + state.offset);
+        const total = addAngleClamp(state.total, state.offset);
         const displayAngle = total + 90;
         updateValue(total);
         return {
@@ -116,7 +118,7 @@ export const InspectorKnob = ({ value, lastNativeUpdate, onChange, min, max, sty
           str: `${displayAngle}deg`,
         };
       } else if (action.type === 'release') {
-        const total = clampAngle(state.total + state.offset);
+        const total = addAngleClamp(state.total, state.offset);
         const displayAngle = total + 90;
         updateValue(total);
         return {
@@ -129,6 +131,7 @@ export const InspectorKnob = ({ value, lastNativeUpdate, onChange, min, max, sty
         // only allow reset if we're not mid-gesture
         if (state.offset === 0) {
           return {
+            ...state,
             total: valueToAngle(action.value, min, max),
             str: `${valueToAngle(action.value, min, max) + 90}deg`,
           };
