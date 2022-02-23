@@ -100,7 +100,7 @@ static RCTBridge *sRctBridge;
 
 namespace CastleAPI {
 void graphqlPostRequest(const std::string &body, const std::function<void(bool, std::string, std::string)> callback) {
-  [APIIos iosGraphqlPostRequest:[NSString stringWithUTF8String:body.c_str()] withCallback:^(NSString *error, NSString *result) {
+  [APIIos iosGraphqlPostRequest:[[NSString stringWithUTF8String:body.c_str()] copy] withCallback:^(NSString *error, NSString *result) {
     if (result) {
       std::string resultString = std::string([result UTF8String]);
       callback(true, "", resultString);
@@ -112,7 +112,7 @@ void graphqlPostRequest(const std::string &body, const std::function<void(bool, 
 }
 
 void getRequest(const std::string &url, const std::function<void(bool, std::string, std::string)> callback) {
-  [APIIos iosGetRequest:[NSString stringWithUTF8String:url.c_str()] withCallback:^(NSString *error, NSString *result) {
+  [APIIos iosGetRequest:[[NSString stringWithUTF8String:url.c_str()] copy] withCallback:^(NSString *error, NSString *result) {
     if (result) {
       std::string resultString = std::string([result UTF8String]);
       callback(true, "", resultString);
@@ -124,7 +124,7 @@ void getRequest(const std::string &url, const std::function<void(bool, std::stri
 }
 
 void getDataRequest(const std::string &url, const std::function<void(bool, std::string, unsigned char *, unsigned long)> callback) {
-  [APIIos iosGetDataRequest:[NSString stringWithUTF8String:url.c_str()] withCallback:^(NSString *error, NSData *result) {
+  [APIIos iosGetDataRequest:[[NSString stringWithUTF8String:url.c_str()] copy] withCallback:^(NSString *error, NSData *result) {
     if (result) {
       callback(true, "", (unsigned char*) [result bytes], [result length]);
     } else {

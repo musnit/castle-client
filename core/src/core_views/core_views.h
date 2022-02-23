@@ -15,7 +15,16 @@ public:
     Tap,
   };
 
-  virtual ~CoreView() = default;
+  CoreView() {
+    currentViewId++;
+    viewId = currentViewId;
+    isViewAlive[viewId] = true;
+  }
+
+  ~CoreView() {
+    isViewAlive[viewId] = false;
+  }
+
   virtual void read(Reader &reader) = 0;
   virtual void render() = 0;
   virtual void handleTouch(TouchEvent touch) {
@@ -44,6 +53,9 @@ public:
   float borderRadius = -1;
   inline static std::unique_ptr<love::Shader> borderRadiusImageShader = nullptr;
   inline static std::unique_ptr<love::Shader> borderRadiusColorShader = nullptr;
+  int viewId;
+  inline static std::map<int, bool> isViewAlive;
+  inline static int currentViewId = 0;
 };
 
 class CoreViewRenderer {

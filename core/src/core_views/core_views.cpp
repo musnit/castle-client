@@ -623,8 +623,9 @@ public:
   void read(Reader &reader) {
     auto url = reader.str("url");
     if (url) {
-      API::getData(*url, [=](APIDataResponse &response) {
-        if (response.success) {
+      int myViewId = viewId;
+      API::getData(*url, [myViewId, this](APIDataResponse &response) {
+        if (response.success && isViewAlive[myViewId]) {
           love::data::DataModule *dataModule
               = love::Module::getInstance<love::data::DataModule>(love::Module::M_DATA);
 
