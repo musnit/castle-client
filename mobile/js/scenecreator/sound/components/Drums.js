@@ -2,6 +2,7 @@ import React from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { InspectorCheckbox } from '../../inspector/components/InspectorCheckbox';
 import { InspectorDropdown } from '../../inspector/components/InspectorDropdown';
+import { InspectorKnob } from '../../inspector/components/InspectorKnob';
 import { InspectorNumberInput } from '../../inspector/components/InspectorNumberInput';
 import { SAMPLE_COMPONENTS } from './Sample';
 import { sendAsync } from '../../../core/CoreEvents';
@@ -30,6 +31,7 @@ const styles = StyleSheet.create({
     marginTop: 16,
     borderTopWidth: 1,
     borderTopColor: Constants.colors.grayOnWhiteBorder,
+    flexDirection: 'row',
   },
   row: {
     flexDirection: 'row',
@@ -42,18 +44,19 @@ const styles = StyleSheet.create({
     paddingRight: 12,
   },
   soundInputLabel: {
-    fontSize: 16,
+    fontSize: 14,
+    textTransform: 'uppercase',
   },
-  soundInputsRow: {
+  soundInputContainer: {
     alignItems: 'center',
     justifyContent: 'space-between',
-    flexDirection: 'row',
+    flexDirection: 'column',
     flexShrink: 1,
     flexGrow: 0,
-    paddingTop: 16,
+    padding: 8,
   },
   soundInput: {
-    maxWidth: '50%',
+    width: 72,
   },
 });
 
@@ -188,9 +191,8 @@ const Drum = ({ name, value, onChange, enabled, onSetEnabled, paramSpecs, lastNa
       {enabled ? (
         <View style={styles.drumParams}>
           {paramSpecs.map((spec) => (
-            <View style={styles.soundInputsRow} key={`spec-${spec.name}`}>
-              <Text style={styles.soundInputLabel}>{spec.label}</Text>
-              <InspectorNumberInput
+            <View style={styles.soundInputContainer} key={`spec-${spec.name}`}>
+              <InspectorKnob
                 style={styles.soundInput}
                 lastNativeUpdate={lastNativeUpdate}
                 {...spec}
@@ -198,6 +200,7 @@ const Drum = ({ name, value, onChange, enabled, onSetEnabled, paramSpecs, lastNa
                 value={value[spec.name]}
                 onChange={(paramVal) => onChangeParam(spec.name, paramVal)}
               />
+              <Text style={styles.soundInputLabel}>{spec.label}</Text>
             </View>
           ))}
         </View>
