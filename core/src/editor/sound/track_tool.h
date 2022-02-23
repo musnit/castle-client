@@ -60,6 +60,8 @@ private:
   void drawGrid(Song::Track *track, love::Vector2 &viewOffset);
   float getNoteAxisWidth();
   void drawNoteAxis(Song::Track *track);
+  float getTimeAxisHeight();
+  void drawTimeAxis(love::Vector2 &viewOffset);
   mutable love::Transform viewTransform;
   love::Vector2 viewPosition;
   float viewWidth = PATTERN_DEFAULT_VIEW_WIDTH;

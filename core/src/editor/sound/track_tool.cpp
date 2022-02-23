@@ -248,8 +248,102 @@ void TrackTool::drawNoteAxis(Song::Track *track) {
   // draw border line on edge of axis
   constexpr auto darkGrey = 0x55 / 255.0f;
   lv.graphics.setColor({ darkGrey, darkGrey, darkGrey, 1.0f });
-  lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, noteAxisWidth, noZoomUnits(-1024.0f),
-      0.1f, noZoomUnits(2048.0f));
+  lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, noteAxisWidth, -48.0f, 0.1f, 96.0f);
+
+  lv.graphics.pop();
+}
+
+float TrackTool::getTimeAxisHeight() {
+  return noZoomUnits(36.0f);
+}
+
+void TrackTool::drawTimeAxis(love::Vector2 &viewOffset) {
+  auto &scene = getScene();
+  unsigned int stepsPerBeat = scene.getClock().getStepsPerBeat(),
+               stepsPerBar = stepsPerBeat * scene.getClock().getBeatsPerBar();
+  auto shittyFontScale = noZoomUnits(1.25f);
+  love::Vector2 fontPosition(noZoomUnits(12.0f), noZoomUnits(20.0f));
+
+  lv.graphics.push();
+  lv.graphics.translate(std::max(viewPosition.x, 0.0f), viewPosition.y - viewOffset.y);
+  auto timeAxisHeight = getTimeAxisHeight() / gridCellSize;
+  lv.graphics.scale(gridCellSize, gridCellSize);
+
+  // background bar
+  constexpr auto bgGrey = 0xee / 255.0f;
+  lv.graphics.setColor({ bgGrey, bgGrey, bgGrey, 1.0f });
+  lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, -getNoteAxisWidth() / gridCellSize,
+      0.0f, 64.0f, timeAxisHeight);
+
+  float xViewPos = std::max(viewPosition.x, 0.0f);
+  int initialStepIndexVisible = int(std::floor(xViewPos / gridCellSize));
+  float initialX = ((initialStepIndexVisible * gridCellSize) - xViewPos) / gridCellSize;
+
+  // beat lines
+  {
+    constexpr auto beatGrey = 0x99 / 255.0f;
+    lv.graphics.setColor({ beatGrey, beatGrey, beatGrey, 1.0f });
+    int stepIndex = initialStepIndexVisible;
+    float x = initialX;
+    while (stepIndex % stepsPerBeat != 0) {
+      stepIndex++;
+      x += 1.0f;
+    }
+    float lineHeight = timeAxisHeight * 0.5f;
+    while (x < 64.0f) {
+      if (x > 0.0f) {
+        lv.graphics.rectangle(
+            love::Graphics::DrawMode::DRAW_FILL, x, timeAxisHeight - lineHeight, 0.1f, lineHeight);
+        if (stepIndex % stepsPerBar != 0) {
+          auto bars = std::floor(stepIndex / stepsPerBar);
+          auto beats = int((stepIndex - bars * stepsPerBar) / stepsPerBeat);
+          auto beatLabel = fmt::format("{}.{}", bars + 1, beats + 1);
+          lv.graphics.print({ { beatLabel, { 1, 1, 1, 1 } } }, axisFont.get(),
+              love::Matrix4(x + fontPosition.x, fontPosition.y, 0, shittyFontScale, shittyFontScale,
+                  0, 0, 0, 0));
+        }
+      }
+      stepIndex += stepsPerBeat;
+      x += stepsPerBeat;
+    }
+  }
+
+  // bar lines
+  {
+    constexpr auto darkGrey = 0x55 / 255.0f;
+    lv.graphics.setColor({ darkGrey, darkGrey, darkGrey, 1.0f });
+    int stepIndex = initialStepIndexVisible;
+    float x = initialX;
+    while (stepIndex % stepsPerBar != 0) {
+      stepIndex++;
+      x += 1.0f;
+    }
+    while (x < 64.0f) {
+      if (x > 0.0f) {
+        lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, x, 0.0f, 0.1f, timeAxisHeight);
+        auto barLabel = fmt::format("{}.1", int(stepIndex / stepsPerBar) + 1);
+        lv.graphics.print({ { barLabel, { 1, 1, 1, 1 } } }, axisFont.get(),
+            love::Matrix4(x + fontPosition.x, fontPosition.y, 0, shittyFontScale, shittyFontScale,
+                0, 0, 0, 0));
+      }
+      stepIndex += stepsPerBar;
+      x += stepsPerBar;
+    }
+  }
+
+  // zero-axis line
+  {
+    constexpr auto darkGrey = 0x55 / 255.0f;
+    lv.graphics.setColor({ darkGrey, darkGrey, darkGrey, 1.0f });
+    lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, 0.0f, 0.0f, 0.1f, timeAxisHeight);
+  }
+
+  // draw border line on edge of axis
+  {
+    constexpr auto darkGrey = 0x55 / 255.0f;
+    lv.graphics.setColor({ darkGrey, darkGrey, darkGrey, 1.0f });
+    lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, 0.0f, timeAxisHeight, 64.0f, 0.1f);
+  }
 
   lv.graphics.pop();
 }
@@ -262,7 +356,7 @@ void TrackTool::drawOverlay() {
   float windowWidth = 800.0f;
   auto viewScale = windowWidth / viewWidth;
   love::Vector2 viewOffset;
-  viewOffset.x = getNoteAxisWidth(); // x offset to accommodate axis
+  viewOffset.x = getNoteAxisWidth(); // offset to accommodate axes
   constexpr auto viewHeightToWidthRatio = 7.0f / 5.0f;
   viewOffset.y = 0.5f * (viewWidth * viewHeightToWidthRatio - ((50 + 44) / viewScale));
 
@@ -310,6 +404,7 @@ void TrackTool::drawOverlay() {
   }
 
   drawNoteAxis(track);
+  drawTimeAxis(viewOffset);
 
   lv.graphics.pop();
 }
