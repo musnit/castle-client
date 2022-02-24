@@ -4,6 +4,7 @@
 #include "sound/instruments/sampler.h"
 #include "sound_tool.h"
 #include "editor/draw/util.h"
+#include "utils/embedded_image.h"
 
 SongTool::SongTool(SoundTool &soundTool_)
     : soundTool(soundTool_) {
@@ -15,6 +16,7 @@ Scene &SongTool::getScene() {
 
 void SongTool::resetState() {
   hasTouch = false;
+  loopImage = nullptr;
   selectedSubtool = Subtool::Select;
   viewWidth = SONG_DEFAULT_VIEW_WIDTH;
   viewPosition.x = 0.0f;
@@ -298,16 +300,52 @@ void SongTool::drawPattern(const std::string &patternId, Pattern &pattern, float
     // draw loop button
     float buttonSize = noZoomUnits(36.0f);
     if (buttonSize <= unit * 0.4f) {
+
+      if (!loopImage) {
+        std::string filename = "sound/loop.png";
+        auto byteData = EmbeddedImage::load(filename);
+        love::image::ImageData *imageData = lv.image.newImageData(byteData);
+
+        love::graphics::Image::Settings settings;
+        love::graphics::Image::Slices slices(love::graphics::TEXTURE_2D);
+        slices.set(0, 0, imageData);
+
+        loopImage = lv.graphics.newImage(slices, settings);
+        love::graphics::Texture::Filter f = loopImage->getFilter();
+        f.min = love::graphics::Texture::FILTER_NEAREST;
+        f.mag = love::graphics::Texture::FILTER_NEAREST;
+        loopImage->setFilter(f);
+      }
+      static auto quad = [&]() {
+        std::vector<love::graphics::Vertex> quadVerts {
+          { 0, 0, 0, 0, { 0xff, 0xff, 0xff, 0xff } },
+          { 1, 0, 1, 0, { 0xff, 0xff, 0xff, 0xff } },
+          { 1, 1, 1, 1, { 0xff, 0xff, 0xff, 0xff } },
+          { 0, 1, 0, 1, { 0xff, 0xff, 0xff, 0xff } },
+        };
+        return lv.graphics.newMesh(quadVerts, love::graphics::PRIMITIVE_TRIANGLE_FAN,
+            love::graphics::vertex::USAGE_STATIC);
+      }();
+      quad->setTexture(loopImage);
+
       float buttonMargin = noZoomUnits(8.0f);
       float buttonRadius = noZoomUnits(3.0f);
       lv.graphics.setColor({ 1.0f, 1.0f, 1.0f, 1.0f });
-      lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL,
-          startTimeUnits + widthUnits - buttonSize - buttonMargin, buttonMargin, buttonSize,
-          buttonSize, buttonRadius, buttonRadius);
+      lv.graphics.push();
+      lv.graphics.translate(startTimeUnits + widthUnits - buttonSize - buttonMargin, buttonMargin);
+      lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, 0, 0, buttonSize, buttonSize,
+          buttonRadius, buttonRadius);
       lv.graphics.setColor({ 0.0f, 0.0f, 0.0f, 1.0f });
-      lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_LINE,
-          startTimeUnits + widthUnits - buttonSize - buttonMargin, buttonMargin, buttonSize,
-          buttonSize, buttonRadius, buttonRadius);
+      auto imageSize = buttonSize * 0.8f;
+      lv.graphics.push();
+      constexpr auto ratio = (24.0f / 52.0f);
+      lv.graphics.translate(
+          (buttonSize - imageSize) * 0.5f, (buttonSize - imageSize * ratio) * 0.5f);
+      quad->draw(&lv.graphics, love::Matrix4(0, 0, 0, imageSize, imageSize * ratio, 0, 0, 0, 0));
+      lv.graphics.pop();
+      lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_LINE, 0, 0, buttonSize, buttonSize,
+          buttonRadius, buttonRadius);
+      lv.graphics.pop();
     }
   }
 }
@@ -456,14 +494,22 @@ void SongTool::drawTrackAxis(Song *song, double timeInSong) {
   }
 
   // draw 'new track' region
-  lv.graphics.setColor({ 1.0f, 1.0f, 1.0f, 1.0f });
-  lv.graphics.circle(love::Graphics::DrawMode::DRAW_FILL, 0, 0, radius);
-  lv.graphics.setColor({ 0.0f, 0.0f, 0.0f, 1.0f });
-  lv.graphics.circle(love::Graphics::DrawMode::DRAW_LINE, 0, 0, radius);
+  {
+    lv.graphics.setColor({ 1.0f, 1.0f, 1.0f, 1.0f });
+    lv.graphics.circle(love::Graphics::DrawMode::DRAW_FILL, 0, 0, radius);
+    lv.graphics.setColor({ 0.0f, 0.0f, 0.0f, 1.0f });
+    lv.graphics.circle(love::Graphics::DrawMode::DRAW_LINE, 0, 0, radius);
 
-  auto textX = (tempFont->getWidth("ADD") * -0.5f) * 0.01f;
-  lv.graphics.print({ { "ADD", { 1, 1, 1, 1 } } }, tempFont.get(),
-      love::Matrix4(textX, gridCellSize * 0.3f, 0, shittyFontScale, shittyFontScale, 0, 0, 0, 0));
+    auto textX = (tempFont->getWidth("ADD") * -0.5f) * 0.01f;
+    lv.graphics.print({ { "ADD", { 1, 1, 1, 1 } } }, tempFont.get(),
+        love::Matrix4(textX, gridCellSize * 0.3f, 0, shittyFontScale, shittyFontScale, 0, 0, 0, 0));
+    lv.graphics.push();
+    lv.graphics.scale(gridCellSize, gridCellSize);
+    lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, -0.01f, -0.15f, 0.02f, 0.3f);
+    lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, -0.15f, -0.01f, 0.3f, 0.02f);
+    lv.graphics.pop();
+  }
+
   lv.graphics.pop();
 }
 

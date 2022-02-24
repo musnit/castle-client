@@ -76,6 +76,7 @@ private:
   love::Vector2 dragPatternTouchStart;
   love::Vector2 dragPatternTouchDelta;
 
+  love::graphics::Image *loopImage = nullptr;
   std::unique_ptr<love::Font> tempFont { lv.graphics.newDefaultFont(
       16.0f, love::TrueTypeRasterizer::HINTING_NORMAL) };
 
