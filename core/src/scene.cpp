@@ -26,6 +26,7 @@ Scene::Scene(Bridge &bridge_, Variables &variables_, Sound &sound_, Clock &clock
 
   // Link to clock
   clock.setScene(this);
+  clock.set(props.clock().tempo(), props.clock().beatsPerBar(), props.clock().stepsPerBeat());
   sound.addClock(&clock);
 
   // Physics setup
