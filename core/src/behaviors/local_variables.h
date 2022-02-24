@@ -49,6 +49,8 @@ public:
   void handleWriteComponent(
       ActorId actorId, const LocalVariablesComponent &component, Writer &writer) const;
 
+  void handlePerform(double dt);
+
 
 private:
   LocalVariablesMap map;
