@@ -2,6 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { BottomSheet } from '../../components/BottomSheet';
+import { ClockSettings } from '../ClockSettings';
 import { DeckVariables } from '../DeckVariables';
 import { SceneBackups } from '../SceneBackups';
 import { SegmentedNavigation } from '../../components/SegmentedNavigation';
@@ -64,6 +65,12 @@ export const CardToolsSheet = ({ isOpen, onClose, ...props }) => {
       value: 'layout',
     },
   ];
+  if (USE_CLOCK) {
+    TAB_ITEMS.push({
+      name: 'Clock',
+      value: 'clock',
+    });
+  }
   if (saveAction === 'save') {
     // neither 'clone' nor 'none'
     TAB_ITEMS.push({
@@ -81,6 +88,8 @@ export const CardToolsSheet = ({ isOpen, onClose, ...props }) => {
     ? () => <DeckVariables />
     : mode === 'layout'
     ? () => <CreateCardSettings />
+    : mode === 'clock'
+    ? () => <ClockSettings />
     : () => <SceneBackups cardId={cardId} onSelectSceneData={onSelectBackupData} />;
 
   const renderHeader = () => (

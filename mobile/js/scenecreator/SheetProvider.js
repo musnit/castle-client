@@ -2,7 +2,6 @@ import * as React from 'react';
 import { NewBlueprintSheet } from './sheets/NewBlueprintSheet';
 import { CapturePreviewSheet } from './sheets/CapturePreviewSheet';
 import { CardToolsSheet } from './sheets/CardToolsSheet';
-import { CreateCardSettingsSheet } from './sheets/CreateCardSettingsSheet';
 import { DrawingImportImageSheet } from './sheets/DrawingImportImageSheet';
 import { DrawingLayersSheet } from './sheets/DrawingLayersSheet';
 import { InspectorSheet } from './inspector/InspectorSheet';
@@ -41,11 +40,6 @@ const ROOT_SHEETS = [
     key: 'variables',
     Component: CardToolsSheet,
     makeSnapPoints: ({ insets }) => [FULL_SHEET_HEIGHT * 0.65, FULL_SHEET_HEIGHT - insets.top - 16],
-  },
-  {
-    key: 'sceneCreatorSettings',
-    Component: CreateCardSettingsSheet,
-    snapPoints: [FULL_SHEET_HEIGHT * 0.6],
   },
   {
     key: 'capturePreview',
