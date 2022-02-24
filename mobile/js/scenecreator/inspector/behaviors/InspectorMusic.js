@@ -31,11 +31,11 @@ const styles = StyleSheet.create({
 
 const items = [
   {
-    name: 'Stopped',
+    name: 'None',
     value: 'none',
   },
   {
-    name: 'Play Once',
+    name: 'Once',
     value: 'once',
   },
   {
@@ -93,7 +93,7 @@ export default InspectorMusic = ({ music }) => {
           </View>
           <View style={styles.row}>
             <View style={{ width: '50%' }}>
-              <Text style={{ fontSize: 16 }}>Autoplay</Text>
+              <Text style={{ fontSize: 16 }}>Play when actor is created</Text>
             </View>
             <InspectorSegmentedControl
               style={{ width: '50%' }}
