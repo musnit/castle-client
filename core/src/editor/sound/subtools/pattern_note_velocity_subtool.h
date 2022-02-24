@@ -79,13 +79,16 @@ public:
     auto zeroKey = track->instrument->getZeroKey();
 
     // draw full note boxes in white
-    lv.graphics.setColor({ 1.0f, 1.0f, 1.0f, 1.0f });
     for (auto &[time, notes] : *pattern) {
       auto x = time;
       for (auto &note : notes) {
         auto y = ((note.key - zeroKey) * -1.0f) - 1.0f;
+        lv.graphics.setColor({ 1.0f, 1.0f, 1.0f, 1.0f });
         lv.graphics.rectangle(
             love::Graphics::DrawMode::DRAW_FILL, x + 0.05f, y + 0.05f, 0.95f, 0.95f);
+        lv.graphics.setColor({ 0.0f, 0.0f, 0.0f, 1.0f });
+        lv.graphics.rectangle(
+            love::Graphics::DrawMode::DRAW_LINE, x + 0.05f, y + 0.05f, 0.95f, 0.95f);
       }
     }
 
@@ -94,10 +97,10 @@ public:
     for (auto &[time, notes] : *pattern) {
       auto x = (time + 0.5f);
       for (auto &note : notes) {
-        auto y = ((note.key - zeroKey) * -1.0f) - 0.5f;
-        auto boxSize = (float(note.vel) / 128.0f) * 0.95f;
-        lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, (x + 0.025f) - boxSize * 0.5f,
-            (y + 0.025f) - boxSize * 0.5f, boxSize, boxSize);
+        auto y = ((note.key - zeroKey) * -1.0f) - 0.025f;
+        auto boxSize = (float(note.vel) / 128.0f) * 0.9f;
+        lv.graphics.rectangle(
+            love::Graphics::DrawMode::DRAW_FILL, (x - 0.425f), y - boxSize, 0.9f, boxSize);
       }
     }
 
