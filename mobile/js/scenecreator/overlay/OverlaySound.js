@@ -1,5 +1,6 @@
 import React from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
+import { InstrumentIcon } from '../sound/components/InstrumentIcon';
 import { Pattern } from '../sound/components/Pattern';
 import { useCoreState, useListen, sendGlobalAction, sendAsync } from '../../core/CoreEvents';
 
@@ -67,6 +68,8 @@ const styles = StyleSheet.create({
     flexShrink: 1,
     borderColor: Constants.colors.black,
     borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
     ...Constants.styles.dropShadow,
   },
 });
@@ -140,9 +143,9 @@ const OverlayPattern = ({ soundToolState, isEditingInstrument, onPressEditInstru
     return (
       <View style={styles.bottomContainer}>
         {soundToolMode === 'track' && !isEditingInstrument ? (
-          <Pressable
-            style={styles.editInstrumentButton}
-            onPress={onPressEditInstrument}></Pressable>
+          <Pressable style={styles.editInstrumentButton} onPress={onPressEditInstrument}>
+            <InstrumentIcon instrument={selectedTrack.instrument} color="#000" size={36} />
+          </Pressable>
         ) : null}
         <View style={styles.patternContainer}>
           <Pattern pattern={pattern} sequenceElem={sequenceElem} soundToolMode={soundToolMode} />
