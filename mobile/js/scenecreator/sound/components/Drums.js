@@ -55,9 +55,7 @@ const styles = StyleSheet.create({
     flexGrow: 0,
     padding: 8,
   },
-  soundInput: {
-    width: 72,
-  },
+  soundInput: {},
 });
 
 const DRUM_PARAMS = {
@@ -193,6 +191,7 @@ const Drum = ({ name, value, onChange, enabled, onSetEnabled, paramSpecs, lastNa
           {paramSpecs.map((spec) => (
             <View style={styles.soundInputContainer} key={`spec-${spec.name}`}>
               <InspectorKnob
+                size={72}
                 style={styles.soundInput}
                 lastNativeUpdate={lastNativeUpdate}
                 {...spec}

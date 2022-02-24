@@ -100,9 +100,38 @@ const angleToValue = (angle, min, max) => {
   return min + angleInterp * (max - min);
 };
 
-export const InspectorKnob = ({ value, lastNativeUpdate, onChange, min, max, style }) => {
+const PerimeterGauge = React.memo(({ angleToDisplay, size }) => {
+  const r = size / 2;
+  return (
+    <>
+      {GAUGE_DOTS.map((_, index) => {
+        const angleDeg = valueToAngle(index, 0, GAUGE_NUM_DOTS - 1) + 90;
+        const angle = angleDeg * (Math.PI / 180);
+        const left = r + r * Math.cos(angle),
+          top = r + r * Math.sin(angle);
+        const isFilled = angleDeg <= angleToDisplay;
+        return (
+          <View
+            key={`gauge-dot-${index}`}
+            style={[
+              styles.gaugeDot,
+              {
+                left,
+                top,
+                backgroundColor: isFilled ? '#000' : '#fff',
+                borderColor: isFilled ? '#000' : '#bbb',
+              },
+            ]}
+          />
+        );
+      })}
+    </>
+  );
+});
+
+export const InspectorKnob = ({ value, lastNativeUpdate, onChange, min, max, size, style }) => {
   if (typeof min !== 'number' || typeof max !== 'number') {
-    console.warn(`Trying to render a knob with absent or non-numeric min or max`);
+    console.warn(`Trying to render a knob with absent or non-numeric min or max: ${min}, ${max}`);
     min = 0;
     max = 1;
   }
@@ -111,7 +140,7 @@ export const InspectorKnob = ({ value, lastNativeUpdate, onChange, min, max, sty
   // don't spam owning component with tons of updates when dragging
   const updateValueDebounce = React.useRef();
   React.useEffect(() => {
-    updateValueDebounce.current = debounce((newValue) => onChange(newValue), 333);
+    updateValueDebounce.current = debounce((newValue) => onChange(newValue), 500);
   }, [onChange]);
 
   const updateValue = React.useCallback(
@@ -203,35 +232,18 @@ export const InspectorKnob = ({ value, lastNativeUpdate, onChange, min, max, sty
     [setRotationState]
   );
 
+  // we don't have to quantize gauge angle, but we take advantage of React.memo if we do
+  const gaugeAngle = Math.round(rotationState.display / GAUGE_NUM_DOTS) * GAUGE_NUM_DOTS;
+
   return (
     <PanGestureHandler onGestureEvent={onPanGestureEvent} onHandlerStateChange={onPanStateChange}>
       {/* Need an outer Animated.View that does not rotate, because the pan gesture's `translateY` is computed in terms of this view's coordinates, so rotating it would mess up that frame of reference. */}
-      <Animated.View style={[styles.container, style]}>
+      <Animated.View style={[styles.container, style, { width: size }]}>
         <View style={styles.gauge}>
           <Animated.View style={[styles.rotating, { transform: [{ rotate: rotationState.str }] }]}>
             <View style={styles.innerPointer} />
           </Animated.View>
-          {GAUGE_DOTS.map((_, index) => {
-            const angleDeg = valueToAngle(index, 0, GAUGE_NUM_DOTS - 1) + 90;
-            const angle = angleDeg * (Math.PI / 180);
-            const left = 36 + 36 * Math.cos(angle),
-              top = 36 + 36 * Math.sin(angle);
-            const isFilled = angleDeg <= rotationState.display;
-            return (
-              <View
-                key={`gauge-dot-${index}`}
-                style={[
-                  styles.gaugeDot,
-                  {
-                    left,
-                    top,
-                    backgroundColor: isFilled ? '#000' : '#fff',
-                    borderColor: isFilled ? '#000' : '#bbb',
-                  },
-                ]}
-              />
-            );
-          })}
+          <PerimeterGauge angleToDisplay={gaugeAngle} size={size} />
         </View>
         <Text style={styles.valueLabel}>{valueLabel}</Text>
       </Animated.View>
