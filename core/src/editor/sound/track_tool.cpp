@@ -261,12 +261,13 @@ void TrackTool::drawTimeAxis(love::Vector2 &viewOffset) {
   auto &scene = getScene();
   unsigned int stepsPerBeat = scene.getClock().getStepsPerBeat(),
                stepsPerBar = stepsPerBeat * scene.getClock().getBeatsPerBar();
-  auto shittyFontScale = noZoomUnits(1.25f);
+  auto timeAxisHeight = getTimeAxisHeight();
+  auto shittyFontScale = timeAxisHeight / 25.0f;
   love::Vector2 fontPosition(noZoomUnits(12.0f), noZoomUnits(20.0f));
 
   lv.graphics.push();
   lv.graphics.translate(std::max(viewPosition.x, 0.0f), viewPosition.y - viewOffset.y);
-  auto timeAxisHeight = getTimeAxisHeight() / gridCellSize;
+  timeAxisHeight /= gridCellSize;
   lv.graphics.scale(gridCellSize, gridCellSize);
 
   // background bar
