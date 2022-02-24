@@ -236,7 +236,7 @@ public:
 
   static void graphql(
       const std::string &query, const std::function<void(APIResponse &)> &callback) {
-#if defined(ANDROID) || defined(__EMSCRIPTEN__)
+#ifdef __EMSCRIPTEN__
     graphqlThread(query, callback);
 #else
     std::thread { &API::graphqlThread, query, callback }.detach();
@@ -245,7 +245,7 @@ public:
 
   static void getData(
       const std::string &url, const std::function<void(APIDataResponse &)> &callback) {
-#if defined(ANDROID) || defined(__EMSCRIPTEN__)
+#ifdef __EMSCRIPTEN__
     cacheLock.unlock();
     getDataThread(url, callback);
 #else
@@ -273,7 +273,7 @@ public:
       cacheLock.lock();
       urlToPendingCallbacks.insert({ url, { callback } });
 
-#if defined(ANDROID) || defined(__EMSCRIPTEN__)
+#ifdef __EMSCRIPTEN__
       cacheLock.unlock();
       getThread(url);
 #else

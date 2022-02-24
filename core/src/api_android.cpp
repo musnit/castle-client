@@ -11,19 +11,23 @@ static std::map<int, const std::function<void(bool, std::string, unsigned char *
     activeDataRequests;
 static std::mutex requestLock;
 
+static jclass apiClass;
+
+JNIEnv *getEnv() {
+  return (JNIEnv *)SDL_AndroidGetJNIEnv();
+}
+
+void initJNI() {
+  auto env = getEnv();
+  apiClass = (jclass)env->NewGlobalRef(env->FindClass("xyz/castle/api/API"));
+}
+
 void graphqlPostRequest(
     const std::string &body, const std::function<void(bool, std::string, std::string)> callback) {
-  JNIEnv *oldEnv = (JNIEnv *)SDL_AndroidGetJNIEnv();
-  JavaVM *jvm;
-  oldEnv->GetJavaVM(&jvm);
-
-  JNIEnv *env;
-  jvm->AttachCurrentThread(&env, NULL);
-
-  jclass activity = env->FindClass("xyz/castle/api/API");
+  JNIEnv *env = getEnv();
 
   jmethodID methodHandle
-      = env->GetStaticMethodID(activity, "jniGraphqlPostRequest", "(Ljava/lang/String;I)V");
+      = env->GetStaticMethodID(apiClass, "jniGraphqlPostRequest", "(Ljava/lang/String;I)V");
 
   jstring bodyJString = env->NewStringUTF(body.c_str());
   int currentRequestId = requestId++;
@@ -33,24 +37,15 @@ void graphqlPostRequest(
       currentRequestId, callback));
   requestLock.unlock();
 
-  env->CallStaticVoidMethod(activity, methodHandle, bodyJString, currentRequestId);
-
-  env->DeleteLocalRef(activity);
+  env->CallStaticVoidMethod(apiClass, methodHandle, bodyJString, currentRequestId);
 }
 
 void getRequest(
     const std::string &url, const std::function<void(bool, std::string, std::string)> callback) {
-  JNIEnv *oldEnv = (JNIEnv *)SDL_AndroidGetJNIEnv();
-  JavaVM *jvm;
-  oldEnv->GetJavaVM(&jvm);
-
-  JNIEnv *env;
-  jvm->AttachCurrentThread(&env, NULL);
-
-  jclass activity = env->FindClass("xyz/castle/api/API");
+  JNIEnv *env = getEnv();
 
   jmethodID methodHandle
-      = env->GetStaticMethodID(activity, "jniGetRequest", "(Ljava/lang/String;I)V");
+      = env->GetStaticMethodID(apiClass, "jniGetRequest", "(Ljava/lang/String;I)V");
 
   jstring urlJString = env->NewStringUTF(url.c_str());
   int currentRequestId = requestId++;
@@ -58,24 +53,15 @@ void getRequest(
   activeRequests.insert(std::pair<int, const std::function<void(bool, std::string, std::string)>>(
       currentRequestId, callback));
   requestLock.unlock();
-  env->CallStaticVoidMethod(activity, methodHandle, urlJString, currentRequestId);
-
-  env->DeleteLocalRef(activity);
+  env->CallStaticVoidMethod(apiClass, methodHandle, urlJString, currentRequestId);
 }
 
 void getDataRequest(const std::string &url,
     const std::function<void(bool, std::string, unsigned char *, unsigned long)> callback) {
-  JNIEnv *oldEnv = (JNIEnv *)SDL_AndroidGetJNIEnv();
-  JavaVM *jvm;
-  oldEnv->GetJavaVM(&jvm);
-
-  JNIEnv *env;
-  jvm->AttachCurrentThread(&env, NULL);
-
-  jclass activity = env->FindClass("xyz/castle/api/API");
+  JNIEnv *env = getEnv();
 
   jmethodID methodHandle
-      = env->GetStaticMethodID(activity, "jniGetDataRequest", "(Ljava/lang/String;I)V");
+      = env->GetStaticMethodID(apiClass, "jniGetDataRequest", "(Ljava/lang/String;I)V");
 
   jstring urlJString = env->NewStringUTF(url.c_str());
   int currentRequestId = requestId++;
@@ -84,9 +70,7 @@ void getDataRequest(const std::string &url,
       std::pair<int, const std::function<void(bool, std::string, unsigned char *, unsigned long)>>(
           currentRequestId, callback));
   requestLock.unlock();
-  env->CallStaticVoidMethod(activity, methodHandle, urlJString, currentRequestId);
-
-  env->DeleteLocalRef(activity);
+  env->CallStaticVoidMethod(apiClass, methodHandle, urlJString, currentRequestId);
 }
 }
 

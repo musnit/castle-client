@@ -6,6 +6,11 @@
 #include "sound/sound.h"
 #include "behaviors/text.h"
 
+#ifdef ANDROID
+namespace CastleAPI {
+void initJNI();
+}
+#endif
 
 //
 // JavaScript bindings
@@ -81,6 +86,10 @@ Engine::PreInit::PreInit() {
 //
 
 Engine::Engine() {
+#ifdef ANDROID
+  CastleAPI::initJNI();
+#endif
+
   instance = this;
 
   // First timer step
@@ -330,8 +339,16 @@ bool Engine::frame() {
     prevWindowWidth = w;
     prevWindowHeight = h;
   }
-#elif __ANDROID__
-  ghostScreenScaling = androidGetGhostScreenScaling();
+#elif defined(ANDROID)
+  {
+    int w = 0, h = 0;
+    SDL_GetWindowSize(lv.window.getSDLWindow(), &w, &h);
+    ghostScreenScaling = androidGetGhostScreenScaling();
+
+    if (feed) {
+      feed->setWindowSize(800, h / (double(w) / 800));
+    }
+  }
 #else
   // Just set screen scaling based on window size in desktop
   {
