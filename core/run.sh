@@ -123,9 +123,13 @@ case "$1" in
     $CMAKE --build build/xcode
     ;;
 
-  # iOS - Generate Xcode project
+  # iOS
   ios-xcode)
     $CMAKE -DIOS=ON -DCMAKE_SYSTEM_NAME=iOS -H. -Bbuild/ios -GXcode
+    ;;
+  ios-debug)
+    ./run.sh ios-xcode
+    $CMAKE --build build/ios --config Debug
     ;;
 
   # Web
