@@ -5,6 +5,7 @@ import { BottomSheetHeader } from '../../../components/BottomSheetHeader';
 import { sendAsync, useCoreState } from '../../../core/CoreEvents';
 
 import * as Constants from '../../../Constants';
+const { CastleIcon } = Constants;
 
 const styles = StyleSheet.create({
   container: {
@@ -31,14 +32,18 @@ const styles = StyleSheet.create({
     lineHeight: 22,
   },
   image: {
-    width: 56,
-    height: 56,
+    paddingVertical: 8,
+    marginRight: 16,
+    justifyContent: 'center',
   },
 });
 
 const TemplateItem = ({ entry, onPress }) => {
   return (
     <TouchableOpacity style={styles.itemContainer} onPress={onPress}>
+      <View style={styles.image}>
+        <CastleIcon name={entry.icon} size={32} color="#000" />
+      </View>
       <View style={styles.meta}>
         <Text style={styles.title}>{entry.title}</Text>
         <Text style={styles.description}>{entry.description}</Text>
@@ -49,15 +54,34 @@ const TemplateItem = ({ entry, onPress }) => {
 
 const entries = [
   {
-    id: 'sampler',
-    title: 'Sampler',
-    description:
-      'A melodic instrument that can play a tone, a recorded clip, or a generated effect',
+    id: 'tone',
+    icon: 'instrument-tone',
+    title: 'Sampler: Tone',
+    description: 'A synthesized musical tone',
   },
   {
     id: 'drums',
+    icon: 'instrument-drum',
     title: 'Drums',
     description: 'A rhythmic instrument that can play a variety of drums',
+  },
+  {
+    id: 'sfxr',
+    icon: 'instrument-sfxr',
+    title: 'Sampler: Generated Effect',
+    description: 'A generated sound effect',
+  },
+  {
+    id: 'microphone',
+    icon: 'instrument-recording',
+    title: 'Sampler: Recording',
+    description: 'A sample recorded from my device microphone',
+  },
+  {
+    id: 'library',
+    icon: 'instrument-file',
+    title: 'Sampler: File',
+    description: 'A sample chosen from my file library',
   },
 ];
 

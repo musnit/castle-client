@@ -9,6 +9,11 @@ std::unique_ptr<Song::Track> Song::makeDefaultTrack(const std::string &type) {
   auto track = std::make_unique<Song::Track>();
   if (type == "drums") {
     track->instrument = std::make_unique<Drums>();
+  } else if (type == "tone" || type == "sfxr" || type == "microphone" || type == "library") {
+    // sampler with specified sample type
+    track->instrument = std::make_unique<Sampler>();
+    Sampler *sampler = (Sampler *)track->instrument.get();
+    sampler->sample.type() = type;
   } else {
     // default sampler
     track->instrument = std::make_unique<Sampler>();
