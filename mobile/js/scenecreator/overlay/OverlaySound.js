@@ -65,7 +65,6 @@ const styles = StyleSheet.create({
     height: 64,
     flexShrink: 0,
     borderRadius: 32,
-    backgroundColor: Constants.colors.white,
     marginRight: 8,
     borderColor: Constants.colors.black,
     borderWidth: 1,
@@ -144,7 +143,7 @@ const OverlayPattern = ({ soundToolState, isEditingInstrument, onPressEditInstru
     return (
       <View style={styles.bottomContainer}>
         {soundToolMode === 'track' && !isEditingInstrument ? (
-          <Pressable style={styles.editInstrumentButton} onPress={onPressEditInstrument}>
+            <Pressable style={({ pressed }) => ([styles.editInstrumentButton, { backgroundColor: pressed ? '#ccc' : '#fff' }])} onPress={onPressEditInstrument}>
             <InstrumentIcon instrument={selectedTrack.instrument} color="#000" size={36} />
           </Pressable>
         ) : null}

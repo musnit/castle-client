@@ -135,7 +135,7 @@ void TrackTool::drawGrid(Song::Track *track, love::Vector2 &viewOffset) {
   float gridWidth = (viewPosition.x + viewWidth) - initialGridX;
   int initialNoteIndexVisible = int(std::floor((viewPosition.y - viewOffset.y) / gridCellSize));
   float initialGridY = float(initialNoteIndexVisible) * gridCellSize;
-  float gridHeight = (viewPosition.y - viewOffset.y + viewWidth * (7.0f / 5.0f)) - initialGridY;
+  float gridHeight = (viewPosition.y - viewOffset.y + viewWidth * (16.0f / 9.0f)) - initialGridY;
 
   lv.graphics.push();
   lv.graphics.translate(initialGridX, initialGridY);
@@ -399,7 +399,7 @@ void TrackTool::drawOverlay() {
   // draw playhead
   if (soundTool.isPlaying) {
     auto lineY = -1024.0f / viewScale;
-    auto lineHeight = 2048.0f / viewScale;
+    auto lineHeight = 4096.0f / viewScale;
     lv.graphics.setColor({ 1.0f, 1.0f, 1.0f, 1.0f });
     constexpr auto playheadWidth = 0.1f;
     lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, playheadX - playheadWidth * 0.5f,
