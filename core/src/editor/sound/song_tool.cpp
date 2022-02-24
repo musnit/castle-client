@@ -85,7 +85,7 @@ void SongTool::update(double dt) {
       if (touch.released) {
         bool touchedLoopButton = false;
         if (patternId != "") {
-          auto buttonSize = noZoomUnits(36.0f + 8.0f);
+          auto buttonSize = noZoomUnits(44.0f + 8.0f);
           if (buttonSize <= gridCellSize * 0.4f) {
             auto yInTrack = transformedTouchPosition.y - (std::floor(track) * gridCellSize);
             auto buttonX = (stepsToBars(patternEndTime) * gridCellSize) - buttonSize;
@@ -298,9 +298,8 @@ void SongTool::drawPattern(const std::string &patternId, Pattern &pattern, float
     lv.graphics.pop();
 
     // draw loop button
-    float buttonSize = noZoomUnits(36.0f);
+    float buttonSize = noZoomUnits(44.0f);
     if (buttonSize <= unit * 0.4f) {
-
       if (!loopImage) {
         std::string filename = "sound/loop.png";
         auto byteData = EmbeddedImage::load(filename);

@@ -52,7 +52,8 @@ const styles = StyleSheet.create({
   },
   patternContainer: {
     padding: 8,
-    flexGrow: 1,
+    width: '100%',
+    flexShrink: 1,
     backgroundColor: Constants.colors.white,
     borderRadius: 6,
     borderColor: Constants.colors.black,
@@ -62,10 +63,10 @@ const styles = StyleSheet.create({
   editInstrumentButton: {
     width: 64,
     height: 64,
+    flexShrink: 0,
     borderRadius: 32,
     backgroundColor: Constants.colors.white,
     marginRight: 8,
-    flexShrink: 1,
     borderColor: Constants.colors.black,
     borderWidth: 1,
     alignItems: 'center',

@@ -10,7 +10,7 @@ struct Sample;
 class SoundTool;
 class Pattern;
 
-#define SONG_DEFAULT_VIEW_WIDTH 10.0f
+#define SONG_DEFAULT_VIEW_WIDTH 8.0f
 #define SONG_MIN_VIEW_WIDTH 5.0f
 #define SONG_MAX_VIEW_WIDTH 30.0f
 #define SONG_DEFAULT_VIEW_BOUND 5.0f

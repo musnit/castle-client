@@ -16,7 +16,8 @@ const styles = StyleSheet.create({
   nameInput: {
     fontSize: 16,
     color: '#000',
-    width: '66%',
+    minWidth: '40%',
+    maxWidth: '66%',
     flexShrink: 1,
   },
   row: {
@@ -85,23 +86,19 @@ export const Pattern = ({ soundToolMode, pattern, sequenceElem }) => {
               placeholder={makeDefaultPatternName(pattern)}
             />
           </View>
-          <TouchableOpacity onPress={forkPattern} style={SceneCreatorConstants.styles.button}>
-            <Text style={SceneCreatorConstants.styles.buttonLabel}>Fork</Text>
-          </TouchableOpacity>
-          {soundToolMode !== 'track' ? (
-            <TouchableOpacity
-              onPress={onPressEditPattern}
-              style={SceneCreatorConstants.styles.button}>
-              <Text style={SceneCreatorConstants.styles.buttonLabel}>Edit</Text>
-            </TouchableOpacity>
-          ) : null}
-        </View>
-        {sequenceElem && false ? (
           <View style={styles.row}>
-            <Text style={styles.label}>Loop here</Text>
-            <InspectorCheckbox value={sequenceElem.loop} onChange={setSequenceLoop} />
+            <TouchableOpacity onPress={forkPattern} style={SceneCreatorConstants.styles.button}>
+              <Text style={SceneCreatorConstants.styles.buttonLabel}>Fork</Text>
+            </TouchableOpacity>
+            {soundToolMode !== 'track' ? (
+              <TouchableOpacity
+                onPress={onPressEditPattern}
+                style={[SceneCreatorConstants.styles.button, { marginLeft: 8 }]}>
+                <Text style={SceneCreatorConstants.styles.buttonLabel}>Edit</Text>
+              </TouchableOpacity>
+            ) : null}
           </View>
-        ) : null}
+        </View>
       </View>
     );
   }

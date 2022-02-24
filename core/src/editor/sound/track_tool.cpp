@@ -254,7 +254,7 @@ void TrackTool::drawNoteAxis(Song::Track *track) {
 }
 
 float TrackTool::getTimeAxisHeight() {
-  return noZoomUnits(36.0f);
+  return noZoomUnits(44.0f);
 }
 
 void TrackTool::drawTimeAxis(love::Vector2 &viewOffset) {
@@ -263,7 +263,7 @@ void TrackTool::drawTimeAxis(love::Vector2 &viewOffset) {
                stepsPerBar = stepsPerBeat * scene.getClock().getBeatsPerBar();
   auto timeAxisHeight = getTimeAxisHeight();
   auto shittyFontScale = timeAxisHeight / 25.0f;
-  love::Vector2 fontPosition(noZoomUnits(12.0f), noZoomUnits(20.0f));
+  love::Vector2 fontPosition(noZoomUnits(14.0f), noZoomUnits(22.0f));
 
   lv.graphics.push();
   lv.graphics.translate(std::max(viewPosition.x, 0.0f), viewPosition.y - viewOffset.y);
