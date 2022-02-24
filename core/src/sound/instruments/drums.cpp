@@ -360,36 +360,43 @@ std::string Drums::getActiveDrumName(int note) {
     if (params.useKick()) {
       return "KICK";
     }
+    break;
   }
   case 37: {
     if (params.useLoTom()) {
       return "LOW TOM";
     }
+    break;
   }
   case 38: {
     if (params.useHiTom()) {
       return "HIGH TOM";
     }
+    break;
   }
   case 39: {
     if (params.useSnare()) {
       return "SNARE";
     }
+    break;
   }
   case 40: {
     if (params.useClap()) {
       return "CLAP";
     }
+    break;
   }
   case 41: {
     if (params.useClosedHat()) {
       return "HAT";
     }
+    break;
   }
   case 42: {
     if (params.useOpenHat()) {
       return "OPEN HAT";
     }
+    break;
   }
   }
   return "";
@@ -419,13 +426,16 @@ void Drums::drawEditorKeyAxis(
   constexpr auto inactive = 0xdd / 255.0f;
   lv.graphics.setColor({ inactive, inactive, inactive, 1.0f });
   lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, 0.0f, -60.0f, width, 120.0f);
+  constexpr auto divider = 0xbb / 255.0f;
+  lv.graphics.setColor({ divider, divider, divider, 1.0f });
+  lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_LINE, 0.0f, -60.0f, width, 120.0f);
 
   // draw keys where there are drums
   for (auto zero = getZeroKey(), note = zero; note < zero + 12; note++) {
     auto y = ((note - zero) * -1.0f) - 1.0f;
     std::string name = getActiveDrumName(note);
     if (name != "") {
-      constexpr auto shittyFontScale = 24.0f / 800.0f;
+      auto shittyFontScale = width / 100.0f;
       constexpr auto active = 0xee / 255.0f;
       lv.graphics.setColor({ active, active, active, 1.0f });
       if (highlightKey && note == keyPressed) {

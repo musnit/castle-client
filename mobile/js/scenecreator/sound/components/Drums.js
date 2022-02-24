@@ -15,33 +15,36 @@ const styles = StyleSheet.create({
   container: {
     padding: 16,
     flexDirection: 'row',
+    alignItems: 'flex-start',
   },
   drumContainer: {
     flex: 1,
-    minWidth: 256,
+    flexDirection: 'row',
     backgroundColor: '#fff',
     ...Constants.styles.dropShadow,
-    padding: 16,
     borderWidth: 1,
     borderRadius: 6,
     borderColor: Constants.colors.black,
     marginRight: 16,
+    minHeight: 172,
   },
   drumParams: {
-    marginTop: 16,
-    borderTopWidth: 1,
-    borderTopColor: Constants.colors.grayOnWhiteBorder,
     flexDirection: 'row',
+    alignItems: 'flex-start',
+    padding: 16,
   },
-  row: {
-    flexDirection: 'row',
+  drumName: {
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start',
+    minWidth: 48,
+    padding: 16,
+    borderRightWidth: 1,
+    borderColor: '#ccc',
   },
   label: {
     fontSize: 16,
     color: '#000',
-    paddingRight: 12,
+    paddingBottom: 12,
   },
   soundInputLabel: {
     fontSize: 14,
@@ -181,8 +184,8 @@ const Drum = ({ name, value, onChange, enabled, onSetEnabled, paramSpecs, lastNa
   );
 
   return (
-    <View style={styles.drumContainer}>
-      <View style={styles.row}>
+    <View style={[styles.drumContainer, { minWidth: enabled ? 256 : 48 }]}>
+      <View style={styles.drumName}>
         <Text style={styles.label}>{name}</Text>
         <InspectorCheckbox value={enabled} onChange={onSetEnabled} />
       </View>

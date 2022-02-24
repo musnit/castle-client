@@ -20,10 +20,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     flexShrink: 0,
-    marginLeft: 16,
   },
   label: {
     fontSize: 16,
+    marginRight: 16,
   },
 });
 
@@ -31,7 +31,7 @@ export const InspectorCheckbox = ({ value, label, onChange, style, ...props }) =
   const onPress = React.useCallback(() => onChange(!value), [value, onChange]);
   return (
     <View style={[styles.container, style]} {...props}>
-      <Text style={styles.label}>{label}</Text>
+      {label?.length ? <Text style={styles.label}>{label}</Text> : null}
       <Pressable onPress={onPress} style={styles.box}>
         {value ? <Constants.CastleIcon name="checkmark" size={22} color="#000" /> : null}
       </Pressable>
