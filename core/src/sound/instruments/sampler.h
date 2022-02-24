@@ -24,6 +24,15 @@ public:
   }
 
   inline std::string getEditorIconName() override {
+    if (sample.type() == "sfxr") {
+      return "sfxr";
+    } else if (sample.type() == "microphone") {
+      return "recording";
+    } else if (sample.type() == "library") {
+      return "file";
+    } else if (sample.type() == "tone") {
+      return "tone";
+    }
     return "tone";
   }
 };
