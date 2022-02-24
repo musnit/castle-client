@@ -220,7 +220,7 @@ void SongTool::drawTimeAxis() {
 }
 
 void SongTool::drawGrid(float viewScale, love::Vector2 &viewOffset) {
-  constexpr auto gridGrey = 136.0f / 255.0f;
+  constexpr auto gridGrey = 0x88 / 255.0f;
   lv.graphics.setColor({ gridGrey, gridGrey, gridGrey, 1.0f });
   auto gridDotRadius = 12.0f * 0.01f;
 
@@ -409,9 +409,10 @@ void SongTool::drawTrack(Song::Track *track, int index, double timeInSong, float
       if (timeInSeq) {
         auto bars = stepsToBars(*timeInSeq);
         float playheadX = (bars + stepsToBars(startSeq->first)) * unit;
+        constexpr auto playheadWidth = 0.075f;
         lv.graphics.setColor({ 1.0f, 1.0f, 1.0f, 1.0f });
-        lv.graphics.rectangle(
-            love::Graphics::DrawMode::DRAW_FILL, playheadX, 0.025f * unit, 0.1f, 0.95f * unit);
+        lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, playheadX - playheadWidth * 0.5f,
+            0.025f * unit, playheadWidth, 0.95f * unit);
       }
     }
   }
@@ -570,8 +571,11 @@ void SongTool::drawOverlay() {
   if (soundTool.isPlaying) {
     auto lineY = viewPosition.y + (-1024.0f / viewScale);
     auto lineHeight = 3000.0f / viewScale;
-    lv.graphics.setColor({ 1.0f, 1.0f, 1.0f, 0.4f });
-    lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, playheadX, lineY, 0.1f, lineHeight);
+    constexpr auto gridGrey = 0x88 / 255.0f;
+    lv.graphics.setColor({ gridGrey, gridGrey, gridGrey, 1.0f });
+    constexpr auto playheadWidth = 0.075f;
+    lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, playheadX - playheadWidth * 0.5f,
+        lineY, playheadWidth, lineHeight);
   }
 
   if (soundTool.hasSong()) {
