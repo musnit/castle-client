@@ -12,6 +12,24 @@ const styles = StyleSheet.create({
     fontSize: 16,
     lineHeight: 22,
   },
+  gauge: {
+    width: '100%',
+    aspectRatio: 1,
+    borderRadius: 999,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 8,
+  },
+  gaugeDot: {
+    position: 'absolute',
+    width: 4,
+    height: 4,
+    marginLeft: -2,
+    marginTop: -2,
+    borderRadius: 2,
+    borderWidth: 1,
+    backgroundColor: '#000',
+  },
   rotating: {
     width: '100%',
     aspectRatio: 1,
@@ -23,8 +41,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   innerPointer: {
-    width: 12,
-    height: 12,
+    width: 10,
+    height: 10,
     borderRadius: 8,
     backgroundColor: '#000',
     position: 'relative',
@@ -32,7 +50,10 @@ const styles = StyleSheet.create({
   },
 });
 
-const numberToText = (number, decimalDigits = 3) => {
+const GAUGE_NUM_DOTS = 18;
+const GAUGE_DOTS = Array(GAUGE_NUM_DOTS).fill(0);
+
+const numberToText = (number, decimalDigits = 2) => {
   if (typeof number !== 'number') {
     return '0';
   }
@@ -40,7 +61,7 @@ const numberToText = (number, decimalDigits = 3) => {
 };
 
 // knob doesn't spin all 360 degrees, it has some dead space to either side of zero
-const ZERO_ANGLE_BUFFER = 30;
+const ZERO_ANGLE_BUFFER = 40;
 
 // RN rotation:
 //
@@ -110,30 +131,34 @@ export const InspectorKnob = ({ value, lastNativeUpdate, onChange, min, max, sty
       if (action.type === 'move') {
         // add 90 when displaying to orient zero downward
         const total = addAngleClamp(state.total, state.offset);
-        const displayAngle = total + 90;
+        const display = total + 90;
         updateValue(total);
         return {
           ...state,
           offset: action.offset,
-          str: `${displayAngle}deg`,
+          display,
+          str: `${display}deg`,
         };
       } else if (action.type === 'release') {
         const total = addAngleClamp(state.total, state.offset);
-        const displayAngle = total + 90;
+        const display = total + 90;
         updateValue(total);
         return {
           ...state,
           offset: 0,
           total,
-          str: `${displayAngle}deg`,
+          display,
+          str: `${display}deg`,
         };
       } else if (action.type === 'reset') {
         // only allow reset if we're not mid-gesture
         if (state.offset === 0) {
+          const total = valueToAngle(action.value, min, max);
           return {
             ...state,
-            total: valueToAngle(action.value, min, max),
-            str: `${valueToAngle(action.value, min, max) + 90}deg`,
+            total,
+            display: total + 90,
+            str: `${total + 90}deg`,
           };
         } else return state;
       }
@@ -141,6 +166,7 @@ export const InspectorKnob = ({ value, lastNativeUpdate, onChange, min, max, sty
     {
       total: valueToAngle(value, min, max),
       offset: 0,
+      display: valueToAngle(value, min, max) + 90,
       str: `${valueToAngle(value, min, max) + 90}deg`,
     }
   );
@@ -181,9 +207,32 @@ export const InspectorKnob = ({ value, lastNativeUpdate, onChange, min, max, sty
     <PanGestureHandler onGestureEvent={onPanGestureEvent} onHandlerStateChange={onPanStateChange}>
       {/* Need an outer Animated.View that does not rotate, because the pan gesture's `translateY` is computed in terms of this view's coordinates, so rotating it would mess up that frame of reference. */}
       <Animated.View style={[styles.container, style]}>
-        <Animated.View style={[styles.rotating, { transform: [{ rotate: rotationState.str }] }]}>
-          <View style={styles.innerPointer} />
-        </Animated.View>
+        <View style={styles.gauge}>
+          <Animated.View style={[styles.rotating, { transform: [{ rotate: rotationState.str }] }]}>
+            <View style={styles.innerPointer} />
+          </Animated.View>
+          {GAUGE_DOTS.map((_, index) => {
+            const angleDeg = valueToAngle(index, 0, GAUGE_NUM_DOTS - 1) + 90;
+            const angle = angleDeg * (Math.PI / 180);
+            const left = 36 + 36 * Math.cos(angle),
+              top = 36 + 36 * Math.sin(angle);
+            const isFilled = angleDeg <= rotationState.display;
+            return (
+              <View
+                key={`gauge-dot-${index}`}
+                style={[
+                  styles.gaugeDot,
+                  {
+                    left,
+                    top,
+                    backgroundColor: isFilled ? '#000' : '#fff',
+                    borderColor: isFilled ? '#000' : '#bbb',
+                  },
+                ]}
+              />
+            );
+          })}
+        </View>
         <Text style={styles.valueLabel}>{valueLabel}</Text>
       </Animated.View>
     </PanGestureHandler>
