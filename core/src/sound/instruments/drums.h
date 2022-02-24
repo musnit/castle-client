@@ -41,8 +41,8 @@ public:
     PROP(Snare, snare);
 
     struct Clap {
-      PROP(float, decay, .min(0) .max(0.5)) = 0.35f;
-      PROP(float, freq, .label("tone") .min(0) .max(1)) = 0.3f;
+      PROP(float, decay, .min(0) .max(0.5)) = 0.3f;
+      PROP(float, freq, .label("tone") .min(0) .max(1)) = 0.5f;
     };
     PROP(bool, useClap) = true;
     PROP(Clap, clap);
