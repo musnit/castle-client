@@ -23,6 +23,7 @@
 #include "behaviors/text.h"
 #include "behaviors/counter.h"
 #include "behaviors/music.h"
+#include "behaviors/local_variables.h"
 
 
 class AllBehaviors {
@@ -89,6 +90,7 @@ private:
     RulesBehavior,
     TagsBehavior,
     CounterBehavior,
+    LocalVariablesBehavior,
 
     // Rendering
 #ifdef ENABLE_DEBUG_DRAW
