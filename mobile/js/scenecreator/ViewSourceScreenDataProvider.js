@@ -5,6 +5,7 @@ import { sendAsync } from '../core/CoreEvents';
 
 import * as Constants from '../Constants';
 import * as LocalId from '../common/local-id';
+import * as Sentry from '@sentry/react-native';
 import * as Session from '../Session';
 
 class ViewSourceScreenDataProvider extends React.Component {
@@ -49,6 +50,12 @@ class ViewSourceScreenDataProvider extends React.Component {
       if (!params.deckIdToEdit || !params.cardIdToEdit) {
         throw new Error(`ViewSourceScreen requires a deck id and card id`);
       }
+
+      Sentry.addBreadcrumb({
+        category: 'create_deck',
+        message: `Opening view source for deckId: ${params.deckIdToEdit} cardId: ${params.cardIdToEdit}`,
+        level: Sentry.Severity.Info,
+      });
 
       let deck = {
         ...Constants.EMPTY_DECK,

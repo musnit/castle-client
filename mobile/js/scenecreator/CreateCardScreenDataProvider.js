@@ -9,6 +9,7 @@ import * as AdjustEvents from '../common/AdjustEvents';
 import * as Constants from '../Constants';
 import * as LocalId from '../common/local-id';
 import * as RulesClipboard from './inspector/rules/RulesClipboard';
+import * as Sentry from '@sentry/react-native';
 import * as Session from '../Session';
 
 const AUTOBACKUP_INTERVAL_MS = 2 * 60 * 1000;
@@ -61,6 +62,12 @@ class CreateCardScreenDataProvider extends React.Component {
       if (!params.deckIdToEdit || !params.cardIdToEdit) {
         throw new Error(`CreateCardScreen requires a deck id and card id`);
       }
+
+      Sentry.addBreadcrumb({
+        category: 'create_deck',
+        message: `Opening card creator for deckId: ${params.deckIdToEdit} cardId: ${params.cardIdToEdit} kitDeckId: ${params.kitDeckId}`,
+        level: Sentry.Severity.Info,
+      });
 
       let deck = {
         ...JSON.parse(JSON.stringify(Constants.EMPTY_DECK)),

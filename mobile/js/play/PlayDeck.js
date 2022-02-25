@@ -7,6 +7,7 @@ import { sendAsync, useListen } from '../core/CoreEvents';
 
 import * as AdjustEvents from '../common/AdjustEvents';
 import * as Constants from '../Constants';
+import * as Sentry from '@sentry/react-native';
 import * as Session from '../Session';
 
 const styles = StyleSheet.create({
@@ -56,6 +57,11 @@ export const PlayDeck = ({ deck, visibility, route, paused }) => {
   React.useEffect(() => {
     Amplitude.getInstance().logEvent('VIEW_PLAY_DECK', { deckId: deck.deckId, visibility });
     AdjustEvents.trackEvent(AdjustEvents.tokens.PLAY_DECK);
+    Sentry.addBreadcrumb({
+      category: 'play_deck',
+      message: `Play deck with deckId: ${deck.deckId}`,
+      level: Sentry.Severity.Info,
+    });
 
     return () => {
       recordDeckPlay(deck.deckId, playingCardId.current);
