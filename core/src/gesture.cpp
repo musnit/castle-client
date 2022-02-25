@@ -91,17 +91,9 @@ void Gesture::update() {
 void Gesture::updateTouch(float screenX, float screenY, love::int64 loveTouchId, bool isMouse) {
   auto screenPos = love::Vector2(screenX - boundsX, screenY - boundsY);
   if (boundsWidth > 0) {
-    if (screenPos.x > boundsWidth) {
-      return;
-    }
-
     screenPos.x *= 800.0 / boundsWidth;
   }
   if (boundsHeight > 0) {
-    if (screenPos.y > boundsHeight) {
-      return;
-    }
-
     screenPos.y *= 1120.0 / boundsHeight;
   }
 
@@ -134,6 +126,19 @@ void Gesture::updateTouch(float screenX, float screenY, love::int64 loveTouchId,
   });
   if (!found) {
     // Didn't find an existing touch, it's a new one
+    // Don't allow starting new touches outside the bounds
+    if (boundsWidth > 0) {
+      if (screenPos.x < 0 || screenPos.x > 800.0) {
+        return;
+      }
+    }
+
+    if (boundsHeight > 0) {
+      if (screenPos.y < 0 || screenPos.y > 1120.0) {
+        return;
+      }
+    }
+
     auto newTouchId = registry.create();
     registry.emplace<Touch>(newTouchId,
         Touch(newTouchId, screenPos, pos, cameraPos, lv.timer.getTime(), loveTouchId, isMouse));

@@ -116,6 +116,9 @@ inline Bridge &Engine::getBridge() {
 }
 
 inline Scene &Engine::getScene() {
+  if (feed) {
+    return *(feed->getScene());
+  }
   return player.getScene();
 }
 

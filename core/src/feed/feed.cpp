@@ -197,9 +197,10 @@ void Feed::update(double dt) {
             multiplier = 0.0;
           }
           offset += (touch.screenPos.x - lastTouchPosition) * multiplier;
-        } else if (usingFixedDecksList && offset < -feedItemWidth * decks.size()) {
+        } else if (usingFixedDecksList && offset < (-feedItemWidth * ((float)decks.size() - 1.0))) {
           // Scrolling past the last deck
-          float multiplier = (200.0 - (feedItemWidth * decks.size() - offset)) / 150.0;
+          float distancePastEnd = (-feedItemWidth * ((float)decks.size() - 1)) - offset;
+          float multiplier = (200.0 - distancePastEnd) / 150.0;
           if (multiplier < 0.0) {
             multiplier = 0.0;
           }
@@ -246,6 +247,10 @@ void Feed::update(double dt) {
         // Don't allow animating to before the first card
         if (animateToOffset > 0.0) {
           animateToOffset = 0.0;
+        }
+        if (usingFixedDecksList
+            && animateToOffset < (-feedItemWidth * ((float)decks.size() - 1.0))) {
+          animateToOffset = (-feedItemWidth * ((float)decks.size() - 1.0));
         }
       }
     }
@@ -306,14 +311,6 @@ void Feed::update(double dt) {
     loadDeckAtIndex(idx);
     loadDeckAtIndex(idx + 1);
     loadDeckAtIndex(idx + 2);
-
-    for (int i = 0; i <= idx - 2; i++) {
-      unloadDeckAtIndex(i);
-    }
-
-    for (int i = idx + 3; i < (int)decks.size(); i++) {
-      unloadDeckAtIndex(i);
-    }
   }
 }
 
@@ -463,6 +460,15 @@ void Feed::draw() {
   renderCardAtPosition(idx, offset + feedItemWidth * idx + padding, !dragStarted && !isAnimating);
   renderCardAtPosition(idx + 1, offset + feedItemWidth * (idx + 1) + padding, false);
   renderCardAtPosition(idx + 2, offset + feedItemWidth * (idx + 2) + padding, false);
+
+  // this releases a canvas, so we want to run it in render
+  for (int i = 0; i <= idx - 2; i++) {
+    unloadDeckAtIndex(i);
+  }
+
+  for (int i = idx + 3; i < (int)decks.size(); i++) {
+    unloadDeckAtIndex(i);
+  }
 }
 
 void Feed::fetchInitialDecks(std::vector<std::string> deckIds) {
@@ -506,7 +512,7 @@ void Feed::fetchInitialDecks(std::vector<std::string> deckIds) {
 }
 
 void Feed::fetchMoreDecks() {
-  if (fetchingDecks) {
+  if (fetchingDecks || usingFixedDecksList) {
     return;
   }
 
@@ -544,12 +550,15 @@ void Feed::loadDeckAtIndex(int i) {
     return;
   }
 
-  if (decks[i].player) {
+  if (decks[i].player || decks[i].isLoading) {
     return;
   }
 
+  decks[i].isLoading = true;
+
   if (decks[i].deckJson) {
     loadDeckFromDeckJson(i);
+    decks[i].isLoading = false;
   } else {
     API::graphql(
         "{\n  deck(deckId: \"" + *decks[i].deckId + "\") {\n" + GRAPHQL_DECK_FIELDS + "\n}\n}",
@@ -559,7 +568,9 @@ void Feed::loadDeckAtIndex(int i) {
 
             reader.obj("data", [&]() {
               reader.obj("deck", [&]() {
+                // this will get loaded by loadDeckAtIndex on the main thread
                 decks[i].deckJson = reader.toJson();
+                decks[i].isLoading = false;
               });
             });
           }

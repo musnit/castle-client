@@ -12,6 +12,7 @@ struct FeedItem {
   std::shared_ptr<Player> player;
   std::shared_ptr<love::graphics::Canvas> canvas;
   std::shared_ptr<CoreViewRenderer> coreView;
+  bool isLoading = false;
   bool isLoaded = false;
   bool hasRunUpdate = false;
   bool hasRunUpdateSinceLastRender = false;
