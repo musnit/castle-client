@@ -195,6 +195,7 @@ android {
             resValue "string", "app_name", "Castle"
             ndk {
                 abiFilters 'arm64-v8a', 'armeabi-v7a', 'x86', 'x86_64'
+                debugSymbolLevel 'FULL'
             }
         }
         beta {
@@ -207,6 +208,7 @@ android {
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
             ndk {
                 abiFilters 'arm64-v8a', 'armeabi-v7a', 'x86', 'x86_64'
+                debugSymbolLevel 'FULL'
             }
             firebaseAppDistribution {
                 appId="1:299950679084:android:592b6b6eb9bdaf174bdd89"
