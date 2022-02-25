@@ -56,6 +56,7 @@ class ViewSourceScreenDataProvider extends React.Component {
         message: `Opening view source for deckId: ${params.deckIdToEdit} cardId: ${params.cardIdToEdit}`,
         level: Sentry.Severity.Info,
       });
+      Sentry.setTag('last_card_id_edited', params.cardIdToEdit);
 
       let deck = {
         ...Constants.EMPTY_DECK,

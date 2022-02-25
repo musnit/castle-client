@@ -62,6 +62,7 @@ export const PlayDeck = ({ deck, visibility, route, paused }) => {
       message: `Play deck with deckId: ${deck.deckId}`,
       level: Sentry.Severity.Info,
     });
+    Sentry.setTag('last_deck_id_played', deck.deckId);
 
     return () => {
       recordDeckPlay(deck.deckId, playingCardId.current);

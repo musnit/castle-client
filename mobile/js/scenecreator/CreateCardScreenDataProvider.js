@@ -68,6 +68,7 @@ class CreateCardScreenDataProvider extends React.Component {
         message: `Opening card creator for deckId: ${params.deckIdToEdit} cardId: ${params.cardIdToEdit} kitDeckId: ${params.kitDeckId}`,
         level: Sentry.Severity.Info,
       });
+      Sentry.setTag('last_card_id_edited', params.cardIdToEdit);
 
       let deck = {
         ...JSON.parse(JSON.stringify(Constants.EMPTY_DECK)),
