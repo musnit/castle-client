@@ -477,8 +477,11 @@ bool DrawData::deleteFrame(OneIndexFrame frameIndex) {
 }
 
 void DrawData::updateFramePreview(DrawDataLayerId layerId, OneIndexFrame frameIndex) {
-  auto frame = layerForId(layerId)->frames[frameIndex.toZeroIndex()];
-  frame->base64Png = frame->renderPreviewPng(-1);
+  auto layer = layerForId(layerId);
+  if (layer) {
+    auto frame = layer->frames[frameIndex.toZeroIndex()];
+    frame->base64Png = frame->renderPreviewPng(-1);
+  }
 }
 
 void DrawData::copyCell(std::shared_ptr<DrawDataFrame> sourceFrame, DrawDataLayerId destLayerId,
