@@ -15,6 +15,7 @@ import * as GhostChannels from './ghost/GhostChannels';
 import * as LocalId from './common/local-id';
 import * as PushNotifications from './PushNotifications';
 import * as EventEmitter from './EventEmitter';
+import * as Sentry from '@sentry/react-native';
 
 const SKIP_NUX = false;
 
@@ -90,6 +91,9 @@ export async function loadAuthTokenAsync() {
     gIsMuted = isMutedStorageValue === 'true' || isMutedStorageValue === true;
     Amplitude.getInstance().setUserId(gUserId);
     AdjustEvents.setUserId(gUserId);
+    Sentry.setUser({
+      id: gUserId,
+    });
   }
 }
 
@@ -187,6 +191,9 @@ export class Provider extends React.Component {
 
         Amplitude.getInstance().setUserId(gUserId);
         AdjustEvents.setUserId(gUserId);
+        Sentry.setUser({
+          id: gUserId,
+        });
         Amplitude.getInstance().setUserProperties({
           isAnonymous: gIsAnonymous,
           isAdmin: isAdmin === true ? isAdmin : undefined,
@@ -198,6 +205,7 @@ export class Provider extends React.Component {
         await PushNotifications.clearTokenAsync();
         Amplitude.getInstance().setUserId(null);
         AdjustEvents.clearUserId();
+        Sentry.configureScope((scope) => scope.setUser(null));
         Amplitude.getInstance().clearUserProperties();
         setNotifBadge(0);
       }
