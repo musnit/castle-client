@@ -59,26 +59,36 @@ export const NuxScreen = () => {
   const { setIsNuxCompleted } = useSession();
 
   const [currentCardId, setCurrentCardId] = React.useState();
-  const [nuxInfo, setNuxInfo] = React.useState();
-  const loadNuxInfo = useQuery(
-    gql`
-      query {
-        nuxInfo {
-          deck {
-            ${Constants.FEED_ITEM_DECK_FRAGMENT}
-          }
-          finalCardId
-        }
-      }
-    `
-  );
-
-  React.useEffect(() => {
-    if (!loadNuxInfo.loading && !loadNuxInfo.error && loadNuxInfo.data) {
-      setNuxInfo(loadNuxInfo.data.nuxInfo);
-      setCurrentCardId(loadNuxInfo.data.nuxInfo.deck.initialCard?.cardId);
-    }
-  }, [loadNuxInfo.loading, loadNuxInfo.error, loadNuxInfo.data]);
+  const nuxInfo = {
+    __typename: 'NUXInfo',
+    deck: {
+      __typename: 'Deck',
+      childDecksCount: 0,
+      comments: { __typename: 'CommentsList', count: 22, threadId: 'deck-4JQS0nAXr' },
+      commentsEnabled: true,
+      creator: { __typename: 'User', photo: [Object], userId: '7187', username: 'castle' },
+      deckId: '4JQS0nAXr',
+      id: '4JQS0nAXr',
+      initialCard: {
+        __typename: 'Card',
+        backgroundColor: '#000000',
+        backgroundImage: [Object],
+        cardId: 'p9m8CRTfo2',
+        id: 'p9m8CRTfo2',
+        sceneDataUrl:
+          'https://d10y2ex2idecuq.cloudfront.net/?cardId=p9m8CRTfo2&version=259&sceneCreatorVersion=102',
+        title: 'card-Vr3D',
+      },
+      lastModified: '2021-10-19T18:17:29.179Z',
+      parentDeck: null,
+      parentDeckId: null,
+      previewVideo: null,
+      reactions: [[Object]],
+      title: 'deck-7ZMe',
+      visibility: 'public',
+    },
+    finalCardId: 'kwruZ1zJJp',
+  };
 
   useListen({
     eventName: 'DID_NAVIGATE_TO_CARD',
