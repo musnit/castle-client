@@ -42,7 +42,9 @@ export const CreateCardCaptureActions = () => {
   const { deck } = useCardCreator();
   const { userId: signedInUserId } = useSession();
 
-  const data = useCoreState('EDITOR_GLOBAL_ACTIONS');
+  const data = useCoreState('EDITOR_GLOBAL_ACTIONS') || {
+    actionsAvailable: {},
+  };
 
   const [capturing, setCapturing] = React.useState(false);
   const [recordState, setNextRecordState] = React.useReducer(
