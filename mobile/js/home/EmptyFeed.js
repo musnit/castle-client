@@ -32,11 +32,14 @@ const formatError = (error) => {
   } else if (typeof error === 'string') {
     message = error;
   }
+  let isCustomMessage = false;
   if (message) {
     if (message.indexOf('Network error') !== -1) {
+      isCustomMessage = true;
       message = `There was a problem loading because the app appears to be offline.`;
     }
-  } else {
+  }
+  if (!isCustomMessage) {
     message = `An unexpected error occurred.`;
   }
   return message;
