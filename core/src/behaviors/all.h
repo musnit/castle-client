@@ -90,7 +90,9 @@ private:
     RulesBehavior,
     TagsBehavior,
     CounterBehavior,
+#ifdef ENABLE_LOCAL_VARIABLES
     LocalVariablesBehavior,
+#endif
 
     // Rendering
 #ifdef ENABLE_DEBUG_DRAW

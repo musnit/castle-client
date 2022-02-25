@@ -254,6 +254,7 @@ ActorId Scene::addActor(const ActorDesc &params) {
   }
 #endif
 
+#ifdef ENABLE_LOCAL_VARIABLES
   auto &localVariablesBehavior = getBehaviors().byType<LocalVariablesBehavior>();
   if (!localVariablesBehavior.hasComponent(actorId)) {
     auto &localVariablesComponent = localVariablesBehavior.addComponent(actorId);
@@ -265,6 +266,7 @@ ActorId Scene::addActor(const ActorDesc &params) {
       localVariablesBehavior.handleReadComponent(actorId, localVariablesComponent, reader);
     });
   }
+#endif
 
   // Set position
   if (params.pos) {

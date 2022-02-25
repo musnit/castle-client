@@ -6,6 +6,9 @@
 #include "props.h"
 
 
+//#define ENABLE_LOCAL_VARIABLES
+
+
 //
 // Storage
 //
