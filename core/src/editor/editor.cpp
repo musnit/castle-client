@@ -2171,11 +2171,13 @@ void Editor::sendTagsData() {
   auto &tagsBehavior = getScene().getBehaviors().byType<TagsBehavior>();
   tagsBehavior.map.forEach([&](TagsMap::Token t, TagsMapElem &elem) {
     auto tagString = tagsBehavior.map.getString(t);
-    std::vector<int> actorIds;
-    for (auto actorId : elem.actorIds) {
-      actorIds.push_back(entt::to_integral(actorId));
+    if (tagString) {
+      std::vector<int> actorIds;
+      for (auto actorId : elem.actorIds) {
+        actorIds.push_back(entt::to_integral(actorId));
+      }
+      ev.tagToActorIds().emplace(*tagString, actorIds);
     }
-    ev.tagToActorIds().emplace(*tagString, actorIds);
   });
   bridge.sendEvent("EDITOR_TAGS", ev);
 }
