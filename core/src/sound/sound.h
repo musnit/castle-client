@@ -46,14 +46,13 @@ public:
       StreamOptions opts);
 
   static void deinit() {
-    sfxrSounds.clear();
-    urlSounds.clear();
-
     if (hasInitializedSoloud) {
       soloud.stopAll();
       soloud.deinit();
       hasInitializedSoloud = false;
     }
+    sfxrSounds.clear();
+    urlSounds.clear();
   }
 
   void stopAll();
