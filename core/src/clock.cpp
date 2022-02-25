@@ -126,7 +126,13 @@ double Clock::getTimeUntilNext(Quantize quant, double count, bool allowRecentPas
   }
 
   // if we would wait almost a full `absolute` time, then the previous time just happened
-  if (allowRecentPast && delta < 0.02) {
+  double epsilon = 0.02;
+  if (totalBeatsElapsed == 0) {
+    // we just started this clock, allow larger delta to accommodate actors playing music at scene start
+    // (avoids a bug where initial music may lag by 1 bar when card starts)
+    epsilon = 0.05;
+  }
+  if (allowRecentPast && delta < epsilon) {
     return -delta;
   } else {
     return absolute - delta;
