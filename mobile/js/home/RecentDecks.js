@@ -72,7 +72,7 @@ export const RecentDecks = ({ focused }) => {
       }
     />
   ) : error ? (
-    <EmptyFeed message={error} />
+    <EmptyFeed error={error} />
   ) : lastFetchedTime && !query.loading ? (
     <EmptyFeed message="You haven't played any decks recently." />
   ) : null;
