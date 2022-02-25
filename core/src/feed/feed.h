@@ -58,6 +58,11 @@ private:
   float elapsedTime = 0.0;
   float dragVelocity = 0.0;
 
+  int cardLeft = 0;
+  int cardWidth = 800;
+  int cardHeight = 1120;
+  int feedItemWidth = 1000;
+
   std::set<std::string> seenDeckIds;
   std::vector<FeedItem> decks;
   std::string sessionId;

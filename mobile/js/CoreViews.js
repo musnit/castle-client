@@ -44,9 +44,10 @@ let coreViews = {
     CARD_BORDER_RADIUS: 30,
   },
   FEED: {
+    id: 'container',
     type: 'view',
     left: 0,
-    top: 1150,
+    top: '100%',
     width: '100%',
     height: 60,
     //backgroundColor: '#f00',

@@ -7,9 +7,7 @@
 #include <thread>
 
 #define TOP_PADDING 0
-#define CARD_WIDTH 800
-#define CARD_HEIGHT 1120
-#define FEED_ITEM_WIDTH (CARD_WIDTH + 200)
+#define BOTTOM_UI_MIN_HEIGHT 200
 
 const std::string GRAPHQL_DECK_FIELDS
     = "\ndeckId\nvariables\ncreator {\nuserId\nusername\nphoto "
@@ -90,10 +88,27 @@ float smoothstep(float a, float b, float t) {
 void Feed::setWindowSize(int w, int h) {
   windowWidth = w;
   windowHeight = h;
+
+  float aspectRatio = (float)w / (float)h;
+  float cardAspectRatio = 800.0 / 1120.0;
+
+  if (aspectRatio > cardAspectRatio) {
+    // screen is wide
+    cardHeight = h - BOTTOM_UI_MIN_HEIGHT;
+    cardWidth = ((float)cardHeight) * cardAspectRatio;
+    cardLeft = (w - cardWidth) * 0.5;
+  } else {
+    // screen is tall
+    cardWidth = w;
+    cardHeight = ((float)cardWidth) / cardAspectRatio;
+    cardLeft = 0;
+  }
+
+  feedItemWidth = w;
 }
 
 int Feed::getCurrentIndex() {
-  int idx = floor((FEED_ITEM_WIDTH / 2.0 - offset) / FEED_ITEM_WIDTH);
+  int idx = floor((feedItemWidth / 2.0 - offset) / feedItemWidth);
   if (idx < 0) {
     idx = 0;
   }
@@ -138,7 +153,7 @@ void Feed::update(double dt) {
   gesture.update();
   gesture.withSingleTouch([&](const Touch &touch) {
     if (touch.pressed) {
-      ignoreCurrentTouch = touch.screenPos.y < CARD_HEIGHT + TOP_PADDING;
+      ignoreCurrentTouch = touch.screenPos.y < cardHeight + TOP_PADDING;
     }
 
     if (ignoreCurrentTouch) {
@@ -182,9 +197,9 @@ void Feed::update(double dt) {
             multiplier = 0.0;
           }
           offset += (touch.screenPos.x - lastTouchPosition) * multiplier;
-        } else if (usingFixedDecksList && offset < -FEED_ITEM_WIDTH * decks.size()) {
+        } else if (usingFixedDecksList && offset < -feedItemWidth * decks.size()) {
           // Scrolling past the last deck
-          float multiplier = (200.0 - (FEED_ITEM_WIDTH * decks.size() - offset)) / 150.0;
+          float multiplier = (200.0 - (feedItemWidth * decks.size() - offset)) / 150.0;
           if (multiplier < 0.0) {
             multiplier = 0.0;
           }
@@ -214,18 +229,18 @@ void Feed::update(double dt) {
         if (touchDuration < FAST_SWIPE_MAX_DURATION
             && fabs(offset - touchStartOffset) > FAST_SWIPE_MIN_OFFSET) {
           if (offset - touchStartOffset > 0) {
-            animateToOffset = (round(touchStartOffset / FEED_ITEM_WIDTH) + 1) * FEED_ITEM_WIDTH;
+            animateToOffset = (round(touchStartOffset / feedItemWidth) + 1) * feedItemWidth;
           } else {
-            animateToOffset = (round(touchStartOffset / FEED_ITEM_WIDTH) - 1) * FEED_ITEM_WIDTH;
+            animateToOffset = (round(touchStartOffset / feedItemWidth) - 1) * feedItemWidth;
           }
         } else if (fabs(dragVelocity) > FAST_SWIPE_MIN_DRAG_VELOCITY) {
           if (dragVelocity > 0) {
-            animateToOffset = (round(touchStartOffset / FEED_ITEM_WIDTH) + 1) * FEED_ITEM_WIDTH;
+            animateToOffset = (round(touchStartOffset / feedItemWidth) + 1) * feedItemWidth;
           } else {
-            animateToOffset = (round(touchStartOffset / FEED_ITEM_WIDTH) - 1) * FEED_ITEM_WIDTH;
+            animateToOffset = (round(touchStartOffset / feedItemWidth) - 1) * feedItemWidth;
           }
         } else {
-          animateToOffset = round((offset) / FEED_ITEM_WIDTH) * FEED_ITEM_WIDTH;
+          animateToOffset = round((offset) / feedItemWidth) * feedItemWidth;
         }
 
         // Don't allow animating to before the first card
@@ -256,7 +271,7 @@ void Feed::update(double dt) {
               auto reader = response.reader;
               decks[idx].player->readScene(reader, decks[idx].player->getScene().getDeckId());
               decks[idx].player->getScene().getGesture().setBounds(
-                  0, TOP_PADDING, CARD_WIDTH, CARD_HEIGHT);
+                  cardLeft, TOP_PADDING, cardWidth, cardHeight);
             }
           });
           decks[idx].player->getScene().setNextCardId(std::nullopt);
@@ -329,7 +344,7 @@ void Feed::renderCardAtPosition(int idx, float position, bool isActive) {
   }
 
   if (!decks[idx].canvas) {
-    decks[idx].canvas = std::shared_ptr<love::graphics::Canvas>(newCanvas(CARD_WIDTH, CARD_HEIGHT));
+    decks[idx].canvas = std::shared_ptr<love::graphics::Canvas>(newCanvas(cardWidth, cardHeight));
   }
   std::shared_ptr<love::graphics::Canvas> canvas = decks[idx].canvas;
 
@@ -337,8 +352,13 @@ void Feed::renderCardAtPosition(int idx, float position, bool isActive) {
 
   if (shouldDraw) {
     renderToCanvas(canvas.get(), [&]() {
+      lv.graphics.push(love::Graphics::STACK_ALL);
+      viewTransform.reset();
+      viewTransform.scale(cardWidth / 800.0, cardHeight / 1120.0);
+      lv.graphics.applyTransform(&viewTransform);
       lv.graphics.setColor({ 1.0, 1.0, 1.0, 1.0 });
       decks[idx].player->draw();
+      lv.graphics.pop();
     });
 
     decks[idx].hasRunUpdateSinceLastRender = false;
@@ -368,13 +388,13 @@ void Feed::renderCardAtPosition(int idx, float position, bool isActive) {
 
   {
     auto info = shader->getUniformInfo("width");
-    info->floats[0] = CARD_WIDTH;
+    info->floats[0] = cardWidth;
     shader->updateUniform(info, 1);
   }
 
   {
     auto info = shader->getUniformInfo("height");
-    info->floats[0] = CARD_HEIGHT;
+    info->floats[0] = cardHeight;
     shader->updateUniform(info, 1);
   }
 
@@ -382,7 +402,7 @@ void Feed::renderCardAtPosition(int idx, float position, bool isActive) {
   // / *
   quad->setTexture(canvas.get());
   lv.graphics.setColor({ 1.0, 1.0, 1.0, 1.0 });
-  quad->draw(&lv.graphics, love::Matrix4(0.0, 0.0, 0, CARD_WIDTH, CARD_HEIGHT, 0, 0, 0, 0));
+  quad->draw(&lv.graphics, love::Matrix4(0.0, 0.0, 0, cardWidth, cardHeight, 0, 0, 0, 0));
   quad->setTexture(nullptr);
   lv.graphics.setShader();
   //  * /
@@ -437,13 +457,12 @@ void Feed::draw() {
   }
 
   int idx = getCurrentIndex();
-  // float padding = (FEED_ITEM_WIDTH - CARD_HEIGHT) / 2.0;
-  float padding = 0.0;
+  float padding = (windowWidth - cardWidth) / 2.0;
 
-  renderCardAtPosition(idx - 1, offset + FEED_ITEM_WIDTH * (idx - 1) + padding, false);
-  renderCardAtPosition(idx, offset + FEED_ITEM_WIDTH * idx + padding, !dragStarted && !isAnimating);
-  renderCardAtPosition(idx + 1, offset + FEED_ITEM_WIDTH * (idx + 1) + padding, false);
-  renderCardAtPosition(idx + 2, offset + FEED_ITEM_WIDTH * (idx + 2) + padding, false);
+  renderCardAtPosition(idx - 1, offset + feedItemWidth * (idx - 1) + padding, false);
+  renderCardAtPosition(idx, offset + feedItemWidth * idx + padding, !dragStarted && !isAnimating);
+  renderCardAtPosition(idx + 1, offset + feedItemWidth * (idx + 1) + padding, false);
+  renderCardAtPosition(idx + 2, offset + feedItemWidth * (idx + 2) + padding, false);
 }
 
 void Feed::fetchInitialDecks(std::vector<std::string> deckIds) {
@@ -550,7 +569,12 @@ void Feed::loadDeckAtIndex(int i) {
 
 void Feed::loadDeckFromDeckJson(int i) {
   decks[i].player = std::make_shared<Player>(bridge);
-  decks[i].coreView = CoreViews::getInstance().getRenderer("FEED");
+  decks[i].coreView
+      = CoreViews::getInstance().getRenderer("FEED", cardWidth, windowHeight - (cardHeight + 20));
+  decks[i].coreView->updateProp("container", "top", std::to_string(cardHeight + 20));
+  decks[i].coreView->updateProp(
+      "container", "height", std::to_string(windowHeight - (cardHeight + 20)));
+  decks[i].coreView->updateProp("container", "width", std::to_string(cardWidth));
 
   auto deckArchive = Archive::fromJson(decks[i].deckJson->c_str());
   deckArchive.read([&](Reader &reader) {
@@ -608,7 +632,7 @@ void Feed::loadDeckFromDeckJson(int i) {
           std::thread t2([=] {
             decks[i].player->readScene(readerJson, deckId);
             decks[i].player->getScene().getGesture().setBounds(
-                0, TOP_PADDING, CARD_WIDTH, CARD_HEIGHT);
+                cardLeft, TOP_PADDING, cardWidth, cardHeight);
             decks[i].isLoaded = true;
           });
           t2.detach();

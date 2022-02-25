@@ -148,10 +148,14 @@ void CoreViewRenderer::unlock() {
 }
 
 void CoreViewRenderer::updateProp(std::string viewId, std::string key, std::string value) {
+  if (props[viewId][key] == value) {
+    return;
+  }
+
   props[viewId][key] = value;
 
-  auto view = getViewForId(layout.get(), viewId);
-  if (!view) {
+  auto views = getViewForId(layout.get(), viewId);
+  if (!views) {
     return;
   }
 
@@ -161,7 +165,7 @@ void CoreViewRenderer::updateProp(std::string viewId, std::string key, std::stri
   });
 
   archive.read([&](Reader &reader) {
-    (*view)->baseRead(reader, nullptr, nullptr);
+    (views->first)->baseRead(reader, views->second, nullptr);
   });
 }
 
@@ -169,15 +173,17 @@ void CoreViewRenderer::updateJSGestureProp(std::string key, std::string value) {
   jsGestureProps[key] = value;
 }
 
-std::optional<CoreView *> CoreViewRenderer::getViewForId(CoreView *root, std::string id) {
+// view, parent
+std::optional<std::pair<CoreView *, CoreView *>> CoreViewRenderer::getViewForId(
+    CoreView *root, std::string id) {
   if (root->id == id) {
-    return root;
+    return std::make_pair(root, nullptr);
   }
 
   for (size_t i = 0; i < root->children.size(); i++) {
     auto childResult = getViewForId(root->children[i].get(), id);
     if (childResult) {
-      return childResult;
+      return std::make_pair(childResult->first, root);
     }
   }
 
@@ -230,19 +236,21 @@ void CoreViews::setJson(std::string json) {
   }
 }
 
-std::shared_ptr<CoreViewRenderer> CoreViews::getRenderer(std::string layoutTemplateName) {
-  return std::make_shared<CoreViewRenderer>(
-      bridge, layoutTemplateName, getView(layoutTemplateName, nullptr), jsonVersion);
+std::shared_ptr<CoreViewRenderer> CoreViews::getRenderer(
+    std::string layoutTemplateName, int defaultWidth, int defaultHeight) {
+  return std::make_shared<CoreViewRenderer>(bridge, layoutTemplateName,
+      getView(layoutTemplateName, nullptr, defaultWidth, defaultHeight), jsonVersion);
 }
 
 std::shared_ptr<CoreView> CoreViews::getView(std::string layoutTemplateName,
-    std::unordered_map<std::string, std::unordered_map<std::string, std::string>> *props) {
+    std::unordered_map<std::string, std::unordered_map<std::string, std::string>> *props,
+    int defaultWidth, int defaultHeight) {
   auto archive = Archive::fromJson(jsonString.c_str());
   std::shared_ptr<CoreView> result = nullptr;
 
   archive.read([&](Reader &reader) {
     reader.obj(layoutTemplateName.c_str(), [&]() {
-      result = readViewFromJson(reader, nullptr, props);
+      result = readViewFromJson(reader, nullptr, props, defaultWidth, defaultHeight);
     });
   });
 
@@ -250,10 +258,11 @@ std::shared_ptr<CoreView> CoreViews::getView(std::string layoutTemplateName,
 }
 
 std::shared_ptr<CoreView> CoreViews::readViewFromJson(Reader &reader, CoreView *parent,
-    std::unordered_map<std::string, std::unordered_map<std::string, std::string>> *props) {
+    std::unordered_map<std::string, std::unordered_map<std::string, std::string>> *props,
+    int defaultWidth, int defaultHeight) {
   auto type = reader.str("type", "");
   auto view = getViewForType(type);
-  view->baseRead(reader, parent, props);
+  view->baseRead(reader, parent, props, defaultWidth, defaultHeight);
 
   if (view->id && props && props->find(*(view->id)) != props->end()) {
     auto viewProps = (*props)[*(view->id)];
@@ -266,7 +275,7 @@ std::shared_ptr<CoreView> CoreViews::readViewFromJson(Reader &reader, CoreView *
     });
 
     archive.read([&](Reader &reader) {
-      view->baseRead(reader, nullptr, props);
+      view->baseRead(reader, nullptr, props, defaultWidth, defaultHeight);
     });
   }
 
@@ -339,9 +348,10 @@ int CoreViews::readInt(Reader &reader, const char *key, float scale) {
 //
 
 void CoreView::baseRead(Reader &reader, CoreView *parent,
-    std::unordered_map<std::string, std::unordered_map<std::string, std::string>> *props) {
-  int parentWidth = parent ? parent->width : 800;
-  int parentHeight = parent ? parent->height : 1120;
+    std::unordered_map<std::string, std::unordered_map<std::string, std::string>> *props,
+    int defaultWidth, int defaultHeight) {
+  int parentWidth = parent ? parent->width : defaultWidth;
+  int parentHeight = parent ? parent->height : defaultHeight;
 
   if (reader.has("width")) {
     width = CoreViews::getInstance().readInt(reader, "width", parentWidth);

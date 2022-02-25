@@ -33,7 +33,8 @@ public:
   }
 
   void baseRead(Reader &reader, CoreView *parent,
-      std::unordered_map<std::string, std::unordered_map<std::string, std::string>> *props);
+      std::unordered_map<std::string, std::unordered_map<std::string, std::string>> *props,
+      int defaultWidth = 800, int defaultHeight = 1120);
   void baseRender();
   void baseHandleTouch(TouchEvent touch);
 
@@ -97,7 +98,7 @@ private:
   std::optional<std::function<void(std::string)>> tapHandler;
   std::mutex mutex;
 
-  std::optional<CoreView *> getViewForId(CoreView *root, std::string id);
+  std::optional<std::pair<CoreView *, CoreView *>> getViewForId(CoreView *root, std::string id);
   std::optional<CoreView *> getViewAtPoint(CoreView *root, float x, float y);
 };
 
@@ -112,7 +113,8 @@ public:
 
   void setJson(std::string json);
 
-  std::shared_ptr<CoreViewRenderer> getRenderer(std::string layoutTemplateName);
+  std::shared_ptr<CoreViewRenderer> getRenderer(
+      std::string layoutTemplateName, int defaultWidth = 800, int defaultHeight = 1120);
 
   static void hexToRGBFloat(std::string hex, float *out);
 
@@ -131,10 +133,12 @@ private:
   int jsonVersion = 0;
 
   std::shared_ptr<CoreView> getView(std::string layoutTemplateName,
-      std::unordered_map<std::string, std::unordered_map<std::string, std::string>> *props);
+      std::unordered_map<std::string, std::unordered_map<std::string, std::string>> *props,
+      int defaultWidth = 800, int defaultHeight = 1120);
 
   std::shared_ptr<CoreView> readViewFromJson(Reader &reader, CoreView *parent,
-      std::unordered_map<std::string, std::unordered_map<std::string, std::string>> *props);
+      std::unordered_map<std::string, std::unordered_map<std::string, std::string>> *props,
+      int defaultWidth = 800, int defaultHeight = 1120);
 
   std::shared_ptr<CoreView> getViewForType(std::string viewType);
 
