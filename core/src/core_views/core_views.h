@@ -42,6 +42,10 @@ public:
   double top = 0;
   double width = 0;
   double height = 0;
+  double savedLeft = 0;
+  double savedTop = 0;
+  double savedWidth = 0;
+  double savedHeight = 0;
   bool isVisible = true;
   bool isTouchEnabled = false;
   std::optional<std::string> onTapHandlerId;
@@ -59,6 +63,24 @@ public:
   inline static int currentViewId = 0;
 };
 
+class CoreViewAnimation {
+public:
+  std::string viewId;
+  std::string key;
+  float duration;
+  float time;
+  const std::function<std::string(float)> easingFunction;
+
+  CoreViewAnimation(std::string viewId_, std::string key_, float duration_,
+      const std::function<std::string(float)> easingFunction_)
+      : viewId(viewId_)
+      , key(key_)
+      , duration(duration_)
+      , easingFunction(easingFunction_) {
+    time = 0.0;
+  }
+};
+
 class CoreViewRenderer {
 public:
   CoreViewRenderer(Bridge &bridge_, std::string layoutTemplateName_,
@@ -70,7 +92,7 @@ public:
   }
 
   void update(double dt);
-  void handleGesture(Gesture &gesture);
+  void handleGesture(Gesture &gesture, int offsetX = 0, int offsetY = 0);
   void render();
   void cancelGestures();
   void registerTapHandler(const std::function<void(std::string)> handler);
@@ -78,6 +100,8 @@ public:
 
   void updateProp(std::string viewId, std::string key, std::string value);
   void updateJSGestureProp(std::string key, std::string value);
+  void runAnimation(std::string viewId, std::string key, float duration,
+      const std::function<std::string(float)> easingFunction);
 
   void lock();
   void unlock();
@@ -96,6 +120,7 @@ private:
   std::unordered_map<std::string, std::unordered_map<std::string, std::string>> props;
   std::unordered_map<std::string, std::string> jsGestureProps;
   std::optional<std::function<void(std::string)>> tapHandler;
+  std::vector<CoreViewAnimation *> animations;
   std::mutex mutex;
 
   std::optional<std::pair<CoreView *, CoreView *>> getViewForId(CoreView *root, std::string id);
@@ -143,6 +168,7 @@ private:
   std::shared_ptr<CoreView> getViewForType(std::string viewType);
 
   int readInt(Reader &reader, const char *key, float scale);
+  float readFloat(Reader &reader, const char *key, float scale);
 
   inline static CoreViews *instance = nullptr;
 

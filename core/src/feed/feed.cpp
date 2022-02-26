@@ -289,7 +289,7 @@ void Feed::update(double dt) {
       }
 
       decks[idx].coreView->update(dt);
-      decks[idx].coreView->handleGesture(gesture);
+      decks[idx].coreView->handleGesture(gesture, cardLeft, TOP_PADDING);
     }
 
     for (size_t i = 0; i < decks.size(); i++) {
@@ -586,10 +586,44 @@ void Feed::loadDeckFromDeckJson(int i) {
   decks[i].coreView->updateProp(
       "container", "height", std::to_string(windowHeight - (cardHeight + 20)));
   decks[i].coreView->updateProp("container", "width", std::to_string(cardWidth));
+  decks[i].coreView->registerTapHandler([i, this](std::string id) {
+    if (id == "reaction-icon" || id == "reaction-count") {
+      decks[i].isCurrentUserReactionToggled = !decks[i].isCurrentUserReactionToggled;
+      if (decks[i].deckId) {
+        API::graphql("mutation {\n  toggleReaction(reactionId: \"fire\", deckId: \""
+                + *decks[i].deckId + "\", enabled: "
+                + (decks[i].isCurrentUserReactionToggled ? "true" : "false") + ") {\nid\n}\n}",
+            [=](APIResponse &response) {
+            });
+      }
+
+      if (decks[i].isCurrentUserReactionToggled) {
+        decks[i].reactionCount++;
+      } else {
+        decks[i].reactionCount--;
+      }
+      decks[i].coreView->updateProp(
+          "reaction-count", "text", std::to_string(decks[i].reactionCount));
+
+      decks[i].coreView->runAnimation("reaction-icon", "scale", 0.3, [i, this](float amount) {
+        if (amount > 0.35 && decks[i].coreView) {
+          if (decks[i].isCurrentUserReactionToggled) {
+            decks[i].coreView->updateProp("reaction-icon", "filename", "fire-selected.png");
+          } else {
+            decks[i].coreView->updateProp("reaction-icon", "filename", "fire.png");
+          }
+        }
+
+        amount = 0.5 - fabs(amount - 0.5);
+        return std::to_string(1.0 + amount * 0.5);
+      });
+    }
+  });
 
   auto deckArchive = Archive::fromJson(decks[i].deckJson->c_str());
   deckArchive.read([&](Reader &reader) {
     std::string deckId = reader.str("deckId", "");
+    decks[i].deckId = deckId;
     decks[i].coreView->updateJSGestureProp("deckId", deckId);
 
     reader.arr("variables", [&]() {
@@ -623,11 +657,13 @@ void Feed::loadDeckFromDeckJson(int i) {
 
         if (reactionId == "fire") {
           int count = reader.num("count", 0);
+          decks[i].reactionCount = count;
           if (count > 0) {
             decks[i].coreView->updateProp("reaction-count", "text", std::to_string(count));
           }
 
           bool isCurrentUserToggled = reader.boolean("isCurrentUserToggled", false);
+          decks[i].isCurrentUserReactionToggled = isCurrentUserToggled;
           if (isCurrentUserToggled) {
             decks[i].coreView->updateProp("reaction-icon", "filename", "fire-selected.png");
           }

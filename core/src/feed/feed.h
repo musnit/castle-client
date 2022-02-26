@@ -17,6 +17,8 @@ struct FeedItem {
   bool hasRunUpdate = false;
   bool hasRunUpdateSinceLastRender = false;
   bool hasRendered = false;
+  bool isCurrentUserReactionToggled = false;
+  int reactionCount = 0;
 };
 
 class Feed {

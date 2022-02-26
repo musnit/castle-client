@@ -50,7 +50,25 @@ void CoreViewRenderer::renderView(CoreView *view) {
   lv.graphics.pop();
 }
 
+void CoreViewRenderer::runAnimation(std::string viewId, std::string key, float duration,
+    const std::function<std::string(float)> easingFunction) {
+  animations.push_back(new CoreViewAnimation(viewId, key, duration, easingFunction));
+}
+
 void CoreViewRenderer::update(double dt) {
+  auto it = animations.begin();
+  while (it != animations.end()) {
+    auto animation = *it;
+    animation->time += dt;
+    if (animation->time > animation->duration) {
+      delete animation;
+      it = animations.erase(it);
+    } else {
+      auto value = animation->easingFunction(animation->time / animation->duration);
+      updateProp(animation->viewId, animation->key, value);
+      ++it;
+    }
+  }
 }
 
 struct CoreViewsGestureEvent {
@@ -58,14 +76,15 @@ struct CoreViewsGestureEvent {
   PROP(std::string, props);
 };
 
-void CoreViewRenderer::handleGesture(Gesture &gesture) {
+void CoreViewRenderer::handleGesture(Gesture &gesture, int offsetX, int offsetY) {
   gesture.withSingleTouch([&](const Touch &touch) {
     if (touch.isUsed() && !touch.isUsed(TextBehavior::leaderboardTouchToken)) {
       return;
     }
 
     if (touch.pressed) {
-      touchView = getViewAtPoint(layout.get(), touch.screenPos.x, touch.screenPos.y);
+      touchView
+          = getViewAtPoint(layout.get(), touch.screenPos.x - offsetX, touch.screenPos.y - offsetY);
       if (touchView) {
         isTouchOverView = true;
         (*touchView)->baseHandleTouch(CoreView::TouchEvent::Down);
@@ -77,7 +96,8 @@ void CoreViewRenderer::handleGesture(Gesture &gesture) {
       return;
     }
 
-    auto newTouchView = getViewAtPoint(layout.get(), touch.screenPos.x, touch.screenPos.y);
+    auto newTouchView
+        = getViewAtPoint(layout.get(), touch.screenPos.x - offsetX, touch.screenPos.y - offsetY);
     bool newIsTouchOverView = newTouchView == touchView;
 
     if (isTouchOverView && !newIsTouchOverView) {
@@ -343,6 +363,28 @@ int CoreViews::readInt(Reader &reader, const char *key, float scale) {
   return 0;
 }
 
+float CoreViews::readFloat(Reader &reader, const char *key, float scale) {
+  auto num = reader.num(key);
+  if (num) {
+    return *num;
+  } else {
+    auto cStr = reader.str(key);
+    if (cStr) {
+      std::string str = *cStr;
+
+      if (str.at(str.length() - 1) == '%') {
+        auto percentStr = str.substr(0, str.length() - 1);
+        auto percent = std::stof(percentStr);
+        return percent * 0.01 * scale;
+      }
+
+      return std::stof(str);
+    }
+  }
+
+  return 0.0;
+}
+
 //
 // Views
 //
@@ -355,21 +397,39 @@ void CoreView::baseRead(Reader &reader, CoreView *parent,
 
   if (reader.has("width")) {
     width = CoreViews::getInstance().readInt(reader, "width", parentWidth);
+    savedWidth = width;
   }
   if (reader.has("height")) {
     height = CoreViews::getInstance().readInt(reader, "height", parentHeight);
+    savedHeight = height;
   }
 
   if (reader.has("left")) {
     left = CoreViews::getInstance().readInt(reader, "left", parentWidth);
+    savedLeft = left;
   } else if (reader.has("right")) {
     left = parentWidth - CoreViews::getInstance().readInt(reader, "right", parentWidth) - width;
+    savedLeft = left;
   }
 
   if (reader.has("top")) {
     top = CoreViews::getInstance().readInt(reader, "top", parentHeight);
+    savedTop = top;
   } else if (reader.has("bottom")) {
     top = parentHeight - CoreViews::getInstance().readInt(reader, "bottom", parentHeight) - height;
+    savedTop = top;
+  }
+
+  if (reader.has("scale")) {
+    float scale = CoreViews::getInstance().readFloat(reader, "scale", 1.0);
+    float newWidth = savedWidth * scale;
+    float newHeight = savedHeight * scale;
+
+    left = savedLeft - (newWidth - savedWidth) * 0.5;
+    top = savedTop - (newHeight - savedHeight) * 0.5;
+
+    width = newHeight;
+    height = newHeight;
   }
 
   if (reader.has("id")) {
@@ -630,6 +690,9 @@ public:
         auto fullPath = CastleCore::getAssetsDirectoryPath() + std::string("/") + *filename;
         byteData = lv.filesystem.read(fullPath.c_str());
       }
+
+      imageData = nullptr;
+      image = nullptr;
     }
 
     if (reader.has("resizeMode")) {

@@ -136,9 +136,6 @@ let coreViews = {
         height: 70,
         resizeMode: 'contain',
         touch: 'enabled',
-        onTap: () => {
-          console.log('on tap 2');
-        },
       },
       {
         id: 'reaction-count',
