@@ -6,7 +6,9 @@
 #include "props.h"
 
 
-//#define ENABLE_LOCAL_VARIABLES
+#ifndef NDEBUG
+#define ENABLE_LOCAL_VARIABLES
+#endif
 
 
 //
@@ -53,6 +55,9 @@ public:
       ActorId actorId, const LocalVariablesComponent &component, Writer &writer) const;
 
   void handlePerform(double dt);
+
+
+  void debugDisplay();
 
 
 private:

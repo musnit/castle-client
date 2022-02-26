@@ -9,6 +9,7 @@ import * as SceneCreatorConstants from '../../SceneCreatorConstants';
 import * as Constants from '../../../Constants';
 
 import Counter from './InspectorCounter';
+import LocalVariables from './InspectorLocalVariables';
 
 const styles = StyleSheet.create({
   container: {},
@@ -161,6 +162,7 @@ export default InspectorRules = ({ behaviors, addChildSheet }) => {
         </View>
       </View>
       {isCounterActive ? <Counter counter={counter} /> : null}
+      <LocalVariables />
     </React.Fragment>
   );
 };

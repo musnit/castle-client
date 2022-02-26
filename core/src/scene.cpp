@@ -373,6 +373,7 @@ void Scene::writeActor(ActorId actorId, Writer &writer, WriteActorParams params)
           writer.num("fontSizeScale", maybeTextComponent->props.fontSizeScale());
         });
       }
+      // TODO: Actor-level overrides for local variables?
     } else {
       getBehaviors().forEach([&](auto &behavior) {
         if (auto component = behavior.maybeGetComponent(actorId)) {

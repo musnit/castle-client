@@ -43,6 +43,18 @@ void LocalVariablesBehavior::handleReadComponent(
 
 void LocalVariablesBehavior::handleWriteComponent(
     ActorId actorId, const LocalVariablesComponent &component, Writer &writer) const {
+  writer.obj("props", [&]() {
+    writer.arr("localVariables", [&]() {
+      map.forEach([&](LocalVariablesMap::Token token, const LocalVariablesMapElem &mapElem) {
+        if (mapElem.entries.contains(actorId)) {
+          writer.obj([&]() {
+            writer.str("name", *map.getString(token));
+            writer.num("value", mapElem.entries.get(actorId).value.as<double>());
+          });
+        }
+      });
+    });
+  });
 }
 
 
@@ -51,6 +63,15 @@ void LocalVariablesBehavior::handleWriteComponent(
 //
 
 void LocalVariablesBehavior::handlePerform(double dt) {
+  debugDisplay();
+}
+
+
+//
+// Debug
+//
+
+void LocalVariablesBehavior::debugDisplay() {
   Debug::display("local variables:");
   forEachEnabledComponent([&](ActorId actorId, LocalVariablesComponent &component) {
     Debug::display("  actor {}:", actorId);
@@ -62,3 +83,4 @@ void LocalVariablesBehavior::handlePerform(double dt) {
     });
   });
 }
+

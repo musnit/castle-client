@@ -349,6 +349,8 @@ void Editor::update(double dt) {
   // may have modified actors
   scene->getLibrary().ensureGhostActorsExist();
   maybeSendData(dt);
+
+  scene->getBehaviors().byType<LocalVariablesBehavior>().debugDisplay();
 }
 
 void Editor::draw() {
@@ -1036,6 +1038,9 @@ void EditorSelectedComponentEvent<Behavior, Component>::write(Writer &writer) co
           }
         }
       });
+      if constexpr (Handlers::hasWriteComponent<decltype(behavior)>) {
+        behavior.handleWriteComponent(actorId, *component, writer);
+      }
     });
   }
 }
