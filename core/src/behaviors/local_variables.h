@@ -49,6 +49,8 @@ public:
 
   using BaseBehavior::BaseBehavior;
 
+  void handleDisableComponent(
+      ActorId actorId, LocalVariablesComponent &component, bool removeActor);
 
   void handleReadComponent(ActorId actorId, LocalVariablesComponent &component, Reader &reader);
   void handleWriteComponent(

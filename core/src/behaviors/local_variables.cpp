@@ -5,38 +5,82 @@
 
 
 //
+// Enable, disable
+//
+
+void LocalVariablesBehavior::handleDisableComponent(
+    ActorId actorId, LocalVariablesComponent &component, bool removeActor) {
+  map.forEach([&](LocalVariablesMap::Token token, LocalVariablesMapElem &mapElem) {
+    if (mapElem.entries.contains(actorId)) {
+      mapElem.entries.remove(actorId);
+    }
+  });
+}
+
+
+//
 // Read, write
 //
 
 void LocalVariablesBehavior::handleReadComponent(
     ActorId actorId, LocalVariablesComponent &component, Reader &reader) {
-  if (std::rand() % 2 == 0) {
-    auto variableId = LocalVariableId { map.getToken("odd") };
-    auto mapElem = map.lookup(variableId.token);
-    if (!mapElem) {
-      map.insert(variableId.token, {});
-      mapElem = map.lookup(variableId.token);
-    }
-    if (mapElem) {
-      if (mapElem->entries.contains(actorId)) {
-        mapElem->entries.get(actorId).value = rand() * 2 + 1;
-      } else {
-        mapElem->entries.emplace(actorId, LocalVariableEntry { rand() * 2 + 1 });
+  auto didRead = false;
+  reader.arr("localVariables", [&]() {
+    didRead = true;
+    reader.each([&]() {
+      auto maybeVariableName = reader.str("name");
+      if (!maybeVariableName) {
+        return;
+      }
+      auto variableName = *maybeVariableName;
+      auto variableValue = reader.num("value", 0);
+
+      // TODO: Factor below into `set(name, value)` to reuse in rules
+      auto variableId = LocalVariableId { map.getToken(variableName) };
+      auto mapElem = map.lookup(variableId.token);
+      if (!mapElem) {
+        map.insert(variableId.token, {});
+        mapElem = map.lookup(variableId.token);
+      }
+      if (mapElem) {
+        if (mapElem->entries.contains(actorId)) {
+          mapElem->entries.get(actorId).value = variableValue;
+        } else {
+          mapElem->entries.emplace(actorId, LocalVariableEntry { variableValue });
+        }
+      }
+    });
+  });
+
+  if (!didRead) {
+    if (std::rand() % 2 == 0) {
+      auto variableId = LocalVariableId { map.getToken("odd") };
+      auto mapElem = map.lookup(variableId.token);
+      if (!mapElem) {
+        map.insert(variableId.token, {});
+        mapElem = map.lookup(variableId.token);
+      }
+      if (mapElem) {
+        if (mapElem->entries.contains(actorId)) {
+          mapElem->entries.get(actorId).value = rand() * 2 + 1;
+        } else {
+          mapElem->entries.emplace(actorId, LocalVariableEntry { rand() * 2 + 1 });
+        }
       }
     }
-  }
-  if (std::rand() % 2 == 0) {
-    auto variableId = LocalVariableId { map.getToken("even") };
-    auto mapElem = map.lookup(variableId.token);
-    if (!mapElem) {
-      map.insert(variableId.token, {});
-      mapElem = map.lookup(variableId.token);
-    }
-    if (mapElem) {
-      if (mapElem->entries.contains(actorId)) {
-        mapElem->entries.get(actorId).value = rand() * 2;
-      } else {
-        mapElem->entries.emplace(actorId, LocalVariableEntry { rand() * 2 });
+    if (std::rand() % 2 == 0) {
+      auto variableId = LocalVariableId { map.getToken("even") };
+      auto mapElem = map.lookup(variableId.token);
+      if (!mapElem) {
+        map.insert(variableId.token, {});
+        mapElem = map.lookup(variableId.token);
+      }
+      if (mapElem) {
+        if (mapElem->entries.contains(actorId)) {
+          mapElem->entries.get(actorId).value = rand() * 2;
+        } else {
+          mapElem->entries.emplace(actorId, LocalVariableEntry { rand() * 2 });
+        }
       }
     }
   }
@@ -105,21 +149,31 @@ struct EditorChangeLocalVariablesReceiver {
       return;
     }
     auto editor = engine.maybeGetEditor();
+    if (!editor->hasScene()) {
+      return;
+    }
+    auto &scene = editor->getScene();
 
     auto actorId = editor->getSelection().firstSelectedActorId();
     if (actorId == nullActor) {
       return;
     }
+    auto isGhost = editor->getSelection().isGhostActorsSelected();
 
-    Debug::log("local variables changed:");
+    auto &localVariablesBehavior = scene.getBehaviors().byType<LocalVariablesBehavior>();
+    auto component = localVariablesBehavior.maybeGetComponent(actorId);
+    if (!component) {
+      component = &localVariablesBehavior.addComponent(actorId);
+    }
+    // TODO: Add undo by writing current value to archive
     auto &reader = *params.reader;
     reader.obj("params", [&]() {
-      reader.arr("localVariables", [&]() {
-        reader.each([&]() {
-          Debug::log("  name: {}", reader.str("name", ""));
-          Debug::log("  value: {}", reader.num("value", 0));
-        });
-      });
+      localVariablesBehavior.handleDisableComponent(actorId, *component, false);
+      localVariablesBehavior.handleReadComponent(actorId, *component, reader);
+      if (isGhost) {
+        editor->updateBlueprint(actorId, {});
+      }
+      editor->setSelectedComponentStateDirty(LocalVariablesBehavior::behaviorId);
     });
   }
 };
