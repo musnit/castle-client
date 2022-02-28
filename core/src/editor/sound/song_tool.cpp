@@ -246,16 +246,26 @@ void SongTool::drawGrid(float viewScale, love::Vector2 &viewOffset) {
 };
 
 void SongTool::drawPattern(const std::string &patternId, Pattern &pattern, float startTime,
-    float patternLength, bool isLoop, bool abutsNext, int zeroKey, float unit) {
+    float patternLength, bool isMuted, bool isLoop, bool abutsNext, int zeroKey, float unit) {
   auto startTimeUnits = stepsToBars(startTime) * unit;
   auto widthUnits = stepsToBars(patternLength) * unit;
 
   // draw pattern rectangle
   if (isLoop) {
-    auto &color = pattern.color();
-    lv.graphics.setColor({ color.r, color.g, color.b, 0.4f });
+    if (isMuted) {
+      constexpr auto disabledPattern = 0xaa / 255.0f;
+      lv.graphics.setColor({ disabledPattern, disabledPattern, disabledPattern, 0.4f });
+    } else {
+      auto &color = pattern.color();
+      lv.graphics.setColor({ color.r, color.g, color.b, 0.4f });
+    }
   } else {
-    lv.graphics.setColor(pattern.color());
+    if (isMuted) {
+      constexpr auto disabledPattern = 0xaa / 255.0f;
+      lv.graphics.setColor({ disabledPattern, disabledPattern, disabledPattern, 1.0f });
+    } else {
+      lv.graphics.setColor(pattern.color());
+    }
   }
   auto rad = isLoop ? 0.0f : unit * 0.05f;
   lv.graphics.rectangle(
@@ -352,7 +362,8 @@ void SongTool::drawPattern(const std::string &patternId, Pattern &pattern, float
   }
 }
 
-void SongTool::drawSequence(Song::Track::Sequence &sequence, int zeroKey, float unit) {
+void SongTool::drawSequence(
+    Song::Track::Sequence &sequence, bool isMuted, int zeroKey, float unit) {
   auto &clock = getScene().getClock();
 
   auto current = sequence.begin();
@@ -365,7 +376,8 @@ void SongTool::drawSequence(Song::Track::Sequence &sequence, int zeroKey, float 
     // draw main pattern
     auto [patternLength, abutsNext]
         = soundTool.song->getSequenceElemLength(sequence, current, clock);
-    drawPattern(patternId, pattern, startTime, patternLength, false, abutsNext, zeroKey, unit);
+    drawPattern(
+        patternId, pattern, startTime, patternLength, isMuted, false, abutsNext, zeroKey, unit);
 
     // draw loops
     if (sequenceElem.loop()) {
@@ -377,8 +389,8 @@ void SongTool::drawSequence(Song::Track::Sequence &sequence, int zeroKey, float 
       }
       while (currentTime < endTime) {
         auto loopEndTime = std::min(currentTime + patternLength, endTime);
-        drawPattern(patternId, pattern, currentTime, loopEndTime - currentTime, true, abutsNext,
-            zeroKey, unit);
+        drawPattern(patternId, pattern, currentTime, loopEndTime - currentTime, isMuted, true,
+            abutsNext, zeroKey, unit);
         currentTime = loopEndTime;
       }
     }
@@ -402,7 +414,8 @@ void SongTool::drawDragPattern(float unit) {
 void SongTool::drawTrack(Song::Track *track, int index, double timeInSong, float unit) {
   // draw sequence
   // TODO: don't need to draw outside viewport
-  drawSequence(track->sequence, track->instrument->getZeroKey(), unit);
+  drawSequence(
+      track->sequence, track->instrument->props.muted(), track->instrument->getZeroKey(), unit);
 
   // draw track-specific playhead
   if (soundTool.isPlaying) {
@@ -456,7 +469,12 @@ void SongTool::drawTrackAxis(Song *song, double timeInSong) {
     if (trackIndex == soundTool.selectedTrackIndex) {
       lv.graphics.setColor({ 0.0f, 0.0f, 0.0f, 1.0f });
     } else {
-      lv.graphics.setColor({ 1.0f, 1.0f, 1.0f, 1.0f });
+      if (track->instrument->props.muted()) {
+        constexpr auto muted = 0xaa / 255.0f;
+        lv.graphics.setColor({ muted, muted, muted, 1.0f });
+      } else {
+        lv.graphics.setColor({ 1.0f, 1.0f, 1.0f, 1.0f });
+      }
     }
     lv.graphics.circle(love::Graphics::DrawMode::DRAW_FILL, 0, 0, radius);
 
@@ -466,8 +484,13 @@ void SongTool::drawTrackAxis(Song *song, double timeInSong) {
       if (soundTool.isPlaying) {
         auto startSeq = Song::sequenceElemAtTime(*track, timeInSong);
         if (startSeq != track->sequence.end()) {
-          auto &pattern = soundTool.song->patterns[startSeq->second.patternId()];
-          lv.graphics.setColor({ pattern.color().r, pattern.color().g, pattern.color().b, power });
+          if (track->instrument->props.muted()) {
+            lv.graphics.setColor({ 1.0f, 1.0f, 1.0f, power });
+          } else {
+            auto &pattern = soundTool.song->patterns[startSeq->second.patternId()];
+            lv.graphics.setColor(
+                { pattern.color().r, pattern.color().g, pattern.color().b, power });
+          }
         }
       } else {
         lv.graphics.setColor({ 1.0f, 1.0f, 1.0f, power });

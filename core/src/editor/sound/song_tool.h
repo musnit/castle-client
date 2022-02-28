@@ -59,9 +59,9 @@ private:
   void drawGrid(float viewScale, love::Vector2 &viewOffset);
   void drawSong(Song *song, double timePlaying);
   void drawTrack(Song::Track *track, int index, double timePlaying, float unit);
-  void drawSequence(Song::Track::Sequence &sequence, int zeroKey, float unit);
+  void drawSequence(Song::Track::Sequence &sequence, bool isMuted, int zeroKey, float unit);
   void drawPattern(const std::string &patternId, Pattern &pattern, float startTime,
-      float patternLength, bool isLoop, bool abutsNext, int zeroKey, float unit);
+      float patternLength, bool isMuted, bool isLoop, bool abutsNext, int zeroKey, float unit);
   void drawTimeAxis();
   void drawTrackAxis(Song *song, double timePlaying);
   void drawDragPattern(float unit);
