@@ -90,6 +90,12 @@ void Instrument::drawEditorKeyAxis(
       if (scaleDegree == 0) {
         constexpr auto darkGrey = 0x55 / 255.0f;
         lv.graphics.setColor({ darkGrey, darkGrey, darkGrey, 1.0f });
+
+        // label C's
+        auto shittyFontScale = width / 100.0f;
+        auto octaveLabel = fmt::format("C{}", (note / 12) - 1); // middle C == C4 == midi 60
+        lv.graphics.print({ { octaveLabel, { 1, 1, 1, 1 } } }, font,
+            love::Matrix4(0.1f, y + 0.25f, 0, shittyFontScale, shittyFontScale, 0, 0, 0, 0));
       }
       if (scaleDegree == 5) {
         constexpr auto dividerGrey = 0xbb / 255.0f;
