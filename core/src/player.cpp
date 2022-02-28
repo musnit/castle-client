@@ -46,16 +46,32 @@ Player::~Player() {
   clearState();
 }
 
+//
+// Player lifecycle
+//
+
 void Player::setScene(std::unique_ptr<Scene> scene_) {
   if (scene == nullptr) {
     // no previous scene existed, assume we are starting a new play session
     clock.reset();
   }
   scene = std::move(scene_);
+
+  // TODO: native feed: only call `resume` when we begin/resume playing this player
+  // TODO: native feed: call `suspend` if we stop playing this player without destroying it
+  resume();
+}
+
+void Player::suspend() {
+  sound.suspend();
+}
+
+void Player::resume() {
+  sound.resume();
 }
 
 void Player::clearState() {
-  sound.removeAllClocks();
+  sound.clear();
   setScene(nullptr);
 }
 

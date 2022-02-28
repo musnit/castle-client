@@ -14,6 +14,7 @@ struct Sample;
 
 class Sound {
   inline static bool hasInitializedSoloud = false;
+  inline static int soloudRefs = 0;
   inline static SoLoud::Soloud soloud;
   inline static std::unordered_map<std::string, std::unique_ptr<SoLoud::Sfxr>> sfxrSounds;
   inline static std::unordered_map<std::string, std::unique_ptr<SoLoud::WavStream>> urlSounds;
@@ -29,11 +30,32 @@ public:
 
   inline static bool isEnabled = true;
 
+  // Sound lifecycle
+
+  void addClock(Clock *); // manage this Clock
+
+  // stop sounds, destroy thread, retain stream state
+  void suspend();
+
+  // start thread
+  void resume();
+
+  // stop sounds, destroy thread, destroy stream state
+  void clear();
+
+  // interrupt any individual sounds and discard any scheduled streams, causing immediate silence.
+  // clock/thread state is maintained and time continues to pass.
+  void stopCurrentlyPlayingSounds();
+
+  // Playing individual sounds
+
   void preload(const Sample &sample);
   void play(const Sample &sample, double playbackRate, float amplitude);
+  SoLoud::Sfxr *getOrMakeSfxrSourceForKey(
+      const std::string &key, std::function<void(SoLoud::Sfxr *)> f);
+  void playSfxr(const std::string &sfxrKey, float amplitude, float soloudClock = 0.0f);
 
-  void addClock(Clock *); // start audio thread if not started, add clock if not added
-  void removeAllClocks(); // stop audio thread and unschedule all clocks
+  // Playing streams
 
   struct StreamOptions {
     double initialTimeInStream = 0; // to start partway thru stream
@@ -45,60 +67,58 @@ public:
   int play(int clockId, std::unique_ptr<Pattern> pattern, std::unique_ptr<Instrument> instrument,
       StreamOptions opts);
 
-  static void deinit() {
-    if (hasInitializedSoloud) {
-      soloud.stopAll();
-      soloud.deinit();
-      hasInitializedSoloud = false;
-    }
-    sfxrSounds.clear();
-    urlSounds.clear();
-  }
-
-  void stopAll();
   void clearStreams();
   void stopStream(int clockId, int streamId, StreamOptions opts);
   Stream *maybeGetStream(int clockId, int streamId);
 
-  SoLoud::Sfxr *getOrMakeSfxrSourceForKey(
-      const std::string &key, std::function<void(SoLoud::Sfxr *)> f);
-  void playSfxr(const std::string &sfxrKey, float amplitude, float soloudClock = 0.0f);
+protected:
+  inline static void retainSoloud() {
+    if (!hasInitializedSoloud) {
+      hasInitializedSoloud = true;
+      soloud.init();
+    }
+    soloudRefs++;
+  }
+  inline static void releaseSoloud() {
+    soloudRefs--;
+    if (soloudRefs == 0) {
+      if (hasInitializedSoloud) {
+        soloud.stopAll();
+        soloud.deinit();
+        hasInitializedSoloud = false;
+      }
+      sfxrSounds.clear();
+      urlSounds.clear();
+    }
+  }
 
-private:
   friend struct SoundEnabledReceiver;
-  void initialize();
   void playUrl(float playbackRate, float amplitude, const std::string &url);
   void playEffect(float playbackRate, float amplitude, const std::string &category, int seed,
       int mutationSeed, int mutationAmount);
   void playTone(float playbackRate, float amplitude, int midiNote, const std::string &waveform,
       float attack, float release);
 
+  // clocks managed by this sound instance
+  std::unordered_map<int, Clock *> clocks;
+
+  // streams managed by this sound instance, grouped by clock
+  std::unordered_map<int, std::vector<std::unique_ptr<Stream>>> streams;
+
   class ClockThread : public love::thread::Threadable {
   public:
     ClockThread(Sound &owner_);
     virtual ~ClockThread() = default;
     void threadFunction();
-    void addClock(Clock *);
-    int addStream(int clockId, std::unique_ptr<Pattern> pattern,
-        std::unique_ptr<Instrument> instrument, StreamOptions opts);
-    void clearStreams();
-    void stopStream(int clockId, int streamId, StreamOptions opts);
-    Stream *maybeGetStream(int clockId, int streamId);
     void finish();
 
-  private:
+  protected:
     Sound &owner;
     love::timer::Timer timer;
 
-    // clocks managed by this thread
-    std::unordered_map<int, Clock *> clocks;
-
-    // streams managed by this thread
-    std::unordered_map<int, std::vector<std::unique_ptr<Stream>>> streams;
-
     volatile bool shouldFinish = false;
-    love::thread::MutexRef mutex;
   };
 
+  love::thread::MutexRef mutex;
   ClockThread *clockThread = nullptr;
 };

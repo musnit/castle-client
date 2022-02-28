@@ -179,7 +179,8 @@ void Feed::update(double dt) {
           int idx = getCurrentIndex();
           if (idx >= 0 && idx < (int)decks.size()) {
             if (decks[idx].player && decks[idx].player->hasScene()) {
-              decks[idx].player->getScene().getSound().stopAll();
+              // TODO: maybe use scene suspend/resume, unless you want to leave sound thread running
+              decks[idx].player->getScene().getSound().stopCurrentlyPlayingSounds();
             }
 
             if (decks[idx].coreView) {
@@ -298,7 +299,8 @@ void Feed::update(double dt) {
         decks[i].hasRunUpdate = true;
         decks[i].hasRunUpdateSinceLastRender = true;
         if (decks[i].player->hasScene()) {
-          decks[i].player->getScene().getSound().stopAll();
+          // TODO: maybe use scene suspend/resume, unless you want to leave sound thread running
+          decks[i].player->getScene().getSound().stopCurrentlyPlayingSounds();
         }
       }
     }

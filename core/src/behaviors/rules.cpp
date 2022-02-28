@@ -997,7 +997,7 @@ struct StopAllSoundResponse : BaseResponse {
   } params;
   void run(RuleContext &ctx) override {
     auto &sound = ctx.getScene().getSound();
-    sound.stopAll();
+    sound.stopCurrentlyPlayingSounds();
   }
 };
 

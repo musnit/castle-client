@@ -17,7 +17,7 @@ Sound::ClockThread::ClockThread(Sound &owner_)
 void Sound::ClockThread::threadFunction() {
   while (true) {
     {
-      love::thread::Lock lock(mutex);
+      love::thread::Lock lock(owner.mutex);
       if (shouldFinish) {
         return;
       }
@@ -25,10 +25,10 @@ void Sound::ClockThread::threadFunction() {
 
     double dt = timer.step();
     {
-      love::thread::Lock lock(mutex);
-      for (auto &[clockId, clock] : clocks) {
+      love::thread::Lock lock(owner.mutex);
+      for (auto &[clockId, clock] : owner.clocks) {
         clock->update(dt);
-        auto &streamsForClock = streams[clockId];
+        auto &streamsForClock = owner.streams[clockId];
         auto iter = streamsForClock.begin();
         while (iter != streamsForClock.end()) {
           auto &stream = *iter;
@@ -49,11 +49,30 @@ void Sound::ClockThread::threadFunction() {
 }
 
 void Sound::ClockThread::finish() {
-  love::thread::Lock lock(mutex);
+  love::thread::Lock lock(owner.mutex);
   shouldFinish = true;
 }
 
-void Sound::ClockThread::addClock(Clock *clock) {
+
+//
+// Constructor, destructor
+//
+
+Sound::Sound() {
+  retainSoloud();
+}
+
+Sound::~Sound() {
+  clear();
+  releaseSoloud();
+}
+
+
+//
+// Sound lifecycle
+//
+
+void Sound::addClock(Clock *clock) {
   // add clock to sound thread, noop if already added
   love::thread::Lock lock(mutex);
   if (clocks.find(clock->clockId) == clocks.end()) {
@@ -62,7 +81,55 @@ void Sound::ClockThread::addClock(Clock *clock) {
   }
 }
 
-int Sound::ClockThread::addStream(int clockId, std::unique_ptr<Pattern> pattern,
+void Sound::resume() {
+  if (!clockThread) {
+    clockThread = new ClockThread(*this);
+    clockThread->start();
+  }
+}
+
+void Sound::suspend() {
+  // do not clear streams - just pause time
+  if (Sound::hasInitializedSoloud) {
+    // stop currently playing sounds
+    Sound::soloud.stopAll();
+  }
+  if (clockThread) {
+    clockThread->finish();
+    clockThread->wait();
+    clockThread = nullptr;
+  }
+}
+
+void Sound::clear() {
+  stopCurrentlyPlayingSounds();
+  if (clockThread) {
+    clockThread->finish();
+    clockThread->wait();
+    clockThread = nullptr;
+  }
+  streams.clear();
+  clocks.clear();
+}
+
+void Sound::stopCurrentlyPlayingSounds() {
+  if (Sound::hasInitializedSoloud) {
+    Sound::soloud.stopAll();
+  }
+  clearStreams();
+}
+
+
+//
+// Playing streams
+//
+
+void Sound::clearStreams() {
+  love::thread::Lock lock(mutex);
+  streams.clear();
+}
+
+int Sound::play(int clockId, std::unique_ptr<Pattern> pattern,
     std::unique_ptr<Instrument> instrument, StreamOptions opts) {
   love::thread::Lock lock(mutex);
   int result = -1;
@@ -76,7 +143,7 @@ int Sound::ClockThread::addStream(int clockId, std::unique_ptr<Pattern> pattern,
     stream->fastForward(opts.initialTimeInStream);
     // play sound immediately if warranted
     if (stream->hasNext() && clock->getTime() >= stream->nextTime()) {
-      stream->playNextNotes(owner);
+      stream->playNextNotes(*this);
     }
     result = stream->streamId;
     streams[clockId].push_back(std::move(stream));
@@ -84,7 +151,7 @@ int Sound::ClockThread::addStream(int clockId, std::unique_ptr<Pattern> pattern,
   return result;
 }
 
-Stream *Sound::ClockThread::maybeGetStream(int clockId, int streamId) {
+Stream *Sound::maybeGetStream(int clockId, int streamId) {
   love::thread::Lock lock(mutex);
   auto &streamsForClock = streams[clockId];
   for (auto &stream : streamsForClock) {
@@ -95,7 +162,7 @@ Stream *Sound::ClockThread::maybeGetStream(int clockId, int streamId) {
   return nullptr;
 }
 
-void Sound::ClockThread::stopStream(int clockId, int streamId, StreamOptions opts) {
+void Sound::stopStream(int clockId, int streamId, StreamOptions opts) {
   love::thread::Lock lock(mutex);
   auto &streamsForClock = streams[clockId];
   if (auto found = clocks.find(clockId); found != clocks.end()) {
@@ -112,80 +179,12 @@ void Sound::ClockThread::stopStream(int clockId, int streamId, StreamOptions opt
   }
 }
 
-void Sound::ClockThread::clearStreams() {
-  love::thread::Lock lock(mutex);
-  streams.clear();
-}
 
-Sound::Sound() {
-  initialize();
-}
-
-Sound::~Sound() {
-  removeAllClocks();
-}
-
-void Sound::initialize() {
-  if (!Sound::hasInitializedSoloud) {
-    Sound::hasInitializedSoloud = true;
-    Sound::soloud.init();
-  }
-}
-
-void Sound::addClock(Clock *clock) {
-  // start sound thread if not started
-  if (!clockThread) {
-    clockThread = new ClockThread(*this);
-    clockThread->start();
-  }
-  clockThread->addClock(clock);
-}
-
-void Sound::removeAllClocks() {
-  if (clockThread) {
-    clockThread->finish();
-    clockThread->wait();
-    clockThread = nullptr;
-  }
-}
-
-void Sound::stopAll() {
-  if (Sound::hasInitializedSoloud) {
-    Sound::soloud.stopAll();
-  }
-  clearStreams();
-}
-
-void Sound::clearStreams() {
-  if (clockThread) {
-    clockThread->clearStreams();
-  }
-}
-
-int Sound::play(int clockId, std::unique_ptr<Pattern> pattern,
-    std::unique_ptr<Instrument> instrument, StreamOptions opts) {
-  if (clockThread) {
-    return clockThread->addStream(clockId, std::move(pattern), std::move(instrument), opts);
-  }
-  return -1;
-}
-
-Stream *Sound::maybeGetStream(int clockId, int streamId) {
-  if (clockThread) {
-    return clockThread->maybeGetStream(clockId, streamId);
-  }
-  return nullptr;
-}
-
-void Sound::stopStream(int clockId, int streamId, StreamOptions opts) {
-  if (clockThread) {
-    clockThread->stopStream(clockId, streamId, opts);
-  }
-}
+//
+// Playing individual sounds
+//
 
 void Sound::preload(const Sample &sample) {
-  initialize();
-
   auto &type = sample.type();
   auto &recordingUrl = sample.recordingUrl();
   auto &uploadUrl = sample.uploadUrl();
@@ -212,8 +211,6 @@ void Sound::preload(const Sample &sample) {
 }
 
 void Sound::play(const Sample &sample, double playbackRate, float amplitude) {
-  initialize();
-
   if (playbackRate <= 0.0) {
     return;
   }

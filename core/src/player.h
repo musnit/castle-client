@@ -26,6 +26,8 @@ public:
   bool hasScene();
   Scene &getScene();
 
+  void suspend();
+  void resume();
   void clearState();
 
 private:

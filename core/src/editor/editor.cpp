@@ -13,9 +13,9 @@ Editor::Editor(Bridge &bridge_)
 
 void Editor::setIsPlaying(bool playing_) {
   if (playing_ != playing) {
-    sound.stopAll();
     isEditorStateDirty = true;
     if (playing_) {
+      sound.suspend();
       if (hasScene()) {
         player = std::make_unique<Player>(getBridge());
         {
@@ -44,6 +44,7 @@ void Editor::setIsPlaying(bool playing_) {
         playing = true;
       }
     } else {
+      sound.resume();
       playing = false;
       player.reset();
     }
@@ -106,8 +107,7 @@ void Editor::clearState() {
   setIsPlaying(false);
   scene = nullptr;
   editVariables.clear();
-  sound.stopAll();
-  sound.removeAllClocks();
+  sound.clear();
 }
 
 void Editor::readScene(Reader &reader) {
@@ -350,7 +350,7 @@ void Editor::update(double dt) {
   scene->getLibrary().ensureGhostActorsExist();
   maybeSendData(dt);
 
-  //scene->getBehaviors().byType<LocalVariablesBehavior>().debugDisplay();
+  // scene->getBehaviors().byType<LocalVariablesBehavior>().debugDisplay();
 }
 
 void Editor::draw() {
@@ -704,6 +704,9 @@ void Editor::editorJSLoaded() {
   sendSceneSettings();
   getVariables().sendVariablesData(getBridge(), false);
   sendTagsData();
+
+  // activate editor's sound instance
+  sound.resume();
 }
 
 struct EditorLoadSnapshotReceiver {
