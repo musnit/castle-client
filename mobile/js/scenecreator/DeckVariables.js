@@ -39,7 +39,6 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
   variableName: {
-    flexGrow: 1,
     fontWeight: '700',
     marginRight: 8,
   },

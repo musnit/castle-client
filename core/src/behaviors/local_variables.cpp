@@ -43,16 +43,14 @@ void LocalVariablesBehavior::handleReadComponent(
 
 void LocalVariablesBehavior::handleWriteComponent(
     ActorId actorId, const LocalVariablesComponent &component, Writer &writer) const {
-  writer.obj("props", [&]() {
-    writer.arr("localVariables", [&]() {
-      map.forEach([&](LocalVariablesMap::Token token, const LocalVariablesMapElem &mapElem) {
-        if (mapElem.entries.contains(actorId)) {
-          writer.obj([&]() {
-            writer.str("name", *map.getString(token));
-            writer.num("value", mapElem.entries.get(actorId).value.as<double>());
-          });
-        }
-      });
+  writer.arr("localVariables", [&]() {
+    map.forEach([&](LocalVariablesMap::Token token, const LocalVariablesMapElem &mapElem) {
+      if (mapElem.entries.contains(actorId)) {
+        writer.obj([&]() {
+          writer.str("name", *map.getString(token));
+          writer.num("value", mapElem.entries.get(actorId).value.as<double>());
+        });
+      }
     });
   });
 }
@@ -83,4 +81,3 @@ void LocalVariablesBehavior::debugDisplay() {
     });
   });
 }
-

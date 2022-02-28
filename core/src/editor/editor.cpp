@@ -350,7 +350,9 @@ void Editor::update(double dt) {
   scene->getLibrary().ensureGhostActorsExist();
   maybeSendData(dt);
 
-  // scene->getBehaviors().byType<LocalVariablesBehavior>().debugDisplay();
+#ifdef ENABLE_LOCAL_VARIABLES
+  scene->getBehaviors().byType<LocalVariablesBehavior>().debugDisplay();
+#endif
 }
 
 void Editor::draw() {
