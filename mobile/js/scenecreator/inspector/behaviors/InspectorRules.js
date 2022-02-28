@@ -53,7 +53,7 @@ function removeEmpty(obj) {
 }
 
 export default InspectorRules = ({ behaviors, addChildSheet }) => {
-  const rulesData = useCoreState('EDITOR_RULES_DATA');
+  const rulesData = useCoreState('EDITOR_RULES_DATA') || {};
   const rulesComponent = useCoreState('EDITOR_SELECTED_COMPONENT:Rules');
   const sendRuleAction = React.useCallback(
     (...args) => sendBehaviorAction('Rules', ...args),
