@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { KeyboardAvoidingView, StyleSheet, TextInput, View, Keyboard } from 'react-native';
-
+import { Amplitude } from '@amplitude/react-native';
 import { BottomSheetHeader } from '../components/BottomSheetHeader';
 import { BottomSheet } from '../components/BottomSheet';
 import { CommentInput } from './CommentInput';
@@ -67,6 +67,10 @@ export const CommentsSheet = ({ isOpen, onClose, deck, isFullScreen, ...props })
   const onAddComment = React.useCallback(
     (message, parentCommentId = null, commentBodyCache = {}, imageFileId = null) => {
       const formattedMessage = formatMessage(message, commentBodyCache);
+      Amplitude.getInstance().logEvent('ADD_COMMENT', {
+        deckId: deck.deckId,
+        hasScreenshot: !!imageFileId,
+      });
       return addComment({
         variables: {
           deckId: deck.deckId,
