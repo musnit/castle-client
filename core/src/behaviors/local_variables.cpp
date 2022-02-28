@@ -24,9 +24,7 @@ void LocalVariablesBehavior::handleDisableComponent(
 
 void LocalVariablesBehavior::handleReadComponent(
     ActorId actorId, LocalVariablesComponent &component, Reader &reader) {
-  auto didRead = false;
   reader.arr("localVariables", [&]() {
-    didRead = true;
     reader.each([&]() {
       auto maybeVariableName = reader.str("name");
       if (!maybeVariableName) {
@@ -51,39 +49,6 @@ void LocalVariablesBehavior::handleReadComponent(
       }
     });
   });
-
-  if (!didRead) {
-    if (std::rand() % 2 == 0) {
-      auto variableId = LocalVariableId { map.getToken("odd") };
-      auto mapElem = map.lookup(variableId.token);
-      if (!mapElem) {
-        map.insert(variableId.token, {});
-        mapElem = map.lookup(variableId.token);
-      }
-      if (mapElem) {
-        if (mapElem->entries.contains(actorId)) {
-          mapElem->entries.get(actorId).value = rand() * 2 + 1;
-        } else {
-          mapElem->entries.emplace(actorId, LocalVariableEntry { rand() * 2 + 1 });
-        }
-      }
-    }
-    if (std::rand() % 2 == 0) {
-      auto variableId = LocalVariableId { map.getToken("even") };
-      auto mapElem = map.lookup(variableId.token);
-      if (!mapElem) {
-        map.insert(variableId.token, {});
-        mapElem = map.lookup(variableId.token);
-      }
-      if (mapElem) {
-        if (mapElem->entries.contains(actorId)) {
-          mapElem->entries.get(actorId).value = rand() * 2;
-        } else {
-          mapElem->entries.emplace(actorId, LocalVariableEntry { rand() * 2 });
-        }
-      }
-    }
-  }
 }
 
 void LocalVariablesBehavior::handleWriteComponent(
@@ -155,7 +120,7 @@ struct EditorChangeLocalVariablesReceiver {
     auto &scene = editor->getScene();
 
     auto actorId = editor->getSelection().firstSelectedActorId();
-    if (actorId == nullActor) {
+    if (actorId == nullActor || !scene.hasActor(actorId)) {
       return;
     }
     auto isGhost = editor->getSelection().isGhostActorsSelected();

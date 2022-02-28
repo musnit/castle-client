@@ -79,17 +79,39 @@ export default InspectorLocalVariables = ({}) => {
 
   const addVariable = React.useCallback(() => {
     sendAsync('EDITOR_CHANGE_LOCAL_VARIABLES', {
-      localVariables, // TODO: Add variable
+      localVariables: [{ name: '', value: 0 }, ...localVariables],
     });
-  }, []);
+  }, [localVariables]);
 
   const changeVariableName = React.useCallback((i, newName) => {
     const newLocalVariables = [...localVariables];
-    newLocalVariables[i].name = validateVariableName(newName),
+    newLocalVariables[i] = {
+      ...newLocalVariables[i],
+      name: validateVariableName(newName),
+    }
     sendAsync('EDITOR_CHANGE_LOCAL_VARIABLES', {
       localVariables: newLocalVariables,
     });
-  }, []);
+  }, [localVariables]);
+
+  const changeVariableValue = React.useCallback((i, newValue) => {
+    const newLocalVariables = [...localVariables];
+    newLocalVariables[i] = {
+      ...newLocalVariables[i],
+      value: newValue,
+    }
+    sendAsync('EDITOR_CHANGE_LOCAL_VARIABLES', {
+      localVariables: newLocalVariables,
+    });
+  }, [localVariables]);
+
+  const deleteVariable = React.useCallback((i) => {
+    const newLocalVariables = [...localVariables];
+    newLocalVariables.splice(i, 1);
+    sendAsync('EDITOR_CHANGE_LOCAL_VARIABLES', {
+      localVariables: newLocalVariables,
+    });
+  }, [localVariables]);
 
   return (
     <View style={styles.container}>
@@ -104,11 +126,12 @@ export default InspectorLocalVariables = ({}) => {
       </View>
       <View style={{ flexDirection: 'column' }}>
         {localVariables.map((localVariable, i) => (
-          <View style={styles.variableInputContainer}>
-            <View style={{ width: '47.5%', flexDirection: 'row', alignItems: 'center'}}>
+          <View key={`${localVariables.length}-${i}`} style={styles.variableInputContainer}>
+            <View style={{ width: '47.5%', flexDirection: 'row', alignItems: 'center' }}>
               <Text style={styles.variablePrefix}>$</Text>
               <InspectorTextInput
                 value={localVariable.name}
+                autoFocus={i == 0 && localVariable.name === ''}
                 optimistic
                 style={[styles.input, styles.variableName, { flexGrow: 1 }]}
                 placeholderTextColor="#666"
@@ -125,17 +148,17 @@ export default InspectorLocalVariables = ({}) => {
               autoCompleteType="off"
               autoCorrect={false}
               hideIncrements
-              onChange={() => { /* TODO: Change variable initial value */ }}
+              onChange={(value) => changeVariableValue(i, value)}
             />
             <View style={{ width: 20 }}>
-              <TouchableOpacity onPress={() => { /* TODO: Delete variable */ }}>
+              <TouchableOpacity onPress={() => deleteVariable(i)}>
                 <Constants.CastleIcon name="trash" size={22} color="#000" />
               </TouchableOpacity>
             </View>
           </View>
         ))}
       </View>
-      <View style={{ height: 16 }}/>
+      <View style={{ height: 16 }} />
       <Text>{JSON.stringify(component.props, null, 2)}</Text>
     </View>
   );
