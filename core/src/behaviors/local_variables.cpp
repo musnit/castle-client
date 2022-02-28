@@ -1,6 +1,7 @@
 #include "local_variables.h"
 
 #include "behaviors/all.h"
+#include "engine.h"
 
 
 //
@@ -81,3 +82,44 @@ void LocalVariablesBehavior::debugDisplay() {
     });
   });
 }
+
+
+//
+// Edit
+//
+
+struct EditorChangeLocalVariablesReceiver {
+  inline static const BridgeRegistration<EditorChangeLocalVariablesReceiver> registration {
+    "EDITOR_CHANGE_LOCAL_VARIABLES"
+  };
+
+  struct Params {
+    Reader *reader = nullptr;
+    void read(Reader &reader_) {
+      reader = &reader_;
+    }
+  } params;
+
+  void receive(Engine &engine) {
+    if (!engine.getIsEditing()) {
+      return;
+    }
+    auto editor = engine.maybeGetEditor();
+
+    auto actorId = editor->getSelection().firstSelectedActorId();
+    if (actorId == nullActor) {
+      return;
+    }
+
+    Debug::log("local variables changed:");
+    auto &reader = *params.reader;
+    reader.obj("params", [&]() {
+      reader.arr("localVariables", [&]() {
+        reader.each([&]() {
+          Debug::log("  name: {}", reader.str("name", ""));
+          Debug::log("  value: {}", reader.num("value", 0));
+        });
+      });
+    });
+  }
+};

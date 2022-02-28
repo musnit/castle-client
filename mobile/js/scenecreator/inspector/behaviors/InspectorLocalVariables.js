@@ -64,6 +64,8 @@ const styles = StyleSheet.create({
   },
 });
 
+const validateVariableName = (name) => name.replace(/\s/g, '');
+
 export default InspectorLocalVariables = ({}) => {
   let component = useCoreState('EDITOR_SELECTED_COMPONENT:LocalVariables');
   if (!component) {
@@ -81,6 +83,14 @@ export default InspectorLocalVariables = ({}) => {
     });
   }, []);
 
+  const changeVariableName = React.useCallback((i, newName) => {
+    const newLocalVariables = [...localVariables];
+    newLocalVariables[i].name = validateVariableName(newName),
+    sendAsync('EDITOR_CHANGE_LOCAL_VARIABLES', {
+      localVariables: newLocalVariables,
+    });
+  }, []);
+
   return (
     <View style={styles.container}>
       <View style={styles.actions}>
@@ -92,7 +102,7 @@ export default InspectorLocalVariables = ({}) => {
         <Text style={[styles.label, { width: '50%' }]}>Name</Text>
         <Text style={[styles.label, { width: '50%' }]}>Initial Value</Text>
       </View>
-      <View style={{ flexDirection: 'column-reverse' }}>
+      <View style={{ flexDirection: 'column' }}>
         {localVariables.map((localVariable, i) => (
           <View style={styles.variableInputContainer}>
             <View style={{ width: '47.5%', flexDirection: 'row', alignItems: 'center'}}>
@@ -105,7 +115,7 @@ export default InspectorLocalVariables = ({}) => {
                 autoCapitalize="none"
                 autoCompleteType="off"
                 autoCorrect={false}
-                onChangeText={() => { /* TODO: Change variable name */ }}
+                onChangeText={(text) => changeVariableName(i, text)}
               />
             </View>
             <InspectorNumberInput
