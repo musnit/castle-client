@@ -99,7 +99,7 @@ double Song::getLength(Clock &clock) {
   return maxLength;
 }
 
-double Song::getSequenceElemLength(
+std::pair<double, bool> Song::getSequenceElemLength(
     Track::Sequence &sequence, Track::Sequence::iterator &current, Clock &clock) {
   auto &[startTime, sequenceElem] = *current;
   auto next = std::next(current);
@@ -107,14 +107,16 @@ double Song::getSequenceElemLength(
   // mostly, the sequence elem is the same length as the underlying pattern
   auto &pattern = patterns[sequenceElem.patternId()];
   auto patternLength = pattern.getLoopLength(clock);
+  bool abutsNext = false;
 
   // but it can possibly be interrupted by next pattern
   if (next != sequence.end()) {
-    if (startTime + patternLength > next->first) {
+    if (startTime + patternLength >= next->first) {
+      abutsNext = true;
       patternLength = next->first - startTime;
     }
   }
-  return patternLength;
+  return { patternLength, abutsNext };
 }
 
 void Song::cleanUpUnusedPatterns() {

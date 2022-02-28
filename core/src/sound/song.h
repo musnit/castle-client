@@ -52,7 +52,11 @@ public:
   double getLength(Clock &clock);
 
   void cleanUpUnusedPatterns();
-  double getSequenceElemLength(
+
+  // get the sequence elem length.
+  // may be equal to the pattern length, but may be shorter if it abuts the following elem.
+  // the boolean in the pair is `true` if this elem abuts the following elem.
+  std::pair<double, bool> getSequenceElemLength(
       Track::Sequence &sequence, Track::Sequence::iterator &current, Clock &clock);
 
   static Track::Sequence::iterator sequenceElemAtTime(Track &track, double timeInSong);

@@ -61,6 +61,7 @@ void SongTool::update(double dt) {
           = track >= 0 && soundTool.hasSong() && track < int(soundTool.song->tracks.size());
       std::string patternId;
       double patternStartTime = 0, patternEndTime = 0;
+      bool abutsNext = false;
       Song::Track::SequenceElem *selectedSequenceElem = nullptr;
       if (selectedExistingTrack && bar >= 0) {
         if (auto &selectedTrack = soundTool.song->tracks[track]; selectedTrack) {
@@ -69,11 +70,13 @@ void SongTool::update(double dt) {
           while (current != sequence.end()) {
             auto &[startTime, sequenceElem] = *current;
             auto startTimeBars = stepsToBars(startTime);
-            auto patternLength = soundTool.song->getSequenceElemLength(sequence, current, clock);
+            auto [patternLength, abutsNext_]
+                = soundTool.song->getSequenceElemLength(sequence, current, clock);
             if (bar >= startTimeBars && bar < startTimeBars + stepsToBars(patternLength)) {
               patternId = sequenceElem.patternId();
               patternStartTime = startTime;
               patternEndTime = startTime + patternLength;
+              abutsNext = abutsNext_;
               selectedSequenceElem = &sequenceElem;
               break;
             }
@@ -86,7 +89,7 @@ void SongTool::update(double dt) {
         bool touchedLoopButton = false;
         if (patternId != "") {
           auto buttonSize = noZoomUnits(44.0f + 8.0f);
-          if (buttonSize <= gridCellSize * 0.4f) {
+          if (buttonSize <= gridCellSize * 0.4f && !abutsNext) {
             auto yInTrack = transformedTouchPosition.y - (std::floor(track) * gridCellSize);
             auto buttonX = (stepsToBars(patternEndTime) * gridCellSize) - buttonSize;
             if (transformedTouchPosition.x >= buttonX && yInTrack <= buttonSize) {
@@ -243,7 +246,7 @@ void SongTool::drawGrid(float viewScale, love::Vector2 &viewOffset) {
 };
 
 void SongTool::drawPattern(const std::string &patternId, Pattern &pattern, float startTime,
-    float patternLength, bool isLoop, int zeroKey, float unit) {
+    float patternLength, bool isLoop, bool abutsNext, int zeroKey, float unit) {
   auto startTimeUnits = stepsToBars(startTime) * unit;
   auto widthUnits = stepsToBars(patternLength) * unit;
 
@@ -299,7 +302,7 @@ void SongTool::drawPattern(const std::string &patternId, Pattern &pattern, float
 
     // draw loop button
     float buttonSize = noZoomUnits(44.0f);
-    if (buttonSize <= unit * 0.4f) {
+    if (buttonSize <= unit * 0.4f && !abutsNext) {
       if (!loopImage) {
         std::string filename = "sound/loop.png";
         auto byteData = EmbeddedImage::load(filename);
@@ -360,8 +363,9 @@ void SongTool::drawSequence(Song::Track::Sequence &sequence, int zeroKey, float 
     auto &pattern = soundTool.song->patterns[patternId];
 
     // draw main pattern
-    auto patternLength = soundTool.song->getSequenceElemLength(sequence, current, clock);
-    drawPattern(patternId, pattern, startTime, patternLength, false, zeroKey, unit);
+    auto [patternLength, abutsNext]
+        = soundTool.song->getSequenceElemLength(sequence, current, clock);
+    drawPattern(patternId, pattern, startTime, patternLength, false, abutsNext, zeroKey, unit);
 
     // draw loops
     if (sequenceElem.loop()) {
@@ -373,8 +377,8 @@ void SongTool::drawSequence(Song::Track::Sequence &sequence, int zeroKey, float 
       }
       while (currentTime < endTime) {
         auto loopEndTime = std::min(currentTime + patternLength, endTime);
-        drawPattern(
-            patternId, pattern, currentTime, loopEndTime - currentTime, true, zeroKey, unit);
+        drawPattern(patternId, pattern, currentTime, loopEndTime - currentTime, true, abutsNext,
+            zeroKey, unit);
         currentTime = loopEndTime;
       }
     }
