@@ -398,12 +398,11 @@ void TrackTool::drawOverlay() {
 
   // draw playhead
   if (soundTool.isPlaying) {
-    auto lineY = -1024.0f / viewScale;
     auto lineHeight = 4096.0f / viewScale;
     lv.graphics.setColor({ 1.0f, 1.0f, 1.0f, 1.0f });
     constexpr auto playheadWidth = 0.1f;
     lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, playheadX - playheadWidth * 0.5f,
-        lineY, playheadWidth, lineHeight);
+        viewPosition.y - viewOffset.y, playheadWidth, lineHeight);
   }
 
   drawNoteAxis(track);
