@@ -12,7 +12,7 @@
 
 
 //
-// Storage
+// Play storage
 //
 
 struct LocalVariableEntry {
@@ -37,6 +37,16 @@ struct LocalVariableId {
 struct LocalVariablesComponent : BaseComponent {
   struct Props {
   } props;
+
+  // Only present when editing
+  struct EditData {
+    struct LocalVariable {
+      std::string name;
+      ExpressionValue value;
+    };
+    SmallVector<LocalVariable, 4> localVariables;
+  };
+  std::unique_ptr<EditData> editData;
 };
 
 class LocalVariablesBehavior
@@ -63,5 +73,6 @@ public:
 
 
 private:
+  // Only present during play
   LocalVariablesMap map;
 };

@@ -190,7 +190,7 @@ public:
 
 
   // Editing state - only settable in constructor
-  bool getIsEditing();
+  bool getIsEditing() const;
 
 
   // Sound
@@ -555,7 +555,7 @@ inline const Bridge &Scene::getBridge() const {
   return bridge;
 }
 
-inline bool Scene::getIsEditing() {
+inline bool Scene::getIsEditing() const {
   return isEditing;
 }
 
