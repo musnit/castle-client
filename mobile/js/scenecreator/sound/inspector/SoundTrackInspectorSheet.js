@@ -31,8 +31,14 @@ const TrackInspector = ({ component, soundToolState }) => {
     selectedTrack = component.props.song.tracks[selectedTrackIndex];
   }
 
+  // force component rerender if track or pattern changes
+  const [lastNativeUpdate, incrementLastNativeUpdate] = React.useReducer((state) => state + 1, 0);
+  React.useEffect(incrementLastNativeUpdate, [selectedTrackIndex, selectedPatternId]);
+
   if (selectedTrack) {
-    return <EditInstrument instrument={selectedTrack.instrument} />;
+    return (
+      <EditInstrument lastNativeUpdate={lastNativeUpdate} instrument={selectedTrack.instrument} />
+    );
   }
   return null;
 };

@@ -28,9 +28,14 @@ const styles = StyleSheet.create({
   },
 });
 
-export const Sampler = ({ instrument }) => {
+export const Sampler = ({ instrument, lastNativeUpdate }) => {
+  // optimistic state
+  const [sample, setSample] = React.useState(instrument?.sample);
+  React.useEffect(() => setSample(instrument?.sample), [lastNativeUpdate, setSample]);
+
   const onChangeSample = React.useCallback(
     (sample) => {
+      setSample(sample);
       sendAsync('TRACK_TOOL_CHANGE_INSTRUMENT', {
         action: 'setSample',
         sampleValue: sample,
@@ -39,14 +44,15 @@ export const Sampler = ({ instrument }) => {
         sendAsync('EDITOR_CHANGE_SOUND', sample);
       }
     },
-    [instrument]
+    [setSample]
   );
+
   const onChangeType = React.useCallback(
-    (type) => onChangeSample({ ...instrument.sample, type }),
-    [onChangeSample]
+    (type) => onChangeSample({ ...sample, type }),
+    [onChangeSample, sample]
   );
-  if (instrument?.sample) {
-    const SampleComponent = SAMPLE_COMPONENTS[instrument.sample.type];
+  if (sample) {
+    const SampleComponent = SAMPLE_COMPONENTS[sample.type];
     if (SampleComponent) {
       return (
         <View style={styles.container}>
@@ -56,13 +62,13 @@ export const Sampler = ({ instrument }) => {
               <Text style={styles.label}>Type:</Text>
               <InspectorDropdown
                 style={{ marginBottom: 0 }}
-                value={instrument.sample.type}
+                value={sample.type}
                 onChange={onChangeType}
                 {...Metadata.responses['play sound'].props.type}
               />
             </View>
           </View>
-          <SampleComponent params={instrument.sample} onChangeParams={onChangeSample} />
+          <SampleComponent params={sample} onChangeParams={onChangeSample} />
         </View>
       );
     }
