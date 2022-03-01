@@ -26,7 +26,11 @@ void LocalVariablesBehavior::handleReadComponent(
     ActorId actorId, LocalVariablesComponent &component, Reader &reader) {
   auto isEditing = getScene().getIsEditing();
   if (isEditing) {
-    component.editData = std::make_unique<LocalVariablesComponent::EditData>();
+    if (component.editData) {
+      *component.editData = {}; // Prevent new allocation if already allocated
+    } else {
+      component.editData = std::make_unique<LocalVariablesComponent::EditData>();
+    }
   }
   reader.arr("localVariables", [&]() {
     reader.each([&]() {
@@ -59,16 +63,21 @@ void LocalVariablesBehavior::handleReadComponent(
   });
 }
 
+static auto undoRedoCount = 0;
+
 void LocalVariablesBehavior::handleWriteComponent(
     ActorId actorId, const LocalVariablesComponent &component, Writer &writer) const {
-  writer.arr("localVariables", [&]() {
-    for (auto &localVariable : component.editData->localVariables) {
-      writer.obj([&]() {
-        writer.str("name", localVariable.name);
-        writer.num("value", localVariable.value.as<double>());
-      });
-    }
-  });
+  if (component.editData) {
+    writer.arr("localVariables", [&]() {
+      for (auto &localVariable : component.editData->localVariables) {
+        writer.obj([&]() {
+          writer.str("name", localVariable.name);
+          writer.num("value", localVariable.value.as<double>());
+        });
+      }
+    });
+    writer.num("undoRedoCount", undoRedoCount);
+  }
 }
 
 
@@ -179,11 +188,17 @@ struct EditorChangeLocalVariablesReceiver {
     commandParams.coalesce = true;
     editor->getCommands().execute(
         commandDescription, commandParams,
-        [actorId, newArchive = std::move(newArchive)](Editor &editor, bool) {
+        [actorId, newArchive = std::move(newArchive)](Editor &editor, bool live) {
           setLocalVariables(editor, actorId, *newArchive);
+          if (!live) {
+            ++undoRedoCount;
+          }
         },
-        [actorId, oldArchive = std::move(oldArchive)](Editor &editor, bool) {
+        [actorId, oldArchive = std::move(oldArchive)](Editor &editor, bool live) {
           setLocalVariables(editor, actorId, *oldArchive);
+          if (!live) {
+            ++undoRedoCount;
+          }
         });
   }
 };

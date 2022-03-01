@@ -69,13 +69,10 @@ const validateVariableName = (name) => name.replace(/\s/g, '');
 export default InspectorLocalVariables = ({}) => {
   let component = useCoreState('EDITOR_SELECTED_COMPONENT:LocalVariables');
   if (!component) {
-    component = { props: { localVariables: [] } };
+    component = { props: { localVariables: [], undoRedoCount: 0 } };
   }
   const localVariables = component.props.localVariables;
-  const sendAction = React.useCallback(
-    (...args) => sendBehaviorAction('LocalVariables', ...args),
-    [sendBehaviorAction]
-  );
+  const undoRedoCount = component.props.undoRedoCount;
 
   const addVariable = React.useCallback(() => {
     sendAsync('EDITOR_CHANGE_LOCAL_VARIABLES', {
@@ -84,38 +81,47 @@ export default InspectorLocalVariables = ({}) => {
     });
   }, [localVariables]);
 
-  const changeVariableName = React.useCallback((i, newName) => {
-    const newLocalVariables = [...localVariables];
-    newLocalVariables[i] = {
-      ...newLocalVariables[i],
-      name: validateVariableName(newName),
-    }
-    sendAsync('EDITOR_CHANGE_LOCAL_VARIABLES', {
-      commandDescription: 'change local variable name',
-      localVariables: newLocalVariables,
-    });
-  }, [localVariables]);
+  const changeVariableName = React.useCallback(
+    (i, newName) => {
+      const newLocalVariables = [...localVariables];
+      newLocalVariables[i] = {
+        ...newLocalVariables[i],
+        name: validateVariableName(newName),
+      };
+      sendAsync('EDITOR_CHANGE_LOCAL_VARIABLES', {
+        commandDescription: 'change local variable name',
+        localVariables: newLocalVariables,
+      });
+    },
+    [localVariables]
+  );
 
-  const changeVariableValue = React.useCallback((i, newValue) => {
-    const newLocalVariables = [...localVariables];
-    newLocalVariables[i] = {
-      ...newLocalVariables[i],
-      value: newValue,
-    }
-    sendAsync('EDITOR_CHANGE_LOCAL_VARIABLES', {
-      commandDescription: 'change local variable value',
-      localVariables: newLocalVariables,
-    });
-  }, [localVariables]);
+  const changeVariableValue = React.useCallback(
+    (i, newValue) => {
+      const newLocalVariables = [...localVariables];
+      newLocalVariables[i] = {
+        ...newLocalVariables[i],
+        value: newValue,
+      };
+      sendAsync('EDITOR_CHANGE_LOCAL_VARIABLES', {
+        commandDescription: 'change local variable value',
+        localVariables: newLocalVariables,
+      });
+    },
+    [localVariables]
+  );
 
-  const deleteVariable = React.useCallback((i) => {
-    const newLocalVariables = [...localVariables];
-    newLocalVariables.splice(i, 1);
-    sendAsync('EDITOR_CHANGE_LOCAL_VARIABLES', {
-      commandDescription: 'remove local variable',
-      localVariables: newLocalVariables,
-    });
-  }, [localVariables]);
+  const deleteVariable = React.useCallback(
+    (i) => {
+      const newLocalVariables = [...localVariables];
+      newLocalVariables.splice(i, 1);
+      sendAsync('EDITOR_CHANGE_LOCAL_VARIABLES', {
+        commandDescription: 'remove local variable',
+        localVariables: newLocalVariables,
+      });
+    },
+    [localVariables]
+  );
 
   return (
     <View style={styles.container}>
@@ -130,7 +136,10 @@ export default InspectorLocalVariables = ({}) => {
       </View>
       <View style={{ flexDirection: 'column' }}>
         {localVariables.map((localVariable, i) => (
-          <View key={`${localVariables.length}-${i}`} style={styles.variableInputContainer}>
+          <View
+            key={`${undoRedoCount}-${localVariables.length}-${i}`}
+            style={styles.variableInputContainer}
+          >
             <View style={{ width: '47.5%', flexDirection: 'row', alignItems: 'center' }}>
               <Text style={styles.variablePrefix}>$</Text>
               <InspectorTextInput
