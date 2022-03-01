@@ -122,6 +122,7 @@ struct EditorChangeLocalVariablesReceiver {
   } params;
 
   void receive(Engine &engine) {
+    // Get scene and actor id
     if (!engine.getIsEditing()) {
       return;
     }
@@ -130,26 +131,59 @@ struct EditorChangeLocalVariablesReceiver {
       return;
     }
     auto &scene = editor->getScene();
-
     auto actorId = editor->getSelection().firstSelectedActorId();
     if (actorId == nullActor || !scene.hasActor(actorId)) {
       return;
     }
-    auto isGhost = editor->getSelection().isGhostActorsSelected();
 
+    // Get behavior and component
     auto &localVariablesBehavior = scene.getBehaviors().byType<LocalVariablesBehavior>();
     auto component = localVariablesBehavior.maybeGetComponent(actorId);
     if (!component) {
       component = &localVariablesBehavior.addComponent(actorId);
     }
-    // TODO: Add undo by writing current value to archive
-    auto &reader = *params.reader;
-    reader.obj("params", [&]() {
-      localVariablesBehavior.handleReadComponent(actorId, *component, reader);
-      if (isGhost) {
-        editor->updateBlueprint(actorId, {});
-      }
-      editor->setSelectedComponentStateDirty(LocalVariablesBehavior::behaviorId);
+
+    // Save old and new data so we can undo / redo
+    std::string commandDescription;
+    std::shared_ptr<Archive> oldArchive = std::make_shared<Archive>();
+    oldArchive->write([&](Writer &writer) {
+      localVariablesBehavior.handleWriteComponent(actorId, *component, writer);
     });
+    std::shared_ptr<Archive> newArchive = std::make_shared<Archive>();
+    newArchive->write([&](Writer &writer) {
+      params.reader->obj("params", [&]() {
+        commandDescription = params.reader->str("commandDescription", "");
+        writer.setValue(*params.reader->jsonValue());
+      });
+    });
+
+    // Common function to use in undo / redo
+    static auto setLocalVariables = [](Editor &editor, ActorId actorId, Archive &archive) {
+      auto &scene = editor.getScene();
+      auto &localVariablesBehavior = scene.getBehaviors().byType<LocalVariablesBehavior>();
+      auto component = localVariablesBehavior.maybeGetComponent(actorId);
+      if (!component) {
+        component = &localVariablesBehavior.addComponent(actorId);
+      }
+      archive.read([&](Reader &reader) {
+        localVariablesBehavior.handleReadComponent(actorId, *component, reader);
+      });
+      if (scene.isGhost(actorId)) {
+        editor.updateBlueprint(actorId, {});
+      }
+      editor.setSelectedComponentStateDirty(LocalVariablesBehavior::behaviorId);
+    };
+
+    // Execute command
+    Commands::Params commandParams;
+    commandParams.coalesce = true;
+    editor->getCommands().execute(
+        commandDescription, commandParams,
+        [actorId, newArchive = std::move(newArchive)](Editor &editor, bool) {
+          setLocalVariables(editor, actorId, *newArchive);
+        },
+        [actorId, oldArchive = std::move(oldArchive)](Editor &editor, bool) {
+          setLocalVariables(editor, actorId, *oldArchive);
+        });
   }
 };

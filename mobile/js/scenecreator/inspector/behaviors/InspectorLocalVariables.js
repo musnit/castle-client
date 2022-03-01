@@ -79,6 +79,7 @@ export default InspectorLocalVariables = ({}) => {
 
   const addVariable = React.useCallback(() => {
     sendAsync('EDITOR_CHANGE_LOCAL_VARIABLES', {
+      commandDescription: 'add local variable',
       localVariables: [{ name: '', value: 0 }, ...localVariables],
     });
   }, [localVariables]);
@@ -90,6 +91,7 @@ export default InspectorLocalVariables = ({}) => {
       name: validateVariableName(newName),
     }
     sendAsync('EDITOR_CHANGE_LOCAL_VARIABLES', {
+      commandDescription: 'change local variable name',
       localVariables: newLocalVariables,
     });
   }, [localVariables]);
@@ -101,6 +103,7 @@ export default InspectorLocalVariables = ({}) => {
       value: newValue,
     }
     sendAsync('EDITOR_CHANGE_LOCAL_VARIABLES', {
+      commandDescription: 'change local variable value',
       localVariables: newLocalVariables,
     });
   }, [localVariables]);
@@ -109,6 +112,7 @@ export default InspectorLocalVariables = ({}) => {
     const newLocalVariables = [...localVariables];
     newLocalVariables.splice(i, 1);
     sendAsync('EDITOR_CHANGE_LOCAL_VARIABLES', {
+      commandDescription: 'remove local variable',
       localVariables: newLocalVariables,
     });
   }, [localVariables]);
