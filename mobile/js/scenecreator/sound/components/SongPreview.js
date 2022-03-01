@@ -49,7 +49,9 @@ export const SongPreview = ({ song }) => {
   return (
     <View style={styles.container}>
       {song.tracks.slice(0, PREVIEW_MAX_TRACKS).map((track, ti) => {
-        const sequenceKeys = Object.keys(track.sequence).sort().slice(0, PREVIEW_MAX_SEQ_ELEMS);
+        const sequenceKeys = Object.keys(track.sequence)
+          .sort((a, b) => parseFloat(a) - parseFloat(b))
+          .slice(0, PREVIEW_MAX_SEQ_ELEMS);
         return (
           <View key={`track-${ti}`} style={styles.trackRow}>
             <View style={styles.instrumentIcon}>
