@@ -16,8 +16,9 @@
 #include "belt.h"
 #include "player.h"
 #include "capture.h"
+#include "screen.h"
 
-class Editor {
+class Editor : public Screen {
   // manages a scene instance that is being edited.
 
 public:
@@ -31,6 +32,9 @@ public:
 
   void update(double dt);
   void draw();
+
+  void suspend();
+  void resume();
 
   void readScene(Reader &reader);
   void readVariables(Reader &reader);

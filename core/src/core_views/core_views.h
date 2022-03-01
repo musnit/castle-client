@@ -84,11 +84,13 @@ public:
 class CoreViewRenderer {
 public:
   CoreViewRenderer(Bridge &bridge_, std::string layoutTemplateName_,
-      std::shared_ptr<CoreView> layout_, int jsonVersion_)
+      std::shared_ptr<CoreView> layout_, int jsonVersion_, int width_, int height_)
       : bridge(bridge_)
       , layout(layout_)
       , jsonVersion(jsonVersion_)
-      , layoutTemplateName(layoutTemplateName_) {
+      , layoutTemplateName(layoutTemplateName_)
+      , width(width_)
+      , height(height_) {
   }
 
   void update(double dt);
@@ -109,6 +111,8 @@ public:
 private:
   void renderView(CoreView *view);
 
+  int width = 800;
+  int height = 1120;
   Bridge &bridge;
   std::shared_ptr<CoreView> layout;
   int jsonVersion = 0;

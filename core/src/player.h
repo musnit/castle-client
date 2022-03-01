@@ -5,8 +5,9 @@
 #include "bridge.h"
 #include "scene.h"
 #include "variables.h"
+#include "screen.h"
 
-class Player {
+class Player : public Screen {
   // manages a scene instance that is being played (not edited).
 
 public:

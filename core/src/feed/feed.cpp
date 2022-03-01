@@ -8,6 +8,7 @@
 
 #define TOP_PADDING 0
 #define BOTTOM_UI_MIN_HEIGHT 200
+//#define DEBUG_CLICK_TO_ADVANCE
 
 const std::string GRAPHQL_DECK_FIELDS
     = "\ndeckId\nvariables\ncreator {\nuserId\nusername\nphoto "
@@ -119,13 +120,14 @@ int Feed::getCurrentIndex() {
   return idx;
 }
 
-Scene *Feed::getScene() {
+bool Feed::hasScene() {
   int idx = getCurrentIndex();
-  if (idx >= 0 && idx < (int)decks.size() && decks[idx].player && decks[idx].player->hasScene()) {
-    return &(decks[idx].player->getScene());
-  }
+  return idx >= 0 && idx < (int)decks.size() && decks[idx].player && decks[idx].player->hasScene();
+}
 
-  return nullptr;
+Scene &Feed::getScene() {
+  int idx = getCurrentIndex();
+  return decks[idx].player->getScene();
 }
 
 void Feed::setPaused(bool paused_) {
@@ -254,6 +256,13 @@ void Feed::update(double dt) {
           animateToOffset = (-feedItemWidth * ((float)decks.size() - 1.0));
         }
       }
+
+#ifdef DEBUG_CLICK_TO_ADVANCE
+      isAnimating = true;
+      animateFromOffset = offset;
+      animationTimeElapsed = 0.0;
+      animateToOffset = (round(touchStartOffset / feedItemWidth) - 1) * feedItemWidth;
+#endif
     }
   });
 
@@ -471,6 +480,15 @@ void Feed::draw() {
   for (int i = idx + 3; i < (int)decks.size(); i++) {
     unloadDeckAtIndex(i);
   }
+}
+
+void Feed::suspend() {
+}
+
+void Feed::resume() {
+}
+
+void Feed::clearState() {
 }
 
 void Feed::fetchInitialDecks(std::vector<std::string> deckIds) {

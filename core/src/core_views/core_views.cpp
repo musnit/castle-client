@@ -22,7 +22,7 @@ void CoreViewRenderer::render() {
   if (jsonVersion != CoreViews::getInstance().jsonVersion) {
     jsonVersion = CoreViews::getInstance().jsonVersion;
 
-    layout = CoreViews::getInstance().getView(layoutTemplateName, &props);
+    layout = CoreViews::getInstance().getView(layoutTemplateName, &props, width, height);
   }
 
   renderView(layout.get());
@@ -259,7 +259,8 @@ void CoreViews::setJson(std::string json) {
 std::shared_ptr<CoreViewRenderer> CoreViews::getRenderer(
     std::string layoutTemplateName, int defaultWidth, int defaultHeight) {
   return std::make_shared<CoreViewRenderer>(bridge, layoutTemplateName,
-      getView(layoutTemplateName, nullptr, defaultWidth, defaultHeight), jsonVersion);
+      getView(layoutTemplateName, nullptr, defaultWidth, defaultHeight), jsonVersion, defaultWidth,
+      defaultHeight);
 }
 
 std::shared_ptr<CoreView> CoreViews::getView(std::string layoutTemplateName,

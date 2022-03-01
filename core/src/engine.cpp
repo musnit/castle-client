@@ -529,9 +529,8 @@ struct RequestScreenshotReceiver {
     if (engine.getIsEditing() && editor) {
       editor->getScene().sendScreenshot(true);
     } else if (feed) {
-      auto scene = feed->getScene();
-      if (scene) {
-        scene->sendScreenshot(true);
+      if (feed->hasScene()) {
+        feed->getScene().sendScreenshot(true);
       }
     } else {
       engine.getScene().sendScreenshot(false);

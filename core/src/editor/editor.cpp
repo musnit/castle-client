@@ -520,6 +520,12 @@ void Editor::draw() {
   }
 }
 
+void Editor::suspend() {
+}
+
+void Editor::resume() {
+}
+
 void Editor::updateBlueprint(ActorId actorId, UpdateBlueprintParams params) {
   auto &library = scene->getLibrary();
 

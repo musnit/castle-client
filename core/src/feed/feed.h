@@ -5,6 +5,7 @@
 #include "player.h"
 #include "gesture.h"
 #include "core_views/core_views.h"
+#include "screen.h"
 
 struct FeedItem {
   std::optional<std::string> deckId;
@@ -21,7 +22,7 @@ struct FeedItem {
   int reactionCount = 0;
 };
 
-class Feed {
+class Feed : public Screen {
 public:
   explicit Feed(Bridge &bridge_)
       : bridge(bridge_) {
@@ -29,9 +30,13 @@ public:
 
   void update(double dt);
   void draw();
+  void suspend();
+  void resume();
+  void clearState();
   void fetchInitialDecks(std::vector<std::string> deckIds);
   void setWindowSize(int w, int h);
-  Scene *getScene(); // for screenshot
+  bool hasScene();
+  Scene &getScene();
   void setPaused(bool paused);
 
 private:

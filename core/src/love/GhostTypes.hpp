@@ -460,7 +460,7 @@ public:
     loveMesh->unmapVertexData(0, vData->getSize());
   }
 
-  void updateTriangles() {
+  void updateTriangles(int vertexCount) {
     int indexCount = MeshGetIndexCount(toveMesh);
     size_t size = indexCount * sizeof(ToveVertexIndex);
 
@@ -470,8 +470,19 @@ public:
     }
 
     MeshCopyIndexData(toveMesh, iData->getData(), iData->getSize());
+    // verifyMesh(vertexCount, indexCount);
     loveMesh->setVertexMap(graphics::INDEX_UINT16, iData->getData(), iData->getSize());
   }
+
+  /*void verifyMesh(int vertexCount, int indexCount) {
+    uint16_t *indexData = (uint16_t *) iData->getData();
+    for (size_t i = 0; i < indexCount; i++) {
+      if (indexData[i] >= vertexCount) {
+        Debug::log("index too big!!! {} vs {}", indexData[i], vertexCount);
+        indexData[i] = 0;
+      }
+    }
+  }*/
 
   void getToveMesh() {
     std::vector<graphics::Mesh::AttribFormat> vertexFormat;
@@ -499,7 +510,8 @@ public:
       return;
     }
 
-    if (MeshGetIndexCount(toveMesh) < 1) {
+    int indexCount = MeshGetIndexCount(toveMesh);
+    if (indexCount < 1) {
       return;
     }
 
@@ -517,7 +529,7 @@ public:
         data::DataModule::instance.newByteData((size_t)vertexCount * vertexByteSize));
 
     updateVertices();
-    updateTriangles();
+    updateTriangles(vertexCount);
   }
 
   void update() {
@@ -541,7 +553,7 @@ public:
       getToveMesh();
     }
 
-    if (loveMesh == NULL) {
+    if (!loveMesh) {
       return;
     }
 
