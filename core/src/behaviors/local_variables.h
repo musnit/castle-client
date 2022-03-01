@@ -6,9 +6,7 @@
 #include "props.h"
 
 
-#ifndef NDEBUG
-#define ENABLE_LOCAL_VARIABLES
-#endif
+//#define ENABLE_LOCAL_VARIABLES
 
 
 //
