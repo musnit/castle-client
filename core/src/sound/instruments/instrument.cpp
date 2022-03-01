@@ -55,6 +55,9 @@ void Instrument::drawEditorGridCellColors(
   constexpr auto darkGrey = 0xd2 / 255.0f;
   lv.graphics.setColor({ darkGrey, darkGrey, darkGrey, 1.0f });
 
+  bool zeroKeyVisible = false;
+  float zeroKeyY = 0.0f;
+
   int noteIndexVisible = initialNoteIndex;
   float gridY = 0.0f;
   while (gridY < height) {
@@ -62,8 +65,18 @@ void Instrument::drawEditorGridCellColors(
     if (isBlack(key % 12)) {
       lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, 0.0f, gridY, width, 1.0f);
     }
+    if (noteIndexVisible == 0) {
+      zeroKeyVisible = true;
+      zeroKeyY = gridY - 1.0f;
+    }
     noteIndexVisible++;
     gridY += 1.0f;
+  }
+
+  if (zeroKeyVisible) {
+    constexpr auto lightGrey = 0xee / 255.0f;
+    lv.graphics.setColor({ lightGrey, lightGrey, lightGrey, 1.0f });
+    lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, 0.0f, zeroKeyY, width, 1.0f);
   }
 }
 
