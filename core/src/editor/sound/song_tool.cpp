@@ -245,10 +245,10 @@ void SongTool::drawGrid(float viewScale, love::Vector2 &viewOffset) {
       gridCellSize, gridMin, gridMax, viewScale, viewPosition, viewOffset, gridDotRadius, false);
 };
 
-void SongTool::drawPattern(const std::string &patternId, Pattern &pattern, float startTime,
+void SongTool::drawPattern(const std::string &patternId, Pattern &pattern, float startTimeSteps,
     float patternLength, bool isMuted, bool isLoop, bool abutsNext, int zeroKey, float unit) {
-  auto startTimeUnits = stepsToBars(startTime) * unit;
-  auto widthUnits = stepsToBars(patternLength) * unit;
+  auto startTime = stepsToBars(startTimeSteps);
+  auto width = stepsToBars(patternLength);
 
   // draw pattern rectangle
   if (isLoop) {
@@ -267,12 +267,10 @@ void SongTool::drawPattern(const std::string &patternId, Pattern &pattern, float
       lv.graphics.setColor(pattern.color());
     }
   }
-  auto rad = isLoop ? 0.0f : unit * 0.05f;
-  lv.graphics.rectangle(
-      love::Graphics::DrawMode::DRAW_FILL, startTimeUnits, 0, widthUnits, unit, rad, rad);
+  auto rad = isLoop ? 0.0f : 0.05f;
+  lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, startTime, 0, width, 1.0f, rad, rad);
 
   // summarize notes
-  // TODO: editor maintains min/max per track
   auto luminance = DrawUtil::luminance((float *)&pattern.color());
   auto noteAlpha = (isLoop) ? 0.4f : 1.0f;
   if (luminance < 0.5f) {
@@ -280,17 +278,19 @@ void SongTool::drawPattern(const std::string &patternId, Pattern &pattern, float
   } else {
     lv.graphics.setColor({ 0.0f, 0.0f, 0.0f, noteAlpha });
   }
-  constexpr auto maxKey = 24.0f, minKey = -24.0f;
-  auto keyHeight = unit / (maxKey - minKey);
-  auto noteWidth = stepsToBars(unit);
-  auto centerY = unit * 0.5f - keyHeight;
+  auto [minKey, maxKey] = soundTool.getPatternMinMax(pattern.patternId());
+  int range = std::max(12.0f, maxKey - minKey + 1.0f);
+  auto keyHeight = 1.0f / range;
+  auto noteWidth = stepsToBars(1.0f);
+  auto totalHeight = (maxKey - minKey + 1.0f) * keyHeight;
+  auto centerY = (totalHeight - 1.0f) * 0.5f;
   for (auto &[time, notes] : pattern) {
     if (time > patternLength) {
       break;
     }
-    auto x = startTimeUnits + stepsToBars(time) * unit;
+    auto x = startTime + stepsToBars(time);
     for (auto &note : notes) {
-      auto y = ((note.key - zeroKey) * -keyHeight) + centerY;
+      auto y = ((note.key - minKey + 1.0f) * -keyHeight) + 1.0f + centerY;
       lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, x, y, noteWidth, keyHeight);
     }
   }
@@ -300,72 +300,77 @@ void SongTool::drawPattern(const std::string &patternId, Pattern &pattern, float
     float innerPadding = 0.0f;
     lv.graphics.push(love::Graphics::STACK_ALL);
     if (patternId == soundTool.selectedPatternId) {
-      lv.graphics.setLineWidth(noZoomUnits(6.0f));
+      lv.graphics.setLineWidth(noZoomUnits(6.0f) / unit);
       lv.graphics.setColor({ 1.0f, 1.0f, 1.0f, 1.0f });
-      innerPadding = noZoomUnits(3.0f);
+      innerPadding = noZoomUnits(3.0f) / unit;
     } else {
       lv.graphics.setColor({ 0.0f, 0.0f, 0.0f, 1.0f });
     }
-    lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_LINE, startTimeUnits + innerPadding,
-        innerPadding, widthUnits - innerPadding * 2.0f, unit - innerPadding * 2.0f, rad, rad);
+    lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_LINE, startTime + innerPadding,
+        innerPadding, width - innerPadding * 2.0f, 1.0f - innerPadding * 2.0f, rad, rad);
     lv.graphics.pop();
 
     // draw loop button
-    float buttonSize = noZoomUnits(44.0f);
-    if (buttonSize <= unit * 0.4f && !abutsNext) {
-      if (!loopImage) {
-        std::string filename = "sound/loop.png";
-        auto byteData = EmbeddedImage::load(filename);
-        love::image::ImageData *imageData = lv.image.newImageData(byteData);
-
-        love::graphics::Image::Settings settings;
-        love::graphics::Image::Slices slices(love::graphics::TEXTURE_2D);
-        slices.set(0, 0, imageData);
-
-        loopImage = lv.graphics.newImage(slices, settings);
-        love::graphics::Texture::Filter f = loopImage->getFilter();
-        f.min = love::graphics::Texture::FILTER_NEAREST;
-        f.mag = love::graphics::Texture::FILTER_NEAREST;
-        loopImage->setFilter(f);
-      }
-      static auto quad = [&]() {
-        std::vector<love::graphics::Vertex> quadVerts {
-          { 0, 0, 0, 0, { 0xff, 0xff, 0xff, 0xff } },
-          { 1, 0, 1, 0, { 0xff, 0xff, 0xff, 0xff } },
-          { 1, 1, 1, 1, { 0xff, 0xff, 0xff, 0xff } },
-          { 0, 1, 0, 1, { 0xff, 0xff, 0xff, 0xff } },
-        };
-        return lv.graphics.newMesh(quadVerts, love::graphics::PRIMITIVE_TRIANGLE_FAN,
-            love::graphics::vertex::USAGE_STATIC);
-      }();
-      quad->setTexture(loopImage);
-
-      float buttonMargin = noZoomUnits(8.0f);
-      float buttonRadius = noZoomUnits(3.0f);
+    float buttonSize = noZoomUnits(44.0f) / unit;
+    if (buttonSize <= 0.4f && !abutsNext) {
+      float buttonMargin = noZoomUnits(8.0f) / unit;
+      lv.graphics.push();
       lv.graphics.setColor({ 1.0f, 1.0f, 1.0f, 1.0f });
-      lv.graphics.push();
-      lv.graphics.translate(startTimeUnits + widthUnits - buttonSize - buttonMargin, buttonMargin);
-      lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, 0, 0, buttonSize, buttonSize,
-          buttonRadius, buttonRadius);
-      lv.graphics.setColor({ 0.0f, 0.0f, 0.0f, 1.0f });
-      auto imageSize = buttonSize * 0.8f;
-      lv.graphics.push();
-      constexpr auto ratio = (24.0f / 52.0f);
-      lv.graphics.translate(
-          (buttonSize - imageSize) * 0.5f, (buttonSize - imageSize * ratio) * 0.5f);
-      quad->draw(&lv.graphics, love::Matrix4(0, 0, 0, imageSize, imageSize * ratio, 0, 0, 0, 0));
-      lv.graphics.pop();
-      lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_LINE, 0, 0, buttonSize, buttonSize,
-          buttonRadius, buttonRadius);
+      lv.graphics.translate(startTime + width - buttonSize - buttonMargin, buttonMargin);
+      drawLoopButton(buttonSize, unit);
       lv.graphics.pop();
     }
   }
+}
+
+void SongTool::drawLoopButton(float buttonSize, float unit) {
+  if (!loopImage) {
+    std::string filename = "sound/loop.png";
+    auto byteData = EmbeddedImage::load(filename);
+    love::image::ImageData *imageData = lv.image.newImageData(byteData);
+
+    love::graphics::Image::Settings settings;
+    love::graphics::Image::Slices slices(love::graphics::TEXTURE_2D);
+    slices.set(0, 0, imageData);
+
+    loopImage = lv.graphics.newImage(slices, settings);
+    love::graphics::Texture::Filter f = loopImage->getFilter();
+    f.min = love::graphics::Texture::FILTER_NEAREST;
+    f.mag = love::graphics::Texture::FILTER_NEAREST;
+    loopImage->setFilter(f);
+  }
+  static auto quad = [&]() {
+    std::vector<love::graphics::Vertex> quadVerts {
+      { 0, 0, 0, 0, { 0xff, 0xff, 0xff, 0xff } },
+      { 1, 0, 1, 0, { 0xff, 0xff, 0xff, 0xff } },
+      { 1, 1, 1, 1, { 0xff, 0xff, 0xff, 0xff } },
+      { 0, 1, 0, 1, { 0xff, 0xff, 0xff, 0xff } },
+    };
+    return lv.graphics.newMesh(
+        quadVerts, love::graphics::PRIMITIVE_TRIANGLE_FAN, love::graphics::vertex::USAGE_STATIC);
+  }();
+  quad->setTexture(loopImage);
+
+  float buttonRadius = noZoomUnits(3.0f) / unit;
+  lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_FILL, 0, 0, buttonSize, buttonSize,
+      buttonRadius, buttonRadius);
+  lv.graphics.setColor({ 0.0f, 0.0f, 0.0f, 1.0f });
+  auto imageSize = buttonSize * 0.8f;
+  lv.graphics.push();
+  constexpr auto ratio = (24.0f / 52.0f);
+  lv.graphics.translate((buttonSize - imageSize) * 0.5f, (buttonSize - imageSize * ratio) * 0.5f);
+  quad->draw(&lv.graphics, love::Matrix4(0, 0, 0, imageSize, imageSize * ratio, 0, 0, 0, 0));
+  lv.graphics.pop();
+  lv.graphics.rectangle(love::Graphics::DrawMode::DRAW_LINE, 0, 0, buttonSize, buttonSize,
+      buttonRadius, buttonRadius);
 }
 
 void SongTool::drawSequence(
     Song::Track::Sequence &sequence, bool isMuted, int zeroKey, float unit) {
   auto &clock = getScene().getClock();
 
+  lv.graphics.push();
+  lv.graphics.scale(unit, unit);
   auto current = sequence.begin();
   while (current != sequence.end()) {
     auto &[startTime, sequenceElem] = *current;
@@ -396,6 +401,7 @@ void SongTool::drawSequence(
     }
     current++;
   }
+  lv.graphics.pop();
 }
 
 void SongTool::drawDragPattern(float unit) {

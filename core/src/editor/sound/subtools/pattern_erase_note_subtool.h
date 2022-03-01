@@ -35,6 +35,7 @@ public:
     if (touch.touch.released) {
       if (hasChanges) {
         soundTool.updateSelectedComponent("remove notes");
+        soundTool.clearPatternMinMax(pattern->patternId());
       }
     } else {
       if (touch.step >= 0 && pattern->hasNote(touch.step, touch.key)) {

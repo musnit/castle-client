@@ -184,6 +184,38 @@ void SoundTool::computePlaybackEndpoints() {
   playEndTimeInSong = songEndTime;
 }
 
+std::pair<float, float> SoundTool::getPatternMinMax(const std::string &patternId) {
+  auto found = patternMinMaxCache.find(patternId);
+  if (found != patternMinMaxCache.end()) {
+    return found->second;
+  } else {
+    // compute min/max note keys for this pattern
+    float maxKey = -9999, minKey = 9999;
+    if (hasSong()) {
+      for (auto &[time, notes] : song->patterns[patternId]) {
+        for (auto &note : notes) {
+          if (note.key > maxKey) {
+            maxKey = note.key;
+          }
+          if (note.key < minKey) {
+            minKey = note.key;
+          }
+        }
+      }
+    }
+    std::pair<float, float> result { minKey, maxKey };
+    patternMinMaxCache.emplace(patternId, result);
+    return result;
+  }
+}
+
+void SoundTool::clearPatternMinMax(const std::string &patternId) {
+  auto found = patternMinMaxCache.find(patternId);
+  if (found != patternMinMaxCache.end()) {
+    patternMinMaxCache.erase(found);
+  }
+}
+
 void SoundTool::scheduleSongForPlayback(
     double songStartTime, double songEndTime, double initialTimeInSong) {
   auto &scene = getScene();

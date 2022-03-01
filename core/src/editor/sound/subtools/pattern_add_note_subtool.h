@@ -40,6 +40,7 @@ public:
       if (touch.step >= 0 && !pattern->hasNote(touch.step, touch.key)) {
         pattern->addNote(touch.step, { touch.key });
         soundTool.updateSelectedComponent("add notes");
+        soundTool.clearPatternMinMax(pattern->patternId());
         hasChanges = false; // changes were committed
       }
       hasTouch = false;

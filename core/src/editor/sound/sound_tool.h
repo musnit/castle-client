@@ -54,6 +54,9 @@ public:
   void updateSelectedComponent(std::string commandDescription);
   void discardChanges();
 
+  std::pair<float, float> getPatternMinMax(const std::string &patternId);
+  void clearPatternMinMax(const std::string &patternId);
+
 private:
   friend class TrackTool;
   friend class SongTool;
@@ -94,6 +97,8 @@ private:
   void clearPlaybackEndpoints();
   std::pair<double, double> getPlaybackEndpoints();
   void computePlaybackEndpoints();
+
+  std::unordered_map<std::string, std::pair<float, float>> patternMinMaxCache;
 };
 
 inline void SoundTool::setTrackIndex(int trackIndex) {
