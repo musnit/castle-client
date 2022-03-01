@@ -1,6 +1,7 @@
 import * as React from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { InspectorSegmentedControl } from '../components/InspectorSegmentedControl';
+import { SongPreview } from '../../sound/components/SongPreview';
 import { useOptimisticBehaviorValue } from '../InspectorUtilities';
 import { useCoreState, sendAsync, sendBehaviorAction } from '../../../core/CoreEvents';
 
@@ -16,9 +17,14 @@ const styles = StyleSheet.create({
     padding: 16,
     alignItems: 'flex-start',
   },
+  titleRow: {
+    flexDirection: 'row',
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
   label: {
     fontWeight: '600',
-    paddingBottom: 16,
     fontSize: 16,
   },
   row: {
@@ -78,18 +84,24 @@ export default InspectorMusic = ({ music }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>Music</Text>
+      <View style={styles.titleRow}>
+        <Text style={styles.label}>Music</Text>
+        {component ? (
+          <Pressable style={SceneCreatorConstants.styles.button} onPress={removeMusic}>
+            <Text style={SceneCreatorConstants.styles.buttonLabel}>Remove</Text>
+          </Pressable>
+        ) : (
+          <Pressable style={SceneCreatorConstants.styles.button} onPress={addMusic}>
+            <Text style={SceneCreatorConstants.styles.buttonLabel}>Add</Text>
+          </Pressable>
+        )}
+      </View>
       {component ? (
         <>
           <View style={styles.row}>
-            <Pressable
-              style={[SceneCreatorConstants.styles.button, { marginRight: 8 }]}
-              onPress={editMusic}>
-              <Text style={SceneCreatorConstants.styles.buttonLabel}>Edit Music</Text>
-            </Pressable>
-            <Pressable style={SceneCreatorConstants.styles.button} onPress={removeMusic}>
-              <Text style={SceneCreatorConstants.styles.buttonLabel}>Remove Music</Text>
-            </Pressable>
+            <TouchableOpacity onPress={editMusic}>
+              <SongPreview song={component.props.song} />
+            </TouchableOpacity>
           </View>
           <View style={styles.row}>
             <View style={{ width: '50%' }}>
@@ -103,11 +115,7 @@ export default InspectorMusic = ({ music }) => {
             />
           </View>
         </>
-      ) : (
-        <Pressable style={SceneCreatorConstants.styles.button} onPress={addMusic}>
-          <Text style={SceneCreatorConstants.styles.buttonLabel}>Add Music</Text>
-        </Pressable>
-      )}
+      ) : null}
     </View>
   );
 };
