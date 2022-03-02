@@ -9,6 +9,7 @@ export const NativeDecksFeed = ({ onPressComments, isCommentsOpen }) => {
   return (
     <GameView
       initialParams={JSON.stringify({
+        screenId: 'featuredFeed',
         useNativeFeed: true,
         //nativeFeedDeckIds: ['Qj_sfZaIs', 'Od2Trh95G', '40pCTkzN2', 'PZS8by31X', 'p70imV9b5', 'rZqvqB_vl', 'BzerSltK9', 'kgETrH4RV', 'FHb49f-0n', 'AuKZO3tff'],
         //nativeFeedDeckIds: ['Cc9V03LFc'],

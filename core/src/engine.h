@@ -58,11 +58,10 @@ public:
 
   Bridge &getBridge();
 
-  Scene &getScene();
-  Editor *maybeGetEditor();
-  Player &getPlayer();
-  Feed *maybeGetFeed();
   bool getIsEditing();
+  Screen *maybeGetScreen();
+  Editor *maybeGetEditor();
+  void clearScreen();
   LibraryClipboard &getLibraryClipboard();
 
 private:
@@ -90,9 +89,8 @@ private:
   std::unique_ptr<love::Font> debugFont { lv.graphics.newDefaultFont(
       22, love::TrueTypeRasterizer::HINTING_NORMAL) };
 
-  Player player { bridge };
-  std::unique_ptr<Editor> editor;
-  std::unique_ptr<Feed> feed;
+  std::map<std::string, std::unique_ptr<Screen>> screens;
+  std::string activeScreenId;
   bool isEditing = false;
   LibraryClipboard libraryClipboard; // persistent for engine instance lifetime
 
@@ -115,23 +113,30 @@ inline Bridge &Engine::getBridge() {
   return bridge;
 }
 
-inline Scene &Engine::getScene() {
-  if (feed) {
-    return feed->getScene();
+inline Screen *Engine::maybeGetScreen() {
+  if (screens.find(activeScreenId) == screens.end()) {
+    return nullptr;
   }
-  return player.getScene();
-}
 
-inline Player &Engine::getPlayer() {
-  return player;
+  return screens[activeScreenId].get();
 }
 
 inline Editor *Engine::maybeGetEditor() {
-  return editor.get();
+  auto screen = maybeGetScreen();
+  if (screen && screen->screenType() == EDITOR) {
+    return (Editor *)screen;
+  }
+
+  return nullptr;
 }
 
-inline Feed *Engine::maybeGetFeed() {
-  return feed.get();
+inline void Engine::clearScreen() {
+  if (screens.find(activeScreenId) != screens.end()) {
+    if (screens[activeScreenId]->screenType() != FEED) {
+      screens.erase(activeScreenId);
+      activeScreenId = "";
+    }
+  }
 }
 
 inline bool Engine::getIsEditing() {
@@ -145,7 +150,8 @@ inline LibraryClipboard &Engine::getLibraryClipboard() {
 inline void Engine::setPaused(bool paused_) {
   paused = paused_;
 
-  if (feed) {
-    feed->setPaused(paused);
+  auto screen = maybeGetScreen();
+  if (screen) {
+    screen->setPaused(paused);
   }
 }

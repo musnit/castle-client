@@ -17,6 +17,7 @@ public:
   explicit Player(Bridge &bridge_);
   ~Player();
 
+  ScreenType screenType();
   void update(double dt);
   void draw();
 
@@ -47,6 +48,10 @@ private:
   Archive sceneArchive;
   std::unique_ptr<Scene> scene;
 };
+
+inline ScreenType Player::screenType() {
+  return PLAYER;
+}
 
 inline bool Player::hasScene() {
   return !!scene;

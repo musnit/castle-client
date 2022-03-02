@@ -129,6 +129,7 @@ void Engine::setInitialParams(const char *initialParamsJson) {
   const char *initialSnapshotJson = nullptr;
   const char *initialCardId = nullptr;
   const char *initialCardSceneDataUrl = nullptr;
+  const char *jsScreenId = nullptr;
   auto useNativeFeed = false;
   auto isNewScene = false;
   auto archive = Archive::fromJson(initialParamsJson);
@@ -139,6 +140,7 @@ void Engine::setInitialParams(const char *initialParamsJson) {
     initialCardId = reader.str("initialCardId", nullptr);
     initialCardSceneDataUrl = reader.str("initialCardSceneDataUrl", nullptr);
     initialSnapshotJson = reader.str("initialSnapshotJson", nullptr);
+    jsScreenId = reader.str("screenId", nullptr);
     isNewScene = reader.boolean("isNewScene", false);
     Scene::uiPixelRatio = float(reader.num("pixelRatio", Scene::uiPixelRatio));
     reader.obj("textOverlayStyle", [&]() {
@@ -156,10 +158,53 @@ void Engine::setInitialParams(const char *initialParamsJson) {
       });
     }
   });
+
+  std::unique_ptr<Screen> newScreen;
+  std::string screenId;
+  Editor *editor = nullptr;
+  Feed *feed = nullptr;
+  std::string screenIdPrefix = "";
+
   if (isEditing) {
-    editor = std::make_unique<Editor>(bridge);
+    screenIdPrefix = "editor:";
+  } else if (useNativeFeed) {
+    screenIdPrefix = "feed:";
+  } else {
+    screenIdPrefix = "player:";
   }
-  if (isEditing && isNewScene) {
+
+  if (jsScreenId) {
+    screenId = std::string(jsScreenId);
+  } else if (deckId) {
+    screenId = screenIdPrefix + std::string(deckId);
+  } else {
+    screenId = screenIdPrefix;
+  }
+
+  activeScreenId = screenId;
+
+  if (screens.find(screenId) != screens.end()) {
+    return;
+  }
+
+  if (isEditing) {
+    newScreen = std::make_unique<Editor>(bridge);
+    editor = (Editor *)newScreen.get();
+    screenIdPrefix = "editor:";
+  } else if (useNativeFeed) {
+    newScreen = std::make_unique<Feed>(bridge);
+    feed = (Feed *)newScreen.get();
+    screenIdPrefix = "feed:";
+  } else {
+    newScreen = std::make_unique<Player>(bridge);
+    screenIdPrefix = "player:";
+  }
+
+  screens.insert(std::make_pair(screenId, std::move(newScreen)));
+
+  if (feed) {
+    feed->fetchInitialDecks(nativeFeedDeckIds);
+  } else if (isEditing && isNewScene) {
     editor->loadEmptyScene();
 
     // maybe still load snapshot variables
@@ -173,9 +218,6 @@ void Engine::setInitialParams(const char *initialParamsJson) {
     loadSceneFromJson(initialSnapshotJson, false);
   } else if (deckId) {
     loadSceneFromDeckId(deckId, initialCardId, initialCardSceneDataUrl);
-  } else if (useNativeFeed) {
-    feed = std::make_unique<Feed>(bridge);
-    feed->fetchInitialDecks(nativeFeedDeckIds);
   }
   if (isEditing) {
     getLibraryClipboard().sendClipboardData(editor->getBridge(), editor->getScene());
@@ -194,19 +236,17 @@ void Engine::loadSceneFromFile(const char *path) {
   auto archive = Archive::fromFile(path);
   archive.read([&](Reader &reader) {
     reader.arr("variables", [&]() {
-      if (isEditing) {
-        editor->readVariables(reader);
-      } else {
-        player.readVariables(reader);
+      auto screen = maybeGetScreen();
+      if (screen) {
+        screen->readVariables(reader);
       }
     });
     reader.obj("initialCard", [&]() {
       reader.obj("sceneData", [&]() {
         reader.obj("snapshot", [&]() {
-          if (isEditing) {
-            editor->readScene(reader);
-          } else {
-            player.readScene(reader, std::nullopt);
+          auto screen = maybeGetScreen();
+          if (screen) {
+            screen->readScene(reader, std::nullopt);
           }
           pendingSceneLoadedEvent = true;
         });
@@ -219,19 +259,17 @@ void Engine::loadSceneFromJson(const char *json, bool skipScene) {
   auto archive = Archive::fromJson(json);
   archive.read([&](Reader &reader) {
     reader.arr("variables", [&]() {
-      if (isEditing) {
-        editor->readVariables(reader);
-      } else {
-        player.readVariables(reader);
+      auto screen = maybeGetScreen();
+      if (screen) {
+        screen->readVariables(reader);
       }
     });
     if (!skipScene) {
       reader.obj("sceneData", [&]() {
         reader.obj("snapshot", [&]() {
-          if (isEditing) {
-            editor->readScene(reader);
-          } else {
-            player.readScene(reader, std::nullopt);
+          auto screen = maybeGetScreen();
+          if (screen) {
+            screen->readScene(reader, std::nullopt);
           }
         });
       });
@@ -249,20 +287,18 @@ void Engine::loadSceneFromDeckId(
       [=](APIResponse &response) {
         if (response.success) {
           auto reader = response.reader;
-          if (isEditing) {
-            editor->readVariables(reader);
-          } else {
-            player.readVariables(reader);
+          auto screen = maybeGetScreen();
+          if (screen) {
+            screen->readVariables(reader);
           }
         }
       },
       [=](APIResponse &response) {
         if (response.success) {
           auto reader = response.reader;
-          if (isEditing) {
-            editor->readScene(reader);
-          } else {
-            player.readScene(reader, deckIdStr);
+          auto screen = maybeGetScreen();
+          if (screen) {
+            screen->readScene(reader, deckIdStr);
           }
           pendingSceneLoadedEvent = true;
         }
@@ -275,10 +311,9 @@ void Engine::loadSceneFromCardId(const char *cardId, std::optional<std::string> 
       [=](APIResponse &response) {
         if (response.success) {
           auto reader = response.reader;
-          if (isEditing) {
-            editor->readScene(reader);
-          } else {
-            player.readScene(reader, deckId);
+          auto screen = maybeGetScreen();
+          if (screen) {
+            screen->readScene(reader, deckId);
           }
           pendingSceneLoadedEvent = true;
         }
@@ -290,7 +325,8 @@ struct AndroidBackPressedEvent {};
 void Engine::androidHandleBackPressed() {
 #ifdef ANDROID
   if (isEditing) {
-    if (editor->androidHandleBackPressed()) {
+    auto screen = maybeGetScreen();
+    if (screen && screen->androidHandleBackPressed()) {
       return;
     }
   }
@@ -345,8 +381,9 @@ bool Engine::frame() {
     SDL_GetWindowSize(lv.window.getSDLWindow(), &w, &h);
     ghostScreenScaling = androidGetGhostScreenScaling();
 
-    if (feed) {
-      feed->setWindowSize(800, h / (double(w) / 800));
+    auto screen = maybeGetScreen();
+    if (screen) {
+      screen->setWindowSize(800, h / (double(w) / 800));
     }
   }
 #else
@@ -356,8 +393,9 @@ bool Engine::frame() {
     SDL_GetWindowSize(lv.window.getSDLWindow(), &w, &h);
     ghostScreenScaling = double(w) / 800;
 
-    if (feed) {
-      feed->setWindowSize(800, h / ghostScreenScaling);
+    auto screen = maybeGetScreen();
+    if (screen) {
+      screen->setWindowSize(800, h / ghostScreenScaling);
     }
   }
 #endif
@@ -414,29 +452,25 @@ void Engine::update(double dt) {
   }
 
   if (!isEditing) {
-    if (player.hasScene()) {
-      if (auto nextCardId = player.getScene().getNextCardId(); nextCardId) {
+    auto screen = maybeGetScreen();
+    if (screen && screen->screenType() == PLAYER && screen->hasScene()) {
+      if (auto nextCardId = screen->getScene().getNextCardId(); nextCardId) {
         // load next card
-        loadSceneFromCardId(nextCardId->c_str(), player.getScene().getDeckId());
+        loadSceneFromCardId(nextCardId->c_str(), screen->getScene().getDeckId());
 
         // notify the UI that we moved
         // DID_NAVIGATE_TO_CARD distinguishes from editor's NAVIGATE_TO_CARD
         DidNavigateToCardEvent ev { *nextCardId };
         getBridge().sendEvent("DID_NAVIGATE_TO_CARD", ev);
 
-        player.getScene().setNextCardId(std::nullopt);
+        screen->getScene().setNextCardId(std::nullopt);
       }
     }
   }
 
-  if (isEditing) {
-    editor->update(dt);
-  } else {
-    if (feed) {
-      feed->update(dt);
-    } else {
-      player.update(dt);
-    }
+  auto screen = maybeGetScreen();
+  if (screen) {
+    screen->update(dt);
   }
 
 #ifdef CASTLE_ENABLE_TESTS
@@ -450,14 +484,9 @@ void Engine::update(double dt) {
 //
 
 void Engine::draw() {
-  if (isEditing && editor) {
-    editor->draw();
-  } else {
-    if (feed) {
-      feed->draw();
-    } else {
-      player.draw();
-    }
+  auto screen = maybeGetScreen();
+  if (screen) {
+    screen->draw();
   }
 
 #ifdef CASTLE_ENABLE_TESTS
@@ -492,12 +521,7 @@ struct ClearSceneReceiver {
 
   void receive(Engine &engine) {
     Debug::log("core: received CLEAR_SCENE");
-    if (engine.getIsEditing()) {
-      // TODO: maybe destroy editor, recreate on next editing mount
-      engine.maybeGetEditor()->clearState();
-    } else {
-      engine.getPlayer().clearState();
-    }
+    engine.clearScreen();
   }
 };
 
@@ -524,16 +548,9 @@ struct RequestScreenshotReceiver {
   struct Params {
   } params;
   void receive(Engine &engine) {
-    auto editor = engine.maybeGetEditor();
-    auto feed = engine.maybeGetFeed();
-    if (engine.getIsEditing() && editor) {
-      editor->getScene().sendScreenshot(true);
-    } else if (feed) {
-      if (feed->hasScene()) {
-        feed->getScene().sendScreenshot(true);
-      }
-    } else {
-      engine.getScene().sendScreenshot(false);
+    auto screen = engine.maybeGetScreen();
+    if (screen && screen->hasScene()) {
+      screen->getScene().sendScreenshot(engine.getIsEditing());
     }
   }
 };

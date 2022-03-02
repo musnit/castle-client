@@ -1253,27 +1253,30 @@ struct ShowLeaderboardResponse : BaseResponse {
     if (name && deckId) {
       ctx.getScene().getLeaderboards().getLeaderboard(
           *deckId, *name, type, filter, [label](Reader &reader) {
-            auto &leaderboardView = Engine::getEngine().getScene().getLeaderboardView();
-            leaderboardView.lock();
-            leaderboardView.reset();
-            leaderboardView.updateProp("label", "text", label);
-            leaderboardView.updateProp("leaderboard", "visibility", "visible");
-            leaderboardView.updateProp("editorText", "visibility", "hidden");
+            auto screen = Engine::getEngine().maybeGetScreen();
+            if (screen && screen->hasScene()) {
+              auto &leaderboardView = screen->getScene().getLeaderboardView();
+              leaderboardView.lock();
+              leaderboardView.reset();
+              leaderboardView.updateProp("label", "text", label);
+              leaderboardView.updateProp("leaderboard", "visibility", "visible");
+              leaderboardView.updateProp("editorText", "visibility", "hidden");
 
-            reader.arr("list", [&]() {
-              int iNum = 1;
-              reader.each([&]() {
-                if (iNum > 10) {
-                  return;
-                }
+              reader.arr("list", [&]() {
+                int iNum = 1;
+                reader.each([&]() {
+                  if (iNum > 10) {
+                    return;
+                  }
 
-                auto i = std::to_string(iNum);
-                readLeaderboardRow(leaderboardView, reader, i);
+                  auto i = std::to_string(iNum);
+                  readLeaderboardRow(leaderboardView, reader, i);
 
-                iNum++;
+                  iNum++;
+                });
               });
-            });
-            leaderboardView.unlock();
+              leaderboardView.unlock();
+            }
           });
     } else {
       auto &leaderboardView = ctx.getScene().getLeaderboardView();

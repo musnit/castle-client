@@ -28,6 +28,7 @@ public:
       : bridge(bridge_) {
   }
 
+  ScreenType screenType();
   void update(double dt);
   void draw();
   void suspend();
@@ -88,3 +89,7 @@ private:
   Lv &lv { Lv::getInstance() };
   Bridge &bridge;
 };
+
+inline ScreenType Feed::screenType() {
+  return FEED;
+}

@@ -36,10 +36,11 @@ public:
   void suspend();
   void resume();
 
-  void readScene(Reader &reader);
+  void readScene(Reader &reader, std::optional<std::string> deckId);
   void readVariables(Reader &reader);
   void loadEmptyScene();
 
+  ScreenType screenType();
   bool hasScene();
   Scene &getScene();
   bool getIsPlaying();
@@ -173,6 +174,10 @@ private:
 
   void save();
 };
+
+inline ScreenType Editor::screenType() {
+  return EDITOR;
+}
 
 inline bool Editor::hasScene() {
   return !!scene;

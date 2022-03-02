@@ -110,7 +110,7 @@ void Editor::clearState() {
   sound.clear();
 }
 
-void Editor::readScene(Reader &reader) {
+void Editor::readScene(Reader &reader, std::optional<std::string> deckId) {
   scene = std::make_unique<Scene>(bridge, variables, sound, clock, std::nullopt, true, &reader);
   scene->setEditVariables(&editVariables);
   clock.reset();
