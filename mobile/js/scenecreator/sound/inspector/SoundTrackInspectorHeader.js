@@ -1,6 +1,8 @@
 import React from 'react';
 import { Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { InstrumentIcon } from '../components/InstrumentIcon';
+import { InspectorNumberInput } from '../../inspector/components/InspectorNumberInput';
+import { PopoverButton } from '../../../components/PopoverProvider';
 import { sendAsync } from '../../../core/CoreEvents';
 
 import * as Constants from '../../../Constants';
@@ -42,6 +44,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 4,
+  },
+  volumeButtonLabel: {
+    fontSize: 16,
+  },
+  volumeButtonActive: {},
+  volumePopover: {
+    padding: 16,
+  },
+  volumeTitle: {
+    fontSize: 16,
+    marginTop: 8,
   },
   titleInputContainer: {
     flexDirection: 'row',
@@ -107,9 +120,45 @@ export const TrackNameHeader = ({ track, setTitle }) => {
   );
 };
 
-const TrackHeaderActions = ({ onRemoveTrack, isMuted, setIsMuted, onClose }) => {
+const VolumePopover = ({ initialVolume, setVolume }) => {
+  const [value, setValue] = React.useState(initialVolume * 100);
+  const onChange = React.useCallback(
+    (val) => {
+      setValue(val);
+      setVolume(val / 100);
+    },
+    [setValue, setVolume]
+  );
+  return (
+    <View style={styles.volumePopover}>
+      <InspectorNumberInput
+        min={0}
+        max={100}
+        step={5}
+        placeholder="Volume"
+        value={value}
+        onChange={onChange}
+      />
+      <Text style={styles.volumeTitle}>Volume</Text>
+    </View>
+  );
+};
+
+const TrackHeaderActions = ({ onRemoveTrack, isMuted, setIsMuted, volume, setVolume, onClose }) => {
+  const volumePopover = {
+    Component: VolumePopover,
+    height: 96,
+    initialVolume: volume,
+    setVolume,
+  };
   return (
     <View style={styles.actions}>
+      <PopoverButton
+        style={styles.closeButton}
+        activeStyle={[styles.closeButton, styles.volumeButtonActive]}
+        popover={volumePopover}>
+        <Text style={styles.volumeButtonLabel}>{Math.round(volume * 100)}%</Text>
+      </PopoverButton>
       <TouchableOpacity style={styles.closeButton} onPress={() => setIsMuted(!isMuted)}>
         <Feather name={isMuted ? 'volume-x' : 'volume-2'} size={22} color="#000" />
       </TouchableOpacity>
@@ -157,6 +206,10 @@ export const SoundTrackInspectorHeader = ({ isOpen, onClose, soundToolState, com
     [setInstrumentProps]
   );
   const setTitle = React.useCallback((name) => setInstrumentProps({ name }), [setInstrumentProps]);
+  const setVolume = React.useCallback(
+    (volume) => setInstrumentProps({ volume }),
+    [setInstrumentProps]
+  );
 
   return (
     <View pointerEvents={isOpen ? 'auto' : 'none'}>
@@ -168,6 +221,8 @@ export const SoundTrackInspectorHeader = ({ isOpen, onClose, soundToolState, com
           onRemoveTrack={removeTrack}
           isMuted={isMuted}
           setIsMuted={setIsMuted}
+          volume={instrumentProps.volume}
+          setVolume={setVolume}
           onClose={onClose}
         />
       </View>

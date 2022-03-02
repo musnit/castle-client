@@ -304,7 +304,7 @@ void Drums::playTom(Sound &sound, bool hi, Params::Tom &tom, float amplitude) {
 
 void Drums::play(Sound &sound, Pattern::Note note) {
   if (!props.muted()) {
-    auto amplitude = SoundUtil::velocityToAmp(note.vel);
+    auto amplitude = SoundUtil::velocityToAmp(note.vel) * props.volume();
     int midiNote = int(note.key);
     switch (midiNote) {
     case 36:

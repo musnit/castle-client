@@ -27,6 +27,7 @@ public:
   struct Props {
     PROP(std::string, name);
     PROP(bool, muted) = false;
+    PROP(float, volume, .min(0.0f) .max(1.0f)) = 1.0f;
   } props;
 
   // editor functionality
