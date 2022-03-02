@@ -193,6 +193,14 @@ const data = {
     ['stops moving']: {
       category: 'motion',
     },
+    ['track plays note']: {
+      category: 'sound',
+      props: {
+        trackIndex: {
+          type: 'track',
+        },
+      },
+    },
     ['enter camera viewport']: {
       category: 'camera',
     },
@@ -582,6 +590,7 @@ const data = {
 
 if (USE_CLOCK) {
   data.triggerCategoryOrder.splice(-2, 0, 'clock');
+  data.triggerCategoryOrder.splice(-2, 0, 'sound');
   data.responseCategoryOrder.splice(-2, 0, 'clock');
   data.expressionCategoryOrder.splice(-1, 0, 'clock');
   data.responses['play sound'].props.type.labeledItems.splice(1, 0, {

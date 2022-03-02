@@ -6,6 +6,8 @@
 #include "props.h"
 #include "sound/song.h"
 
+#include <unordered_set>
+
 struct MusicComponent : BaseComponent {
   struct Props {
     PROP(Song, song, .rulesGet(false) .rulesSet(false));
@@ -31,6 +33,7 @@ public:
   static std::string hash(const std::string &songJson);
   void handleEnableComponent(ActorId actorId, MusicComponent &component);
   void handleDisableComponent(ActorId actorId, MusicComponent &component, bool removeActor);
+  void handlePerform(double dt);
   void handleSceneEnd();
 
   void stopMusic(ActorId &actorId, MusicComponent *component, Sound::StreamOptions opts);
@@ -47,4 +50,9 @@ public:
   // ActorId -> track index -> stream id
   // one (actorId, track) can only play one stream at a time
   std::unordered_map<ActorId, std::unordered_map<int, int>> activeStreams;
+
+  // can be accessed from clock thread
+  void markStreamPlayedNote(int streamId);
+  love::thread::MutexRef streamTriggersMutex;
+  std::unordered_set<int> streamTriggersToFire;
 };

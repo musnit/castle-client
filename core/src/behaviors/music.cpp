@@ -183,6 +183,27 @@ void MusicBehavior::setTrackMuted(
   }
 }
 
+void MusicBehavior::markStreamPlayedNote(int streamId) {
+  love::thread::Lock lock(streamTriggersMutex);
+  streamTriggersToFire.emplace(streamId);
+}
+
+
+//
+// Triggers
+//
+
+struct TrackPlaysNoteTrigger : BaseTrigger {
+  inline static const RuleRegistration<TrackPlaysNoteTrigger, MusicBehavior> registration {
+    "track plays note"
+  };
+  static constexpr auto description = "When a track plays a note";
+
+  struct Params {
+    PROP(int, trackIndex, .label("track")) = 0;
+  } params;
+};
+
 
 //
 // Responses
@@ -354,3 +375,31 @@ struct UnmuteTrackResponse : BaseResponse {
     }
   }
 };
+
+
+//
+// Perform / fire triggers
+//
+
+void MusicBehavior::handlePerform(double dt) {
+  auto &rulesBehavior = getBehaviors().byType<RulesBehavior>();
+  {
+    // fire triggers for streams that played since last step
+    love::thread::Lock lock(streamTriggersMutex);
+    if (streamTriggersToFire.size() > 0) {
+      for (auto &[key, streamsByTrack] : activeStreams) {
+        ActorId actorId = key;
+        for (auto &[idx, streamId] : streamsByTrack) {
+          int trackIndex = idx;
+          if (streamTriggersToFire.find(streamId) != streamTriggersToFire.end()) {
+            rulesBehavior.fireAllIf<TrackPlaysNoteTrigger>(
+                {}, [&](ActorId receivingActorId, const TrackPlaysNoteTrigger &trigger) {
+                  return (receivingActorId == actorId && trigger.params.trackIndex() == trackIndex);
+                });
+          }
+        }
+      }
+      streamTriggersToFire.clear();
+    }
+  }
+}

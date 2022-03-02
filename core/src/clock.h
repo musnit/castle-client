@@ -90,6 +90,9 @@ public:
   double getPerformTimeSinceBeat();
   double getTime(); // steps
 
+  // tell the owning scene that a stream played a note
+  void markStreamPlayedNote(int streamId);
+
 private:
   love::thread::MutexRef mutex;
   Scene *scene = nullptr;

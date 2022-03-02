@@ -3,6 +3,7 @@ import {
   formatTag,
   makeExpressionSummary,
   readableOperator,
+  makeTrackName,
 } from '../../SceneCreatorUtilities';
 
 /**
@@ -308,6 +309,28 @@ const StopsMoving = () => {
   ]);
 };
 
+const TrackPlaysNote = ({ trigger, context }) => {
+  let trackLabel,
+    hasTrack = false;
+  if (trigger.params?.trackIndex !== undefined) {
+    const track = context.tracks[trigger.params.trackIndex];
+    trackLabel = makeTrackName(track);
+    hasTrack = true;
+  }
+  return withWhen([
+    {
+      type: 'selectEntry',
+      label: 'a track plays a note:',
+    },
+    {
+      type: 'selectParamSheet',
+      label: hasTrack ? trackLabel : '(choose track)',
+      paramName: 'trackIndex',
+      paramValue: trigger.params?.trackIndex,
+    },
+  ]);
+};
+
 const EnterCameraViewPort = () => {
   return withWhen([
     {
@@ -508,6 +531,7 @@ export const Triggers = {
   ['counter changes']: CounterChanges,
   ['velocity changes']: VelocityChanges,
   ['stops moving']: StopsMoving,
+  ['track plays note']: TrackPlaysNote,
   ['enter camera viewport']: EnterCameraViewPort,
   ['exit camera viewport']: ExitCameraViewPort,
   ['clock reaches beat']: ClockReachesBeat,

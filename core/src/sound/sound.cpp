@@ -35,6 +35,7 @@ void Sound::ClockThread::threadFunction() {
           if (stream->hasNext()) {
             if (clock->getTime() >= stream->nextTime()) {
               stream->playNextNotes(owner);
+              clock->markStreamPlayedNote(stream->streamId);
             }
             ++iter;
           } else {
