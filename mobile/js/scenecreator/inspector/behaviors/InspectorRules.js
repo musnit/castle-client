@@ -162,7 +162,7 @@ export default InspectorRules = ({ behaviors, addChildSheet }) => {
         </View>
       </View>
       {isCounterActive ? <Counter counter={counter} /> : null}
-      <LocalVariables />
+      {SceneCreatorConstants.USE_LOCAL_VARIABLES ? <LocalVariables /> : null}
     </React.Fragment>
   );
 };

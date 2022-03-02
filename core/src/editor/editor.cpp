@@ -350,7 +350,7 @@ void Editor::update(double dt) {
   scene->getLibrary().ensureGhostActorsExist();
   maybeSendData(dt);
 
-#if 0
+#ifdef ENABLE_LOCAL_VARIABLES
   scene->getBehaviors().byType<LocalVariablesBehavior>().debugDisplay();
 #endif
 }
