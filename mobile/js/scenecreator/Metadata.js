@@ -350,6 +350,14 @@ const data = {
     ['stop song']: {
       category: USE_CLOCK ? 'sound' : 'clock',
     },
+    ['stop track']: {
+      category: USE_CLOCK ? 'sound' : 'clock',
+      props: {
+        trackIndex: {
+          type: 'track',
+        },
+      },
+    },
     ['play pattern']: {
       category: USE_CLOCK ? 'sound' : 'clock',
       props: {

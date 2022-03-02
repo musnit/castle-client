@@ -236,6 +236,26 @@ struct StopSongResponse : BaseResponse {
   }
 };
 
+struct StopTrackResponse : BaseResponse {
+  inline static const RuleRegistration<StopTrackResponse, MusicBehavior> registration {
+    "stop track"
+  };
+  static constexpr auto description = "Stop a track from this actor's song";
+
+  struct Params {
+    PROP(int, trackIndex, .label("track")) = 0;
+  } params;
+
+  void run(RuleContext &ctx) override {
+    auto actorId = ctx.actorId;
+    auto &scene = ctx.getScene();
+    auto &musicBehavior = scene.getBehaviors().byType<MusicBehavior>();
+    if (auto component = musicBehavior.maybeGetComponent(actorId)) {
+      musicBehavior.stopTrack(actorId, component, params.trackIndex(), {});
+    }
+  }
+};
+
 struct PlayPatternResponse : BaseResponse {
   inline static const RuleRegistration<PlayPatternResponse, MusicBehavior> registration {
     "play pattern"

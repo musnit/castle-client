@@ -1227,6 +1227,28 @@ const StopSong = () => {
   ];
 };
 
+const StopTrack = ({ response, context }) => {
+  let trackLabel,
+    hasTrack = false;
+  if (response.params?.trackIndex !== undefined) {
+    const track = context.tracks[response.params.trackIndex];
+    trackLabel = makeTrackName(track);
+    hasTrack = true;
+  }
+  return [
+    {
+      type: 'showEntryOptions',
+      label: 'Stop track',
+    },
+    {
+      type: 'selectParamSheet',
+      label: hasTrack ? trackLabel : '(choose track)',
+      paramName: 'trackIndex',
+      paramValue: response.params?.trackIndex,
+    },
+  ];
+};
+
 const PlayPattern = ({ response, context }) => {
   const loop = response.params?.loop ?? true;
   const quantize = response.params?.quantize ?? true;
@@ -1501,6 +1523,7 @@ export const Responses = {
   ['set clock tempo']: SetClockTempo,
   ['play song']: PlaySong,
   ['stop song']: StopSong,
+  ['stop track']: StopTrack,
   ['follow with camera']: FollowWithCamera,
   ['is in camera viewport']: IsInCameraViewport,
   ['move to back']: MoveToBack,
