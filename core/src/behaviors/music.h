@@ -34,8 +34,8 @@ public:
   void handleSceneEnd();
 
   void stopMusic(ActorId &actorId, MusicComponent *component, Sound::StreamOptions opts);
-  void stopPattern(ActorId &actorId, MusicComponent *component, const std::string &patternId,
-      Sound::StreamOptions opts);
+  void stopTrack(
+      ActorId &actorId, MusicComponent *component, int trackIndex, Sound::StreamOptions opts);
   void playSong(ActorId &actorId, MusicComponent *component, bool loop, Sound::StreamOptions opts);
   void playPattern(ActorId &actorId, MusicComponent *component, const std::string &patternId,
       int trackIndex, bool loop, Sound::StreamOptions opts);
@@ -43,9 +43,8 @@ public:
   void playPatternStep(ActorId &actorId, MusicComponent *component, const std::string &patternId,
       int trackIndex, double timeInPattern);
 
-  // handles to currently-running tracks, by actor id
-  std::unordered_map<ActorId, std::vector<int>> activeTracks;
-
-  // handles to currently-running patterns, by pattern id
-  std::unordered_map<std::string, int> activePatterns;
+  // handles to currently-running streams
+  // ActorId -> track index -> stream id
+  // one (actorId, track) can only play one stream at a time
+  std::unordered_map<ActorId, std::unordered_map<int, int>> activeStreams;
 };

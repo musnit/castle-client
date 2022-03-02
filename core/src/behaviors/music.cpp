@@ -59,31 +59,27 @@ std::string MusicBehavior::hash(const std::string &json) {
 void MusicBehavior::stopMusic(
     ActorId &actorId, MusicComponent *component, Sound::StreamOptions opts) {
   auto &scene = getScene();
-
-  // stop tracks
   auto &clock = scene.getClock();
-  if (auto found = activeTracks.find(actorId); found != activeTracks.end()) {
+  if (auto found = activeStreams.find(actorId); found != activeStreams.end()) {
     auto &[_, streams] = *found;
-    for (auto streamId : streams) {
+    for (auto &[trackIndex, streamId] : streams) {
       scene.getSound().stopStream(clock.clockId, streamId, opts);
     }
-    activeTracks.erase(actorId);
-  }
-  // stop patterns
-  auto &song = component->props.song();
-  for (auto &[patternId, _] : song.patterns) {
-    stopPattern(actorId, component, patternId, opts);
+    activeStreams.erase(actorId);
   }
 }
 
-void MusicBehavior::stopPattern(ActorId &actorId, MusicComponent *component,
-    const std::string &patternId, Sound::StreamOptions opts) {
+void MusicBehavior::stopTrack(
+    ActorId &actorId, MusicComponent *component, int trackIndex, Sound::StreamOptions opts) {
   auto &scene = getScene();
   auto &clock = scene.getClock();
-  if (auto found = activePatterns.find(patternId); found != activePatterns.end()) {
-    auto &[_, streamId] = *found;
-    scene.getSound().stopStream(clock.clockId, streamId, opts);
-    activePatterns.erase(patternId);
+  if (auto found = activeStreams.find(actorId); found != activeStreams.end()) {
+    auto &[_, streamsByTrack] = *found;
+    if (auto foundTrack = streamsByTrack.find(trackIndex); foundTrack != streamsByTrack.end()) {
+      auto streamId = foundTrack->second;
+      scene.getSound().stopStream(clock.clockId, streamId, opts);
+      streamsByTrack.erase(trackIndex);
+    }
   }
 }
 
@@ -96,7 +92,7 @@ void MusicBehavior::playSong(
   stopMusic(actorId, component, opts);
 
   auto &song = component->props.song();
-  std::vector<int> streamsCreated;
+  std::unordered_map<int, int> streamsCreated;
   auto patterns = song.flattenTracksForPlayback(0, song.getLength(clock), clock);
   for (size_t idx = 0; idx < song.tracks.size(); idx++) {
     auto &pattern = patterns[idx];
@@ -106,10 +102,11 @@ void MusicBehavior::playSong(
     auto streamId = scene.getSound().play(
         clock.clockId, std::move(pattern), std::move(instrumentClone), opts);
     if (streamId >= 0) {
-      streamsCreated.push_back(streamId);
+      streamsCreated.emplace(idx, streamId);
     }
   }
-  activeTracks.emplace(actorId, streamsCreated);
+  // can safely emplace because of prior `stopMusic` call
+  activeStreams.emplace(actorId, streamsCreated);
 }
 
 void MusicBehavior::playPattern(ActorId &actorId, MusicComponent *component,
@@ -122,8 +119,8 @@ void MusicBehavior::playPattern(ActorId &actorId, MusicComponent *component,
     if (trackIndex >= 0 && trackIndex < int(song.tracks.size())) {
       auto &track = song.tracks[trackIndex];
 
-      // if this pattern is already playing, stop
-      stopPattern(actorId, component, patternId, opts);
+      // if this track is already playing, stop
+      stopTrack(actorId, component, trackIndex, opts);
 
       auto pattern = std::make_unique<Pattern>(refPattern);
       if (!loop) {
@@ -133,7 +130,12 @@ void MusicBehavior::playPattern(ActorId &actorId, MusicComponent *component,
       auto streamId = scene.getSound().play(
           clock.clockId, std::move(pattern), std::move(instrumentClone), opts);
       if (streamId >= 0) {
-        activePatterns.emplace(patternId, streamId);
+        if (auto trackMap = activeStreams.find(actorId); trackMap == activeStreams.end()) {
+          activeStreams.emplace(actorId, std::unordered_map<int, int>());
+        }
+        if (auto trackMap = activeStreams.find(actorId); trackMap != activeStreams.end()) {
+          trackMap->second.emplace(trackIndex, streamId);
+        }
       }
     }
   }
@@ -161,10 +163,10 @@ void MusicBehavior::setTrackMuted(
     ActorId &actorId, MusicComponent *component, int trackIndex, bool muted) {
   auto &clock = getScene().getClock();
   // look up existing stream corresponding to this track and modify its instrument
-  if (auto found = activeTracks.find(actorId); found != activeTracks.end()) {
+  if (auto found = activeStreams.find(actorId); found != activeStreams.end()) {
     auto &[_, streams] = *found;
-    if (trackIndex >= 0 && trackIndex < int(streams.size())) {
-      auto streamIdForTrack = streams[trackIndex];
+    if (auto foundTrack = streams.find(trackIndex); foundTrack != streams.end()) {
+      auto streamIdForTrack = foundTrack->second;
       auto stream = getScene().getSound().maybeGetStream(clock.clockId, streamIdForTrack);
       if (stream) {
         // TODO: dangerous, probably need a lock on this stream
