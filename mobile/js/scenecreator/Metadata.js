@@ -564,6 +564,10 @@ const data = {
     ['clock tempo']: {
       category: 'clock',
     },
+    ['note played']: {
+      category: 'music',
+      triggerFilter: { ['track plays note']: true },
+    },
     min: {
       category: 'choices',
     },
@@ -593,6 +597,7 @@ if (USE_CLOCK) {
   data.triggerCategoryOrder.splice(-2, 0, 'sound');
   data.responseCategoryOrder.splice(-2, 0, 'clock');
   data.expressionCategoryOrder.splice(-1, 0, 'clock');
+  data.expressionCategoryOrder.splice(-1, 0, 'music');
   data.responses['play sound'].props.type.labeledItems.splice(1, 0, {
     id: 'tone',
     name: 'tone',

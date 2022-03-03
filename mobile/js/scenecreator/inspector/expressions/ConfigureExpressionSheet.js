@@ -169,11 +169,20 @@ const InspectorExpressionInput = ({
     });
   };
 
+  const filterExpression = React.useCallback(
+    ([name, spec]) => {
+      const expressionTriggerFilter = expressions[name]?.triggerFilter;
+      return !expressionTriggerFilter || expressionTriggerFilter[triggerFilter] === true;
+    },
+    [triggerFilter, expressions]
+  );
+
   const onChooseExpressionType = React.useCallback(
     () =>
       addChildSheet({
         key: `chooseExpressionType-${depth}`,
         Component: ExpressionTypePickerSheet,
+        filterExpression,
         onSelectExpressionType: onChangeExpressionType,
       }),
     [onChangeExpressionType]
@@ -229,6 +238,7 @@ const InspectorExpressionInput = ({
                 depth: depth + 1,
                 label: `Nested Expression`, // TODO: provide further info?
                 Component: ConfigureExpressionSheet,
+                triggerFilter,
                 value: paramValue,
                 onChange: setValue,
               });

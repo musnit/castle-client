@@ -63,7 +63,7 @@ export const ExpressionTypePickerSheet = ({
         return categories;
       }, {})
     );
-  }, [expressions]);
+  }, [expressions, filterExpression]);
 
   const renderContent = () => (
     <View style={styles.container}>

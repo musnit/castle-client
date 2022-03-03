@@ -90,10 +90,10 @@ export default {
     result.expressions = {};
     if (data.expressions) {
       data.expressions.forEach((entry) => {
-        const category = Metadata.expressions[entry.name]?.category;
+        const metadata = Metadata.expressions[entry.name];
         result.expressions[entry.name] = {
           ...entry,
-          category,
+          ...metadata,
         };
         addInitialParamValues(result.expressions[entry.name]);
         result.expressions[entry.name].initialParamsJson = undefined;
