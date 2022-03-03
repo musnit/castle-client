@@ -8,7 +8,8 @@ import { InspectorSheet } from './inspector/InspectorSheet';
 import { InstanceSheet } from './inspector/instance/InstanceSheet';
 import { TextContentSheet } from './inspector/instance/TextContentSheet';
 import { SheetBackgroundOverlay } from '../components/SheetBackgroundOverlay';
-import { SoundNewTrackSheet } from './sound/sheets/SoundNewTrackSheet.js';
+import { SoundClockSheet } from './sound/sheets/SoundClockSheet';
+import { SoundNewTrackSheet } from './sound/sheets/SoundNewTrackSheet';
 import { SoundTrackInspectorSheet } from './sound/inspector/SoundTrackInspectorSheet';
 import { useCardCreator } from './CreateCardContext';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -64,6 +65,11 @@ const ROOT_SHEETS = [
   {
     key: 'soundNewTrack',
     Component: SoundNewTrackSheet,
+    makeSnapPoints: ({ insets }) => [FULL_SHEET_HEIGHT * 0.4, FULL_SHEET_HEIGHT - insets.top - 16],
+  },
+  {
+    key: 'soundClock',
+    Component: SoundClockSheet,
     makeSnapPoints: ({ insets }) => [FULL_SHEET_HEIGHT * 0.4, FULL_SHEET_HEIGHT - insets.top - 16],
   },
 ];

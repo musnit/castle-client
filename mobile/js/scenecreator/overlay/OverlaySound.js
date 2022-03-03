@@ -1,5 +1,5 @@
 import React from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { InstrumentIcon } from '../sound/components/InstrumentIcon';
 import { Pattern } from '../sound/components/Pattern';
 import { useCoreState, useListen, sendGlobalAction, sendAsync } from '../../core/CoreEvents';
@@ -7,7 +7,7 @@ import { useCoreState, useListen, sendGlobalAction, sendAsync } from '../../core
 import * as Constants from '../../Constants';
 const { CastleIcon } = Constants;
 
-import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
+import Feather from 'react-native-vector-icons/Feather';
 
 const styles = StyleSheet.create({
   container: {
@@ -71,6 +71,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     ...Constants.styles.dropShadow,
+  },
+  clockTempoLabel: {
+    fontSize: 11,
   },
 });
 
@@ -143,7 +146,12 @@ const OverlayPattern = ({ soundToolState, isEditingInstrument, onPressEditInstru
     return (
       <View style={styles.bottomContainer}>
         {soundToolMode === 'track' && !isEditingInstrument ? (
-            <Pressable style={({ pressed }) => ([styles.editInstrumentButton, { backgroundColor: pressed ? '#ccc' : '#fff' }])} onPress={onPressEditInstrument}>
+          <Pressable
+            style={({ pressed }) => [
+              styles.editInstrumentButton,
+              { backgroundColor: pressed ? '#ccc' : '#fff' },
+            ]}
+            onPress={onPressEditInstrument}>
             <InstrumentIcon instrument={selectedTrack.instrument} color="#000" size={36} />
           </Pressable>
         ) : null}
@@ -158,6 +166,9 @@ const OverlayPattern = ({ soundToolState, isEditingInstrument, onPressEditInstru
 
 export const OverlaySound = ({ setActiveSheet, activeSheet }) => {
   const soundToolState = useCoreState('EDITOR_SOUND_TOOL') || {};
+  const sceneSettingsData = useCoreState('EDITOR_SCENE_SETTINGS') || {
+    sceneProperties: { clock: {} },
+  };
   const {
     mode,
     subtool: selectedSubtool,
@@ -208,6 +219,12 @@ export const OverlaySound = ({ setActiveSheet, activeSheet }) => {
     [setActiveSheet]
   );
 
+  const onPressClock = React.useCallback(
+    () => setActiveSheet({ sound: 'soundClock' }),
+    [setActiveSheet]
+  );
+  const isClockShown = activeSheet.sound === 'soundClock';
+
   return (
     <>
       <View style={styles.container} pointerEvents="box-none">
@@ -244,6 +261,16 @@ export const OverlaySound = ({ setActiveSheet, activeSheet }) => {
                 size={22}
                 color={viewFollowsPlayhead ? '#fff' : '#000'}
               />
+            </Pressable>
+          </View>
+          <View style={styles.toolbar}>
+            <Pressable
+              style={[styles.button, isClockShown ? { backgroundColor: '#000' } : null]}
+              onPress={onPressClock}>
+              <Feather name="clock" size={20} color={isClockShown ? '#fff' : '#000'} />
+              <Text style={[styles.clockTempoLabel, { color: isClockShown ? '#fff' : '#000' }]}>
+                {sceneSettingsData.sceneProperties.clock.tempo}
+              </Text>
             </Pressable>
           </View>
           <View style={styles.toolbar}>
