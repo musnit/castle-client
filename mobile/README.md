@@ -84,6 +84,7 @@ Troubleshooting:
   - Open deck from push notification (cold boot)
   - Open deck from push notification (app already open)
   - Play initial 4 pinned decks
+  - Create a new deck and save
 
 - `cd ..` (to mobile)
 - `./node_modules/@sentry/cli/bin/sentry-cli upload-dif -o castle-xyz -p castle-mobile android/app/build/intermediates/merged_native_libs/release`
