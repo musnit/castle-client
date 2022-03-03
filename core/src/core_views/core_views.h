@@ -25,7 +25,7 @@ public:
     isViewAlive[viewId] = false;
   }
 
-  virtual void read(Reader &reader) = 0;
+  virtual void read(Reader &reader, int viewportWidth, int viewportHeight) = 0;
   virtual void render() = 0;
   virtual void handleTouch(TouchEvent touch) {
   }
@@ -34,12 +34,14 @@ public:
 
   void baseRead(Reader &reader, CoreView *parent,
       std::unordered_map<std::string, std::unordered_map<std::string, std::string>> *props,
-      int defaultWidth = 800, int defaultHeight = 1120);
+      int viewportWidth = 800, int viewportHeight = 1120);
   void baseRender();
   void baseHandleTouch(TouchEvent touch);
 
   double left = 0;
   double top = 0;
+  double absoluteTop = 0;
+  double absoluteLeft = 0;
   double width = 0;
   double height = 0;
   double savedLeft = 0;
@@ -109,7 +111,7 @@ public:
   void unlock();
 
 private:
-  void renderView(CoreView *view);
+  void renderView(CoreView *view, float currentLeft, float currentTop);
 
   int width = 800;
   int height = 1120;
@@ -143,11 +145,15 @@ public:
   void setJson(std::string json);
 
   std::shared_ptr<CoreViewRenderer> getRenderer(
-      std::string layoutTemplateName, int defaultWidth = 800, int defaultHeight = 1120);
+      std::string layoutTemplateName, int viewportWidth = 800, int viewportHeight = 1120);
 
   static void hexToRGBFloat(std::string hex, float *out);
 
   float getNumConstant(std::string key);
+
+  int readInt(Reader &reader, const char *key, float scale, int viewportWidth, int viewportHeight);
+  float readFloat(
+      Reader &reader, const char *key, float scale, int viewportWidth, int viewportHeight);
 
 private:
   friend class CoreViewRenderer;
@@ -163,16 +169,13 @@ private:
 
   std::shared_ptr<CoreView> getView(std::string layoutTemplateName,
       std::unordered_map<std::string, std::unordered_map<std::string, std::string>> *props,
-      int defaultWidth = 800, int defaultHeight = 1120);
+      int viewportWidth = 800, int viewportHeight = 1120);
 
   std::shared_ptr<CoreView> readViewFromJson(Reader &reader, CoreView *parent,
       std::unordered_map<std::string, std::unordered_map<std::string, std::string>> *props,
-      int defaultWidth = 800, int defaultHeight = 1120);
+      int viewportWidth = 800, int viewportHeight = 1120);
 
   std::shared_ptr<CoreView> getViewForType(std::string viewType);
-
-  int readInt(Reader &reader, const char *key, float scale);
-  float readFloat(Reader &reader, const char *key, float scale);
 
   inline static CoreViews *instance = nullptr;
 

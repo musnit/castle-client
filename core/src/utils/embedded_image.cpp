@@ -5,10 +5,7 @@ love::Data *EmbeddedImage::load(const std::string &filename) {
   unsigned char *data = nullptr;
   unsigned int len = 0;
 
-  if (filename == "comment-selected.png") {
-    data = comment_selected_png;
-    len = comment_selected_png_len;
-  } else if (filename == "comment.png") {
+  if (filename == "comment.png") {
     data = comment_png;
     len = comment_png_len;
   } else if (filename == "fire-selected.png") {
@@ -17,6 +14,18 @@ love::Data *EmbeddedImage::load(const std::string &filename) {
   } else if (filename == "fire.png") {
     data = fire_png;
     len = fire_png_len;
+  } else if (filename == "share-ios.png") {
+    data = share_ios_png;
+    len = share_ios_png_len;
+  } else if (filename == "share-android.png") {
+    data = share_android_png;
+    len = share_android_png_len;
+  } else if (filename == "overflow.png") {
+    data = overflow_png;
+    len = overflow_png_len;
+  } else if (filename == "remix.png") {
+    data = remix_png;
+    len = remix_png_len;
   } else if (filename == "sound/instrument-drum-white.png") {
     data = sound_instrument_drum_white_png;
     len = sound_instrument_drum_white_png_len;

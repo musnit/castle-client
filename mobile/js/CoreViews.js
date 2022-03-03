@@ -1,5 +1,12 @@
+import { Platform } from 'react-native';
 import { useListen } from './core/CoreEvents';
 import { useNavigation } from './ReactNavigation';
+import { shareDeck } from './common/utilities';
+
+let FEED_ICON_SIZE = '5.5vw';
+let FEED_ICON_TOP = '0.2vw';
+let FEED_FONT_SIZE = '0.45vw';
+let FEED_TEXT_TOP = '1.2vw';
 
 let coreViews = {
   CONSTANTS: {
@@ -53,45 +60,108 @@ let coreViews = {
     // backgroundColor: '#f00',
     touch: 'enabled',
     children: [
+      // User
       {
         id: 'avatar',
         type: 'image',
-        borderRadius: 23,
-        left: 20,
+        borderRadius: '3.2vw',
+        left: '3.5vw',
         top: 0,
-        width: 46,
-        height: 46,
+        width: '6.4vw',
+        height: '6.4vw',
         resizeMode: 'contain',
         touch: 'enabled',
-        onTap: (props) => {
-          props.push('Profile', { userId: props.userId });
+        onTap: (params) => {
+          params.push('Profile', { userId: params.userId });
         },
       },
       {
         id: 'username',
         type: 'text',
-        left: 80,
-        top: 10,
+        left: '12vw',
+        top: FEED_TEXT_TOP,
         width: 300,
         height: '100%',
         color: '#fff',
         textAlign: 'left',
-        fontSize: 3.3,
+        fontSize: FEED_FONT_SIZE,
         fontFamily: 'Overlay',
         textAlignVertical: 'top',
         // backgroundColor: '#f00',
         touch: 'enabled',
-        onTap: (props) => {
-          props.push('Profile', { userId: props.userId });
+        onTap: (params) => {
+          params.push('Profile', { userId: params.userId });
+        },
+      },
+
+      // Menu
+      {
+        filename: 'overflow.png',
+        type: 'image',
+        right: '56vw',
+        top: '0.4vw',
+        width: FEED_ICON_SIZE,
+        height: FEED_ICON_SIZE,
+        resizeMode: 'contain',
+        touch: 'enabled',
+        onTap: (params) => {
+          params.onShowPopover(params);
+        },
+      },
+
+      // Remixes
+      {
+        visibility: 'hidden',
+        id: 'remix-icon',
+        filename: 'remix.png',
+        type: 'image',
+        right: '46vw',
+        top: FEED_ICON_TOP,
+        width: FEED_ICON_SIZE,
+        height: FEED_ICON_SIZE,
+        resizeMode: 'contain',
+        touch: 'enabled',
+        onTap: (params) => {
+          console.log(params)
+          params.push('DeckRemixes', {
+            deck: JSON.parse(params.deck),
+            isFullscreen: true,
+          });
         },
       },
       {
+        visibility: 'hidden',
+        id: 'remix-count',
+        type: 'text',
+        right: '37vw',
+        top: FEED_TEXT_TOP,
+        width: '8vw',
+        height: '100%',
+        color: '#fff',
+        textAlign: 'left',
+        fontSize: FEED_FONT_SIZE,
+        fontFamily: 'Overlay',
+        textAlignVertical: 'top',
+        //backgroundColor: '#f00',
+        touch: 'enabled',
+        onTap: (params) => {
+          params.push('DeckRemixes', {
+            deck: {
+              deckId: params.deckId,
+            },
+            isFullscreen: true,
+          });
+        },
+      },
+
+      // Comments
+      {
         filename: 'comment.png',
         type: 'image',
-        right: 210,
-        top: -6,
-        width: 55,
-        height: 55,
+        right: '32.5vw',
+        top: FEED_ICON_TOP,
+        width: FEED_ICON_SIZE,
+        height: FEED_ICON_SIZE,
         resizeMode: 'contain',
         touch: 'enabled',
         onTap: (params) => {
@@ -106,13 +176,13 @@ let coreViews = {
       {
         id: 'comment-count',
         type: 'text',
-        right: 130,
-        top: 10,
-        width: 80,
+        right: '23.5vw',
+        top: FEED_TEXT_TOP,
+        width: '8vw',
         height: '100%',
         color: '#fff',
         textAlign: 'left',
-        fontSize: 3.3,
+        fontSize: FEED_FONT_SIZE,
         fontFamily: 'Overlay',
         textAlignVertical: 'top',
         // backgroundColor: '#f00',
@@ -126,31 +196,51 @@ let coreViews = {
           });
         },
       },
+
+      // Reactions
       {
         id: 'reaction-icon',
         filename: 'fire.png',
         type: 'image',
-        right: 80,
-        top: -6,
-        width: 55,
-        height: 55,
+        right: '18.5vw',
+        top: '0vw',
+        width: FEED_ICON_SIZE,
+        height: FEED_ICON_SIZE,
         resizeMode: 'contain',
         touch: 'enabled',
       },
       {
         id: 'reaction-count',
         type: 'text',
-        right: 0,
-        top: 10,
-        width: 80,
+        right: '10vw',
+        top: FEED_TEXT_TOP,
+        width: '8vw',
         height: '100%',
         color: '#fff',
         textAlign: 'left',
-        fontSize: 3.3,
+        fontSize: FEED_FONT_SIZE,
         fontFamily: 'Overlay',
         textAlignVertical: 'top',
         // backgroundColor: '#f00',
         touch: 'enabled',
+      },
+
+      // Share
+      {
+        id: 'share-icon',
+        filename: Platform.OS === 'android' ? 'share-android.png' : 'share-ios.png',
+        type: 'image',
+        right: '3vw',
+        top: '0vw',
+        width: FEED_ICON_SIZE,
+        height: FEED_ICON_SIZE,
+        resizeMode: 'contain',
+        touch: 'enabled',
+        onTap: (params) => {
+          shareDeck({
+            deckId: params.deckId,
+          });
+        },
       },
     ],
   },

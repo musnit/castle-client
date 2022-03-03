@@ -36,19 +36,78 @@ const styles = StyleSheet.create({
   },
 });
 
-export const PlayDeckActions = ({
+export function getDropdownItems({
+  isAnonymous,
+  creatorUsername,
+  isMe,
+  onBlockUser,
+  onReportDeck,
+  isMuted,
+}) {
+  let dropdownItems = [];
+  if (!isAnonymous) {
+    // TODO: enable anonymous view source
+    dropdownItems.push({
+      id: 'view-source',
+      icon: 'search',
+      name: 'View deck source',
+    });
+  }
+  if (!isMe && onReportDeck) {
+    dropdownItems.push({
+      id: 'report',
+      icon: 'flag',
+      name: 'Report and hide this deck',
+    });
+  }
+
+  if (isAdmin()) {
+    dropdownItems.push({
+      id: 'blacklist',
+      icon: 'flag',
+      name: '(Admin) Blacklist',
+    });
+  }
+
+  if (isAdmin()) {
+    dropdownItems.push({
+      id: 'blacklistFeatured',
+      icon: 'flag',
+      name: '(Admin) Blacklist from featured',
+    });
+  }
+
+  if (!isMe && onBlockUser) {
+    dropdownItems.push({
+      id: 'block',
+      icon: 'block',
+      name: `Block @${creatorUsername}`,
+    });
+  }
+  dropdownItems.push({
+    id: 'mute',
+    icon: isMuted ? 'volume-up' : 'volume-off',
+    name: isMuted ? 'Turn on sound' : 'Mute',
+  });
+
+  if (isAdmin()) {
+    dropdownItems.push({
+      id: 'staffPick',
+      icon: 'star',
+      name: '(Admin) Add to staff picks',
+    });
+  }
+
+  return dropdownItems;
+}
+
+export function getOnSelectDropdownAction({
   deck,
-  isPlaying,
-  onPressBack,
-  disabled,
   onBlockUser,
   onReportDeck,
   onSetIsMuted,
-  isMe = false,
-  isMuted = false,
-  isAnonymous = false,
-}) => {
-  const { creator } = deck;
+  isMuted,
+}) {
   const { push } = useNavigation();
   const { showActionSheetWithOptions } = useActionSheet();
 
@@ -92,72 +151,7 @@ export const PlayDeckActions = ({
     [addStaffPick, deck]
   );
 
-  let playingTransition = React.useRef(new Animated.Value(0)).current;
-
-  React.useEffect(() => {
-    Animated.spring(playingTransition, {
-      toValue: isPlaying ? 1 : 0,
-      friction: 20,
-      tension: 10,
-      useNativeDriver: true,
-    }).start();
-  }, [isPlaying]);
-
-  let dropdownItems = [];
-  if (!isAnonymous) {
-    // TODO: enable anonymous view source
-    dropdownItems.push({
-      id: 'view-source',
-      icon: 'search',
-      name: 'View deck source',
-    });
-  }
-  if (!isMe && onReportDeck) {
-    dropdownItems.push({
-      id: 'report',
-      icon: 'flag',
-      name: 'Report and hide this deck',
-    });
-  }
-
-  if (isAdmin()) {
-    dropdownItems.push({
-      id: 'blacklist',
-      icon: 'flag',
-      name: '(Admin) Blacklist',
-    });
-  }
-
-  if (isAdmin()) {
-    dropdownItems.push({
-      id: 'blacklistFeatured',
-      icon: 'flag',
-      name: '(Admin) Blacklist from featured',
-    });
-  }
-
-  if (!isMe && onBlockUser) {
-    dropdownItems.push({
-      id: 'block',
-      icon: 'block',
-      name: `Block @${creator.username}`,
-    });
-  }
-  dropdownItems.push({
-    id: 'mute',
-    icon: isMuted ? 'volume-up' : 'volume-off',
-    name: isMuted ? 'Turn on sound' : 'Mute',
-  });
-
-  if (isAdmin()) {
-    dropdownItems.push({
-      id: 'staffPick',
-      icon: 'star',
-      name: '(Admin) Add to staff picks',
-    });
-  }
-
-  const onSelectDropdownAction = React.useCallback(
+  return React.useCallback(
     (id) => {
       switch (id) {
         case 'mute': {
@@ -251,6 +245,50 @@ export const PlayDeckActions = ({
     },
     [deck?.deckId, onBlockUser, onReportDeck, onSetIsMuted, isMuted]
   );
+}
+
+export const PlayDeckActions = ({
+  deck,
+  isPlaying,
+  onPressBack,
+  disabled,
+  onBlockUser,
+  onReportDeck,
+  onSetIsMuted,
+  isMe = false,
+  isMuted = false,
+  isAnonymous = false,
+}) => {
+  const { creator } = deck;
+
+  let playingTransition = React.useRef(new Animated.Value(0)).current;
+
+  React.useEffect(() => {
+    Animated.spring(playingTransition, {
+      toValue: isPlaying ? 1 : 0,
+      friction: 20,
+      tension: 10,
+      useNativeDriver: true,
+    }).start();
+  }, [isPlaying]);
+
+  let dropdownItems = getDropdownItems({
+    isAnonymous,
+    creatorUsername: creator.username,
+    isMe,
+    onBlockUser,
+    onReportDeck,
+    onSetIsMuted,
+    isMuted,
+  });
+
+  const onSelectDropdownAction = getOnSelectDropdownAction({
+    deck,
+    onBlockUser,
+    onReportDeck,
+    onSetIsMuted,
+    isMuted,
+  });
 
   return (
     <Animated.View

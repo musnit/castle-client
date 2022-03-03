@@ -2,12 +2,83 @@ import React from 'react';
 import { GameView } from '../game/GameView';
 import * as Constants from '../Constants';
 import * as CoreViews from '../CoreViews';
+import { DropdownItemsList } from './Dropdown';
+import { usePopover } from './PopoverProvider';
+import { getDropdownItems, getOnSelectDropdownAction } from '../play/PlayDeckActions';
+import { useSession, blockUser, reportDeck } from '../Session';
 
 export const NativeDecksFeed = ({ onPressComments, isCommentsOpen }) => {
-  CoreViews.useCoreViews({ onPressComments });
+  const { userId: signedInUserId, isAnonymous, isMuted, setIsMuted } = useSession();
+  const { showPopover } = usePopover();
+  const container = React.useRef(null);
+
+  const [deck, setDeck] = React.useState(null);
+  const [creatorUserId, setCreatorUserId] = React.useState(null);
+
+  const [popoverProps, setPopoverProps] = React.useState(null);
+
+  const onBlockUser = React.useCallback(() => blockUser(creatorUserId, true), [creatorUserId]);
+  const onReportDeck = React.useCallback(() => reportDeck(deck.deckId), [deck]);
+
+  let onSelectDropdownAction = getOnSelectDropdownAction({
+    deck,
+    onBlockUser,
+    onReportDeck,
+    onSetIsMuted: setIsMuted,
+    isMuted,
+  });
+
+  React.useEffect(() => {
+    if (popoverProps) {
+      const isMe = deck?.creator?.userId === signedInUserId;
+
+      let dropdownItems = getDropdownItems({
+        isAnonymous,
+        creatorUsername: deck?.creator?.username,
+        isMe,
+        onBlockUser,
+        onReportDeck,
+        isMuted,
+      });
+
+      const popover = {
+        Component: DropdownItemsList,
+        items: dropdownItems,
+        selectedItem: null,
+        height: 52 * dropdownItems.length,
+        width: 256,
+        onSelectItem: (item) => onSelectDropdownAction(item.id),
+      };
+
+      let measureRef = null;
+      if (container.current) {
+        measureRef = {
+          measure: (fn) => {
+            container.current.measure((x, y, anchorWidth, anchorHeight, anchorLeft, anchorTop) => {
+              fn(x, y, popoverProps.width, popoverProps.height, anchorLeft + popoverProps.left, anchorTop + popoverProps.top);
+            });
+          },
+        };
+      }
+
+      showPopover({ measureRef, ...popover });
+    }
+  }, [popoverProps]);
+
+  const onShowPopover = (props) => {
+    let deck = JSON.parse(props.deck);
+
+    setDeck(deck);
+    setCreatorUserId(deck?.creator?.userId);
+
+    setPopoverProps(props);
+  };
+
+  CoreViews.useCoreViews({ onPressComments, onShowPopover });
 
   return (
     <GameView
+      ref={container}
       initialParams={JSON.stringify({
         screenId: 'featuredFeed',
         useNativeFeed: true,

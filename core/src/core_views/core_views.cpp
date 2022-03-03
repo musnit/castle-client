@@ -25,10 +25,10 @@ void CoreViewRenderer::render() {
     layout = CoreViews::getInstance().getView(layoutTemplateName, &props, width, height);
   }
 
-  renderView(layout.get());
+  renderView(layout.get(), 0, 0);
 }
 
-void CoreViewRenderer::renderView(CoreView *view) {
+void CoreViewRenderer::renderView(CoreView *view, float currentLeft, float currentTop) {
   if (!view) {
     return;
   }
@@ -39,12 +39,14 @@ void CoreViewRenderer::renderView(CoreView *view) {
   lv.graphics.push(love::Graphics::STACK_ALL);
   viewTransform.reset();
   viewTransform.translate(view->left, view->top);
+  view->absoluteLeft = currentLeft + view->left;
+  view->absoluteTop = currentTop + view->top;
   lv.graphics.applyTransform(&viewTransform);
 
   view->baseRender();
 
   for (size_t i = 0; i < view->children.size(); i++) {
-    renderView(view->children[i].get());
+    renderView(view->children[i].get(), currentLeft + view->left, currentTop + view->top);
   }
 
   lv.graphics.pop();
@@ -126,6 +128,11 @@ void CoreViewRenderer::handleGesture(Gesture &gesture, int offsetX, int offsetY)
             for (auto it = jsGestureProps.cbegin(); it != jsGestureProps.cend(); ++it) {
               writer.str(it->first, it->second);
             }
+
+            writer.num("left", (*touchView)->absoluteLeft);
+            writer.num("top", (*touchView)->absoluteTop);
+            writer.num("width", (*touchView)->width);
+            writer.num("height", (*touchView)->height);
           });
 
           ev.props = archive.toJson();
@@ -257,21 +264,21 @@ void CoreViews::setJson(std::string json) {
 }
 
 std::shared_ptr<CoreViewRenderer> CoreViews::getRenderer(
-    std::string layoutTemplateName, int defaultWidth, int defaultHeight) {
+    std::string layoutTemplateName, int viewportWidth, int viewportHeight) {
   return std::make_shared<CoreViewRenderer>(bridge, layoutTemplateName,
-      getView(layoutTemplateName, nullptr, defaultWidth, defaultHeight), jsonVersion, defaultWidth,
-      defaultHeight);
+      getView(layoutTemplateName, nullptr, viewportWidth, viewportHeight), jsonVersion,
+      viewportWidth, viewportHeight);
 }
 
 std::shared_ptr<CoreView> CoreViews::getView(std::string layoutTemplateName,
     std::unordered_map<std::string, std::unordered_map<std::string, std::string>> *props,
-    int defaultWidth, int defaultHeight) {
+    int viewportWidth, int viewportHeight) {
   auto archive = Archive::fromJson(jsonString.c_str());
   std::shared_ptr<CoreView> result = nullptr;
 
   archive.read([&](Reader &reader) {
     reader.obj(layoutTemplateName.c_str(), [&]() {
-      result = readViewFromJson(reader, nullptr, props, defaultWidth, defaultHeight);
+      result = readViewFromJson(reader, nullptr, props, viewportWidth, viewportHeight);
     });
   });
 
@@ -280,10 +287,10 @@ std::shared_ptr<CoreView> CoreViews::getView(std::string layoutTemplateName,
 
 std::shared_ptr<CoreView> CoreViews::readViewFromJson(Reader &reader, CoreView *parent,
     std::unordered_map<std::string, std::unordered_map<std::string, std::string>> *props,
-    int defaultWidth, int defaultHeight) {
+    int viewportWidth, int viewportHeight) {
   auto type = reader.str("type", "");
   auto view = getViewForType(type);
-  view->baseRead(reader, parent, props, defaultWidth, defaultHeight);
+  view->baseRead(reader, parent, props, viewportWidth, viewportHeight);
 
   if (view->id && props && props->find(*(view->id)) != props->end()) {
     auto viewProps = (*props)[*(view->id)];
@@ -296,7 +303,7 @@ std::shared_ptr<CoreView> CoreViews::readViewFromJson(Reader &reader, CoreView *
     });
 
     archive.read([&](Reader &reader) {
-      view->baseRead(reader, nullptr, props, defaultWidth, defaultHeight);
+      view->baseRead(reader, nullptr, props, viewportWidth, viewportHeight);
     });
   }
 
@@ -342,7 +349,8 @@ float CoreViews::getNumConstant(std::string key) {
   return numConstantsCache[key];
 }
 
-int CoreViews::readInt(Reader &reader, const char *key, float scale) {
+int CoreViews::readInt(
+    Reader &reader, const char *key, float scale, int viewportWidth, int viewportHeight) {
   auto num = reader.num(key);
   if (num) {
     return *num;
@@ -357,6 +365,18 @@ int CoreViews::readInt(Reader &reader, const char *key, float scale) {
         return percent * 0.01 * scale;
       }
 
+      if (str.substr(str.length() - 2) == "vw") {
+        auto numStr = str.substr(0, str.length() - 2);
+        auto num = std::stof(numStr);
+        return viewportWidth * 0.01 * num;
+      }
+
+      if (str.substr(str.length() - 2) == "vh") {
+        auto numStr = str.substr(0, str.length() - 2);
+        auto num = std::stof(numStr);
+        return viewportHeight * 0.01 * num;
+      }
+
       return std::stoi(str);
     }
   }
@@ -364,7 +384,8 @@ int CoreViews::readInt(Reader &reader, const char *key, float scale) {
   return 0;
 }
 
-float CoreViews::readFloat(Reader &reader, const char *key, float scale) {
+float CoreViews::readFloat(
+    Reader &reader, const char *key, float scale, int viewportWidth, int viewportHeight) {
   auto num = reader.num(key);
   if (num) {
     return *num;
@@ -377,6 +398,18 @@ float CoreViews::readFloat(Reader &reader, const char *key, float scale) {
         auto percentStr = str.substr(0, str.length() - 1);
         auto percent = std::stof(percentStr);
         return percent * 0.01 * scale;
+      }
+
+      if (str.substr(str.length() - 2) == "vw") {
+        auto numStr = str.substr(0, str.length() - 2);
+        auto num = std::stof(numStr);
+        return viewportWidth * 0.01 * num;
+      }
+
+      if (str.substr(str.length() - 2) == "vh") {
+        auto numStr = str.substr(0, str.length() - 2);
+        auto num = std::stof(numStr);
+        return viewportHeight * 0.01 * num;
       }
 
       return std::stof(str);
@@ -392,37 +425,48 @@ float CoreViews::readFloat(Reader &reader, const char *key, float scale) {
 
 void CoreView::baseRead(Reader &reader, CoreView *parent,
     std::unordered_map<std::string, std::unordered_map<std::string, std::string>> *props,
-    int defaultWidth, int defaultHeight) {
-  int parentWidth = parent ? parent->width : defaultWidth;
-  int parentHeight = parent ? parent->height : defaultHeight;
+    int viewportWidth, int viewportHeight) {
+  int parentWidth = parent ? parent->width : viewportWidth;
+  int parentHeight = parent ? parent->height : viewportHeight;
 
   if (reader.has("width")) {
-    width = CoreViews::getInstance().readInt(reader, "width", parentWidth);
+    width = CoreViews::getInstance().readInt(
+        reader, "width", parentWidth, viewportWidth, viewportHeight);
     savedWidth = width;
   }
   if (reader.has("height")) {
-    height = CoreViews::getInstance().readInt(reader, "height", parentHeight);
+    height = CoreViews::getInstance().readInt(
+        reader, "height", parentHeight, viewportWidth, viewportHeight);
     savedHeight = height;
   }
 
   if (reader.has("left")) {
-    left = CoreViews::getInstance().readInt(reader, "left", parentWidth);
+    left = CoreViews::getInstance().readInt(
+        reader, "left", parentWidth, viewportWidth, viewportHeight);
     savedLeft = left;
   } else if (reader.has("right")) {
-    left = parentWidth - CoreViews::getInstance().readInt(reader, "right", parentWidth) - width;
+    left = parentWidth
+        - CoreViews::getInstance().readInt(
+            reader, "right", parentWidth, viewportWidth, viewportHeight)
+        - width;
     savedLeft = left;
   }
 
   if (reader.has("top")) {
-    top = CoreViews::getInstance().readInt(reader, "top", parentHeight);
+    top = CoreViews::getInstance().readInt(
+        reader, "top", parentHeight, viewportWidth, viewportHeight);
     savedTop = top;
   } else if (reader.has("bottom")) {
-    top = parentHeight - CoreViews::getInstance().readInt(reader, "bottom", parentHeight) - height;
+    top = parentHeight
+        - CoreViews::getInstance().readInt(
+            reader, "bottom", parentHeight, viewportWidth, viewportHeight)
+        - height;
     savedTop = top;
   }
 
   if (reader.has("scale")) {
-    float scale = CoreViews::getInstance().readFloat(reader, "scale", 1.0);
+    float scale
+        = CoreViews::getInstance().readFloat(reader, "scale", 1.0, viewportWidth, viewportHeight);
     float newWidth = savedWidth * scale;
     float newHeight = savedHeight * scale;
 
@@ -442,7 +486,8 @@ void CoreView::baseRead(Reader &reader, CoreView *parent,
   }
 
   if (reader.has("borderRadius")) {
-    borderRadius = reader.num("borderRadius", -1);
+    borderRadius = CoreViews::getInstance().readFloat(
+        reader, "borderRadius", 1.0, viewportWidth, viewportHeight);
   }
 
   auto backgroundColorStr = reader.str("backgroundColor");
@@ -454,7 +499,8 @@ void CoreView::baseRead(Reader &reader, CoreView *parent,
   if (reader.has("children")) {
     reader.arr("children", [&]() {
       reader.each([&]() {
-        children.push_back(CoreViews::getInstance().readViewFromJson(reader, this, props));
+        children.push_back(CoreViews::getInstance().readViewFromJson(
+            reader, this, props, viewportWidth, viewportHeight));
       });
     });
   }
@@ -469,7 +515,7 @@ void CoreView::baseRead(Reader &reader, CoreView *parent,
     isTouchEnabled = touch == "enabled";
   }
 
-  read(reader);
+  read(reader, viewportWidth, viewportHeight);
 }
 
 void CoreView::baseRender() {
@@ -633,7 +679,7 @@ void CoreView::baseHandleTouch(TouchEvent touch) {
 }
 
 class View : public CoreView {
-  void read(Reader &reader) {
+  void read(Reader &reader, int viewportWidth, int viewportHeight) {
   }
 
   void render() {
@@ -666,7 +712,7 @@ public:
   love::graphics::Image *image = nullptr;
   ResizeMode resizeMode = ResizeMode::Stretch;
 
-  void read(Reader &reader) {
+  void read(Reader &reader, int viewportWidth, int viewportHeight) {
     auto url = reader.str("url");
     if (url) {
       int myViewId = viewId;
@@ -777,13 +823,14 @@ class TextView : public CoreView {
   float fontSize = 10;
   std::string fontFamily = "Overlay";
 
-  void read(Reader &reader) {
+  void read(Reader &reader, int viewportWidth, int viewportHeight) {
     if (reader.has("text")) {
       text = reader.str("text", "");
     }
 
     if (reader.has("fontSize")) {
-      fontSize = reader.num("fontSize", 10);
+      fontSize = CoreViews::getInstance().readFloat(
+          reader, "fontSize", 1.0, viewportWidth, viewportHeight);
     }
 
     if (reader.has("fontFamily")) {

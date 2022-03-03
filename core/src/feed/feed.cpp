@@ -8,13 +8,15 @@
 #include "utils/format_number.h"
 
 #define TOP_PADDING 0
-#define BOTTOM_UI_MIN_HEIGHT 200
+#define BOTTOM_UI_MIN_HEIGHT 150
 //#define DEBUG_CLICK_TO_ADVANCE
 
+// creator.photo.url and initialCard.backgroundImage.smallUrl needed for DeckRemixesScreen
 const std::string GRAPHQL_DECK_FIELDS
-    = "\ndeckId\nvariables\ncreator {\nuserId\nusername\nphoto "
-      "{\nsmallAvatarUrl\n}\n}\ninitialCard {\n    "
-      "    sceneDataUrl\n      }\n    commentsEnabled\n  comments {\n count\n }\n reactions {\n "
+    = "\ndeckId\nvariables\nchildDecksCount\ncreator {\nuserId\nusername\nphoto "
+      "{\nsmallAvatarUrl\nurl\n}\n}\ninitialCard {\n    "
+      "    sceneDataUrl\nbackgroundImage {\nsmallUrl}\n      }\n    commentsEnabled\n  comments "
+      "{\n count\n }\n reactions {\n "
       "reactionId\n isCurrentUserToggled\n count\n }";
 const char *DEFAULT_AVATAR_URL
     = "https://castle.imgix.net/"
@@ -91,7 +93,7 @@ void Feed::setWindowSize(int w, int h) {
   windowWidth = w;
   windowHeight = h;
 
-  float aspectRatio = (float)w / (float)h;
+  float aspectRatio = (float)w / (float)(h - BOTTOM_UI_MIN_HEIGHT);
   float cardAspectRatio = 800.0 / 1120.0;
 
   if (aspectRatio > cardAspectRatio) {
@@ -649,6 +651,7 @@ void Feed::loadDeckFromDeckJson(int i) {
     std::string deckId = reader.str("deckId", "");
     decks[i].deckId = deckId;
     decks[i].coreView->updateJSGestureProp("deckId", deckId);
+    decks[i].coreView->updateJSGestureProp("deck", *decks[i].deckJson);
 
     reader.arr("variables", [&]() {
       decks[i].player->readVariables(reader);
@@ -663,6 +666,13 @@ void Feed::loadDeckFromDeckJson(int i) {
             "avatar", "url", reader.str("smallAvatarUrl", DEFAULT_AVATAR_URL));
       });
     });
+
+    int childDecksCount = reader.num("childDecksCount", 0);
+    if (childDecksCount > 0) {
+      decks[i].coreView->updateProp("remix-count", "text", FormatNumber::toString(childDecksCount));
+      decks[i].coreView->updateProp("remix-icon", "visibility", "visible");
+      decks[i].coreView->updateProp("remix-count", "visibility", "visible");
+    }
 
     bool commentsEnabled = reader.boolean("commentsEnabled", false);
     decks[i].coreView->updateJSGestureProp("commentsEnabled", commentsEnabled ? "true" : "false");

@@ -67,7 +67,7 @@ const computeDimensionsSettings = ({ metadata }) => {
   return dimensionsSettings;
 };
 
-export const GameView = ({
+export const GameView = React.forwardRef(({
   deckId,
   initialParams,
   coreViews,
@@ -75,7 +75,7 @@ export const GameView = ({
   onLoaded,
   paused,
   beltHeightFraction,
-}) => {
+}, ref) => {
   const dimensionsSettings = computeDimensionsSettings({
     metadata: {
       dimensions: 800,
@@ -105,7 +105,7 @@ export const GameView = ({
   });
 
   return (
-    <View style={styles.container}>
+    <View style={styles.container} ref={ref}>
       <CastleCoreView
         initialParams={initialParams}
         coreViews={coreViews}
@@ -116,4 +116,4 @@ export const GameView = ({
       />
     </View>
   );
-};
+});
