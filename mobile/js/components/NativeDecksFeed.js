@@ -7,8 +7,9 @@ import { usePopover } from './PopoverProvider';
 import { getDropdownItems, getOnSelectDropdownAction } from '../play/PlayDeckActions';
 import { useSession, blockUser, reportDeck } from '../Session';
 import { sendAsync } from '../core/CoreEvents';
+import { useGameViewAndroidBackHandler } from '../common/GameViewAndroidBackHandler';
 
-export const NativeDecksFeed = ({ onPressComments, isCommentsOpen }) => {
+export const NativeDecksFeed = ({ onPressComments, isCommentsOpen, onCloseComments }) => {
   const { userId: signedInUserId, isAnonymous, isMuted, setIsMuted } = useSession();
   const { showPopover } = usePopover();
   const container = React.useRef(null);
@@ -91,6 +92,16 @@ export const NativeDecksFeed = ({ onPressComments, isCommentsOpen }) => {
   };
 
   CoreViews.useCoreViews({ onPressComments, onShowPopover });
+
+  const onHardwareBackPress = React.useCallback(() => {
+    if (isCommentsOpen) {
+      onCloseComments();
+      return true;
+    }
+
+    return false;
+  }, [isCommentsOpen, onCloseComments]);
+  useGameViewAndroidBackHandler({ onHardwareBackPress });
 
   return (
     <GameView
