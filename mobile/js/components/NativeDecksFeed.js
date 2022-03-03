@@ -6,6 +6,7 @@ import { DropdownItemsList } from './Dropdown';
 import { usePopover } from './PopoverProvider';
 import { getDropdownItems, getOnSelectDropdownAction } from '../play/PlayDeckActions';
 import { useSession, blockUser, reportDeck } from '../Session';
+import { sendAsync } from '../core/CoreEvents';
 
 export const NativeDecksFeed = ({ onPressComments, isCommentsOpen }) => {
   const { userId: signedInUserId, isAnonymous, isMuted, setIsMuted } = useSession();
@@ -19,12 +20,16 @@ export const NativeDecksFeed = ({ onPressComments, isCommentsOpen }) => {
 
   const onBlockUser = React.useCallback(() => blockUser(creatorUserId, true), [creatorUserId]);
   const onReportDeck = React.useCallback(() => reportDeck(deck.deckId), [deck]);
+  const onSetIsMuted = React.useCallback((isMuted) => {
+    setIsMuted(isMuted);
+    sendAsync('SET_SOUND_ENABLED', { enabled: isMuted ? false : true });
+  })
 
   let onSelectDropdownAction = getOnSelectDropdownAction({
     deck,
     onBlockUser,
     onReportDeck,
-    onSetIsMuted: setIsMuted,
+    onSetIsMuted,
     isMuted,
   });
 
@@ -54,9 +59,20 @@ export const NativeDecksFeed = ({ onPressComments, isCommentsOpen }) => {
       if (container.current) {
         measureRef = {
           measure: (fn) => {
-            container.current.measure((x, y, anchorWidth, anchorHeight, anchorLeft, anchorTop) => {
-              fn(x, y, popoverProps.width, popoverProps.height, anchorLeft + popoverProps.left, anchorTop + popoverProps.top);
-            });
+            if (container.current) {
+              container.current.measure(
+                (x, y, anchorWidth, anchorHeight, anchorLeft, anchorTop) => {
+                  fn(
+                    x,
+                    y,
+                    popoverProps.width,
+                    popoverProps.height,
+                    anchorLeft + popoverProps.left,
+                    anchorTop + popoverProps.top
+                  );
+                }
+              );
+            }
           },
         };
       }

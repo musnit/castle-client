@@ -10,6 +10,8 @@
 
 #define TOUCH_DOWN_ALPHA 0.7f
 
+extern "C" double ghostScreenScaling;
+
 namespace CastleCore {
 const char *getAssetsDirectoryPath();
 }
@@ -129,10 +131,10 @@ void CoreViewRenderer::handleGesture(Gesture &gesture, int offsetX, int offsetY)
               writer.str(it->first, it->second);
             }
 
-            writer.num("left", (*touchView)->absoluteLeft);
-            writer.num("top", (*touchView)->absoluteTop);
-            writer.num("width", (*touchView)->width);
-            writer.num("height", (*touchView)->height);
+            writer.num("left", (*touchView)->absoluteLeft * ghostScreenScaling);
+            writer.num("top", (*touchView)->absoluteTop * ghostScreenScaling);
+            writer.num("width", (*touchView)->width * ghostScreenScaling);
+            writer.num("height", (*touchView)->height * ghostScreenScaling);
           });
 
           ev.props = archive.toJson();

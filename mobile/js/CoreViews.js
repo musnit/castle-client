@@ -80,7 +80,7 @@ let coreViews = {
         type: 'text',
         left: '12vw',
         top: FEED_TEXT_TOP,
-        width: 300,
+        width: '24vw',
         height: '100%',
         color: '#fff',
         textAlign: 'left',
