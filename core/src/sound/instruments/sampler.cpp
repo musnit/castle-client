@@ -22,6 +22,8 @@ void Sampler::read(Reader &reader) {
 
 void Sampler::setInitialProps() {
   static love::RandomGenerator rng;
+  unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+  rng.setSeed({ seed });
 
   // readable default name
   if (sample.type() == "sfxr") {
