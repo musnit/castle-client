@@ -765,8 +765,8 @@ public:
 
       image = lv.graphics.newImage(slices, settings);
       love::graphics::Texture::Filter f = image->getFilter();
-      f.min = love::graphics::Texture::FILTER_NEAREST;
-      f.mag = love::graphics::Texture::FILTER_NEAREST;
+      f.min = love::graphics::Texture::FILTER_LINEAR;
+      f.mag = love::graphics::Texture::FILTER_LINEAR;
       image->setFilter(f);
     }
 
