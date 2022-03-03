@@ -18,7 +18,7 @@ std::unique_ptr<Song::Track> Song::makeDefaultTrack(const std::string &type) {
     // default sampler
     track->instrument = std::make_unique<Sampler>();
   }
-  track->instrument->props.name() = track->instrument->getType();
+  track->instrument->setInitialProps();
   return track;
 }
 

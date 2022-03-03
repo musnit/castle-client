@@ -20,6 +20,67 @@ void Sampler::read(Reader &reader) {
   });
 }
 
+void Sampler::setInitialProps() {
+  static love::RandomGenerator rng;
+
+  // readable default name
+  if (sample.type() == "sfxr") {
+    props.name() = "effect";
+  } else if (sample.type() == "microphone") {
+    props.name() = "recording";
+  } else if (sample.type() == "library") {
+    props.name() = "file";
+  } else if (sample.type() == "tone") {
+    props.name() = "tone";
+  }
+
+  // if tone, randomize params slightly
+  if (sample.type() == "tone") {
+    auto randomWave = rng.rand() % 2;
+    switch (randomWave) {
+    case 0:
+      sample.waveform() = "square";
+      break;
+    case 1:
+    default:
+      sample.waveform() = "sawtooth";
+      break;
+    }
+    auto randomNote = 48 + int(rng.rand() % 3) * 12;
+    sample.midiNote() = randomNote;
+  }
+
+  // if sfxr, randomize params
+  if (sample.type() == "sfxr") {
+    auto randomCategory = rng.rand() % 7;
+    switch (randomCategory) {
+    case 0:
+      sample.category() = "pickup";
+      break;
+    case 1:
+      sample.category() = "laser";
+      break;
+    case 2:
+    default:
+      sample.category() = "explosion";
+      break;
+    case 3:
+      sample.category() = "powerup";
+      break;
+    case 4:
+      sample.category() = "hit";
+      break;
+    case 5:
+      sample.category() = "jump";
+      break;
+    case 6:
+      sample.category() = "blip";
+      break;
+    }
+    sample.seed() = rng.rand() % 9999;
+  }
+}
+
 void Sampler::play(Sound &sound, Pattern::Note note) {
   if (!props.muted()) {
     // play our given Sample, pitched up or down according to note.key

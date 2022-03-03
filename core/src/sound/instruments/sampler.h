@@ -12,6 +12,7 @@ public:
   inline std::string getType() const override {
     return "sampler";
   }
+  void setInitialProps() override;
 
   Sample sample;
 

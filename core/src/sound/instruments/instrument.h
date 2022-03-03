@@ -18,6 +18,7 @@ public:
   virtual std::unique_ptr<Instrument> clone() const = 0;
 
   virtual std::string getType() const;
+  virtual void setInitialProps();
   virtual int getZeroKey() {
     // midi middle C
     return 60;
@@ -53,4 +54,8 @@ private:
 
 inline std::string Instrument::getType() const {
   return "instrument";
+}
+
+inline void Instrument::setInitialProps() {
+  props.name() = getType();
 }
