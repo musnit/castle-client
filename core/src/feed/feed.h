@@ -8,6 +8,12 @@
 #include "screen.h"
 
 struct FeedItem {
+  enum OptionalBool {
+    Unset,
+    True,
+    False,
+  };
+
   std::optional<std::string> deckId;
   std::optional<std::string> deckJson;
   std::shared_ptr<Player> player;
@@ -18,8 +24,8 @@ struct FeedItem {
   bool hasRunUpdate = false;
   bool hasRunUpdateSinceLastRender = false;
   bool hasRendered = false;
-  bool isCurrentUserReactionToggled = false;
-  int reactionCount = 0;
+  OptionalBool isCurrentUserReactionToggled = Unset;
+  std::optional<int> reactionCount;
 };
 
 class Feed : public Screen {
