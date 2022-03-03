@@ -79,6 +79,10 @@ import com.android.build.OutputFile
 
 project.ext.react = [
     enableHermes: false,  // clean and rebuild if changing
+    bundleInBeta: true,
+    devDisabledInBeta: true,
+    jsBundleDirBeta: "$buildDir/intermediates/assets/beta",
+    resourcesDirBeta: "$buildDir/intermediates/res/merged/beta",
 ]
 
 apply from: "../../node_modules/react-native/react.gradle"
