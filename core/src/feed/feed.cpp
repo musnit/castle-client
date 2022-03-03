@@ -5,6 +5,7 @@
 #include "library.h"
 #include "api.h"
 #include <thread>
+#include "utils/format_number.h"
 
 #define TOP_PADDING 0
 #define BOTTOM_UI_MIN_HEIGHT 200
@@ -626,7 +627,7 @@ void Feed::loadDeckFromDeckJson(int i) {
         (*decks[i].reactionCount)--;
       }
       decks[i].coreView->updateProp(
-          "reaction-count", "text", std::to_string(*decks[i].reactionCount));
+          "reaction-count", "text", FormatNumber::toString(*decks[i].reactionCount));
 
       decks[i].coreView->runAnimation("reaction-icon", "scale", 0.3, [i, this](float amount) {
         if (amount > 0.35 && decks[i].coreView) {
@@ -669,7 +670,7 @@ void Feed::loadDeckFromDeckJson(int i) {
       reader.obj("comments", [&]() {
         int count = reader.num("count", 0);
         if (count > 0) {
-          decks[i].coreView->updateProp("comment-count", "text", std::to_string(count));
+          decks[i].coreView->updateProp("comment-count", "text", FormatNumber::toString(count));
         }
       });
     }
@@ -685,7 +686,7 @@ void Feed::loadDeckFromDeckJson(int i) {
 
           int count = *decks[i].reactionCount;
           if (count > 0) {
-            decks[i].coreView->updateProp("reaction-count", "text", std::to_string(count));
+            decks[i].coreView->updateProp("reaction-count", "text", FormatNumber::toString(count));
           }
 
           if (decks[i].isCurrentUserReactionToggled == FeedItem::Unset) {
