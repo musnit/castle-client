@@ -105,7 +105,7 @@ export const GameView = React.forwardRef(({
   });
 
   return (
-    <View style={styles.container} ref={ref}>
+    <View style={styles.container} ref={ref} collapsable={false}>
       <CastleCoreView
         initialParams={initialParams}
         coreViews={coreViews}
