@@ -78,3 +78,15 @@ struct ClockTempoExpression : BaseExpression {
     return double(ctx.getScene().getClock().getTempo());
   }
 };
+
+struct NotePlayedExpression : BaseExpression {
+  inline static const RuleRegistration<NotePlayedExpression> registration { "note played" };
+  static constexpr auto description = "The key of the note played";
+
+  struct Params {
+  } params;
+
+  ExpressionValue eval(RuleContext &ctx) override {
+    return ctx.extras.noteKey;
+  }
+};

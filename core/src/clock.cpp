@@ -146,9 +146,9 @@ void Clock::fireBeatTriggers(Clock::Quantize unit, int index) {
   }
 }
 
-void Clock::markStreamPlayedNote(int streamId) {
+void Clock::markStreamPlayedNotes(int streamId, std::vector<float> &keysPlayed) {
   if (scene) {
     auto &musicBehavior = scene->getBehaviors().byType<MusicBehavior>();
-    musicBehavior.markStreamPlayedNote(streamId);
+    musicBehavior.markStreamPlayedNotes(streamId, keysPlayed);
   }
 }

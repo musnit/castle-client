@@ -59,6 +59,8 @@ struct RuleContextExtras {
   ActorId otherActorId = nullActor;
   bool scheduleEvenIfDestroyed
       = false; // Whether to resume context even if this ActorId was destroyed
+  float noteKey
+      = 0.0f; // For music note triggers, the value of the note's key that caused the trigger
 };
 
 class RuleContext {

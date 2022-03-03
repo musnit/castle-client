@@ -183,9 +183,9 @@ void MusicBehavior::setTrackMuted(
   }
 }
 
-void MusicBehavior::markStreamPlayedNote(int streamId) {
+void MusicBehavior::markStreamPlayedNotes(int streamId, std::vector<float> &keysPlayed) {
   love::thread::Lock lock(streamTriggersMutex);
-  streamTriggersToFire.emplace(streamId);
+  streamTriggersToFire.emplace(streamId, keysPlayed);
 }
 
 
@@ -387,15 +387,18 @@ void MusicBehavior::handlePerform(double dt) {
     // fire triggers for streams that played since last step
     love::thread::Lock lock(streamTriggersMutex);
     if (streamTriggersToFire.size() > 0) {
-      for (auto &[key, streamsByTrack] : activeStreams) {
-        ActorId actorId = key;
+      for (auto &[actorId, streamsByTrack] : activeStreams) {
         for (auto &[idx, streamId] : streamsByTrack) {
           int trackIndex = idx;
-          if (streamTriggersToFire.find(streamId) != streamTriggersToFire.end()) {
-            rulesBehavior.fireAllIf<TrackPlaysNoteTrigger>(
-                {}, [&](ActorId receivingActorId, const TrackPlaysNoteTrigger &trigger) {
-                  return (receivingActorId == actorId && trigger.params.trackIndex() == trackIndex);
-                });
+          if (auto keys = streamTriggersToFire.find(streamId); keys != streamTriggersToFire.end()) {
+            for (float key : keys->second) {
+              RuleContextExtras extras;
+              extras.noteKey = key;
+              rulesBehavior.fireIf<TrackPlaysNoteTrigger>(
+                  actorId, extras, [&](const TrackPlaysNoteTrigger &trigger) {
+                    return (trigger.params.trackIndex() == trackIndex);
+                  });
+            }
           }
         }
       }

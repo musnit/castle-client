@@ -52,7 +52,7 @@ public:
   std::unordered_map<ActorId, std::unordered_map<int, int>> activeStreams;
 
   // can be accessed from clock thread
-  void markStreamPlayedNote(int streamId);
+  void markStreamPlayedNotes(int streamId, std::vector<float> &keysPlayed);
   love::thread::MutexRef streamTriggersMutex;
-  std::unordered_set<int> streamTriggersToFire;
+  std::unordered_map<int, std::vector<float>> streamTriggersToFire;
 };

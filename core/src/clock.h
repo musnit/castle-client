@@ -90,8 +90,8 @@ public:
   double getPerformTimeSinceBeat();
   double getTime(); // steps
 
-  // tell the owning scene that a stream played a note
-  void markStreamPlayedNote(int streamId);
+  // tell the owning scene that a stream played some notes
+  void markStreamPlayedNotes(int streamId, std::vector<float> &keysPlayed);
 
 private:
   love::thread::MutexRef mutex;

@@ -21,6 +21,7 @@ public:
 
   double nextTime(); // in steps
   bool hasNext();
+  SmallVector<Pattern::Note, 2> &getNextNotes();
   void playNextNotes(Sound &sound);
   void skipToNext();
   void fastForward(double time);
@@ -61,6 +62,10 @@ inline double Stream::nextTime() {
 
 inline bool Stream::hasNext() {
   return current != pattern->end() && (finishTime < 0 || nextTime() < finishTime);
+}
+
+inline SmallVector<Pattern::Note, 2> &Stream::getNextNotes() {
+  return current->second;
 }
 
 inline void Stream::playNextNotes(Sound &sound) {
