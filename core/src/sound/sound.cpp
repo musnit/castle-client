@@ -9,6 +9,8 @@
 
 #include <common/delay.h>
 
+#define STREAM_LATE_TOLERANCE 0.75
+
 Sound::ClockThread::ClockThread(Sound &owner_)
     : owner(owner_) {
   threadName = "SoundClockThread";
@@ -33,16 +35,21 @@ void Sound::ClockThread::threadFunction() {
         while (iter != streamsForClock.end()) {
           auto &stream = *iter;
           if (stream->hasNext()) {
-            if (clock->getTime() >= stream->nextTime()) {
-              std::vector<float> keysPlayed;
-              for (auto &note : stream->getNextNotes()) {
-                // save notes played to pass to rule context.
-                // for now capture a vector of float keys relative to instrument's zero key,
-                // might decide to capture entire Note later
-                keysPlayed.push_back(note.key - stream->instrument->getZeroKey());
+            double clockTime = clock->getTime(), nextTime = stream->nextTime();
+            if (clockTime >= nextTime) {
+              if (clockTime - nextTime < STREAM_LATE_TOLERANCE) {
+                std::vector<float> keysPlayed;
+                for (auto &note : stream->getNextNotes()) {
+                  // save notes played to pass to rule context.
+                  // for now capture a vector of float keys relative to instrument's zero key,
+                  // might decide to capture entire Note later
+                  keysPlayed.push_back(note.key - stream->instrument->getZeroKey());
+                }
+                clock->markStreamPlayedNotes(stream->streamId, keysPlayed);
+                stream->playNextNotes(owner);
+              } else {
+                stream->skipToNext();
               }
-              clock->markStreamPlayedNotes(stream->streamId, keysPlayed);
-              stream->playNextNotes(owner);
             }
             ++iter;
           } else {
