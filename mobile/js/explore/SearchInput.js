@@ -36,7 +36,6 @@ const styles = StyleSheet.create({
   },
 });
 
-// TODO: actually search something
 export const SearchInput = ({ onFocus, onCancel, ...props }) => {
   const [isFocused, setIsFocused] = React.useState(false);
   const textInputRef = React.useRef(null);
@@ -76,7 +75,7 @@ export const SearchInput = ({ onFocus, onCancel, ...props }) => {
           ref={textInputRef}
           style={styles.input}
           autoCapitalize="none"
-          placeholder="Find people..."
+          placeholder="Search"
           placeholderTextColor={Constants.colors.white}
           onFocus={onTextInputFocus}
           onBlur={onTextInputBlur}

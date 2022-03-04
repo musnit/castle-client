@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { gql } from '@apollo/client';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { DecksGrid } from '../components/DecksGrid';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { UserAvatar } from '../components/UserAvatar';
 import { useNavigation } from '../ReactNavigation';
@@ -11,7 +12,18 @@ import * as Constants from '../Constants';
 import * as Session from '../Session';
 
 const styles = StyleSheet.create({
-  container: {
+  container: {},
+  heading: {
+    fontSize: 16,
+    color: Constants.colors.white,
+    fontWeight: 'bold',
+  },
+  headingRow: {
+    flexDirection: 'row',
+    padding: 16,
+    alignItems: 'center',
+  },
+  users: {
     flexDirection: 'column',
   },
   row: {
@@ -19,6 +31,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: Constants.colors.grayOnBlackBorder,
     padding: 16,
+    paddingLeft: 24,
     alignItems: 'center',
   },
   pressedRow: {
@@ -31,12 +44,13 @@ const styles = StyleSheet.create({
     width: 24,
     marginRight: 8,
   },
+  decks: {},
 });
 
 const search = async (query) => {
   const result = await Session.apolloClient.query({
     query: gql`
-      query($text: String!) {
+      query ($text: String!) {
         exploreSearch(text: $text) {
           users {
             id
@@ -46,6 +60,9 @@ const search = async (query) => {
               url
             }
           }
+          decks {
+            ${Constants.FEED_ITEM_DECK_FRAGMENT}
+          }
         }
       }
     `,
@@ -54,7 +71,7 @@ const search = async (query) => {
   return result.data?.exploreSearch;
 };
 
-const SearchResult = ({ user, onSelectUser }) => {
+const UserSearchResult = ({ user, onSelectUser }) => {
   return (
     <Pressable
       style={({ pressed }) => [styles.row, pressed ? styles.pressedRow : null]}
@@ -87,18 +104,57 @@ export const SearchResults = ({ query, onCancel, initialResults }) => {
     (user) => navigate('Profile', { userId: user.userId }),
     []
   );
+  const onSelectDeck = React.useCallback(
+    (deck) => {
+      navigate(
+        'PlayDeck',
+        {
+          decks: [deck],
+          initialDeckIndex: 0,
+          title: 'Search results',
+        },
+        {
+          isFullscreen: true,
+        }
+      );
+    },
+    [navigate]
+  );
+
+  const usersLimit = results.decks?.length ? 3 : 20; // limit users shown if there are decks too
 
   return (
     <KeyboardAwareScrollView
       contentContainerStyle={styles.container}
       keyboardShouldPersistTaps="always">
-      {results?.users?.length ? (
-        results.users.map((user) => (
-          <SearchResult key={`user-${user.id}`} user={user} onSelectUser={onSelectUser} />
-        ))
+      <View style={styles.headingRow}>
+        <Text style={styles.heading}>Users</Text>
+      </View>
+      <View style={styles.users}>
+        {results?.users?.length ? (
+          results.users
+            .slice(0, usersLimit)
+            .map((user) => (
+              <UserSearchResult key={`user-${user.id}`} user={user} onSelectUser={onSelectUser} />
+            ))
+        ) : query?.length ? (
+          <View style={styles.row}>
+            <Text style={styles.rowLabel}>No matching users</Text>
+          </View>
+        ) : null}
+      </View>
+      {results?.decks?.length ? (
+        <>
+          <View style={styles.headingRow}>
+            <Text style={styles.heading}>Decks</Text>
+          </View>
+          <View style={styles.decks}>
+            <DecksGrid decks={results.decks} onPressDeck={onSelectDeck} />
+          </View>
+        </>
       ) : query?.length ? (
         <View style={styles.row}>
-          <Text style={styles.rowLabel}>No results</Text>
+          <Text style={styles.rowLabel}>No matching decks</Text>
         </View>
       ) : null}
     </KeyboardAwareScrollView>
