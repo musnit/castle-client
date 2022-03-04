@@ -89,8 +89,28 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     ...Constants.styles.dropShadow,
   },
+  clockIcon: {
+    top: -3,
+    left: -1,
+  },
+  clockTempo: {
+    backgroundColor: '#fff',
+    borderWidth: 1.3,
+    borderColor: '#000',
+    borderRadius: 3,
+    paddingLeft: 1.5,
+    paddingRight: 1,
+    position: 'absolute',
+    bottom: 3,
+    right: 4,
+  },
+  clockTempoActive: {
+    backgroundColor: '#000',
+    borderColor: '#fff',
+  },
   clockTempoLabel: {
-    fontSize: 11,
+    fontSize: 8,
+    fontWeight: '600',
   },
 });
 
@@ -284,10 +304,17 @@ export const OverlaySound = ({ setActiveSheet, activeSheet }) => {
             <Pressable
               style={[styles.button, isClockShown ? { backgroundColor: '#000' } : null]}
               onPress={onPressClock}>
-              <Feather name="clock" size={20} color={isClockShown ? '#fff' : '#000'} />
-              <Text style={[styles.clockTempoLabel, { color: isClockShown ? '#fff' : '#000' }]}>
-                {sceneSettingsData.sceneProperties.clock.tempo}
-              </Text>
+              <Feather
+                name="clock"
+                style={styles.clockIcon}
+                size={22}
+                color={isClockShown ? '#fff' : '#000'}
+              />
+              <View style={[styles.clockTempo, isClockShown ? styles.clockTempoActive : null]}>
+                <Text style={[styles.clockTempoLabel, { color: isClockShown ? '#fff' : '#000' }]}>
+                  {sceneSettingsData.sceneProperties.clock.tempo}
+                </Text>
+              </View>
             </Pressable>
           </View>
           <View style={styles.toolbar}>

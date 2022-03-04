@@ -4,20 +4,20 @@ import { InspectorNumberInput } from './inspector/components/InspectorNumberInpu
 import { useCoreState, sendAsync } from '../core/CoreEvents';
 
 import FeatherIcon from 'react-native-vector-icons/Feather';
+import FastImage from 'react-native-fast-image';
 
 const styles = StyleSheet.create({
   container: {},
   settingsRow: {
-    borderBottomWidth: 1,
     borderBottomColor: '#ccc',
     padding: 16,
+    paddingBottom: 2,
   },
   numberRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingLeft: 16,
-    paddingBottom: 16,
   },
   numberInput: {
     width: '50%',
@@ -29,15 +29,18 @@ const styles = StyleSheet.create({
     padding: 16,
     flexDirection: 'row',
   },
+  explainerContent: {
+    flex: 1,
+  },
   explainerIcon: {
     marginTop: 4,
     marginRight: 12,
   },
   explainerText: {
-    flex: 1,
     fontSize: 16,
-    lineHeight: 24,
+    lineHeight: 22,
     color: '#888',
+    marginBottom: 8,
   },
 });
 
@@ -86,11 +89,19 @@ export const ClockSettings = () => {
         </View>
       </View>
       <View style={styles.explainer}>
-        <FeatherIcon name="book-open" size={18} color="#888" style={styles.explainerIcon} />
-        <Text style={styles.explainerText}>
-          Clock settings are shared across all actors and rules in this card. The clock continues to
-          tick when switching to another card.
-        </Text>
+        <FastImage
+          style={{ width: 36, height: 36, marginTop: 4, marginRight: 12 }}
+          tintColor={'#888'}
+          source={require('../../assets/images/emoji/key-star-black.png')}
+        />
+        <View style={styles.explainerContent}>
+          <Text style={styles.explainerText}>
+            Clock settings are shared across all actors and rules in this card.
+          </Text>
+          <Text style={styles.explainerText}>
+            The clock continues to tick when switching to another card.
+          </Text>
+        </View>
       </View>
     </View>
   );
