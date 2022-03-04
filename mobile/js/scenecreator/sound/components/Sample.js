@@ -121,8 +121,8 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   soundInputsLabel: {
-    marginTop: 6,
-    marginBottom: 2,
+    marginTop: 4,
+    marginBottom: 6,
   },
   chooseFileButton: {
     marginRight: 12,
