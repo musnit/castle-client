@@ -38,14 +38,7 @@ void Sound::ClockThread::threadFunction() {
             double clockTime = clock->getTime(), nextTime = stream->nextTime();
             if (clockTime >= nextTime) {
               if (clockTime - nextTime < STREAM_LATE_TOLERANCE) {
-                std::vector<float> keysPlayed;
-                for (auto &note : stream->getNextNotes()) {
-                  // save notes played to pass to rule context.
-                  // for now capture a vector of float keys relative to instrument's zero key,
-                  // might decide to capture entire Note later
-                  keysPlayed.push_back(note.key - stream->instrument->getZeroKey());
-                }
-                clock->markStreamPlayedNotes(stream->streamId, keysPlayed);
+                owner.markStreamPlayedNotesOnClock(*clock, *stream);
                 stream->playNextNotes(owner);
               } else {
                 stream->skipToNext();
@@ -158,12 +151,24 @@ int Sound::play(int clockId, std::unique_ptr<Pattern> pattern,
     stream->fastForward(opts.initialTimeInStream);
     // play sound immediately if warranted
     if (stream->hasNext() && clock->getTime() >= stream->nextTime()) {
+      markStreamPlayedNotesOnClock(*clock, *stream);
       stream->playNextNotes(*this);
     }
     result = stream->streamId;
     streams[clockId].push_back(std::move(stream));
   }
   return result;
+}
+
+void Sound::markStreamPlayedNotesOnClock(Clock &clock, Stream &stream) {
+  std::vector<float> keysPlayed;
+  for (auto &note : stream.getNextNotes()) {
+    // save notes played to pass to rule context.
+    // for now capture a vector of float keys relative to instrument's zero key,
+    // might decide to capture entire Note later
+    keysPlayed.push_back(note.key - stream.instrument->getZeroKey());
+  }
+  clock.markStreamPlayedNotes(stream.streamId, keysPlayed);
 }
 
 Stream *Sound::maybeGetStream(int clockId, int streamId) {

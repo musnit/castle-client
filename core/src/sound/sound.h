@@ -105,6 +105,8 @@ protected:
   // streams managed by this sound instance, grouped by clock
   std::unordered_map<int, std::vector<std::unique_ptr<Stream>>> streams;
 
+  void markStreamPlayedNotesOnClock(Clock &clock, Stream &stream);
+
   class ClockThread : public love::thread::Threadable {
   public:
     ClockThread(Sound &owner_);
