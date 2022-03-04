@@ -52,7 +52,7 @@ else()
 endif()
 
 # Sources
-file(GLOB_RECURSE MY_SOURCES CONFIGURE_DEPENDS src/*.cpp)
+file(GLOB_RECURSE MY_SOURCES CONFIGURE_DEPENDS src/*.h src/*.cpp)
 
 list(REMOVE_ITEM MY_SOURCES
   "${CMAKE_SOURCE_DIR}/src/api_android.cpp" "${CMAKE_SOURCE_DIR}/src/api_web.cpp")
