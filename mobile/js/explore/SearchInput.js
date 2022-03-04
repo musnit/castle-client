@@ -79,6 +79,7 @@ export const SearchInput = ({ onFocus, onCancel, ...props }) => {
           placeholderTextColor={Constants.colors.white}
           onFocus={onTextInputFocus}
           onBlur={onTextInputBlur}
+          blurOnSubmit={false}
           {...props}
         />
       </View>

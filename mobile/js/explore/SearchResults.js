@@ -141,9 +141,9 @@ export const SearchResults = ({ query, onCancel, initialResults }) => {
     [navigate]
   );
 
-  const usersLimit = results.decks?.length ? 3 : 20; // limit users shown if there are decks too
+  const usersLimit = results?.decks?.length ? 3 : 20; // limit users shown if there are decks too
 
-  if (results.decks?.length) {
+  if (results?.decks?.length) {
     // everything is a header to the DecksGrid FlatList
     // https://stackoverflow.com/questions/58243680/react-native-another-virtualizedlist-backed-container
     const flatlistHeader = () => (
