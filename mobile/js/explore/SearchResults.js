@@ -44,7 +44,6 @@ const styles = StyleSheet.create({
     width: 24,
     marginRight: 8,
   },
-  decks: {},
 });
 
 const search = async (query) => {
@@ -81,6 +80,27 @@ const UserSearchResult = ({ user, onSelectUser }) => {
     </Pressable>
   );
 };
+
+const UsersResults = ({ users, onSelectUser, limit, query }) => (
+  <>
+    <View style={styles.headingRow}>
+      <Text style={styles.heading}>Users</Text>
+    </View>
+    <View style={styles.users}>
+      {users?.length ? (
+        users
+          .slice(0, limit)
+          .map((user) => (
+            <UserSearchResult key={`user-${user.id}`} user={user} onSelectUser={onSelectUser} />
+          ))
+      ) : query?.length ? (
+        <View style={styles.row}>
+          <Text style={styles.rowLabel}>No matching users</Text>
+        </View>
+      ) : null}
+    </View>
+  </>
+);
 
 export const SearchResults = ({ query, onCancel, initialResults }) => {
   const { navigate } = useNavigation();
@@ -123,40 +143,49 @@ export const SearchResults = ({ query, onCancel, initialResults }) => {
 
   const usersLimit = results.decks?.length ? 3 : 20; // limit users shown if there are decks too
 
-  return (
-    <KeyboardAwareScrollView
-      contentContainerStyle={styles.container}
-      keyboardShouldPersistTaps="always">
-      <View style={styles.headingRow}>
-        <Text style={styles.heading}>Users</Text>
-      </View>
-      <View style={styles.users}>
-        {results?.users?.length ? (
-          results.users
-            .slice(0, usersLimit)
-            .map((user) => (
-              <UserSearchResult key={`user-${user.id}`} user={user} onSelectUser={onSelectUser} />
-            ))
-        ) : query?.length ? (
+  if (results.decks?.length) {
+    // everything is a header to the DecksGrid FlatList
+    // https://stackoverflow.com/questions/58243680/react-native-another-virtualizedlist-backed-container
+    const flatlistHeader = () => (
+      <>
+        <UsersResults
+          users={results?.users}
+          limit={usersLimit}
+          query={query}
+          onSelectUser={onSelectUser}
+        />
+        <View style={styles.headingRow}>
+          <Text style={styles.heading}>Decks</Text>
+        </View>
+      </>
+    );
+    return (
+      <DecksGrid
+        keyboardAware
+        keyboardShouldPersistTaps="always"
+        decks={results.decks}
+        contentContainerStyle={{ paddingBottom: 72 }}
+        onPressDeck={onSelectDeck}
+        ListHeaderComponent={flatlistHeader}
+      />
+    );
+  } else {
+    return (
+      <KeyboardAwareScrollView
+        contentContainerStyle={styles.container}
+        keyboardShouldPersistTaps="always">
+        <UsersResults
+          users={results?.users}
+          limit={usersLimit}
+          query={query}
+          onSelectUser={onSelectUser}
+        />
+        {query?.length ? (
           <View style={styles.row}>
-            <Text style={styles.rowLabel}>No matching users</Text>
+            <Text style={styles.rowLabel}>No matching decks</Text>
           </View>
         ) : null}
-      </View>
-      {results?.decks?.length ? (
-        <>
-          <View style={styles.headingRow}>
-            <Text style={styles.heading}>Decks</Text>
-          </View>
-          <View style={styles.decks}>
-            <DecksGrid decks={results.decks} onPressDeck={onSelectDeck} />
-          </View>
-        </>
-      ) : query?.length ? (
-        <View style={styles.row}>
-          <Text style={styles.rowLabel}>No matching decks</Text>
-        </View>
-      ) : null}
-    </KeyboardAwareScrollView>
-  );
+      </KeyboardAwareScrollView>
+    );
+  }
 };

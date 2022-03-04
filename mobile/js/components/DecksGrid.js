@@ -1,6 +1,7 @@
 import React from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
 import { CardCell } from './CardCell';
+import { KeyboardAwareFlatList } from 'react-native-keyboard-aware-scroll-view';
 
 import * as Constants from '../Constants';
 
@@ -37,7 +38,14 @@ const CardGridRow = React.memo(({ decks, enablePreviewVideo, onPress }) => {
   );
 });
 
-export const DecksGrid = ({ decks, onPressDeck, enablePreviewVideo, scrollViewRef, ...props }) => {
+export const DecksGrid = ({
+  decks,
+  onPressDeck,
+  enablePreviewVideo,
+  scrollViewRef,
+  keyboardAware,
+  ...props
+}) => {
   const [groupedDecks, setGroupedDecks] = React.useState([]);
   React.useEffect(() => {
     const newGroupedDecks = decks
@@ -67,16 +75,31 @@ export const DecksGrid = ({ decks, onPressDeck, enablePreviewVideo, scrollViewRe
     [onPressDeck]
   );
 
-  return (
-    <FlatList
-      ref={scrollViewRef}
-      contentContainerStyle={props.contentContainerStyle}
-      data={groupedDecks}
-      renderItem={renderItem}
-      keyExtractor={(item, index) =>
-        item.length ? `row-${item[0].deckId}-${index}` : `row-${index}`
-      }
-      {...props}
-    />
-  );
+  if (keyboardAware) {
+    return (
+      <KeyboardAwareFlatList
+        ref={scrollViewRef}
+        contentContainerStyle={props.contentContainerStyle}
+        data={groupedDecks}
+        renderItem={renderItem}
+        keyExtractor={(item, index) =>
+          item.length ? `row-${item[0].deckId}-${index}` : `row-${index}`
+        }
+        {...props}
+      />
+    );
+  } else {
+    return (
+      <FlatList
+        ref={scrollViewRef}
+        contentContainerStyle={props.contentContainerStyle}
+        data={groupedDecks}
+        renderItem={renderItem}
+        keyExtractor={(item, index) =>
+          item.length ? `row-${item[0].deckId}-${index}` : `row-${index}`
+        }
+        {...props}
+      />
+    );
+  }
 };
