@@ -104,7 +104,7 @@ export default InspectorMusic = ({ music }) => {
             </TouchableOpacity>
           </View>
           <View style={styles.row}>
-            <View style={{ width: '50%' }}>
+            <View style={{ width: '50%', paddingRight: 16 }}>
               <Text style={{ fontSize: 16 }}>Play when actor is created</Text>
             </View>
             <InspectorSegmentedControl
