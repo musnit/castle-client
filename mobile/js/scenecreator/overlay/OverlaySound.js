@@ -1,5 +1,13 @@
 import React from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import {
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  StatusBar,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import { InstrumentIcon } from '../sound/components/InstrumentIcon';
 import { Pattern } from '../sound/components/Pattern';
 import { useCoreState, useListen, sendGlobalAction, sendAsync } from '../../core/CoreEvents';
@@ -14,6 +22,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
+  keyboardContainer: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: '100%',
+    padding: 8,
+  },
+  keyboardInnerContainer: { flex: 1, flexDirection: 'column', justifyContent: 'space-between' },
   leftContainer: {
     width: 36,
   },
@@ -289,11 +306,23 @@ export const OverlaySound = ({ setActiveSheet, activeSheet }) => {
         </View>
       </View>
       {!activeSheet.sound ? (
-        <OverlayPattern
-          isEditingInstrument={activeSheet.sound === 'soundTrackInspector'}
-          onPressEditInstrument={onPressEditInstrument}
-          soundToolState={soundToolState}
-        />
+        <KeyboardAvoidingView
+          keyboardVerticalOffset={100}
+          pointerEvents="box-none"
+          style={{
+            ...styles.keyboardContainer,
+            top: Platform.OS == 'android' ? StatusBar.currentHeight + 20 : 0,
+          }}
+          behavior="padding">
+          <View style={styles.keyboardInnerContainer} pointerEvents="box-none">
+            <View />
+            <OverlayPattern
+              isEditingInstrument={activeSheet.sound === 'soundTrackInspector'}
+              onPressEditInstrument={onPressEditInstrument}
+              soundToolState={soundToolState}
+            />
+          </View>
+        </KeyboardAvoidingView>
       ) : null}
     </>
   );
