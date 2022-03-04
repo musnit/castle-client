@@ -98,76 +98,79 @@ void SongTool::update(double dt) {
           }
         }
 
-        switch (selectedSubtool) {
-        case Subtool::Select: {
-          // touch grid on existing track/pattern?
-          if (bar >= 0 && selectedExistingTrack) {
-            if (dragPatternId != ""
-                && (dragPatternId != patternId
-                    || dragPatternStartTime + dragDeltaBars != patternStartTime)) {
-              // dragged a different pattern here, clone
-              auto newPatternStartTime = dragPatternStartTime + barsToSteps(dragDeltaBars);
-              if (auto &selectedTrack = soundTool.song->tracks[track]; selectedTrack) {
-                auto oldSequence = soundTool.song->tracks[dragPatternTrackIndex]->sequence.find(
-                    dragPatternStartTime);
-                Song::Track::SequenceElem newElem = oldSequence->second;
-                if (selectedTrack->sequence.find(newPatternStartTime)
-                    != selectedTrack->sequence.end()) {
-                  selectedTrack->sequence.erase(newPatternStartTime);
-                  soundTool.song->cleanUpUnusedPatterns();
+        // tapping the track axis comes ahead of any subtool
+        if (bar < 0 && selectedExistingTrack) {
+          // just select track
+          soundTool.setPatternId("", 0);
+          soundTool.setTrackIndex(track);
+          soundTool.sendUIEvent();
+          soundTool.openTrackInspector();
+        } else if (bar < 0 && track == int(soundTool.song->tracks.size())) {
+          // touched the N+1th track axis, prompt to add track
+          soundTool.sendNewTrackEvent();
+        } else {
+          switch (selectedSubtool) {
+          case Subtool::Select: {
+            // touch grid on existing track/pattern?
+            if (bar >= 0 && selectedExistingTrack) {
+              if (dragPatternId != ""
+                  && (dragPatternId != patternId
+                      || dragPatternStartTime + dragDeltaBars != patternStartTime)) {
+                // dragged a different pattern here, clone
+                auto newPatternStartTime = dragPatternStartTime + barsToSteps(dragDeltaBars);
+                if (auto &selectedTrack = soundTool.song->tracks[track]; selectedTrack) {
+                  auto oldSequence = soundTool.song->tracks[dragPatternTrackIndex]->sequence.find(
+                      dragPatternStartTime);
+                  Song::Track::SequenceElem newElem = oldSequence->second;
+                  if (selectedTrack->sequence.find(newPatternStartTime)
+                      != selectedTrack->sequence.end()) {
+                    selectedTrack->sequence.erase(newPatternStartTime);
+                    soundTool.song->cleanUpUnusedPatterns();
+                  }
+                  selectedTrack->sequence.emplace(newPatternStartTime, newElem);
                 }
-                selectedTrack->sequence.emplace(newPatternStartTime, newElem);
+                soundTool.setTrackIndex(track);
+                soundTool.setPatternId(dragPatternId, newPatternStartTime);
+                soundTool.updateSelectedComponent("clone pattern");
+              } else if (touchedLoopButton && selectedSequenceElem) {
+                // selected loop button on a sequence elem, toggle loop
+                selectedSequenceElem->loop = !selectedSequenceElem->loop();
+                soundTool.updateSelectedComponent("change loop");
+              } else if (patternId == "") {
+                // selected a valid track but no pattern, so add a new pattern here
+                soundTool.setTrackIndex(track);
+                auto steps = barsToSteps(std::floor(bar));
+                soundTool.addPattern(steps, track);
+              } else if (soundTool.selectedTrackIndex == track
+                  && soundTool.selectedPatternId == patternId) {
+                // selected same pattern and track that was already selected, edit pattern
+                soundTool.setMode(SoundTool::Mode::Track);
+              } else {
+                // select existing pattern and track
+                soundTool.setPatternId(patternId, patternStartTime);
+                soundTool.setTrackIndex(track);
               }
-              soundTool.setTrackIndex(track);
-              soundTool.setPatternId(dragPatternId, newPatternStartTime);
-              soundTool.updateSelectedComponent("clone pattern");
-            } else if (touchedLoopButton && selectedSequenceElem) {
-              // selected loop button on a sequence elem, toggle loop
-              selectedSequenceElem->loop = !selectedSequenceElem->loop();
-              soundTool.updateSelectedComponent("change loop");
-            } else if (patternId == "") {
-              // selected a valid track but no pattern, so add a new pattern here
-              soundTool.setTrackIndex(track);
-              auto steps = barsToSteps(std::floor(bar));
-              soundTool.addPattern(steps, track);
-            } else if (soundTool.selectedTrackIndex == track
-                && soundTool.selectedPatternId == patternId) {
-              // selected same pattern and track that was already selected, edit pattern
-              soundTool.setMode(SoundTool::Mode::Track);
+              soundTool.sendUIEvent();
             } else {
-              // select existing pattern and track
-              soundTool.setPatternId(patternId, patternStartTime);
-              soundTool.setTrackIndex(track);
-            }
-            soundTool.sendUIEvent();
-          } else if (bar < 0 && selectedExistingTrack) {
-            // just select track
-            soundTool.setPatternId("", 0);
-            soundTool.setTrackIndex(track);
-            soundTool.sendUIEvent();
-            soundTool.openTrackInspector();
-          } else if (bar < 0 && track == int(soundTool.song->tracks.size())) {
-            // touched the N+1th track axis, prompt to add track
-            soundTool.sendNewTrackEvent();
-          } else {
-            soundTool.clearSelection();
-            soundTool.sendUIEvent();
-          }
-          dragPatternId = "";
-          break; // Subtool::Select
-        }
-        case Subtool::Erase: {
-          if (bar >= 0 && selectedExistingTrack && patternId != "") {
-            // erase existing sequence elem
-            if (auto &selectedTrack = soundTool.song->tracks[track]; selectedTrack) {
-              selectedTrack->sequence.erase(patternStartTime);
-              soundTool.song->cleanUpUnusedPatterns();
               soundTool.clearSelection();
-              soundTool.updateSelectedComponent("erase pattern");
+              soundTool.sendUIEvent();
             }
+            dragPatternId = "";
+            break; // Subtool::Select
           }
-          break;
-        }
+          case Subtool::Erase: {
+            if (bar >= 0 && selectedExistingTrack && patternId != "") {
+              // erase existing sequence elem
+              if (auto &selectedTrack = soundTool.song->tracks[track]; selectedTrack) {
+                selectedTrack->sequence.erase(patternStartTime);
+                soundTool.song->cleanUpUnusedPatterns();
+                soundTool.clearSelection();
+                soundTool.updateSelectedComponent("erase pattern");
+              }
+            }
+            break;
+          }
+          }
         }
       } else if ((touch.screenPos - touch.initialScreenPos).getLengthSquare() > 10 * 10) {
         if (selectedSubtool == Subtool::Select) {
