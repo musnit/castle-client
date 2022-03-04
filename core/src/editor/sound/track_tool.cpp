@@ -23,6 +23,7 @@ void TrackTool::resetState() {
   currentSubtoolName = "add_note";
   getCurrentSubtool()->onReset();
   viewWidth = PATTERN_DEFAULT_VIEW_WIDTH;
+  lastAxisKeyTouched = 0;
 }
 
 void TrackTool::onSetActive() {
@@ -104,13 +105,21 @@ void TrackTool::update(double dt) {
       auto key = floor(-transformedTouchPosition.y / gridCellSize)
           + zeroKey; // set axis to midi middle C
 
-      SoundSubtoolTouch subtoolTouch(touch);
-      subtoolTouch.touchX = transformedTouchPosition.x;
-      subtoolTouch.touchY = transformedTouchPosition.y;
-      subtoolTouch.step = step;
-      subtoolTouch.key = key;
+      if (step < 0) {
+        // touched key axis, always play note and ignore subtool
+        if (touch.pressed || key != lastAxisKeyTouched) {
+          track->instrument->play(soundTool.getScene().getSound(), { key });
+        }
+        lastAxisKeyTouched = key;
+      } else {
+        SoundSubtoolTouch subtoolTouch(touch);
+        subtoolTouch.touchX = transformedTouchPosition.x;
+        subtoolTouch.touchY = transformedTouchPosition.y;
+        subtoolTouch.step = step;
+        subtoolTouch.key = key;
 
-      getCurrentSubtool()->onTouch(subtoolTouch);
+        getCurrentSubtool()->onTouch(subtoolTouch);
+      }
     });
   } else if (gesture.getCount() == 2) {
     // cancel touch, don't add note

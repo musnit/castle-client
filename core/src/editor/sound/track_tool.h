@@ -66,6 +66,7 @@ private:
   love::Vector2 viewPosition;
   float viewWidth = PATTERN_DEFAULT_VIEW_WIDTH;
   void zoomToFit();
+  int lastAxisKeyTouched = 0;
 
   std::unique_ptr<love::Font> axisFont { lv.graphics.newDefaultFont(
       16.0f, love::TrueTypeRasterizer::HINTING_NORMAL) };
