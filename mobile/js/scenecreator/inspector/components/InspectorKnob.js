@@ -1,6 +1,7 @@
 import React from 'react';
 import { Animated, StyleSheet, Text, View } from 'react-native';
 import { PanGestureHandler, State } from 'react-native-gesture-handler';
+import * as Constants from '../../../Constants';
 
 import debounce from 'lodash.debounce';
 
@@ -10,7 +11,7 @@ const styles = StyleSheet.create({
   },
   valueLabel: {
     fontSize: 16,
-    lineHeight: 22,
+    lineHeight: 18,
   },
   gauge: {
     width: '100%',
@@ -40,13 +41,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  shadowWrapper: {
+    ...Constants.styles.dropShadow,
+  },
   innerPointer: {
-    width: 10,
-    height: 10,
+    width: 8,
+    height: 8,
     borderRadius: 8,
     backgroundColor: '#000',
     position: 'relative',
-    left: '33%',
+    left: '30%',
   },
 });
 
@@ -118,8 +122,8 @@ const PerimeterGauge = React.memo(({ angleToDisplay, size }) => {
               {
                 left,
                 top,
-                backgroundColor: isFilled ? '#000' : '#fff',
-                borderColor: isFilled ? '#000' : '#bbb',
+                backgroundColor: isFilled ? '#000' : '#ccc',
+                borderColor: isFilled ? '#000' : '#ccc',
               },
             ]}
           />
@@ -240,9 +244,12 @@ export const InspectorKnob = ({ value, lastNativeUpdate, onChange, min, max, siz
       {/* Need an outer Animated.View that does not rotate, because the pan gesture's `translateY` is computed in terms of this view's coordinates, so rotating it would mess up that frame of reference. */}
       <Animated.View style={[styles.container, style, { width: size }]}>
         <View style={styles.gauge}>
-          <Animated.View style={[styles.rotating, { transform: [{ rotate: rotationState.str }] }]}>
-            <View style={styles.innerPointer} />
-          </Animated.View>
+          <View style={styles.shadowWrapper}>
+            <Animated.View
+              style={[styles.rotating, { transform: [{ rotate: rotationState.str }] }]}>
+              <View style={styles.innerPointer} />
+            </Animated.View>
+          </View>
           <PerimeterGauge angleToDisplay={gaugeAngle} size={size} />
         </View>
         <Text style={styles.valueLabel}>{valueLabel}</Text>

@@ -14,6 +14,7 @@ import * as Constants from '../../../Constants';
 const styles = StyleSheet.create({
   container: {
     padding: 16,
+    paddingRight: 0,
     flexDirection: 'row',
     alignItems: 'flex-start',
   },
@@ -26,28 +27,31 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     borderColor: Constants.colors.black,
     marginRight: 16,
-    minHeight: 172,
+    minHeight: 135,
   },
   drumParams: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    padding: 16,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderLeftWidth: 1,
+    borderColor: '#ccc',
   },
   drumName: {
     alignItems: 'center',
     justifyContent: 'flex-start',
-    minWidth: 48,
-    padding: 16,
-    borderRightWidth: 1,
-    borderColor: '#ccc',
+    width: 72,
+    paddingTop: 16,
+    paddingHorizontal: 4,
   },
   label: {
     fontSize: 16,
     color: '#000',
-    paddingBottom: 12,
+    marginTop: 12,
+    textAlign: 'center',
   },
   soundInputLabel: {
-    fontSize: 14,
+    fontSize: 12,
     textTransform: 'uppercase',
   },
   soundInputContainer: {
@@ -56,9 +60,11 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     flexShrink: 1,
     flexGrow: 0,
-    padding: 8,
+    padding: 12,
   },
-  soundInput: {},
+  soundInput: {
+    marginBottom: 12,
+  },
 });
 
 const DRUM_PARAMS = {
@@ -186,15 +192,15 @@ const Drum = ({ name, value, onChange, enabled, onSetEnabled, paramSpecs, lastNa
   return (
     <View style={[styles.drumContainer, { minWidth: enabled ? 256 : 48 }]}>
       <View style={styles.drumName}>
-        <Text style={styles.label}>{name}</Text>
         <InspectorCheckbox value={enabled} onChange={onSetEnabled} />
+        <Text style={styles.label}>{name}</Text>
       </View>
       {enabled ? (
         <View style={styles.drumParams}>
           {paramSpecs.map((spec) => (
             <View style={styles.soundInputContainer} key={`spec-${spec.name}`}>
               <InspectorKnob
-                size={72}
+                size={56}
                 style={styles.soundInput}
                 lastNativeUpdate={lastNativeUpdate}
                 {...spec}

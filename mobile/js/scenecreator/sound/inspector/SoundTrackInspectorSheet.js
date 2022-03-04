@@ -79,7 +79,7 @@ export const SoundTrackInspectorSheet = ({ isOpen, onClose }) => {
   return (
     <CardCreatorBottomSheet
       isOpen={isOpen}
-      headerHeight={88}
+      headerHeight={210}
       extraTopInset={8}
       useViewInsteadOfScrollview={isDrums}
       renderContent={renderContent}
