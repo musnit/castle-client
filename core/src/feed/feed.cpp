@@ -206,10 +206,7 @@ void Feed::update(double dt) {
 
           int idx = getCurrentIndex();
           if (idx >= 0 && idx < (int)decks.size()) {
-            if (decks[idx].player && decks[idx].player->hasScene()) {
-              // TODO: maybe use scene suspend/resume, unless you want to leave sound thread running
-              decks[idx].player->getScene().getSound().stopCurrentlyPlayingSounds();
-            }
+            decks[idx].player->suspend();
 
             if (decks[idx].coreView) {
               decks[idx].coreView->cancelGestures();
@@ -292,6 +289,8 @@ void Feed::update(double dt) {
     }
   });
 
+  int idx = getCurrentIndex();
+
   if (isAnimating) {
     offset = smoothstep(
         animateFromOffset, animateToOffset, animationTimeElapsed / SCROLL_ANIMATION_TIME);
@@ -302,7 +301,6 @@ void Feed::update(double dt) {
     }
   }
 
-  int idx = getCurrentIndex();
   if (!dragStarted && !isAnimating) {
     if (!shouldSkipUpdate && idx >= 0 && idx < (int)decks.size() && decks[idx].player) {
       if (decks[idx].player->hasScene()) {
@@ -321,6 +319,9 @@ void Feed::update(double dt) {
       }
 
       if (!paused) {
+        if (decks[idx].player) {
+          decks[idx].player->resume();
+        }
         decks[idx].player->update(dt);
         decks[idx].hasRunUpdateSinceLastRender = true;
 
@@ -339,10 +340,7 @@ void Feed::update(double dt) {
         decks[i].player->update(dt);
         decks[i].hasRunUpdate = true;
         decks[i].hasRunUpdateSinceLastRender = true;
-        if (decks[i].player->hasScene()) {
-          // TODO: maybe use scene suspend/resume, unless you want to leave sound thread running
-          decks[i].player->getScene().getSound().stopCurrentlyPlayingSounds();
-        }
+        decks[i].player->suspend();
       }
     }
 
@@ -558,9 +556,17 @@ void Feed::draw() {
 }
 
 void Feed::suspend() {
+  int idx = getCurrentIndex();
+  if (decks[idx].player) {
+    decks[idx].player->suspend();
+  }
 }
 
 void Feed::resume() {
+  int idx = getCurrentIndex();
+  if (decks[idx].player) {
+    decks[idx].player->resume();
+  }
 }
 
 void Feed::clearState() {
