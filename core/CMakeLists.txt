@@ -92,6 +92,7 @@ endif()
 # Disable exceptions
 if(WEB)
   target_compile_options(castle-core PRIVATE -fno-exceptions)
+  target_compile_options(castle-core PRIVATE "SHELL:-s -pthread")
 endif()
 
 # Precompiled header
@@ -104,6 +105,7 @@ if(WEB)
   target_compile_definitions(castle-core PRIVATE EMSCRIPTEN_HAS_UNBOUND_TYPE_NAMES=0)
   target_link_options(castle-core PRIVATE "SHELL:--bind")
   target_link_options(castle-core PRIVATE "SHELL:-s WASM=1")
+  target_link_options(castle-core PRIVATE "SHELL:-s -pthread")
   target_link_options(castle-core PRIVATE "SHELL:-s MAX_WEBGL_VERSION=2")
   target_link_options(castle-core PRIVATE "SHELL:-s INITIAL_MEMORY=256MB")
   target_link_options(castle-core PRIVATE "SHELL:-s EXPORTED_FUNCTIONS='[\"_main\", \"_jsDataRequestCompleted\", \"_jsGraphQLPostRequestComplete\"]")
