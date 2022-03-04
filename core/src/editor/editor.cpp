@@ -1389,6 +1389,12 @@ struct EditorModifyComponentReceiver {
             [actorId](Editor &editor, bool) {
               auto &behavior = editor.getScene().getBehaviors().byType<BehaviorType>();
               behavior.removeComponent(actorId);
+              if constexpr (std::is_same_v<BehaviorType, MusicBehavior>) {
+                if (editor.getEditMode() == Editor::EditMode::Sound) {
+                  // music can be removed via undo while inside the song tool
+                  editor.setEditMode(Editor::EditMode::Default);
+                }
+              }
               editor.updateBlueprint(actorId, {});
               editor.setSelectedComponentStateDirty(BehaviorType::behaviorId);
               editor.setSelectedActorStateDirty();
