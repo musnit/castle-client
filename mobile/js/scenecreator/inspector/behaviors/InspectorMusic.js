@@ -31,7 +31,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     width: '100%',
     alignItems: 'center',
-    paddingBottom: 12,
+    paddingTop: 12,
   },
 });
 
@@ -104,8 +104,8 @@ export default InspectorMusic = ({ music }) => {
             </TouchableOpacity>
           </View>
           <View style={styles.row}>
-            <View style={{ width: '50%', paddingRight: 16 }}>
-              <Text style={{ fontSize: 16 }}>Play when actor is created</Text>
+            <View style={{ width: '50%', paddingRight: 16, paddingBottom: 8 }}>
+              <Text style={{ fontSize: 16 }}>Play when created</Text>
             </View>
             <InspectorSegmentedControl
               style={{ width: '50%' }}
