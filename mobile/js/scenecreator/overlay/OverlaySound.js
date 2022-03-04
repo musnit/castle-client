@@ -338,9 +338,9 @@ export const OverlaySound = ({ setActiveSheet, activeSheet }) => {
           pointerEvents="box-none"
           style={{
             ...styles.keyboardContainer,
-            top: Platform.OS == 'android' ? StatusBar.currentHeight + 20 : 0,
+            top: 0,
           }}
-          behavior="padding">
+          behavior={Platform.OS === 'iOS' ? 'padding' : 'height'}>
           <View style={styles.keyboardInnerContainer} pointerEvents="box-none">
             <View />
             <OverlayPattern
