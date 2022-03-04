@@ -17,11 +17,12 @@ const styles = StyleSheet.create({
   wrapper: {
     backgroundColor: '#0001',
     padding: 2,
+    paddingRight: 0,
   },
   trackRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    margin: 2,
+    marginVertical: 2,
   },
   instrumentIcon: {
     width: 24,
@@ -31,7 +32,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderRadius: 12,
     margin: 3,
-    marginRight: 8,
+    marginRight: 6,
     // borderWidth: 1,
     borderColor: '#000',
   },
