@@ -21,7 +21,7 @@ if(WEB)
   # Emscripten
   set(CMAKE_TOOLCHAIN_FILE vendor/emsdk/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake)
   add_compile_options(-pthread)
-  add_link_options(-pthread)
+  add_link_options(-pthread -s PTHREAD_POOL_SIZE=4)
 elseif(WIN32)
   set(CMAKE_C_COMPILER "C:/Program Files/LLVM/bin/clang.exe")
   set(CMAKE_CXX_COMPILER "C:/Program Files/LLVM/bin/clang++.exe")
