@@ -90,6 +90,12 @@ Engine::Engine() {
   CastleAPI::initJNI();
 #endif
 
+#ifdef __EMSCRIPTEN__
+  auto screen = std::make_unique<Player>(bridge);
+  activeScreenId = "player:web";
+  screens.insert(std::make_pair(activeScreenId, std::move(screen)));
+#endif
+
   instance = this;
 
   // First timer step
