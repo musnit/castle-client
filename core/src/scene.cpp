@@ -77,6 +77,15 @@ Scene::~Scene() {
 void Scene::read(Reader &reader) {
   reader.setScene(this);
 
+  // Scene-level props
+  // Read these first because some can affect initial actor behavior (e.g. clock beats per bar)
+  reader.obj("sceneProperties", [&]() {
+    reader.read(props);
+  });
+
+  // Set clock props
+  clock.set(props.clock().tempo(), props.clock().beatsPerBar(), props.clock().stepsPerBeat());
+
   // Library
   reader.each("library", [&]() {
     library->readEntry(reader);
@@ -103,14 +112,6 @@ void Scene::read(Reader &reader) {
       addActor(actorDesc);
     });
   });
-
-  // Scene-level props
-  reader.obj("sceneProperties", [&]() {
-    reader.read(props);
-  });
-
-  // Set clock props
-  clock.set(props.clock().tempo(), props.clock().beatsPerBar(), props.clock().stepsPerBeat());
 }
 
 void Scene::write(Writer &writer) const {
