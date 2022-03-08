@@ -116,13 +116,20 @@ void Sound::clear() {
     clockThread->wait();
     clockThread = nullptr;
   }
+  sfxrSounds.clear();
+  urlSounds.clear();
   streams.clear();
   clocks.clear();
 }
 
 void Sound::stopCurrentlyPlayingSounds() {
   if (Sound::hasInitializedSoloud) {
-    Sound::soloud.stopAll();
+    for (auto &[key, source] : sfxrSounds) {
+      Sound::soloud.stopAudioSource(*source);
+    }
+    for (auto &[key, source] : urlSounds) {
+      Sound::soloud.stopAudioSource(*source);
+    }
   }
   clearStreams();
 }
@@ -216,13 +223,13 @@ void Sound::preload(const Sample &sample) {
       return;
     }
 
-    if (Sound::urlSounds.find(url) == Sound::urlSounds.end()) {
+    if (urlSounds.find(url) == urlSounds.end()) {
       API::getData(url, [=](APIDataResponse &response) {
         if (response.success) {
           std::unique_ptr<SoLoud::WavStream> sound = std::make_unique<SoLoud::WavStream>();
 
           sound->loadMem(response.data, response.length, true, true);
-          Sound::urlSounds.insert(std::make_pair(url, std::move(sound)));
+          urlSounds.insert(std::make_pair(url, std::move(sound)));
         }
       });
     }
@@ -256,13 +263,13 @@ void Sound::playUrl(float playbackRate, float amplitude, const std::string &url)
     return;
   }
 
-  if (Sound::urlSounds.find(url) == Sound::urlSounds.end()) {
+  if (urlSounds.find(url) == urlSounds.end()) {
     API::getData(url, [=](APIDataResponse &response) {
       if (response.success) {
         std::unique_ptr<SoLoud::WavStream> sound = std::make_unique<SoLoud::WavStream>();
 
         sound->loadMem(response.data, response.length, true, true);
-        Sound::urlSounds.insert(std::make_pair(url, std::move(sound)));
+        urlSounds.insert(std::make_pair(url, std::move(sound)));
 
         int handle = Sound::soloud.play(*urlSounds[url]);
         Sound::soloud.setVolume(handle, amplitude);
@@ -281,7 +288,7 @@ void Sound::playEffect(float playbackRate, float amplitude, const std::string &c
   std::string key = "category: " + category + " seed:" + std::to_string(seed) + " mutationSeed:"
       + std::to_string(mutationSeed) + " mutationAmount:" + std::to_string(mutationAmount);
 
-  if (Sound::sfxrSounds.find(key) == Sound::sfxrSounds.end()) {
+  if (sfxrSounds.find(key) == sfxrSounds.end()) {
     std::unique_ptr<SoLoud::Sfxr> sound = std::make_unique<SoLoud::Sfxr>();
 
     if (category == "pickup") {
@@ -308,10 +315,10 @@ void Sound::playEffect(float playbackRate, float amplitude, const std::string &c
 
     sound->clampLength();
 
-    Sound::sfxrSounds.insert(std::make_pair(key, std::move(sound)));
+    sfxrSounds.insert(std::make_pair(key, std::move(sound)));
   }
 
-  int handle = Sound::soloud.play(*Sound::sfxrSounds[key]);
+  int handle = Sound::soloud.play(*sfxrSounds[key]);
   Sound::soloud.setVolume(handle, amplitude);
   Sound::soloud.setRelativePlaySpeed(handle, playbackRate);
 }
@@ -321,7 +328,7 @@ void Sound::playTone(float playbackRate, float amplitude, int midiNote, const st
   std::string key = "midiNote: " + std::to_string(midiNote) + " waveform: " + waveform
       + " attack: " + std::to_string(attack) + " release: " + std::to_string(release);
 
-  if (Sound::sfxrSounds.find(key) == Sound::sfxrSounds.end()) {
+  if (sfxrSounds.find(key) == sfxrSounds.end()) {
     std::unique_ptr<SoLoud::Sfxr> sound = std::make_unique<SoLoud::Sfxr>();
 
     sound->mParams.p_base_freq
@@ -342,10 +349,10 @@ void Sound::playTone(float playbackRate, float amplitude, int midiNote, const st
     sound->mParams.p_env_decay = 0;
     sound->clampLength();
 
-    Sound::sfxrSounds.insert(std::make_pair(key, std::move(sound)));
+    sfxrSounds.insert(std::make_pair(key, std::move(sound)));
   }
 
-  int handle = Sound::soloud.play(*Sound::sfxrSounds[key]);
+  int handle = Sound::soloud.play(*sfxrSounds[key]);
   Sound::soloud.setVolume(handle, amplitude);
   Sound::soloud.setRelativePlaySpeed(handle, playbackRate);
   Sound::soloud.setLooping(handle, true);
@@ -356,12 +363,12 @@ void Sound::playTone(float playbackRate, float amplitude, int midiNote, const st
 
 SoLoud::Sfxr *Sound::getOrMakeSfxrSourceForKey(
     const std::string &key, std::function<void(SoLoud::Sfxr *)> f) {
-  if (Sound::sfxrSounds.find(key) == Sound::sfxrSounds.end()) {
+  if (sfxrSounds.find(key) == sfxrSounds.end()) {
     std::unique_ptr<SoLoud::Sfxr> source = std::make_unique<SoLoud::Sfxr>();
     f(source.get());
-    Sound::sfxrSounds.insert(std::make_pair(key, std::move(source)));
+    sfxrSounds.insert(std::make_pair(key, std::move(source)));
   }
-  return Sound::sfxrSounds[key].get();
+  return sfxrSounds[key].get();
 }
 
 void Sound::playSfxr(const std::string &sfxrKey, float amplitude, float soloudClock) {
@@ -369,10 +376,10 @@ void Sound::playSfxr(const std::string &sfxrKey, float amplitude, float soloudCl
     return;
   }
   if (soloudClock > 0.0f) {
-    int handle = Sound::soloud.playClocked(soloudClock, *Sound::sfxrSounds[sfxrKey]);
+    int handle = Sound::soloud.playClocked(soloudClock, *sfxrSounds[sfxrKey]);
     Sound::soloud.setVolume(handle, amplitude);
   } else {
-    int handle = Sound::soloud.play(*Sound::sfxrSounds[sfxrKey]);
+    int handle = Sound::soloud.play(*sfxrSounds[sfxrKey]);
     Sound::soloud.setVolume(handle, amplitude);
   }
 }

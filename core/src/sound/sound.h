@@ -16,8 +16,6 @@ class Sound {
   inline static bool hasInitializedSoloud = false;
   inline static int soloudRefs = 0;
   inline static SoLoud::Soloud soloud;
-  inline static std::unordered_map<std::string, std::unique_ptr<SoLoud::Sfxr>> sfxrSounds;
-  inline static std::unordered_map<std::string, std::unique_ptr<SoLoud::WavStream>> urlSounds;
 
 public:
   Sound(const Sound &) = delete; // Prevent accidental copies
@@ -87,8 +85,6 @@ protected:
         soloud.deinit();
         hasInitializedSoloud = false;
       }
-      sfxrSounds.clear();
-      urlSounds.clear();
     }
   }
 
@@ -98,6 +94,10 @@ protected:
       int mutationSeed, int mutationAmount);
   void playTone(float playbackRate, float amplitude, int midiNote, const std::string &waveform,
       float attack, float release);
+
+  // soloud sources managed by this sound instance
+  std::unordered_map<std::string, std::unique_ptr<SoLoud::Sfxr>> sfxrSounds;
+  std::unordered_map<std::string, std::unique_ptr<SoLoud::WavStream>> urlSounds;
 
   // clocks managed by this sound instance
   std::unordered_map<int, Clock *> clocks;
