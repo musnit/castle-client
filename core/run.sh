@@ -148,12 +148,23 @@ case "$1" in
     esac
     ;;
   web-release)
+    # build with pthread / Atomics
     if [ ! -d build/web-release ]; then
       $CMAKE -DWEB=ON -H. -Bbuild/web-release -GNinja
     fi
     $CMAKE --build build/web-release
-    rm -rf ../../castle-www/public/player/*
-    cp build/web-release/castle-core.* ../../castle-www/public/player/
+    rm -rf ../../castle-www/public/player/main/*
+    mkdir -p ../../castle-www/public/player/main
+    cp build/web-release/castle-core.* ../../castle-www/public/player/main/
+
+    # build without pthread / Atomics
+    if [ ! -d build/web-release-nothread ]; then
+      $CMAKE -DWEB=ON -DEMSCRIPTEN_NO_PTHREAD=ON -H. -Bbuild/web-release-nothread -GNinja
+    fi
+    $CMAKE --build build/web-release-nothread
+    rm -rf ../../castle-www/public/player/nothread/*
+    mkdir -p ../../castle-www/public/player/nothread
+    cp build/web-release-nothread/castle-core.* ../../castle-www/public/player/nothread/
     ;;
   web-watch-release)
     find CMakeLists.txt src assets web -type f | entr $TIME_TOTAL ./run.sh web-release
