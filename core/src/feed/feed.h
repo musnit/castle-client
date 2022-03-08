@@ -15,6 +15,7 @@ struct FeedItem {
   };
 
   std::optional<std::string> deckId;
+  std::optional<std::string> cardId;
   std::optional<std::string> deckJson;
   std::shared_ptr<Player> player;
   std::shared_ptr<love::graphics::Canvas> canvas;

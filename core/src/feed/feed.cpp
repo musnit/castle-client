@@ -6,6 +6,7 @@
 #include "api.h"
 #include <thread>
 #include "utils/format_number.h"
+#include "deck_plays.h"
 
 #define TOP_PADDING 0
 #define BOTTOM_UI_MIN_HEIGHT 150
@@ -15,7 +16,8 @@
 const std::string GRAPHQL_DECK_FIELDS
     = "\ndeckId\nvariables\nchildDecksCount\ncreator {\nuserId\nusername\nphoto "
       "{\nsmallAvatarUrl\nurl\n}\n}\ninitialCard {\n    "
-      "    sceneDataUrl\nbackgroundImage {\nsmallUrl}\n      }\n    commentsEnabled\n  comments "
+      "    cardId\nsceneDataUrl\nbackgroundImage {\nsmallUrl}\n      }\n    commentsEnabled\n  "
+      "comments "
       "{\n count\n }\n reactions {\n "
       "reactionId\n isCurrentUserToggled\n count\n }";
 const char *DEFAULT_AVATAR_URL
@@ -293,12 +295,18 @@ void Feed::update(double dt) {
             }
           });
           decks[idx].player->getScene().setNextCardId(std::nullopt);
+          decks[idx].cardId = nextCardId;
         }
       }
 
       if (!paused) {
         decks[idx].player->update(dt);
         decks[idx].hasRunUpdateSinceLastRender = true;
+
+        if (decks[idx].deckId && decks[idx].cardId) {
+          DeckPlays::getInstance().setDeckAndCardIds(*decks[idx].deckId, *decks[idx].cardId);
+        }
+        DeckPlays::getInstance().update(dt);
       }
 
       decks[idx].coreView->update(dt);
@@ -713,6 +721,8 @@ void Feed::loadDeckFromDeckJson(int i) {
     });
 
     reader.obj("initialCard", [&]() {
+      decks[i].cardId = reader.str("cardId", "");
+
       auto sceneDataUrl = reader.str("sceneDataUrl", "");
       API::loadSceneData(sceneDataUrl, [=](APIResponse &response) {
         if (response.success) {
