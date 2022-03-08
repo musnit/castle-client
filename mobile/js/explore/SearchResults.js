@@ -106,19 +106,25 @@ export const SearchResults = ({ query, onCancel, initialResults }) => {
   const { navigate } = useNavigation();
   const [results, setResults] = React.useState(initialResults);
   const searchDebounce = React.useRef();
+  const lastQuerySearched = React.useRef('');
   React.useEffect(() => {
     searchDebounce.current = debounce(async (query) => {
       const results = await search(query);
-      setResults(results);
+      // double check the query hasn't changed async during our debounce/request
+      if (lastQuerySearched.current === query) {
+        setResults(results);
+      }
     }, 500);
-  }, []);
+  }, [setResults]);
   React.useEffect(() => {
     if (query?.length && searchDebounce.current) {
+      lastQuerySearched.current = query;
       searchDebounce.current(query);
     } else {
-      setResults(initialResults);
+      lastQuerySearched.current = '';
+      setResults({ ...initialResults, decks: [] });
     }
-  }, [query, initialResults]);
+  }, [query, setResults, initialResults]);
 
   const onSelectUser = React.useCallback(
     (user) => navigate('Profile', { userId: user.userId }),
