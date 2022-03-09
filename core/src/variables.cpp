@@ -36,7 +36,7 @@ void Variable::write(Writer &writer) const {
 
 void Variable::read(Reader &reader) {
   if (auto scene = reader.getScene()) {
-    if (auto variableId = reader.str()) {
+    if (auto variableId = reader.str(); !(std::strcmp(*variableId, "(none)") == 0)) {
       auto &variables = scene->getVariables();
       token = variables.map.getToken(*variableId);
     }

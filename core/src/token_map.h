@@ -38,12 +38,12 @@ public:
 
     Token() = default; // To allow default construction when reading
 
+    int index = -1;
+
   private:
     friend class TokenMap;
 
     explicit Token(int index_);
-
-    int index = -1;
   };
 
 

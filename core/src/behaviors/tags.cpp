@@ -25,8 +25,8 @@ void Tag::write(Writer &writer) const {
 //
 
 void Tag::read(Reader &reader) {
-  if (auto scene = reader.getScene()) {
-    if (auto str = reader.str(); str && (*str)[0] != '\0') { // Empty string is empty tag
+  if (auto str = reader.str(); str && (*str)[0] != '\0') { // Empty string is empty tag
+    if (auto scene = reader.getScene()) {
       auto &tagsBehavior = scene->getBehaviors().byType<TagsBehavior>();
       *this = tagsBehavior.getTag(*str);
     }

@@ -26,10 +26,16 @@ struct VariableExpression : BaseExpression {
 
   struct Params {
     PROP(Variable, variableId, .label("Variable name"));
+    PROP(LocalVariableId, localVariableId, .label("Local variable name"));
   } params;
 
   ExpressionValue eval(RuleContext &ctx) override {
-    return ctx.getScene().getVariables().get(params.variableId());
+    if (auto variableId = params.variableId(); variableId.token.index >= 0) {
+      return ctx.getScene().getVariables().get(params.variableId());
+    } else {
+      auto &localVariablesBehavior = ctx.getScene().getBehaviors().byType<LocalVariablesBehavior>();
+      return localVariablesBehavior.get(ctx.actorId, params.localVariableId());
+    }
   }
 };
 
