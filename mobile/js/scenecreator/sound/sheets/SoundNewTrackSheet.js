@@ -66,6 +66,13 @@ const entries = [
     description: 'A rhythmic instrument that can play a variety of drums',
   },
   {
+    id: 'drums-simple-beat',
+    icon: 'instrument-drum',
+    title: 'Simple Beat',
+    preset: 'simple beat',
+    description: 'A simple beat',
+  },
+  {
     id: 'sfxr',
     icon: 'instrument-sfxr',
     title: 'Sampler: Generated Effect',
@@ -101,7 +108,10 @@ export const SoundNewTrackSheet = ({ element, isOpen, onClose, ...props }) => {
               key={index}
               entry={entry}
               onPress={() => {
-                sendAsync('EDITOR_SOUND_TOOL_ADD_TRACK', { type: entry.id });
+                sendAsync('EDITOR_SOUND_TOOL_ADD_TRACK', {
+                  type: entry.id,
+                  presetName: entry.preset || '',
+                });
                 onClose();
               }}
             />
