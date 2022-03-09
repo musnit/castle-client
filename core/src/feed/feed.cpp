@@ -157,6 +157,10 @@ void Feed::setPaused(bool paused_) {
 }
 
 void Feed::update(double dt) {
+  if (dt > 0.5) {
+    dt = 1.0 / 60.0;
+  }
+
   float SCROLL_ANIMATION_TIME = CoreViews::getInstance().getNumConstant("SCROLL_ANIMATION_TIME");
   float DRAG_START_OFFSET = CoreViews::getInstance().getNumConstant("DRAG_START_OFFSET");
   float SCROLL_MULTIPLIER = CoreViews::getInstance().getNumConstant("SCROLL_MULTIPLIER");
