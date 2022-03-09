@@ -341,18 +341,15 @@ void Editor::update(double dt) {
       break;
     }
 
-
     updateAutoSave(dt);
+
+    scene->getBehaviors().byType<LocalVariablesBehavior>().debugDisplay();
   }
 
   // Make sure ghost actors exist before sending new data, because current tool's update()
   // may have modified actors
   scene->getLibrary().ensureGhostActorsExist();
   maybeSendData(dt);
-
-#ifdef ENABLE_LOCAL_VARIABLES
-  scene->getBehaviors().byType<LocalVariablesBehavior>().debugDisplay();
-#endif
 }
 
 void Editor::draw() {

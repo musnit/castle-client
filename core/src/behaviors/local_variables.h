@@ -22,6 +22,10 @@ using LocalVariablesMap = TokenMap<LocalVariablesMapElem>;
 
 struct LocalVariableId {
   LocalVariablesMap::Token token;
+  std::string name = "";
+
+  void read(Reader &reader);
+  void write(Writer &writer) const;
 };
 
 
@@ -64,10 +68,17 @@ public:
   void handlePerform(double dt);
 
 
+  ExpressionValue get(ActorId actorId, const LocalVariableId &localVariableId) const;
+  void set(ActorId actorId, const LocalVariableId &localVariableId, ExpressionValue value);
+
+
   void debugDisplay();
 
 
 private:
+  friend struct LocalVariableId;
+  friend struct LocalVariableExpression;
+
   // Only present during play
   LocalVariablesMap map;
 };
