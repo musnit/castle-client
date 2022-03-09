@@ -10,7 +10,7 @@
 
 #define TOP_PADDING 0
 #define BOTTOM_UI_MIN_HEIGHT 150
-//#define DEBUG_CLICK_TO_ADVANCE
+// #define DEBUG_CLICK_TO_ADVANCE
 
 // creator.photo.url and initialCard.backgroundImage.smallUrl needed for DeckRemixesScreen
 const std::string GRAPHQL_DECK_FIELDS
@@ -609,6 +609,77 @@ void Feed::loadDeckAtIndex(int i) {
   }
 }
 
+void Feed::layoutCoreViews(int i) {
+  float FEED_BOTTOM_ACTIONS_INITIAL_RIGHT
+      = CoreViews::getInstance().getNumConstant("FEED_BOTTOM_ACTIONS_INITIAL_RIGHT");
+  float FEED_BOTTOM_ACTIONS_INITIAL_RIGHT_NO_REACTIONS
+      = CoreViews::getInstance().getNumConstant("FEED_BOTTOM_ACTIONS_INITIAL_RIGHT_NO_REACTIONS");
+  float FEED_BOTTOM_ACTIONS_TEXT_RIGHT_PADDING
+      = CoreViews::getInstance().getNumConstant("FEED_BOTTOM_ACTIONS_TEXT_RIGHT_PADDING");
+  float FEED_BOTTOM_ACTIONS_ICON_RIGHT_PADDING
+      = CoreViews::getInstance().getNumConstant("FEED_BOTTOM_ACTIONS_ICON_RIGHT_PADDING");
+  float FEED_BOTTOM_ACTIONS_SPACE_REACTION_BUTTON_AND_TEXT
+      = CoreViews::getInstance().getNumConstant(
+          "FEED_BOTTOM_ACTIONS_SPACE_REACTION_BUTTON_AND_TEXT");
+  float FEED_BOTTOM_ACTIONS_SPACE_COMMENT_BUTTON_AND_TEXT = CoreViews::getInstance().getNumConstant(
+      "FEED_BOTTOM_ACTIONS_SPACE_COMMENT_BUTTON_AND_TEXT");
+  float FEED_BOTTOM_ACTIONS_SPACE_REMIX_BUTTON_AND_TEXT
+      = CoreViews::getInstance().getNumConstant("FEED_BOTTOM_ACTIONS_SPACE_REMIX_BUTTON_AND_TEXT");
+
+  float vw = cardWidth / 100.0;
+  int currentRight;
+
+  auto reactionCount = decks[i].coreView->getProp("reaction-count", "text");
+  if (reactionCount.empty() || reactionCount == "0") {
+    currentRight = FEED_BOTTOM_ACTIONS_INITIAL_RIGHT_NO_REACTIONS * vw;
+    decks[i].coreView->updateProp("reaction-count", "visibility", "hidden");
+    currentRight += FEED_BOTTOM_ACTIONS_ICON_RIGHT_PADDING * vw;
+  } else {
+    currentRight = FEED_BOTTOM_ACTIONS_INITIAL_RIGHT * vw;
+    int reactionCountWidth = decks[i].coreView->getView("reaction-count").getContentWidth()
+        + FEED_BOTTOM_ACTIONS_TEXT_RIGHT_PADDING * vw;
+    decks[i].coreView->updateProp("reaction-count", "visibility", "visible");
+    decks[i].coreView->updateProp("reaction-count", "width", std::to_string(reactionCountWidth));
+    currentRight -= reactionCountWidth;
+    decks[i].coreView->updateProp("reaction-count", "right", std::to_string(currentRight), true);
+    currentRight += reactionCountWidth;
+    currentRight += FEED_BOTTOM_ACTIONS_SPACE_REACTION_BUTTON_AND_TEXT * vw;
+  }
+
+  decks[i].coreView->updateProp("reaction-icon", "right", std::to_string(currentRight));
+  currentRight += 5.5 * vw;
+
+  if (decks[i].coreView->getProp("comment-count", "text") == "0") {
+    decks[i].coreView->updateProp("comment-count", "visibility", "hidden");
+    currentRight += FEED_BOTTOM_ACTIONS_ICON_RIGHT_PADDING * vw;
+  } else {
+    int commentCountWidth = decks[i].coreView->getView("comment-count").getContentWidth()
+        + FEED_BOTTOM_ACTIONS_TEXT_RIGHT_PADDING * vw;
+    decks[i].coreView->updateProp("comment-count", "visibility", "visible");
+    decks[i].coreView->updateProp("comment-count", "width", std::to_string(commentCountWidth));
+    decks[i].coreView->updateProp("comment-count", "right", std::to_string(currentRight), true);
+    currentRight += commentCountWidth;
+    currentRight += FEED_BOTTOM_ACTIONS_SPACE_COMMENT_BUTTON_AND_TEXT * vw;
+  }
+
+  decks[i].coreView->updateProp("comment-icon", "right", std::to_string(currentRight));
+  currentRight += 5.5 * vw;
+
+  if (decks[i].coreView->getProp("remix-count", "visibility") == "visible") {
+    int remixCountWidth = decks[i].coreView->getView("remix-count").getContentWidth()
+        + FEED_BOTTOM_ACTIONS_TEXT_RIGHT_PADDING * vw;
+    decks[i].coreView->updateProp("remix-count", "width", std::to_string(remixCountWidth));
+    decks[i].coreView->updateProp("remix-count", "right", std::to_string(currentRight), true);
+    currentRight += remixCountWidth;
+    currentRight += FEED_BOTTOM_ACTIONS_SPACE_REMIX_BUTTON_AND_TEXT * vw;
+    decks[i].coreView->updateProp("remix-icon", "right", std::to_string(currentRight));
+    currentRight += 5.5 * vw;
+  }
+
+  currentRight += FEED_BOTTOM_ACTIONS_ICON_RIGHT_PADDING * vw;
+  decks[i].coreView->updateProp("overflow-icon", "right", std::to_string(currentRight));
+}
+
 void Feed::loadDeckFromDeckJson(int i) {
   decks[i].player = std::make_shared<Player>(bridge);
   decks[i].coreView
@@ -638,6 +709,7 @@ void Feed::loadDeckFromDeckJson(int i) {
       }
       decks[i].coreView->updateProp(
           "reaction-count", "text", FormatNumber::toString(*decks[i].reactionCount));
+      layoutCoreViews(i);
 
       decks[i].coreView->runAnimation("reaction-icon", "scale", 0.3, [i, this](float amount) {
         if (amount > 0.35 && decks[i].coreView) {
@@ -703,9 +775,7 @@ void Feed::loadDeckFromDeckJson(int i) {
           }
 
           int count = *decks[i].reactionCount;
-          if (count > 0) {
-            decks[i].coreView->updateProp("reaction-count", "text", FormatNumber::toString(count));
-          }
+          decks[i].coreView->updateProp("reaction-count", "text", FormatNumber::toString(count));
 
           if (decks[i].isCurrentUserReactionToggled == FeedItem::Unset) {
             bool isCurrentUserToggled = reader.boolean("isCurrentUserToggled", false);
@@ -738,6 +808,8 @@ void Feed::loadDeckFromDeckJson(int i) {
       });
     });
   });
+
+  layoutCoreViews(i);
 }
 
 void Feed::unloadDeckAtIndex(int i) {

@@ -31,6 +31,9 @@ public:
   }
   virtual void update(double dt) {
   }
+  virtual float getContentWidth() {
+    return savedWidth;
+  }
 
   void baseRead(Reader &reader, CoreView *parent,
       std::unordered_map<std::string, std::unordered_map<std::string, std::string>> *props,
@@ -102,13 +105,16 @@ public:
   void registerTapHandler(const std::function<void(std::string)> handler);
   void reset();
 
-  void updateProp(std::string viewId, std::string key, std::string value);
+  void updateProp(std::string viewId, std::string key, std::string value, bool force = false);
+  std::string getProp(std::string viewId, std::string key);
   void updateJSGestureProp(std::string key, std::string value);
   void runAnimation(std::string viewId, std::string key, float duration,
       const std::function<std::string(float)> easingFunction);
 
   void lock();
   void unlock();
+
+  CoreView &getView(std::string viewId);
 
 private:
   void renderView(CoreView *view, float currentLeft, float currentTop);

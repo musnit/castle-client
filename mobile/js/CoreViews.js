@@ -10,6 +10,14 @@ let FEED_TEXT_TOP = '1.2vw';
 
 let coreViews = {
   CONSTANTS: {
+    FEED_BOTTOM_ACTIONS_INITIAL_RIGHT: 16,
+    FEED_BOTTOM_ACTIONS_INITIAL_RIGHT_NO_REACTIONS: 10,
+    FEED_BOTTOM_ACTIONS_TEXT_RIGHT_PADDING: 3,
+    FEED_BOTTOM_ACTIONS_ICON_RIGHT_PADDING: 3,
+    FEED_BOTTOM_ACTIONS_SPACE_REACTION_BUTTON_AND_TEXT: 0.5,
+    FEED_BOTTOM_ACTIONS_SPACE_COMMENT_BUTTON_AND_TEXT: 1.0,
+    FEED_BOTTOM_ACTIONS_SPACE_REMIX_BUTTON_AND_TEXT: 0.8,
+
     /*
      * 0 - cubicEaseIn
      * 1 - cubicEaseInOut
@@ -96,6 +104,7 @@ let coreViews = {
 
       // Menu
       {
+        id: 'overflow-icon',
         filename: 'overflow.png',
         type: 'image',
         right: '56vw',
@@ -142,7 +151,7 @@ let coreViews = {
         fontSize: FEED_FONT_SIZE,
         fontFamily: 'Overlay',
         textAlignVertical: 'top',
-        //backgroundColor: '#f00',
+        // backgroundColor: '#f00',
         touch: 'enabled',
         onTap: (params) => {
           params.push('DeckRemixes', {
@@ -156,6 +165,7 @@ let coreViews = {
 
       // Comments
       {
+        id: 'comment-icon',
         filename: 'comment.png',
         type: 'image',
         right: '32.5vw',
@@ -164,6 +174,7 @@ let coreViews = {
         height: FEED_ICON_SIZE,
         resizeMode: 'contain',
         touch: 'enabled',
+        // backgroundColor: '#0f0',
         onTap: (params) => {
           params.onPressComments({
             deck: {
@@ -208,6 +219,7 @@ let coreViews = {
         height: FEED_ICON_SIZE,
         resizeMode: 'contain',
         touch: 'enabled',
+        // backgroundColor: '#0f0',
       },
       {
         id: 'reaction-count',

@@ -92,6 +92,7 @@ private:
   void renderCardAtPosition(int idx, float position, bool isActive);
   love::graphics::Canvas *newCanvas(int width, int height);
   void renderToCanvas(love::graphics::Canvas *canvas, const std::function<void()> &lambda);
+  void layoutCoreViews(int i);
 
   Lv &lv { Lv::getInstance() };
   Bridge &bridge;

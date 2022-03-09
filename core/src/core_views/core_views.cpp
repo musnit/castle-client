@@ -176,8 +176,9 @@ void CoreViewRenderer::unlock() {
   mutex.unlock();
 }
 
-void CoreViewRenderer::updateProp(std::string viewId, std::string key, std::string value) {
-  if (props[viewId][key] == value) {
+void CoreViewRenderer::updateProp(
+    std::string viewId, std::string key, std::string value, bool force) {
+  if (!force && props[viewId][key] == value) {
     return;
   }
 
@@ -196,6 +197,18 @@ void CoreViewRenderer::updateProp(std::string viewId, std::string key, std::stri
   archive.read([&](Reader &reader) {
     (views->first)->baseRead(reader, views->second, nullptr);
   });
+}
+
+std::string CoreViewRenderer::getProp(std::string viewId, std::string key) {
+  if (props.find(viewId) == props.end()) {
+    return "";
+  }
+
+  if (props[viewId].find(key) == props[viewId].end()) {
+    return "";
+  }
+
+  return props[viewId][key];
 }
 
 void CoreViewRenderer::updateJSGestureProp(std::string key, std::string value) {
@@ -241,6 +254,11 @@ std::optional<CoreView *> CoreViewRenderer::getViewAtPoint(CoreView *root, float
   } else {
     return std::nullopt;
   }
+}
+
+CoreView &CoreViewRenderer::getView(std::string viewId) {
+  auto views = getViewForId(layout.get(), viewId);
+  return *(views->first);
 }
 
 //
@@ -361,19 +379,19 @@ int CoreViews::readInt(
     if (cStr) {
       std::string str = *cStr;
 
-      if (str.at(str.length() - 1) == '%') {
+      if (str.length() > 0 && str.at(str.length() - 1) == '%') {
         auto percentStr = str.substr(0, str.length() - 1);
         auto percent = std::stof(percentStr);
         return percent * 0.01 * scale;
       }
 
-      if (str.substr(str.length() - 2) == "vw") {
+      if (str.length() > 1 && str.substr(str.length() - 2) == "vw") {
         auto numStr = str.substr(0, str.length() - 2);
         auto num = std::stof(numStr);
         return viewportWidth * 0.01 * num;
       }
 
-      if (str.substr(str.length() - 2) == "vh") {
+      if (str.length() > 1 && str.substr(str.length() - 2) == "vh") {
         auto numStr = str.substr(0, str.length() - 2);
         auto num = std::stof(numStr);
         return viewportHeight * 0.01 * num;
@@ -396,19 +414,19 @@ float CoreViews::readFloat(
     if (cStr) {
       std::string str = *cStr;
 
-      if (str.at(str.length() - 1) == '%') {
+      if (str.length() > 0 && str.at(str.length() - 1) == '%') {
         auto percentStr = str.substr(0, str.length() - 1);
         auto percent = std::stof(percentStr);
         return percent * 0.01 * scale;
       }
 
-      if (str.substr(str.length() - 2) == "vw") {
+      if (str.length() > 1 && str.substr(str.length() - 2) == "vw") {
         auto numStr = str.substr(0, str.length() - 2);
         auto num = std::stof(numStr);
         return viewportWidth * 0.01 * num;
       }
 
-      if (str.substr(str.length() - 2) == "vh") {
+      if (str.length() > 1 && str.substr(str.length() - 2) == "vh") {
         auto numStr = str.substr(0, str.length() - 2);
         auto num = std::stof(numStr);
         return viewportHeight * 0.01 * num;
@@ -824,6 +842,16 @@ class TextView : public CoreView {
   float color[3] = { 0, 0, 0 };
   float fontSize = 10;
   std::string fontFamily = "Overlay";
+  float fontPixelScale;
+  float worldFontSize;
+  float downscale;
+
+  float getContentWidth() {
+    createFont();
+
+    int width = font->getWidth(text);
+    return (float)width * downscale;
+  }
 
   void read(Reader &reader, int viewportWidth, int viewportHeight) {
     if (reader.has("text")) {
@@ -866,13 +894,7 @@ class TextView : public CoreView {
   }
 
   void render() {
-    auto fontPixelScale = float(lv.window.getDPIScale());
-    auto worldFontSize = std::clamp(fontSize, 1.0f, 30.0f) / 10;
-    if (!font) {
-      font = TextBehavior::getFont(
-          TextBehavior::getFontResource(fontFamily), worldFontSize * fontPixelScale);
-    }
-    auto downscale = 100.0 * worldFontSize / font->getHeight();
+    createFont();
 
     auto wrap = width / downscale;
 
@@ -888,6 +910,17 @@ class TextView : public CoreView {
     lv.graphics.setFont(font);
     lv.graphics.printf(
         { { text, { 1, 1, 1, 1 } } }, wrap, textAlign, love::Matrix4(0, y, 0, 1, 1, 0, 0, 0, 0));
+  }
+
+private:
+  void createFont() {
+    fontPixelScale = float(lv.window.getDPIScale());
+    worldFontSize = std::clamp(fontSize, 1.0f, 30.0f) / 10;
+    if (!font) {
+      font = TextBehavior::getFont(
+          TextBehavior::getFontResource(fontFamily), worldFontSize * fontPixelScale);
+    }
+    downscale = 100.0 * worldFontSize / font->getHeight();
   }
 };
 
