@@ -5,8 +5,8 @@ import { shareDeck } from './common/utilities';
 
 let FEED_ICON_SIZE = '5.5vw';
 let FEED_ICON_TOP = '0.2vw';
-let FEED_FONT_SIZE = '0.45vw';
-let FEED_TEXT_TOP = '1.2vw';
+let FEED_FONT_SIZE = '0.53vw';
+let FEED_TEXT_TOP = '0.95vw';
 
 let coreViews = {
   CONSTANTS: {
@@ -16,7 +16,7 @@ let coreViews = {
 
     FEED_BOTTOM_ACTIONS_REACTION_ICON_RIGHT_PADDING: 3,
     FEED_BOTTOM_ACTIONS_SPACE_REACTION_BUTTON_AND_TEXT: 0.5,
-    FEED_BOTTOM_ACTIONS_MAX_DIFF_BEFORE_REACTION_RELAYOUT: 1.0,
+    FEED_BOTTOM_ACTIONS_MAX_DIFF_BEFORE_REACTION_RELAYOUT: 1.5,
 
     FEED_BOTTOM_ACTIONS_COMMENT_ICON_RIGHT_PADDING: 3,
     FEED_BOTTOM_ACTIONS_SPACE_COMMENT_BUTTON_AND_TEXT: 1.0,
@@ -95,8 +95,8 @@ let coreViews = {
         type: 'text',
         left: '12vw',
         top: FEED_TEXT_TOP,
-        width: '24vw',
-        height: '100%',
+        width: '35vw',
+        height: '5vw',
         color: '#fff',
         textAlign: 'left',
         fontSize: FEED_FONT_SIZE,
@@ -260,6 +260,23 @@ let coreViews = {
             deckId: params.deckId,
           });
         },
+      },
+
+      // Caption
+      {
+        id: 'caption',
+        type: 'text',
+        left: '3.5vw',
+        top: '9vw',
+        width: '94vw',
+        height: '5vw',
+        color: '#fff',
+        textAlign: 'left',
+        fontSize: FEED_FONT_SIZE,
+        fontFamily: 'Overlay',
+        textAlignVertical: 'top',
+        // backgroundColor: '#f00',
+        // touch: 'enabled',
       },
     ],
   },

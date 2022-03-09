@@ -59,7 +59,6 @@ private:
   std::unique_ptr<love::Shader> shader;
   bool hasTouch = false;
   bool dragStarted = false;
-  bool deckIsFocused = false;
   bool ignoreCurrentTouch = false;
   float touchStartOffset = 0.0;
   float touchDuration = 0.0;

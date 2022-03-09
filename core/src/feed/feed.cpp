@@ -9,12 +9,12 @@
 #include "deck_plays.h"
 
 #define TOP_PADDING 0
-#define BOTTOM_UI_MIN_HEIGHT 150
+#define BOTTOM_UI_MIN_HEIGHT 140
 // #define DEBUG_CLICK_TO_ADVANCE
 
 // creator.photo.url and initialCard.backgroundImage.smallUrl needed for DeckRemixesScreen
 const std::string GRAPHQL_DECK_FIELDS
-    = "\ndeckId\nvariables\nchildDecksCount\ncreator {\nuserId\nusername\nphoto "
+    = "\ndeckId\ncaption\nvariables\nchildDecksCount\ncreator {\nuserId\nusername\nphoto "
       "{\nsmallAvatarUrl\nurl\n}\n}\ninitialCard {\n    "
       "    cardId\nsceneDataUrl\nbackgroundImage {\nsmallUrl}\n      }\n    commentsEnabled\n  "
       "comments "
@@ -752,6 +752,8 @@ void Feed::loadDeckFromDeckJson(int i) {
     decks[i].coreView->updateJSGestureProp("deckId", deckId);
     decks[i].coreView->updateJSGestureProp("deck", *decks[i].deckJson);
 
+    decks[i].coreView->updateProp("caption", "text", reader.str("caption", ""));
+
     reader.arr("variables", [&]() {
       decks[i].player->readVariables(reader);
     });
@@ -785,7 +787,10 @@ void Feed::loadDeckFromDeckJson(int i) {
     }
 
     reader.arr("reactions", [&]() {
+      bool foundReaction = false;
+
       reader.each([&]() {
+        foundReaction = true;
         std::string reactionId = reader.str("reactionId", "");
 
         if (reactionId == "fire") {
@@ -807,6 +812,24 @@ void Feed::loadDeckFromDeckJson(int i) {
           }
         }
       });
+
+      // Server doesn't send back fire at all if no reactions
+      if (!foundReaction) {
+        if (!decks[i].reactionCount) {
+          decks[i].reactionCount = 0;
+        }
+
+        int count = *decks[i].reactionCount;
+        decks[i].coreView->updateProp("reaction-count", "text", FormatNumber::toString(count));
+
+        if (decks[i].isCurrentUserReactionToggled == FeedItem::Unset) {
+          decks[i].isCurrentUserReactionToggled = FeedItem::False;
+        }
+
+        if (decks[i].isCurrentUserReactionToggled == FeedItem::True) {
+          decks[i].coreView->updateProp("reaction-icon", "filename", "fire-selected.png");
+        }
+      }
     });
 
     reader.obj("initialCard", [&]() {
