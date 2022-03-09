@@ -614,8 +614,12 @@ void Feed::layoutCoreViews(int i) {
       = CoreViews::getInstance().getNumConstant("FEED_BOTTOM_ACTIONS_INITIAL_RIGHT");
   float FEED_BOTTOM_ACTIONS_TEXT_RIGHT_PADDING
       = CoreViews::getInstance().getNumConstant("FEED_BOTTOM_ACTIONS_TEXT_RIGHT_PADDING");
-  float FEED_BOTTOM_ACTIONS_ICON_RIGHT_PADDING
-      = CoreViews::getInstance().getNumConstant("FEED_BOTTOM_ACTIONS_ICON_RIGHT_PADDING");
+  float FEED_BOTTOM_ACTIONS_REACTION_ICON_RIGHT_PADDING
+      = CoreViews::getInstance().getNumConstant("FEED_BOTTOM_ACTIONS_REACTION_ICON_RIGHT_PADDING");
+  float FEED_BOTTOM_ACTIONS_COMMENT_ICON_RIGHT_PADDING
+      = CoreViews::getInstance().getNumConstant("FEED_BOTTOM_ACTIONS_COMMENT_ICON_RIGHT_PADDING");
+  float FEED_BOTTOM_ACTIONS_OVERFLOW_ICON_RIGHT_PADDING
+      = CoreViews::getInstance().getNumConstant("FEED_BOTTOM_ACTIONS_OVERFLOW_ICON_RIGHT_PADDING");
   float FEED_BOTTOM_ACTIONS_SPACE_REACTION_BUTTON_AND_TEXT
       = CoreViews::getInstance().getNumConstant(
           "FEED_BOTTOM_ACTIONS_SPACE_REACTION_BUTTON_AND_TEXT");
@@ -633,7 +637,7 @@ void Feed::layoutCoreViews(int i) {
   auto reactionCount = decks[i].coreView->getProp("reaction-count", "text");
   if (reactionCount.empty() || reactionCount == "0") {
     decks[i].coreView->updateProp("reaction-count", "visibility", "hidden");
-    currentRight += FEED_BOTTOM_ACTIONS_ICON_RIGHT_PADDING * vw;
+    currentRight += FEED_BOTTOM_ACTIONS_REACTION_ICON_RIGHT_PADDING * vw;
   } else {
     int reactionCountWidth = decks[i].coreView->getView("reaction-count").getContentWidth()
         + FEED_BOTTOM_ACTIONS_TEXT_RIGHT_PADDING * vw;
@@ -666,7 +670,7 @@ void Feed::layoutCoreViews(int i) {
 
   if (decks[i].coreView->getProp("comment-count", "text") == "0") {
     decks[i].coreView->updateProp("comment-count", "visibility", "hidden");
-    currentRight += FEED_BOTTOM_ACTIONS_ICON_RIGHT_PADDING * vw;
+    currentRight += FEED_BOTTOM_ACTIONS_COMMENT_ICON_RIGHT_PADDING * vw;
   } else {
     int commentCountWidth = decks[i].coreView->getView("comment-count").getContentWidth()
         + FEED_BOTTOM_ACTIONS_TEXT_RIGHT_PADDING * vw;
@@ -691,7 +695,7 @@ void Feed::layoutCoreViews(int i) {
     currentRight += 5.5 * vw;
   }
 
-  currentRight += FEED_BOTTOM_ACTIONS_ICON_RIGHT_PADDING * vw;
+  currentRight += FEED_BOTTOM_ACTIONS_OVERFLOW_ICON_RIGHT_PADDING * vw;
   decks[i].coreView->updateProp("overflow-icon", "right", std::to_string(currentRight));
 }
 
