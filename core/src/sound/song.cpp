@@ -2,23 +2,32 @@
 #include "archive.h"
 #include "sound/instruments/sampler.h"
 #include "sound/instruments/drums.h"
+#include "editor/sound/track_preset.h"
 
 #include <unordered_set>
 
-std::unique_ptr<Song::Track> Song::makeDefaultTrack(const std::string &type) {
+std::unique_ptr<Song::Track> Song::makeDefaultTrack(const std::string &type, TrackPreset *preset) {
   auto track = std::make_unique<Song::Track>();
-  if (type == "drums") {
-    track->instrument = std::make_unique<Drums>();
-  } else if (type == "tone" || type == "sfxr" || type == "microphone" || type == "library") {
-    // sampler with specified sample type
-    track->instrument = std::make_unique<Sampler>();
-    Sampler *sampler = (Sampler *)track->instrument.get();
-    sampler->sample.type() = type;
+  if (preset) {
+    // read preset instrument
+    auto instrumentArchive = Archive::fromJson(preset->instrumentJson.c_str());
+    instrumentArchive.read([&](Reader &reader) {
+      track->instrument = Instrument::readVirtual(reader);
+    });
   } else {
-    // default sampler
-    track->instrument = std::make_unique<Sampler>();
+    if (type == "drums") {
+      track->instrument = std::make_unique<Drums>();
+    } else if (type == "tone" || type == "sfxr" || type == "microphone" || type == "library") {
+      // sampler with specified sample type
+      track->instrument = std::make_unique<Sampler>();
+      Sampler *sampler = (Sampler *)track->instrument.get();
+      sampler->sample.type() = type;
+    } else {
+      // default sampler
+      track->instrument = std::make_unique<Sampler>();
+    }
+    track->instrument->setInitialProps();
   }
-  track->instrument->setInitialProps();
   return track;
 }
 

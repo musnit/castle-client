@@ -9,6 +9,7 @@
 #include "playback_monitor.h"
 
 class Editor;
+class TrackPreset;
 
 class SoundTool {
 public:
@@ -50,7 +51,7 @@ public:
   Scene &getScene();
   Song::Track *getSelectedTrack();
   Pattern *getSelectedPattern();
-  void addTrack(const std::string &type);
+  void addTrack(const std::string &type, TrackPreset *preset);
   void updateSelectedComponent(std::string commandDescription);
   void discardChanges();
 

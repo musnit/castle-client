@@ -5,6 +5,8 @@
 #include "pattern.h"
 #include "instruments/instrument.h"
 
+class TrackPreset;
+
 //
 // A Song is a bank of Patterns and a list of Tracks.
 //
@@ -60,7 +62,8 @@ public:
       Track::Sequence &sequence, Track::Sequence::iterator &current, Clock &clock);
 
   static Track::Sequence::iterator sequenceElemAtTime(Track &track, double timeInSong);
-  static std::unique_ptr<Track> makeDefaultTrack(const std::string &type);
+  static std::unique_ptr<Track> makeDefaultTrack(
+      const std::string &type, TrackPreset *preset = nullptr);
 };
 
 inline Song::Track::Sequence::iterator Song::sequenceElemAtTime(

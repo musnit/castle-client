@@ -3,6 +3,7 @@
 #include "engine.h"
 #include "bridge.h"
 #include "behaviors/all.h"
+#include "track_preset.h"
 
 SoundTool::SoundTool(Editor &editor_)
     : editor(editor_) {
@@ -457,6 +458,7 @@ struct SoundToolAddTrackReceiver {
 
   struct Params {
     PROP(std::string, type);
+    PROP(std::string, presetName);
   } params;
 
   void receive(Engine &engine) {
@@ -464,19 +466,32 @@ struct SoundToolAddTrackReceiver {
     if (!editor)
       return;
 
-    editor->soundTool.addTrack(params.type());
+    if (params.presetName() != "") {
+      auto &preset = TrackPreset::get(params.presetName());
+      editor->soundTool.addTrack(params.type(), &preset);
+    } else {
+      editor->soundTool.addTrack(params.type(), nullptr);
+    }
   }
 };
 
-void SoundTool::addTrack(const std::string &type) {
+void SoundTool::addTrack(const std::string &type, TrackPreset *preset) {
   if (hasSong()) {
-    auto emptyPattern = Pattern::makeEmptyPattern();
-    auto defaultTrack = Song::makeDefaultTrack(type);
-    Song::Track::SequenceElem firstElem { emptyPattern->patternId(), true };
+    auto newPattern = Pattern::makeEmptyPattern();
+    auto defaultTrack = Song::makeDefaultTrack(type, preset);
+
+    if (preset) {
+      // read preset notes
+      auto notesArchive = Archive::fromJson(preset->notesJson.c_str());
+      notesArchive.read([&](Reader &reader) {
+        reader.read(newPattern->notes());
+      });
+    }
+    Song::Track::SequenceElem firstElem { newPattern->patternId(), true };
     defaultTrack->sequence.emplace(0, firstElem);
-    song->patterns.emplace(emptyPattern->patternId(), *emptyPattern);
+    song->patterns.emplace(newPattern->patternId(), *newPattern);
     song->tracks.push_back(std::move(defaultTrack));
-    setPatternId(emptyPattern->patternId(), 0);
+    setPatternId(newPattern->patternId(), 0);
     setTrackIndex(song->tracks.size() - 1);
     updateSelectedComponent("add track");
   }
