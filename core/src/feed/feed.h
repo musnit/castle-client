@@ -41,7 +41,7 @@ public:
   void suspend();
   void resume();
   void clearState();
-  void fetchInitialDecks(std::vector<std::string> deckIds);
+  void fetchInitialDecks(std::vector<std::string> deckIds, int initialDeckIndex = 0);
   void setWindowSize(int w, int h);
   bool hasScene();
   Scene &getScene();
@@ -72,6 +72,8 @@ private:
   float offset = 0.0;
   float elapsedTime = 0.0;
   float dragVelocity = 0.0;
+  bool hasSetWindowSize = false;
+  int initialDeckIndex = 0;
 
   int cardLeft = 0;
   int cardWidth = 800;

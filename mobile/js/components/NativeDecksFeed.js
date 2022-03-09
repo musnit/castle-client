@@ -1,4 +1,5 @@
 import React from 'react';
+import { View } from 'react-native';
 import { GameView } from '../game/GameView';
 import * as Constants from '../Constants';
 import * as CoreViews from '../CoreViews';
@@ -8,8 +9,18 @@ import { getDropdownItems, getOnSelectDropdownAction } from '../play/PlayDeckAct
 import { useSession, blockUser, reportDeck } from '../Session';
 import { sendAsync } from '../core/CoreEvents';
 import { useGameViewAndroidBackHandler } from '../common/GameViewAndroidBackHandler';
+import { ScreenHeader } from './ScreenHeader';
 
-export const NativeDecksFeed = ({ onPressComments, isCommentsOpen, onCloseComments }) => {
+export const NativeDecksFeed = ({
+  onPressComments,
+  isCommentsOpen,
+  onCloseComments,
+  deckIds,
+  initialDeckIndex,
+  showBackButton,
+  title = '',
+  screenId,
+}) => {
   const { userId: signedInUserId, isAnonymous, isMuted, setIsMuted } = useSession();
   const { showPopover } = usePopover();
   const container = React.useRef(null);
@@ -24,7 +35,7 @@ export const NativeDecksFeed = ({ onPressComments, isCommentsOpen, onCloseCommen
   const onSetIsMuted = React.useCallback((isMuted) => {
     setIsMuted(isMuted);
     sendAsync('SET_SOUND_ENABLED', { enabled: isMuted ? false : true });
-  })
+  });
 
   let onSelectDropdownAction = getOnSelectDropdownAction({
     deck,
@@ -103,18 +114,29 @@ export const NativeDecksFeed = ({ onPressComments, isCommentsOpen, onCloseCommen
   }, [isCommentsOpen, onCloseComments]);
   useGameViewAndroidBackHandler({ onHardwareBackPress });
 
-  return (
+  let gameView = (
     <GameView
       ref={container}
       initialParams={JSON.stringify({
-        screenId: 'featuredFeed',
+        screenId,
         useNativeFeed: true,
-        //nativeFeedDeckIds: ['Qj_sfZaIs', 'Od2Trh95G', '40pCTkzN2', 'PZS8by31X', 'p70imV9b5', 'rZqvqB_vl', 'BzerSltK9', 'kgETrH4RV', 'FHb49f-0n', 'AuKZO3tff'],
-        //nativeFeedDeckIds: ['Cc9V03LFc'],
+        nativeFeedDeckIds: deckIds,
+        initialDeckIndex,
         textOverlayStyle: Constants.CORE_OVERLAY_TEXT_STYLE,
       })}
       coreViews={CoreViews.getCoreViews()}
       paused={isCommentsOpen}
     />
+  );
+
+  if (!showBackButton) {
+    return gameView;
+  }
+
+  return (
+    <View style={{flex: 1}}>
+      <ScreenHeader title={title} />
+      {gameView}
+    </View>
   );
 };

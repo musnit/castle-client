@@ -98,6 +98,9 @@ void Feed::setWindowSize(int w, int h) {
   float aspectRatio = (float)w / (float)(h - BOTTOM_UI_MIN_HEIGHT);
   float cardAspectRatio = 800.0 / 1120.0;
 
+  int oldCardWidth = cardWidth;
+  int oldCardHeight = cardHeight;
+
   if (aspectRatio > cardAspectRatio) {
     // screen is wide
     cardHeight = h - BOTTOM_UI_MIN_HEIGHT;
@@ -111,6 +114,20 @@ void Feed::setWindowSize(int w, int h) {
   }
 
   feedItemWidth = w;
+
+  if (!hasSetWindowSize) {
+    offset = -initialDeckIndex * feedItemWidth;
+  }
+
+  if (cardWidth != oldCardWidth || cardHeight != oldCardHeight) {
+    for (size_t i = 0; i < decks.size(); i++) {
+      if (decks[i].coreView) {
+        decks[i].coreView->updateProp("container", "top", std::to_string(cardHeight + 20));
+      }
+    }
+  }
+
+  hasSetWindowSize = true;
 }
 
 int Feed::getCurrentIndex() {
@@ -471,6 +488,10 @@ void Feed::makeShader() {
 }
 
 void Feed::draw() {
+  if (!hasSetWindowSize) {
+    return;
+  }
+
   if (!shader) {
     makeShader();
   }
@@ -502,7 +523,9 @@ void Feed::resume() {
 void Feed::clearState() {
 }
 
-void Feed::fetchInitialDecks(std::vector<std::string> deckIds) {
+void Feed::fetchInitialDecks(std::vector<std::string> deckIds, int initialDeckIndex_) {
+  initialDeckIndex = initialDeckIndex_;
+
   if (deckIds.size() > 0) {
     usingFixedDecksList = true;
     for (size_t i = 0; i < deckIds.size(); i++) {

@@ -58,10 +58,9 @@ const ProfileDecksGrid = ({ user, refreshing, onRefresh, error, isMe, ...props }
         push(
           'PlayDeck',
           {
-            // TODO: support list of decks
-            decks: [deck],
-            initialDeckIndex: 0,
-            title: `@${user.username}`,
+            decks,
+            initialDeckIndex: index,
+            title: `@${user.username}'s Decks`,
           },
           {
             isFullscreen: true,
