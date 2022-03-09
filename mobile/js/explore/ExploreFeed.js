@@ -109,9 +109,9 @@ export const ExploreFeed = ({ route }) => {
             navigate(
               'PlayDeck',
               {
-                // TODO: support passing all decks here
-                decks: [deck],
-                initialDeckIndex: 0,
+                // TODO: support loading more decks from native feed
+                decks,
+                initialDeckIndex: index,
                 title: 'Recent',
               },
               {

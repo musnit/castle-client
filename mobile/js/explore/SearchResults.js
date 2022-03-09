@@ -131,12 +131,12 @@ export const SearchResults = ({ query, onCancel, initialResults }) => {
     []
   );
   const onSelectDeck = React.useCallback(
-    (deck) => {
+    (deck, index) => {
       navigate(
         'PlayDeck',
         {
-          decks: [deck],
-          initialDeckIndex: 0,
+          decks: results.decks,
+          initialDeckIndex: index,
           title: 'Search results',
         },
         {
@@ -144,7 +144,7 @@ export const SearchResults = ({ query, onCancel, initialResults }) => {
         }
       );
     },
-    [navigate]
+    [navigate, results.decks]
   );
 
   const usersLimit = results?.decks?.length ? 3 : 20; // limit users shown if there are decks too

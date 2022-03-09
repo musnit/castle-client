@@ -73,8 +73,8 @@ export const ExploreRow = ({ feed, last }) => {
       navigate(
         'PlayDeck',
         {
-          decks: [deck],
-          initialDeckIndex: 0,
+          decks: feed.decks,
+          initialDeckIndex: index,
           title: feed.title,
         },
         {
