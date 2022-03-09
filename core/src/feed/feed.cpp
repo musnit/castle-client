@@ -612,8 +612,6 @@ void Feed::loadDeckAtIndex(int i) {
 void Feed::layoutCoreViews(int i) {
   float FEED_BOTTOM_ACTIONS_INITIAL_RIGHT
       = CoreViews::getInstance().getNumConstant("FEED_BOTTOM_ACTIONS_INITIAL_RIGHT");
-  float FEED_BOTTOM_ACTIONS_INITIAL_RIGHT_NO_REACTIONS
-      = CoreViews::getInstance().getNumConstant("FEED_BOTTOM_ACTIONS_INITIAL_RIGHT_NO_REACTIONS");
   float FEED_BOTTOM_ACTIONS_TEXT_RIGHT_PADDING
       = CoreViews::getInstance().getNumConstant("FEED_BOTTOM_ACTIONS_TEXT_RIGHT_PADDING");
   float FEED_BOTTOM_ACTIONS_ICON_RIGHT_PADDING
@@ -625,24 +623,41 @@ void Feed::layoutCoreViews(int i) {
       "FEED_BOTTOM_ACTIONS_SPACE_COMMENT_BUTTON_AND_TEXT");
   float FEED_BOTTOM_ACTIONS_SPACE_REMIX_BUTTON_AND_TEXT
       = CoreViews::getInstance().getNumConstant("FEED_BOTTOM_ACTIONS_SPACE_REMIX_BUTTON_AND_TEXT");
+  float FEED_BOTTOM_ACTIONS_MAX_DIFF_BEFORE_REACTION_RELAYOUT
+      = CoreViews::getInstance().getNumConstant(
+          "FEED_BOTTOM_ACTIONS_MAX_DIFF_BEFORE_REACTION_RELAYOUT");
 
   float vw = cardWidth / 100.0;
-  int currentRight;
+  int currentRight = FEED_BOTTOM_ACTIONS_INITIAL_RIGHT * vw;
 
   auto reactionCount = decks[i].coreView->getProp("reaction-count", "text");
   if (reactionCount.empty() || reactionCount == "0") {
-    currentRight = FEED_BOTTOM_ACTIONS_INITIAL_RIGHT_NO_REACTIONS * vw;
     decks[i].coreView->updateProp("reaction-count", "visibility", "hidden");
     currentRight += FEED_BOTTOM_ACTIONS_ICON_RIGHT_PADDING * vw;
   } else {
-    currentRight = FEED_BOTTOM_ACTIONS_INITIAL_RIGHT * vw;
     int reactionCountWidth = decks[i].coreView->getView("reaction-count").getContentWidth()
         + FEED_BOTTOM_ACTIONS_TEXT_RIGHT_PADDING * vw;
     decks[i].coreView->updateProp("reaction-count", "visibility", "visible");
-    decks[i].coreView->updateProp("reaction-count", "width", std::to_string(reactionCountWidth));
-    currentRight -= reactionCountWidth;
-    decks[i].coreView->updateProp("reaction-count", "right", std::to_string(currentRight), true);
-    currentRight += reactionCountWidth;
+
+    auto oldReactionCountWidthStr = decks[i].coreView->getProp("reaction-count", "width");
+    int oldReactionCountWidth = FormatNumber::isInt(oldReactionCountWidthStr)
+        ? std::stoi(oldReactionCountWidthStr)
+        : 1000000;
+    auto oldReactionCountRightStr = decks[i].coreView->getProp("reaction-count", "right");
+    int oldReactionCountRight = FormatNumber::isInt(oldReactionCountRightStr)
+        ? std::stoi(oldReactionCountRightStr)
+        : 1000000;
+
+    if (abs(oldReactionCountWidth - reactionCountWidth)
+            > FEED_BOTTOM_ACTIONS_MAX_DIFF_BEFORE_REACTION_RELAYOUT * vw
+        || abs(oldReactionCountRight - currentRight)
+            > FEED_BOTTOM_ACTIONS_MAX_DIFF_BEFORE_REACTION_RELAYOUT * vw) {
+      decks[i].coreView->updateProp("reaction-count", "width", std::to_string(reactionCountWidth));
+      decks[i].coreView->updateProp("reaction-count", "right", std::to_string(currentRight), true);
+      currentRight += reactionCountWidth;
+    } else {
+      currentRight += oldReactionCountWidth;
+    }
     currentRight += FEED_BOTTOM_ACTIONS_SPACE_REACTION_BUTTON_AND_TEXT * vw;
   }
 

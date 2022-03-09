@@ -32,4 +32,11 @@ std::string toString(float value) {
 
   return prefix + round(value) + unit;
 }
+
+bool isInt(const std::string &s) {
+  std::string::const_iterator it = s.begin();
+  while (it != s.end() && (std::isdigit(*it) || *it == '-'))
+    ++it;
+  return !s.empty() && it == s.end();
+}
 }
