@@ -133,6 +133,27 @@ const groupedEntries = [
         preset: 'dnb',
         description: 'Higher clock bpm recommended',
       },
+      {
+        id: 'sampler-8-bit',
+        icon: 'instrument-sfxr',
+        title: '8-bit Beat',
+        preset: '8-bit beat',
+        description: 'A lo-fi beat made from subnoise',
+      },
+      {
+        id: 'sampler-square',
+        icon: 'instrument-tone',
+        title: 'Square Bass',
+        preset: 'square bass',
+        description: 'A melodic bass synth',
+      },
+      {
+        id: 'sampler-prelude',
+        icon: 'instrument-tone',
+        title: 'Prelude',
+        preset: 'prelude',
+        description: 'An example of a famous melody',
+      },
     ],
   },
 ];
