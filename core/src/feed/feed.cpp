@@ -124,6 +124,8 @@ void Feed::setWindowSize(int w, int h) {
       if (decks[i].coreView) {
         decks[i].coreView->updateProp("container", "top", std::to_string(cardHeight + 20));
       }
+
+      decks[i].canvas.reset();
     }
   }
 
