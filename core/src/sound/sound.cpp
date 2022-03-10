@@ -94,9 +94,18 @@ void Sound::resume() {
     clockThread = new ClockThread(*this);
     clockThread->start();
   }
+  if (Sound::hasInitializedSoloud) {
+    // if we tried to play any sounds before resuming, unleash them now
+    for (auto handle : pausedSoloudHandles) {
+      Sound::soloud.setPause(handle, 0);
+    }
+    pausedSoloudHandles.clear();
+  }
+  isRunning = true;
 }
 
 void Sound::suspend() {
+  isRunning = false;
   // do not clear streams - just pause time
   stopCurrentlyPlayingSounds();
   if (clockThread) {
@@ -107,10 +116,14 @@ void Sound::suspend() {
 }
 
 void Sound::clear() {
+  // pause time
   suspend();
+
+  // forget all state
   sfxrSounds.clear();
   urlSounds.clear();
-  streams.clear();
+  pausedSoloudHandles.clear();
+  clearStreams();
   clocks.clear();
 }
 
@@ -123,7 +136,6 @@ void Sound::stopCurrentlyPlayingSounds() {
       Sound::soloud.stopAudioSource(*source);
     }
   }
-  clearStreams();
 }
 
 
@@ -262,16 +274,11 @@ void Sound::playUrl(float playbackRate, float amplitude, const std::string &url)
 
         sound->loadMem(response.data, response.length, true, true);
         urlSounds.insert(std::make_pair(url, std::move(sound)));
-
-        int handle = Sound::soloud.play(*urlSounds[url]);
-        Sound::soloud.setVolume(handle, amplitude);
-        Sound::soloud.setRelativePlaySpeed(handle, playbackRate);
+        playSoloudSource(*urlSounds[url], playbackRate, amplitude);
       }
     });
   } else {
-    int handle = Sound::soloud.play(*urlSounds[url]);
-    Sound::soloud.setVolume(handle, amplitude);
-    Sound::soloud.setRelativePlaySpeed(handle, playbackRate);
+    playSoloudSource(*urlSounds[url], playbackRate, amplitude);
   }
 }
 
@@ -310,9 +317,7 @@ void Sound::playEffect(float playbackRate, float amplitude, const std::string &c
     sfxrSounds.insert(std::make_pair(key, std::move(sound)));
   }
 
-  int handle = Sound::soloud.play(*sfxrSounds[key]);
-  Sound::soloud.setVolume(handle, amplitude);
-  Sound::soloud.setRelativePlaySpeed(handle, playbackRate);
+  playSoloudSource(*sfxrSounds[key], playbackRate, amplitude);
 }
 
 void Sound::playTone(float playbackRate, float amplitude, int midiNote, const std::string &waveform,
@@ -344,9 +349,7 @@ void Sound::playTone(float playbackRate, float amplitude, int midiNote, const st
     sfxrSounds.insert(std::make_pair(key, std::move(sound)));
   }
 
-  int handle = Sound::soloud.play(*sfxrSounds[key]);
-  Sound::soloud.setVolume(handle, amplitude);
-  Sound::soloud.setRelativePlaySpeed(handle, playbackRate);
+  int handle = playSoloudSource(*sfxrSounds[key], playbackRate, amplitude);
   Sound::soloud.setLooping(handle, true);
   Sound::soloud.setLoopPoint(handle, attack);
   Sound::soloud.fadeVolume(handle, 0, attack + release);
@@ -367,12 +370,11 @@ void Sound::playSfxr(const std::string &sfxrKey, float amplitude, float soloudCl
   if (!Sound::isEnabled) {
     return;
   }
-  if (soloudClock > 0.0f) {
+  if (soloudClock > 0.0f && isRunning) {
     int handle = Sound::soloud.playClocked(soloudClock, *sfxrSounds[sfxrKey]);
     Sound::soloud.setVolume(handle, amplitude);
   } else {
-    int handle = Sound::soloud.play(*sfxrSounds[sfxrKey]);
-    Sound::soloud.setVolume(handle, amplitude);
+    playSoloudSource(*sfxrSounds[sfxrKey], 1.0f, amplitude);
   }
 }
 

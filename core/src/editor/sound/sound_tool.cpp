@@ -239,6 +239,7 @@ void SoundTool::stopPlayback() {
   isPlaying = false;
   playbackMonitor.clear();
   scene.getSound().stopCurrentlyPlayingSounds();
+  scene.getSound().clearStreams();
 }
 
 void SoundTool::togglePlayback() {
