@@ -369,9 +369,14 @@ const ExpressionMeetsCondition = ({ response, context }) => {
 
 const VariableMeetsCondition = ({ response, context }) => {
   const changeAllParams = {
-    paramNames: ['variableId', 'comparison', 'value'],
+    paramNames: ['variableId', 'localVariableName', 'comparison', 'value'],
     paramValues: { ...response.params },
   };
+  const isLocal =
+    response.params && (!response.params.variableId || response.params.variableId === '(none)');
+  const name = isLocal
+    ? response.params.name
+    : getVariableName(response.params?.variableId, context.variables);
   if (response.params) {
     return [
       {
@@ -380,7 +385,7 @@ const VariableMeetsCondition = ({ response, context }) => {
       },
       {
         type: 'selectParamSheet',
-        label: formatVariableName(getVariableName(response.params.variableId, context.variables)),
+        label: formatVariableName(name),
         ...changeAllParams,
       },
       {
@@ -761,19 +766,24 @@ const ResetVariable = ({ response, context }) => {
 
 const SetVariable = ({ response, context }) => {
   const changeAllParams = {
-    paramNames: ['variableId', 'setToValue'],
+    paramNames: ['variableId', 'localVariableId', 'setToValue'],
     paramValues: {
       ...response.params,
     },
   };
+  const isLocal =
+    response.params && (!response.params.variableId || response.params.variableId === '(none)');
+  const name = isLocal
+    ? response.params.name
+    : getVariableName(response.params?.variableId, context.variables);
   return [
     {
       type: 'showEntryOptions',
-      label: 'Modify variable value',
+      label: isLocal ? 'Modify local variable value' : 'Modify variable value',
     },
     {
       type: 'selectParamSheet',
-      label: formatVariableName(getVariableName(response.params?.variableId, context.variables)),
+      label: formatVariableName(name),
       ...changeAllParams,
     },
     {

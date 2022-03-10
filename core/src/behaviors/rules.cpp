@@ -1139,18 +1139,30 @@ struct SetVariableResponse : BaseResponse {
 
   struct Params {
     PROP(Variable, variableId, .label("variable"));
+    PROP(LocalVariableId, localVariableId, .label("Local variable name"));
     PROP(ExpressionRef, setToValue, .label("set to value"));
     PROP(bool, relative);
   } params;
 
   void run(RuleContext &ctx) override {
-    auto variable = params.variableId();
-    auto &variables = ctx.getScene().getVariables();
     auto value = params.setToValue().eval(ctx);
-    if (params.relative() && value.is<double>()) {
-      variables.set(variable, variables.get(variable).as<double>() + value.as<double>());
+    if (auto variableId = params.variableId(); variableId.token.index >= 0) {
+      auto &variables = ctx.getScene().getVariables();
+      if (params.relative() && value.is<double>()) {
+        variables.set(variableId, variables.get(variableId).as<double>() + value.as<double>());
+      } else {
+        variables.set(variableId, value);
+      }
     } else {
-      variables.set(variable, value);
+      auto &localVariablesBehavior = ctx.getScene().getBehaviors().byType<LocalVariablesBehavior>();
+      auto localVariableId = params.localVariableId();
+      if (params.relative() && value.is<double>()) {
+        auto currValue = localVariablesBehavior.get(ctx.actorId, localVariableId).as<double>();
+        localVariablesBehavior.set(
+            ctx.actorId, params.localVariableId(), currValue + value.as<double>());
+      } else {
+        localVariablesBehavior.set(ctx.actorId, localVariableId, value);
+      }
     }
   }
 };
@@ -1163,14 +1175,22 @@ struct VariableMeetsConditionResponse : BaseResponse {
 
   struct Params {
     PROP(Variable, variableId, .label("variable"));
+    PROP(LocalVariableId, localVariableId, .label("Local variable name"));
     PROP(ExpressionComparison, comparison);
     PROP(ExpressionRef, value);
   } params;
 
   bool eval(RuleContext &ctx) override {
-    auto &variables = ctx.getScene().getVariables();
     auto value = params.value().eval(ctx);
-    return params.comparison().compare(variables.get(params.variableId()), value);
+    if (auto variableId = params.variableId(); variableId.token.index >= 0) {
+      auto &variables = ctx.getScene().getVariables();
+      return params.comparison().compare(variables.get(params.variableId()), value);
+    } else {
+      auto &localVariablesBehavior = ctx.getScene().getBehaviors().byType<LocalVariablesBehavior>();
+      auto currValue
+          = localVariablesBehavior.get(ctx.actorId, params.localVariableId()).as<double>();
+      return params.comparison().compare(currValue, value);
+    }
   }
 };
 
