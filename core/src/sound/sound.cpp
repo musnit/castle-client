@@ -90,18 +90,20 @@ void Sound::addClock(Clock *clock) {
 }
 
 void Sound::resume() {
-  if (!clockThread) {
-    clockThread = new ClockThread(*this);
-    clockThread->start();
-  }
-  if (Sound::hasInitializedSoloud) {
-    // if we tried to play any sounds before resuming, unleash them now
-    for (auto handle : pausedSoloudHandles) {
-      Sound::soloud.setPause(handle, 0);
+  if (!isRunning) {
+    if (!clockThread) {
+      clockThread = new ClockThread(*this);
+      clockThread->start();
     }
-    pausedSoloudHandles.clear();
+    if (Sound::hasInitializedSoloud) {
+      // if we tried to play any sounds before resuming, unleash them now
+      for (auto handle : pausedSoloudHandles) {
+        Sound::soloud.setPause(handle, 0);
+      }
+      pausedSoloudHandles.clear();
+    }
+    isRunning = true;
   }
-  isRunning = true;
 }
 
 void Sound::suspend() {
