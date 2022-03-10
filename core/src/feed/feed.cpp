@@ -321,9 +321,7 @@ void Feed::update(double dt) {
       }
 
       if (!paused) {
-        if (decks[idx].player) {
-          decks[idx].player->resume();
-        }
+        decks[idx].player->resume();
         decks[idx].player->update(dt);
         decks[idx].hasRunUpdateSinceLastRender = true;
 
@@ -342,7 +340,10 @@ void Feed::update(double dt) {
         decks[i].player->update(dt);
         decks[i].hasRunUpdate = true;
         decks[i].hasRunUpdateSinceLastRender = true;
-        decks[i].player->suspend();
+
+        if (i != (size_t)idx) {
+          decks[i].player->suspend();
+        }
       }
     }
 

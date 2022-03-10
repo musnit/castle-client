@@ -98,10 +98,7 @@ void Sound::resume() {
 
 void Sound::suspend() {
   // do not clear streams - just pause time
-  if (Sound::hasInitializedSoloud) {
-    // stop currently playing sounds
-    Sound::soloud.stopAll();
-  }
+  stopCurrentlyPlayingSounds();
   if (clockThread) {
     clockThread->finish();
     clockThread->wait();
@@ -110,12 +107,7 @@ void Sound::suspend() {
 }
 
 void Sound::clear() {
-  stopCurrentlyPlayingSounds();
-  if (clockThread) {
-    clockThread->finish();
-    clockThread->wait();
-    clockThread = nullptr;
-  }
+  suspend();
   sfxrSounds.clear();
   urlSounds.clear();
   streams.clear();
