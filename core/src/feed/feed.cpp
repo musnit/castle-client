@@ -455,6 +455,12 @@ void Feed::renderCardTexture(love::Texture *texture) {
     currentShader->updateUniform(info, 1);
   }
 
+  if (!texture) {
+    auto info = currentShader->getUniformInfo("time");
+    info->floats[0] = elapsedTime;
+    currentShader->updateUniform(info, 1);
+  }
+
   quad->setTexture(texture);
   lv.graphics.setColor({ 1.0, 1.0, 1.0, 1.0 });
   quad->draw(&lv.graphics, love::Matrix4(0.0, 0.0, 0, cardWidth, cardHeight, 0, 0, 0, 0));
@@ -504,6 +510,7 @@ void Feed::makeShader() {
     uniform float radius;
     uniform float width;
     uniform float height;
+    uniform float time;
 
     vec4 effect(vec4 color, Image tex, vec2 texCoords, vec2 screenCoords) {
       float x = texCoords.x * width;
@@ -526,7 +533,7 @@ void Feed::makeShader() {
         discard;
       }
 
-      return vec4(0.15, 0.15, 0.15, 1.0);
+      return vec4(0.15, 0.15, 0.15, 0.75 + cos(time * 4.0) * 0.25);
     }
   )";
   loadingShader.reset(
