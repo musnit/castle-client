@@ -44,10 +44,20 @@ export const PlayDeckScreen = ({ decks, initialDeckIndex = 0, title, route }) =>
   );
 
   const [isCommentsVisible, setIsCommentsVisible] = React.useState(false);
-  const openComments = React.useCallback(() => setIsCommentsVisible(true), []);
+  const [commentsDeck, setCommentsDeck] = React.useState(null);
+  const openComments = React.useCallback(({ deck }) => {
+    if (deck) {
+      setCommentsDeck(deck);
+    }
+    setIsCommentsVisible(true);
+  }, []);
   const closeComments = React.useCallback(() => setIsCommentsVisible(false), []);
 
   React.useEffect(closeComments, [decks]);
+
+  React.useEffect(() => {
+    setCommentsDeck(deck);
+  }, [deck]);
 
   const { pop } = useNavigation();
   const onHardwareBackPress = React.useCallback(() => {
@@ -69,7 +79,7 @@ export const PlayDeckScreen = ({ decks, initialDeckIndex = 0, title, route }) =>
             onPressComments={openComments}
             isCommentsOpen={isCommentsVisible}
             onCloseComments={closeComments}
-            deckIds={decks.map(deck => deck.deckId)}
+            deckIds={decks.map((deck) => deck.deckId)}
             initialDeckIndex={initialDeckIndex}
             screenId={title}
             title={title}
@@ -77,7 +87,7 @@ export const PlayDeckScreen = ({ decks, initialDeckIndex = 0, title, route }) =>
           />
         ) : (
           <DecksFeed
-            decks={decks}
+            decks={[deck]}
             isPlaying={true}
             onPressDeck={({ deckId }) => {
               if (deckId) {
@@ -97,7 +107,7 @@ export const PlayDeckScreen = ({ decks, initialDeckIndex = 0, title, route }) =>
           isFullScreen
           isOpen={isCommentsVisible}
           onClose={closeComments}
-          deck={deck}
+          deck={commentsDeck}
         />
       </PopoverProvider>
     </SafeAreaView>
