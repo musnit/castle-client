@@ -237,8 +237,8 @@ std::optional<CoreView *> CoreViewRenderer::getViewAtPoint(CoreView *root, float
     return std::nullopt;
   }
 
-  if (x >= root->left && x <= root->left + root->width && y >= root->top
-      && y <= root->top + root->height) {
+  if (x >= root->left - root->hitSlopLeft && x <= root->left + root->width + root->hitSlopRight
+      && y >= root->top - root->hitSlopTop && y <= root->top + root->height + root->hitSlopBottom) {
     for (int i = root->children.size() - 1; i >= 0; i--) {
       auto childResult = getViewAtPoint(root->children[i].get(), x - root->left, y - root->top);
       if (childResult) {
@@ -495,6 +495,26 @@ void CoreView::baseRead(Reader &reader, CoreView *parent,
 
     width = newHeight;
     height = newHeight;
+  }
+
+  if (reader.has("hitSlopLeft")) {
+    hitSlopLeft = CoreViews::getInstance().readInt(
+        reader, "hitSlopLeft", parentWidth, viewportWidth, viewportHeight);
+  }
+
+  if (reader.has("hitSlopRight")) {
+    hitSlopRight = CoreViews::getInstance().readInt(
+        reader, "hitSlopRight", parentWidth, viewportWidth, viewportHeight);
+  }
+
+  if (reader.has("hitSlopTop")) {
+    hitSlopTop = CoreViews::getInstance().readInt(
+        reader, "hitSlopTop", parentHeight, viewportWidth, viewportHeight);
+  }
+
+  if (reader.has("hitSlopBottom")) {
+    hitSlopBottom = CoreViews::getInstance().readInt(
+        reader, "hitSlopBottom", parentHeight, viewportWidth, viewportHeight);
   }
 
   if (reader.has("id")) {

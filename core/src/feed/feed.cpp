@@ -125,6 +125,11 @@ void Feed::setWindowSize(int w, int h) {
         decks[i].coreView->updateProp("container", "top", std::to_string(cardHeight + 20));
       }
 
+      if (decks[i].player && decks[i].player->hasScene()) {
+        decks[i].player->getScene().getGesture().setBounds(
+            cardLeft, TOP_PADDING, cardWidth, cardHeight);
+      }
+
       decks[i].canvas.reset();
     }
   }

@@ -84,8 +84,12 @@ let coreViews = {
         top: 0,
         width: '6.4vw',
         height: '6.4vw',
+        hitSlopLeft: '4vw',
+        hitSlopBottom: '5vw',
+        hitSlopTop: '5vw',
         resizeMode: 'contain',
         touch: 'enabled',
+        // backgroundColor: '#f00',
         onTap: (params) => {
           params.push('Profile', { userId: params.userId });
         },
@@ -103,6 +107,9 @@ let coreViews = {
         fontFamily: 'Overlay',
         textAlignVertical: 'top',
         // backgroundColor: '#f00',
+        hitSlopLeft: '3vw',
+        hitSlopBottom: '5vw',
+        hitSlopTop: '5vw',
         touch: 'enabled',
         onTap: (params) => {
           params.push('Profile', { userId: params.userId });
@@ -118,8 +125,13 @@ let coreViews = {
         top: '0.4vw',
         width: FEED_ICON_SIZE,
         height: FEED_ICON_SIZE,
+        hitSlopLeft: '2vw',
+        hitSlopRight: '2vw',
+        hitSlopBottom: '5vw',
+        hitSlopTop: '5vw',
         resizeMode: 'contain',
         touch: 'enabled',
+        // backgroundColor: '#f00',
         onTap: (params) => {
           params.onShowPopover(params);
         },
@@ -135,10 +147,13 @@ let coreViews = {
         top: FEED_ICON_TOP,
         width: FEED_ICON_SIZE,
         height: FEED_ICON_SIZE,
+        hitSlopLeft: '2vw',
+        hitSlopBottom: '5vw',
+        hitSlopTop: '5vw',
         resizeMode: 'contain',
         touch: 'enabled',
+        // backgroundColor: '#0f0',
         onTap: (params) => {
-          console.log(params)
           params.push('DeckRemixes', {
             deck: JSON.parse(params.deck),
             isFullscreen: true,
@@ -152,7 +167,10 @@ let coreViews = {
         right: '37vw',
         top: FEED_TEXT_TOP,
         width: '8vw',
-        height: '100%',
+        height: '5vw',
+        hitSlopLeft: '2vw',
+        hitSlopBottom: '5vw',
+        hitSlopTop: '5vw',
         color: '#fff',
         textAlign: 'left',
         fontSize: FEED_FONT_SIZE,
@@ -162,9 +180,7 @@ let coreViews = {
         touch: 'enabled',
         onTap: (params) => {
           params.push('DeckRemixes', {
-            deck: {
-              deckId: params.deckId,
-            },
+            deck: JSON.parse(params.deck),
             isFullscreen: true,
           });
         },
@@ -179,6 +195,8 @@ let coreViews = {
         top: FEED_ICON_TOP,
         width: FEED_ICON_SIZE,
         height: FEED_ICON_SIZE,
+        hitSlopBottom: '5vw',
+        hitSlopTop: '5vw',
         resizeMode: 'contain',
         touch: 'enabled',
         // backgroundColor: '#0f0',
@@ -197,7 +215,10 @@ let coreViews = {
         right: '23.5vw',
         top: FEED_TEXT_TOP,
         width: '8vw',
-        height: '100%',
+        height: '5vw',
+        hitSlopLeft: '2vw',
+        hitSlopBottom: '5vw',
+        hitSlopTop: '5vw',
         color: '#fff',
         textAlign: 'left',
         fontSize: FEED_FONT_SIZE,
@@ -224,6 +245,8 @@ let coreViews = {
         top: '0vw',
         width: FEED_ICON_SIZE,
         height: FEED_ICON_SIZE,
+        hitSlopBottom: '5vw',
+        hitSlopTop: '5vw',
         resizeMode: 'contain',
         touch: 'enabled',
         // backgroundColor: '#0f0',
@@ -234,7 +257,10 @@ let coreViews = {
         right: '10vw',
         top: FEED_TEXT_TOP,
         width: '8vw',
-        height: '100%',
+        height: '5vw',
+        hitSlopLeft: '2vw',
+        hitSlopBottom: '5vw',
+        hitSlopTop: '5vw',
         color: '#fff',
         textAlign: 'left',
         fontSize: FEED_FONT_SIZE,
@@ -253,8 +279,13 @@ let coreViews = {
         top: '0vw',
         width: FEED_ICON_SIZE,
         height: FEED_ICON_SIZE,
+        hitSlopLeft: '1.5vw',
+        hitSlopRight: '3vw',
+        hitSlopBottom: '5vw',
+        hitSlopTop: '5vw',
         resizeMode: 'contain',
         touch: 'enabled',
+        // backgroundColor: '#f00',
         onTap: (params) => {
           shareDeck({
             deckId: params.deckId,

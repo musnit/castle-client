@@ -51,6 +51,10 @@ public:
   double savedTop = 0;
   double savedWidth = 0;
   double savedHeight = 0;
+  double hitSlopLeft = 0;
+  double hitSlopTop = 0;
+  double hitSlopRight = 0;
+  double hitSlopBottom = 0;
   bool isVisible = true;
   bool isTouchEnabled = false;
   std::optional<std::string> onTapHandlerId;
