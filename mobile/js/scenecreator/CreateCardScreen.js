@@ -20,6 +20,7 @@ import { CreateCardOverlay } from './overlay/CreateCardOverlay';
 
 import { PopoverProvider } from '../components/PopoverProvider';
 import { SheetProvider } from './SheetProvider';
+import { useAppState } from '../ghost/GhostAppState';
 import { useGameViewAndroidBackHandler } from '../common/GameViewAndroidBackHandler';
 
 const TABLET_BELT_HEIGHT_MULTIPLIER = isTablet() ? 2 : 1;
@@ -74,6 +75,8 @@ export const CreateCardScreen = ({
   saveAction = 'none',
 }) => {
   const { showActionSheetWithOptions } = useActionSheet();
+  const [appState, setAppState] = React.useState('active');
+  useAppState(setAppState);
 
   // activeSheet maps from `editMode` to sheet key
   const [activeSheet, setActiveSheet] = React.useReducer(
@@ -331,6 +334,7 @@ export const CreateCardScreen = ({
                   style={styles.scene}
                   isNewScene={isNewScene}
                   isEditable={true}
+                  paused={appState !== 'active'}
                   onMessage={onSceneMessage}
                   beltHeight={beltHeight}
                   beltHeightFraction={beltHeightFraction}

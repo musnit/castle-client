@@ -41,6 +41,7 @@ void Editor::setIsPlaying(bool playing_) {
             player->readScene(reader, std::nullopt);
           });
         }
+        player->resume();
         playing = true;
       }
     } else {
@@ -518,9 +519,19 @@ void Editor::draw() {
 }
 
 void Editor::suspend() {
+  if (editMode == EditMode::Sound) {
+    soundTool.stopPlayback();
+    soundTool.sendUIEvent();
+  }
+  if (playing && player) {
+    player->suspend();
+  }
 }
 
 void Editor::resume() {
+  if (playing && player) {
+    player->resume();
+  }
 }
 
 void Editor::updateBlueprint(ActorId actorId, UpdateBlueprintParams params) {
