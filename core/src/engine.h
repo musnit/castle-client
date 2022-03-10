@@ -152,6 +152,10 @@ inline void Engine::setPaused(bool paused_) {
 
   auto screen = maybeGetScreen();
   if (screen) {
-    screen->setPaused(paused);
+    if (paused) {
+      screen->suspend();
+    } else {
+      screen->resume();
+    }
   }
 }

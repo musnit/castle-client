@@ -47,7 +47,6 @@ public:
   void setWindowSize(int w, int h);
   bool hasScene();
   Scene &getScene();
-  void setPaused(bool paused);
 
 private:
   mutable love::Transform viewTransform;

@@ -160,10 +160,6 @@ Scene &Feed::getScene() {
   return decks[idx].player->getScene();
 }
 
-void Feed::setPaused(bool paused_) {
-  paused = paused_;
-}
-
 void Feed::update(double dt) {
   if (dt > 0.5) {
     dt = 1.0 / 60.0;
@@ -565,6 +561,7 @@ void Feed::draw() {
 }
 
 void Feed::suspend() {
+  paused = true;
   int idx = getCurrentIndex();
   if (decks[idx].player) {
     decks[idx].player->suspend();
@@ -572,6 +569,7 @@ void Feed::suspend() {
 }
 
 void Feed::resume() {
+  paused = false;
   int idx = getCurrentIndex();
   if (decks[idx].player) {
     decks[idx].player->resume();

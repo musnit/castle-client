@@ -8,6 +8,7 @@ import { usePopover } from './PopoverProvider';
 import { getDropdownItems, getOnSelectDropdownAction } from '../play/PlayDeckActions';
 import { useSession, blockUser, reportDeck } from '../Session';
 import { sendAsync } from '../core/CoreEvents';
+import { useAppState } from '../ghost/GhostAppState';
 import { useGameViewAndroidBackHandler } from '../common/GameViewAndroidBackHandler';
 import { ScreenHeader } from './ScreenHeader';
 
@@ -30,6 +31,8 @@ export const NativeDecksFeed = ({
   const [creatorUserId, setCreatorUserId] = React.useState(null);
 
   const [popoverProps, setPopoverProps] = React.useState(null);
+  const [appState, setAppState] = React.useState('active');
+  useAppState(setAppState);
 
   const onBlockUser = React.useCallback(() => blockUser(creatorUserId, true), [creatorUserId]);
   const onReportDeck = React.useCallback(() => reportDeck(deck.deckId), [deck]);
@@ -127,7 +130,7 @@ export const NativeDecksFeed = ({
         textOverlayStyle: Constants.CORE_OVERLAY_TEXT_STYLE,
       })}
       coreViews={CoreViews.getCoreViews()}
-      paused={isCommentsOpen}
+      paused={isCommentsOpen || appState !== 'active'}
     />
   );
 
@@ -136,7 +139,7 @@ export const NativeDecksFeed = ({
   }
 
   return (
-    <View style={{flex: 1}}>
+    <View style={{ flex: 1 }}>
       <ScreenHeader title={title} />
       {gameView}
     </View>

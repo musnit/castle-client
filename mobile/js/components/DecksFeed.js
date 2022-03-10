@@ -6,6 +6,7 @@ import { PlayDeckActions } from '../play/PlayDeckActions';
 import { PlayDeckFooter } from '../play/PlayDeckFooter';
 import { PlayDeck } from '../play/PlayDeck';
 import { useGameViewAndroidBackHandler } from '../common/GameViewAndroidBackHandler';
+import { useAppState } from '../ghost/GhostAppState';
 import { useIsFocused } from '../ReactNavigation';
 import { useSession, blockUser, reportDeck } from '../Session';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -286,6 +287,8 @@ export const DecksFeed = ({
 }) => {
   const [currentCardIndex, setCurrentCardIndex] = React.useState(0);
   const [paused, setPaused] = React.useState(false);
+  const [appState, setAppState] = React.useState('active');
+  useAppState(setAppState);
 
   // state from expanding/collapsing a deck to play it
   // note: non-native duplicate is needed for just the background color fade (not supported by native)
@@ -330,7 +333,7 @@ export const DecksFeed = ({
             onCloseComments={onCloseComments}
             isCommentsOpen={isCommentsOpen}
             playingTransition={playingTransition}
-            paused={paused || isCommentsOpen}
+            paused={paused || isCommentsOpen || appState !== 'active'}
             onRefreshFeed={props.onRefresh}
           />
         );

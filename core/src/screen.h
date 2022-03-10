@@ -33,8 +33,6 @@ public:
   }
 
   // Only used by feed
-  virtual void setPaused(bool paused) {
-  }
   virtual void setWindowSize(int w, int h) {
   }
 };
