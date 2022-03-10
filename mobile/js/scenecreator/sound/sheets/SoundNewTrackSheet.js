@@ -66,13 +66,6 @@ const entries = [
     description: 'A rhythmic instrument that can play a variety of drums',
   },
   {
-    id: 'drums-simple-beat',
-    icon: 'instrument-drum',
-    title: 'Simple Beat',
-    preset: 'simple beat',
-    description: 'A simple beat',
-  },
-  {
     id: 'sfxr',
     icon: 'instrument-sfxr',
     title: 'Sampler: Generated Effect',
@@ -89,6 +82,41 @@ const entries = [
     icon: 'instrument-file',
     title: 'Sampler: File',
     description: 'A sample chosen from my file library',
+  },
+  {
+    id: 'drums-simple-beat',
+    icon: 'instrument-drum',
+    title: 'Simple Beat',
+    preset: 'simple beat',
+    description: 'A simple beat',
+  },
+  {
+    id: 'drums-techno',
+    icon: 'instrument-drum',
+    title: 'Techno',
+    preset: 'techno',
+    description: 'A dancey beat',
+  },
+  {
+    id: 'drums-house',
+    icon: 'instrument-drum',
+    title: 'More techno',
+    preset: 'techno2',
+    description: 'A different dancey beat',
+  },
+  {
+    id: 'drums-slow',
+    icon: 'instrument-drum',
+    title: '808 bass',
+    preset: 'slow',
+    description: `Slow 808-ish beat with heavy sub-bass`,
+  },
+  {
+    id: 'drums-dnb',
+    icon: 'instrument-drum',
+    title: 'Drum and Bass',
+    preset: 'dnb',
+    description: 'Higher clock bpm recommended',
   },
 ];
 
