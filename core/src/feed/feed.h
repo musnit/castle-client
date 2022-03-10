@@ -17,6 +17,7 @@ struct FeedItem {
   std::optional<std::string> deckId;
   std::optional<std::string> cardId;
   std::optional<std::string> deckJson;
+  std::optional<std::string> lastModified;
   std::shared_ptr<Player> player;
   std::shared_ptr<love::graphics::Canvas> canvas;
   std::shared_ptr<CoreViewRenderer> coreView;
@@ -41,7 +42,8 @@ public:
   void suspend();
   void resume();
   void clearState();
-  void fetchInitialDecks(std::vector<std::string> deckIds, int initialDeckIndex = 0);
+  void fetchInitialDecks(std::vector<std::string> deckIds, int initialDeckIndex = 0,
+      std::optional<std::string> paginateFeedId = std::nullopt);
   void setWindowSize(int w, int h);
   bool hasScene();
   Scene &getScene();
@@ -75,6 +77,8 @@ private:
   float dragVelocity = 0.0;
   bool hasSetWindowSize = false;
   int initialDeckIndex = 0;
+  std::optional<std::string> paginateFeedId;
+  bool lastFeedPageWasEmpty = false;
 
   int cardLeft = 0;
   int cardWidth = 800;

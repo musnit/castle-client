@@ -20,6 +20,7 @@ export const NativeDecksFeed = ({
   showBackButton,
   title = '',
   screenId,
+  paginateFeedId,
 }) => {
   const { userId: signedInUserId, isAnonymous, isMuted, setIsMuted } = useSession();
   const { showPopover } = usePopover();
@@ -122,6 +123,7 @@ export const NativeDecksFeed = ({
         useNativeFeed: true,
         nativeFeedDeckIds: deckIds,
         initialDeckIndex,
+        paginateFeedId,
         textOverlayStyle: Constants.CORE_OVERLAY_TEXT_STYLE,
       })}
       coreViews={CoreViews.getCoreViews()}

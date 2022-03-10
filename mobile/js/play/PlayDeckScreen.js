@@ -19,10 +19,11 @@ const styles = StyleSheet.create({
 // TODO: support list of decks
 // and distinguish "go back out of this screen" from "collapse current deck but
 // stay on this screen"
-export const PlayDeckScreen = ({ decks, initialDeckIndex = 0, title, route }) => {
+export const PlayDeckScreen = ({ decks, initialDeckIndex = 0, title, route, paginateFeedId }) => {
   if (!decks && route?.params) {
     decks = route.params.decks;
     title = route.params.title;
+    paginateFeedId = route.params.paginateFeedId;
     initialDeckIndex = route.params.initialDeckIndex ?? 0;
   }
 
@@ -83,6 +84,7 @@ export const PlayDeckScreen = ({ decks, initialDeckIndex = 0, title, route }) =>
             initialDeckIndex={initialDeckIndex}
             screenId={title}
             title={title}
+            paginateFeedId={paginateFeedId}
             showBackButton={true}
           />
         ) : (

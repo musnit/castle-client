@@ -136,6 +136,7 @@ void Engine::setInitialParams(const char *initialParamsJson) {
   const char *initialCardId = nullptr;
   const char *initialCardSceneDataUrl = nullptr;
   const char *jsScreenId = nullptr;
+  const char *paginateFeedId = nullptr;
   int initialDeckIndex = 0;
   auto useNativeFeed = false;
   auto isNewScene = false;
@@ -155,6 +156,7 @@ void Engine::setInitialParams(const char *initialParamsJson) {
     });
     useNativeFeed = reader.boolean("useNativeFeed", false);
     initialDeckIndex = reader.num("initialDeckIndex", 0);
+    paginateFeedId = reader.str("paginateFeedId", nullptr);
     if (reader.has("nativeFeedDeckIds")) {
       reader.arr("nativeFeedDeckIds", [&]() {
         reader.each([&]() {
@@ -211,7 +213,8 @@ void Engine::setInitialParams(const char *initialParamsJson) {
   screens.insert(std::make_pair(screenId, std::move(newScreen)));
 
   if (feed) {
-    feed->fetchInitialDecks(nativeFeedDeckIds, initialDeckIndex);
+    feed->fetchInitialDecks(nativeFeedDeckIds, initialDeckIndex,
+        paginateFeedId ? (std::optional<std::string>)std::string(paginateFeedId) : std::nullopt);
   } else if (isEditing && isNewScene) {
     editor->loadEmptyScene();
 

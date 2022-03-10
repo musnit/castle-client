@@ -76,6 +76,7 @@ export const ExploreRow = ({ feed, last }) => {
           decks: feed.decks,
           initialDeckIndex: index,
           title: feed.title,
+          paginateFeedId: feed.feedId,
         },
         {
           isFullscreen: true,

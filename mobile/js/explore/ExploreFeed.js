@@ -113,6 +113,7 @@ export const ExploreFeed = ({ route }) => {
                 decks,
                 initialDeckIndex: index,
                 title: 'Recent',
+                paginateFeedId: feedId,
               },
               {
                 isFullscreen: true,

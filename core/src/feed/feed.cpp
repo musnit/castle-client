@@ -14,7 +14,8 @@
 
 // creator.photo.url and initialCard.backgroundImage.smallUrl needed for DeckRemixesScreen
 const std::string GRAPHQL_DECK_FIELDS
-    = "\ndeckId\ncaption\nvariables\nchildDecksCount\ncreator {\nuserId\nusername\nphoto "
+    = "\ndeckId\ncaption\nlastModified\nvariables\nchildDecksCount\ncreator "
+      "{\nuserId\nusername\nphoto "
       "{\nsmallAvatarUrl\nurl\n}\n}\ninitialCard {\n    "
       "    cardId\nsceneDataUrl\nbackgroundImage {\nsmallUrl}\n      }\n    commentsEnabled\n  "
       "comments "
@@ -352,7 +353,7 @@ void Feed::update(double dt) {
       }
     }
 
-    if (decks.size() > 0 && idx > (int)decks.size() - 4 && !usingFixedDecksList) {
+    if (decks.size() > 0 && idx > (int)decks.size() - 4) {
       fetchMoreDecks();
     }
 
@@ -580,8 +581,10 @@ void Feed::resume() {
 void Feed::clearState() {
 }
 
-void Feed::fetchInitialDecks(std::vector<std::string> deckIds, int initialDeckIndex_) {
+void Feed::fetchInitialDecks(std::vector<std::string> deckIds, int initialDeckIndex_,
+    std::optional<std::string> paginateFeedId_) {
   initialDeckIndex = initialDeckIndex_;
+  paginateFeedId = paginateFeedId_;
 
   if (deckIds.size() > 0) {
     usingFixedDecksList = true;
@@ -589,6 +592,7 @@ void Feed::fetchInitialDecks(std::vector<std::string> deckIds, int initialDeckIn
       FeedItem feedItem;
       feedItem.deckId = deckIds[i];
       decks.push_back(std::move(feedItem));
+      seenDeckIds.insert(deckIds[i]);
     }
   } else {
     usingFixedDecksList = false;
@@ -623,37 +627,77 @@ void Feed::fetchInitialDecks(std::vector<std::string> deckIds, int initialDeckIn
 }
 
 void Feed::fetchMoreDecks() {
-  if (fetchingDecks || usingFixedDecksList) {
+  if (fetchingDecks || (usingFixedDecksList && !paginateFeedId) || lastFeedPageWasEmpty) {
     return;
   }
 
-  fetchingDecks = true;
-  API::graphql("{\n  infiniteFeed(sessionId: \"" + sessionId + "\") {\n    decks {"
-          + GRAPHQL_DECK_FIELDS + "}\n  }\n}",
-      [=](APIResponse &response) {
-        if (response.success) {
-          auto &reader = response.reader;
+  if (paginateFeedId) {
+    auto lastModifiedBefore = decks[decks.size() - 1].lastModified;
+    if (!lastModifiedBefore) {
+      return;
+    }
 
-          reader.obj("data", [&]() {
-            reader.obj("infiniteFeed", [&]() {
-              reader.arr("decks", [&]() {
+    fetchingDecks = true;
+    API::graphql("{\n  paginateFeed(feedId: \"" + *paginateFeedId + "\", lastModifiedBefore: \""
+            + *lastModifiedBefore + "\") {\n" + GRAPHQL_DECK_FIELDS + "}\n}",
+        [=](APIResponse &response) {
+          if (response.success) {
+            auto &reader = response.reader;
+
+            reader.obj("data", [&]() {
+              reader.arr("paginateFeed", [&]() {
+                bool hasDeck = false;
                 reader.each([&]() {
                   std::string deckId = reader.str("deckId", "");
 
                   if (seenDeckIds.find(deckId) == seenDeckIds.end()) {
+                    hasDeck = true;
                     FeedItem feedItem;
                     feedItem.deckJson = reader.toJson();
                     seenDeckIds.insert(deckId);
                     decks.push_back(std::move(feedItem));
                   }
                 });
+
+                if (!hasDeck) {
+                  lastFeedPageWasEmpty = true;
+                }
               });
             });
-          });
-        }
+          }
 
-        fetchingDecks = false;
-      });
+          fetchingDecks = false;
+        });
+  } else {
+    fetchingDecks = true;
+
+    API::graphql("{\n  infiniteFeed(sessionId: \"" + sessionId + "\") {\n    decks {"
+            + GRAPHQL_DECK_FIELDS + "}\n  }\n}",
+        [=](APIResponse &response) {
+          if (response.success) {
+            auto &reader = response.reader;
+
+            reader.obj("data", [&]() {
+              reader.obj("infiniteFeed", [&]() {
+                reader.arr("decks", [&]() {
+                  reader.each([&]() {
+                    std::string deckId = reader.str("deckId", "");
+
+                    if (seenDeckIds.find(deckId) == seenDeckIds.end()) {
+                      FeedItem feedItem;
+                      feedItem.deckJson = reader.toJson();
+                      seenDeckIds.insert(deckId);
+                      decks.push_back(std::move(feedItem));
+                    }
+                  });
+                });
+              });
+            });
+          }
+
+          fetchingDecks = false;
+        });
+  }
 }
 
 void Feed::loadDeckAtIndex(int i) {
@@ -829,6 +873,7 @@ void Feed::loadDeckFromDeckJson(int i) {
   deckArchive.read([&](Reader &reader) {
     std::string deckId = reader.str("deckId", "");
     decks[i].deckId = deckId;
+    decks[i].lastModified = reader.str("lastModified");
     decks[i].coreView->updateJSGestureProp("deckId", deckId);
     decks[i].coreView->updateJSGestureProp("deck", *decks[i].deckJson);
 
