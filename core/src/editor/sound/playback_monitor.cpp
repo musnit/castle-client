@@ -2,20 +2,20 @@
 #include "sound/stream.h"
 
 void PlaybackMonitor::add(
-    Clock &clock, std::unique_ptr<Pattern> pattern, Sound::StreamOptions opts) {
+    int trackIndex, Clock &clock, std::unique_ptr<Pattern> pattern, Sound::StreamOptions opts) {
   auto wait = 0;
   if (opts.quantize) {
     wait = clock.getTimeUntilNext(opts.quantizeUnits, 1);
   }
   auto stream = std::make_unique<Stream>(clock, std::move(pattern), nullptr, wait);
   stream->fastForward(opts.initialTimeInStream);
-  tracks.push_back({ std::move(stream), 0.0f });
+  tracks[trackIndex] = { std::move(stream), 0.0f };
 }
 
 void PlaybackMonitor::update(double dt, double clockTime) {
   auto iter = tracks.begin();
   while (iter != tracks.end()) {
-    auto &state = *iter;
+    auto &[trackIndex, state] = *iter;
 
     // cool down this track
     if (state.power > 0.0f) {
