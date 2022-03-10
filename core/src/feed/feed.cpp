@@ -366,11 +366,16 @@ void Feed::renderCardAtPosition(int idx, float position, bool isActive) {
     return;
   }
 
-  if (!decks[idx].player) {
-    return;
-  }
+  if (!decks[idx].player || !decks[idx].hasRunUpdate) {
+    lv.graphics.push(love::Graphics::STACK_ALL);
+    viewTransform.reset();
+    viewTransform.translate(position, TOP_PADDING);
+    lv.graphics.applyTransform(&viewTransform);
 
-  if (!decks[idx].hasRunUpdate) {
+    renderCardTexture(nullptr);
+
+    lv.graphics.pop();
+
     return;
   }
 
@@ -388,8 +393,6 @@ void Feed::renderCardAtPosition(int idx, float position, bool isActive) {
   }
   std::shared_ptr<love::graphics::Canvas> canvas = decks[idx].canvas;
 
-  lv.graphics.push(love::Graphics::STACK_ALL);
-
   if (shouldDraw) {
     renderToCanvas(canvas.get(), [&]() {
       lv.graphics.push(love::Graphics::STACK_ALL);
@@ -404,10 +407,19 @@ void Feed::renderCardAtPosition(int idx, float position, bool isActive) {
     decks[idx].hasRunUpdateSinceLastRender = false;
   }
 
+  lv.graphics.push(love::Graphics::STACK_ALL);
   viewTransform.reset();
   viewTransform.translate(position, TOP_PADDING);
   lv.graphics.applyTransform(&viewTransform);
 
+  renderCardTexture(canvas.get());
+
+  decks[idx].coreView->render();
+
+  lv.graphics.pop();
+}
+
+void Feed::renderCardTexture(love::Texture *texture) {
   static auto quad = [&]() {
     std::vector<love::graphics::Vertex> quadVerts {
       { 0, 0, 0, 0, { 0xff, 0xff, 0xff, 0xff } },
@@ -418,38 +430,33 @@ void Feed::renderCardAtPosition(int idx, float position, bool isActive) {
     return lv.graphics.newMesh(
         quadVerts, love::graphics::PRIMITIVE_TRIANGLE_FAN, love::graphics::vertex::USAGE_STATIC);
   }();
-  lv.graphics.setShader(shader.get());
+
+  auto currentShader = texture ? shader.get() : loadingShader.get();
+  lv.graphics.setShader(currentShader);
 
   {
-    auto info = shader->getUniformInfo("radius");
+    auto info = currentShader->getUniformInfo("radius");
     info->floats[0] = CoreViews::getInstance().getNumConstant("CARD_BORDER_RADIUS");
-    shader->updateUniform(info, 1);
+    currentShader->updateUniform(info, 1);
   }
 
   {
-    auto info = shader->getUniformInfo("width");
+    auto info = currentShader->getUniformInfo("width");
     info->floats[0] = cardWidth;
-    shader->updateUniform(info, 1);
+    currentShader->updateUniform(info, 1);
   }
 
   {
-    auto info = shader->getUniformInfo("height");
+    auto info = currentShader->getUniformInfo("height");
     info->floats[0] = cardHeight;
-    shader->updateUniform(info, 1);
+    currentShader->updateUniform(info, 1);
   }
 
-
-  // / *
-  quad->setTexture(canvas.get());
+  quad->setTexture(texture);
   lv.graphics.setColor({ 1.0, 1.0, 1.0, 1.0 });
   quad->draw(&lv.graphics, love::Matrix4(0.0, 0.0, 0, cardWidth, cardHeight, 0, 0, 0, 0));
   quad->setTexture(nullptr);
   lv.graphics.setShader();
-  //  * /
-
-  decks[idx].coreView->render();
-
-  lv.graphics.pop();
 }
 
 void Feed::makeShader() {
@@ -489,6 +496,38 @@ void Feed::makeShader() {
   )";
   shader.reset(
       lv.graphics.newShader(lv.wrapVertexShaderCode(vert), lv.wrapFragmentShaderCode(frag)));
+
+  static const char loadingFrag[] = R"(
+    uniform float radius;
+    uniform float width;
+    uniform float height;
+
+    vec4 effect(vec4 color, Image tex, vec2 texCoords, vec2 screenCoords) {
+      float x = texCoords.x * width;
+      float y = texCoords.y * height;
+      vec2 coord = vec2(x, y);
+
+      if (x < radius && y < radius && distance(coord, vec2(radius, radius)) > radius) {
+        discard;
+      }
+
+      if (x < radius && y > height - radius && distance(coord, vec2(radius, height - radius)) > radius) {
+        discard;
+      }
+
+      if (x > width - radius && y < radius && distance(coord, vec2(width - radius, radius)) > radius) {
+        discard;
+      }
+
+      if (x > width - radius && y > height - radius && distance(coord, vec2(width - radius, height - radius)) > radius) {
+        discard;
+      }
+
+      return vec4(0.15, 0.15, 0.15, 1.0);
+    }
+  )";
+  loadingShader.reset(
+      lv.graphics.newShader(lv.wrapVertexShaderCode(vert), lv.wrapFragmentShaderCode(loadingFrag)));
 }
 
 void Feed::draw() {

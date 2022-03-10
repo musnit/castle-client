@@ -57,6 +57,7 @@ private:
   bool paused = false;
   Gesture gesture { nullptr };
   std::unique_ptr<love::Shader> shader;
+  std::unique_ptr<love::Shader> loadingShader;
   bool hasTouch = false;
   bool dragStarted = false;
   bool ignoreCurrentTouch = false;
@@ -94,6 +95,7 @@ private:
   love::graphics::Canvas *newCanvas(int width, int height);
   void renderToCanvas(love::graphics::Canvas *canvas, const std::function<void()> &lambda);
   void layoutCoreViews(int i);
+  void renderCardTexture(love::Texture *texture);
 
   Lv &lv { Lv::getInstance() };
   Bridge &bridge;
