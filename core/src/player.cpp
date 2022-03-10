@@ -56,10 +56,6 @@ void Player::setScene(std::unique_ptr<Scene> scene_) {
     clock.reset();
   }
   scene = std::move(scene_);
-
-  // TODO: native feed: only call `resume` when we begin/resume playing this player
-  // TODO: native feed: call `suspend` if we stop playing this player without destroying it
-  resume();
 }
 
 void Player::suspend() {
