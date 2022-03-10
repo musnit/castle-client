@@ -207,6 +207,7 @@ void Engine::setInitialParams(const char *initialParamsJson) {
     screenIdPrefix = "feed:";
   } else {
     newScreen = std::make_unique<Player>(bridge);
+    ((Player *)newScreen.get())->resume();
     screenIdPrefix = "player:";
   }
 
