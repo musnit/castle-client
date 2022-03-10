@@ -13,9 +13,14 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 12,
     borderTopRightRadius: 12,
   },
-  itemContainer: {
+  group: {
     padding: 16,
-    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderColor: Constants.colors.grayOnWhiteBorder,
+  },
+  itemContainer: {
+    paddingHorizontal: 12,
+    paddingTop: 12,
     flexDirection: 'row',
   },
   meta: {
@@ -52,71 +57,83 @@ const TemplateItem = ({ entry, onPress }) => {
   );
 };
 
-const entries = [
+const groupedEntries = [
   {
-    id: 'tone',
-    icon: 'instrument-tone',
-    title: 'Sampler: Tone',
-    description: 'A synthesized musical tone',
+    id: 'empty',
+    label: 'Instruments',
+    entries: [
+      {
+        id: 'tone',
+        icon: 'instrument-tone',
+        title: 'Sampler: Tone',
+        description: 'A synthesized musical tone',
+      },
+      {
+        id: 'drums',
+        icon: 'instrument-drum',
+        title: 'Drums',
+        description: 'A rhythmic instrument that can play a variety of drums',
+      },
+      {
+        id: 'sfxr',
+        icon: 'instrument-sfxr',
+        title: 'Sampler: Generated Effect',
+        description: 'A generated sound effect',
+      },
+      {
+        id: 'microphone',
+        icon: 'instrument-recording',
+        title: 'Sampler: Recording',
+        description: 'A sample recorded from my device microphone',
+      },
+      {
+        id: 'library',
+        icon: 'instrument-file',
+        title: 'Sampler: File',
+        description: 'A sample chosen from my file library',
+      },
+    ],
   },
   {
-    id: 'drums',
-    icon: 'instrument-drum',
-    title: 'Drums',
-    description: 'A rhythmic instrument that can play a variety of drums',
-  },
-  {
-    id: 'sfxr',
-    icon: 'instrument-sfxr',
-    title: 'Sampler: Generated Effect',
-    description: 'A generated sound effect',
-  },
-  {
-    id: 'microphone',
-    icon: 'instrument-recording',
-    title: 'Sampler: Recording',
-    description: 'A sample recorded from my device microphone',
-  },
-  {
-    id: 'library',
-    icon: 'instrument-file',
-    title: 'Sampler: File',
-    description: 'A sample chosen from my file library',
-  },
-  {
-    id: 'drums-simple-beat',
-    icon: 'instrument-drum',
-    title: 'Simple Beat',
-    preset: 'simple beat',
-    description: 'A simple beat',
-  },
-  {
-    id: 'drums-techno',
-    icon: 'instrument-drum',
-    title: 'Techno',
-    preset: 'techno',
-    description: 'A dancey beat',
-  },
-  {
-    id: 'drums-house',
-    icon: 'instrument-drum',
-    title: 'More techno',
-    preset: 'techno2',
-    description: 'A different dancey beat',
-  },
-  {
-    id: 'drums-slow',
-    icon: 'instrument-drum',
-    title: '808 bass',
-    preset: 'slow',
-    description: `Slow 808-ish beat with heavy sub-bass`,
-  },
-  {
-    id: 'drums-dnb',
-    icon: 'instrument-drum',
-    title: 'Drum and Bass',
-    preset: 'dnb',
-    description: 'Higher clock bpm recommended',
+    id: 'presets',
+    label: 'Presets',
+    entries: [
+      {
+        id: 'drums-simple-beat',
+        icon: 'instrument-drum',
+        title: 'Simple Beat',
+        preset: 'simple beat',
+        description: 'A simple beat',
+      },
+      {
+        id: 'drums-techno',
+        icon: 'instrument-drum',
+        title: 'Techno',
+        preset: 'techno',
+        description: 'A dancey beat',
+      },
+      {
+        id: 'drums-house',
+        icon: 'instrument-drum',
+        title: 'More techno',
+        preset: 'techno2',
+        description: 'A different dancey beat',
+      },
+      {
+        id: 'drums-slow',
+        icon: 'instrument-drum',
+        title: '808 bass',
+        preset: 'slow',
+        description: `Slow 808-ish beat with heavy sub-bass`,
+      },
+      {
+        id: 'drums-dnb',
+        icon: 'instrument-drum',
+        title: 'Drum and Bass',
+        preset: 'dnb',
+        description: 'Higher clock bpm recommended',
+      },
+    ],
   },
 ];
 
@@ -130,21 +147,28 @@ export const SoundNewTrackSheet = ({ element, isOpen, onClose, ...props }) => {
 
     return (
       <>
-        {entries.map((entry, index) => {
-          return (
-            <TemplateItem
-              key={index}
-              entry={entry}
-              onPress={() => {
-                sendAsync('EDITOR_SOUND_TOOL_ADD_TRACK', {
-                  type: entry.id,
-                  presetName: entry.preset || '',
-                });
-                onClose();
-              }}
-            />
-          );
-        })}
+        {groupedEntries.map((group) => (
+          <View style={styles.group} key={`group-${group.id}`}>
+            <View style={styles.groupHeading}>
+              <Text style={styles.title}>{group.label}</Text>
+            </View>
+            {group.entries.map((entry) => {
+              return (
+                <TemplateItem
+                  key={`entry-${entry.id}`}
+                  entry={entry}
+                  onPress={() => {
+                    sendAsync('EDITOR_SOUND_TOOL_ADD_TRACK', {
+                      type: entry.id,
+                      presetName: entry.preset || '',
+                    });
+                    onClose();
+                  }}
+                />
+              );
+            })}
+          </View>
+        ))}
       </>
     );
   };
