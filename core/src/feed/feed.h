@@ -21,11 +21,13 @@ struct FeedItem {
   std::shared_ptr<Player> player;
   std::shared_ptr<love::graphics::Canvas> canvas;
   std::shared_ptr<CoreViewRenderer> coreView;
+  std::shared_ptr<CoreViewRenderer> errorCoreView;
   bool isLoading = false;
   bool isLoaded = false;
   bool hasRunUpdate = false;
   bool hasRunUpdateSinceLastRender = false;
   bool hasRendered = false;
+  bool hasNetworkError = false;
   OptionalBool isCurrentUserReactionToggled = Unset;
   std::optional<int> reactionCount;
 };
@@ -78,6 +80,7 @@ private:
   int initialDeckIndex = 0;
   std::optional<std::string> paginateFeedId;
   bool lastFeedPageWasEmpty = false;
+  bool hasGlobalNetworkError = false;
 
   int cardLeft = 0;
   int cardWidth = 800;
@@ -87,18 +90,20 @@ private:
   std::set<std::string> seenDeckIds;
   std::vector<FeedItem> decks;
   std::string sessionId;
+  std::shared_ptr<CoreViewRenderer> globalErrorCoreView;
 
   void makeShader();
   void fetchMoreDecks();
   int getCurrentIndex();
   void loadDeckAtIndex(int i);
   void loadDeckFromDeckJson(int i);
-  void unloadDeckAtIndex(int i);
+  void unloadDeckAtIndex(int i, bool force = false);
+  void networkErrorAtIndex(int i);
   void renderCardAtPosition(int idx, float position, bool isActive);
   love::graphics::Canvas *newCanvas(int width, int height);
   void renderToCanvas(love::graphics::Canvas *canvas, const std::function<void()> &lambda);
   void layoutCoreViews(int i);
-  void renderCardTexture(love::Texture *texture);
+  void renderCardTexture(love::Texture *texture, float time);
 
   Lv &lv { Lv::getInstance() };
   Bridge &bridge;

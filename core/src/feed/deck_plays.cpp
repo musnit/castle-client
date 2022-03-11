@@ -2,7 +2,7 @@
 #include "api.h"
 
 const double INITIAL_UPDATE_INTERVAL = 1.0;
-const double UPDATE_INTERVAL = 10.0;
+const double UPDATE_INTERVAL = 3.0;
 
 DeckPlays::DeckPlays() {
   instance = this;

@@ -4,9 +4,9 @@ import { useNavigation } from './ReactNavigation';
 import { shareDeck } from './common/utilities';
 
 let FEED_ICON_SIZE = '5.5vw';
-let FEED_ICON_TOP = '0.2vw';
+let FEED_ICON_TOP = '2.7vw';
 let FEED_FONT_SIZE = '0.53vw';
-let FEED_TEXT_TOP = '0.95vw';
+let FEED_TEXT_TOP = '3.45vw';
 
 let coreViews = {
   CONSTANTS: {
@@ -65,6 +65,47 @@ let coreViews = {
 
     CARD_BORDER_RADIUS: 30,
   },
+  FEED_ERROR: {
+    id: 'container',
+    type: 'view',
+    left: 0,
+    top: 0,
+    width: '100%',
+    height: '100%',
+    // backgroundColor: '#f00',
+    touch: 'enabled',
+    children: [
+      {
+        id: 'error-text',
+        type: 'text',
+        text: '',
+        color: '#fff',
+        fontSize: '0.6vw',
+        fontFamily: 'Overlay',
+        width: '50%',
+        height: '50%',
+        left: '25%',
+        top: '25%',
+        textAlign: 'center',
+        textAlignVertical: 'center',
+      },
+      {
+        id: 'reload-icon',
+        filename: 'reload.png',
+        type: 'image',
+        left: '45%',
+        top: '50%',
+        width: '10%',
+        height: '10%',
+        resizeMode: 'contain',
+        touch: 'enabled',
+        hitSlopLeft: '20%',
+        hitSlopRight: '20%',
+        hitSlopBottom: '20%',
+        hitSlopTop: '20%',
+      },
+    ],
+  },
   FEED: {
     id: 'container',
     type: 'view',
@@ -81,7 +122,7 @@ let coreViews = {
         type: 'image',
         borderRadius: '3.2vw',
         left: '3.5vw',
-        top: 0,
+        top: '2.5vw',
         width: '6.4vw',
         height: '6.4vw',
         hitSlopLeft: '4vw',
@@ -122,7 +163,7 @@ let coreViews = {
         filename: 'overflow.png',
         type: 'image',
         right: '56vw',
-        top: '0.4vw',
+        top: '2.9vw',
         width: FEED_ICON_SIZE,
         height: FEED_ICON_SIZE,
         hitSlopLeft: '2vw',
@@ -242,7 +283,7 @@ let coreViews = {
         filename: 'fire.png',
         type: 'image',
         right: '18.5vw',
-        top: '0vw',
+        top: '2.5vw',
         width: FEED_ICON_SIZE,
         height: FEED_ICON_SIZE,
         hitSlopBottom: '5vw',
@@ -276,7 +317,7 @@ let coreViews = {
         filename: Platform.OS === 'android' ? 'share-android.png' : 'share-ios.png',
         type: 'image',
         right: '3vw',
-        top: '0vw',
+        top: '2.5vw',
         width: FEED_ICON_SIZE,
         height: FEED_ICON_SIZE,
         hitSlopLeft: '1.5vw',
@@ -298,7 +339,7 @@ let coreViews = {
         id: 'caption',
         type: 'text',
         left: '3.5vw',
-        top: '9vw',
+        top: '11.5vw',
         width: '94vw',
         height: '5vw',
         color: '#fff',

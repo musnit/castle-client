@@ -123,7 +123,7 @@ void Feed::setWindowSize(int w, int h) {
   if (cardWidth != oldCardWidth || cardHeight != oldCardHeight) {
     for (size_t i = 0; i < decks.size(); i++) {
       if (decks[i].coreView) {
-        decks[i].coreView->updateProp("container", "top", std::to_string(cardHeight + 20));
+        decks[i].coreView->updateProp("container", "top", std::to_string(cardHeight));
       }
 
       if (decks[i].player && decks[i].player->hasScene()) {
@@ -316,6 +316,8 @@ void Feed::update(double dt) {
               decks[idx].player->getScene().getGesture().setBounds(
                   cardLeft, TOP_PADDING, cardWidth, cardHeight);
             }
+
+            // TODO: show error?
           });
           decks[idx].player->getScene().setNextCardId(std::nullopt);
           decks[idx].cardId = nextCardId;
@@ -335,6 +337,15 @@ void Feed::update(double dt) {
 
       decks[idx].coreView->update(dt);
       decks[idx].coreView->handleGesture(gesture, cardLeft, TOP_PADDING);
+    }
+
+    if (idx >= 0 && idx < (int)decks.size() && decks[idx].errorCoreView
+        && decks[idx].hasNetworkError) {
+      decks[idx].errorCoreView->handleGesture(gesture, cardLeft, TOP_PADDING);
+    }
+
+    if (globalErrorCoreView && hasGlobalNetworkError) {
+      globalErrorCoreView->handleGesture(gesture, 0, 0);
     }
 
     for (size_t i = 0; i < decks.size(); i++) {
@@ -369,16 +380,24 @@ void Feed::renderCardAtPosition(int idx, float position, bool isActive) {
     return;
   }
 
-  if (!decks[idx].player || !decks[idx].hasRunUpdate) {
+  if (!decks[idx].player || !decks[idx].hasRunUpdate || decks[idx].hasNetworkError) {
     lv.graphics.push(love::Graphics::STACK_ALL);
     viewTransform.reset();
     viewTransform.translate(position, TOP_PADDING);
     lv.graphics.applyTransform(&viewTransform);
 
-    renderCardTexture(nullptr);
+    if (decks[idx].hasNetworkError) {
+      elapsedTime = 0.0;
+    }
+
+    if (decks[idx].hasNetworkError) {
+      renderCardTexture(nullptr, 0.0);
+      decks[idx].errorCoreView->render();
+    } else {
+      renderCardTexture(nullptr, elapsedTime);
+    }
 
     lv.graphics.pop();
-
     return;
   }
 
@@ -415,14 +434,14 @@ void Feed::renderCardAtPosition(int idx, float position, bool isActive) {
   viewTransform.translate(position, TOP_PADDING);
   lv.graphics.applyTransform(&viewTransform);
 
-  renderCardTexture(canvas.get());
+  renderCardTexture(canvas.get(), elapsedTime);
 
   decks[idx].coreView->render();
 
   lv.graphics.pop();
 }
 
-void Feed::renderCardTexture(love::Texture *texture) {
+void Feed::renderCardTexture(love::Texture *texture, float time) {
   static auto quad = [&]() {
     std::vector<love::graphics::Vertex> quadVerts {
       { 0, 0, 0, 0, { 0xff, 0xff, 0xff, 0xff } },
@@ -457,7 +476,7 @@ void Feed::renderCardTexture(love::Texture *texture) {
 
   if (!texture) {
     auto info = currentShader->getUniformInfo("time");
-    info->floats[0] = elapsedTime;
+    info->floats[0] = time;
     currentShader->updateUniform(info, 1);
   }
 
@@ -549,6 +568,11 @@ void Feed::draw() {
     makeShader();
   }
 
+  if (hasGlobalNetworkError) {
+    globalErrorCoreView->render();
+    return;
+  }
+
   int idx = getCurrentIndex();
   float padding = (windowWidth - cardWidth) / 2.0;
 
@@ -626,6 +650,19 @@ void Feed::fetchInitialDecks(std::vector<std::string> deckIds, int initialDeckIn
             });
 
             fetchingDecks = false;
+          } else {
+            globalErrorCoreView
+                = CoreViews::getInstance().getRenderer("FEED_ERROR", windowWidth, windowHeight);
+            globalErrorCoreView->updateProp("error-text", "text", "Error loading feed");
+            globalErrorCoreView->registerTapHandler([this](std::string id) {
+              if (id == "reload-icon") {
+                hasGlobalNetworkError = false;
+                fetchingDecks = false;
+                std::vector<std::string> deckIds;
+                fetchInitialDecks(deckIds, 0, std::nullopt);
+              }
+            });
+            hasGlobalNetworkError = true;
           }
         });
   }
@@ -669,9 +706,11 @@ void Feed::fetchMoreDecks() {
                 }
               });
             });
-          }
 
-          fetchingDecks = false;
+            fetchingDecks = false;
+          } else {
+            // TODO: show error?
+          }
         });
   } else {
     fetchingDecks = true;
@@ -698,9 +737,11 @@ void Feed::fetchMoreDecks() {
                 });
               });
             });
-          }
 
-          fetchingDecks = false;
+            fetchingDecks = false;
+          } else {
+            // TODO: show error?
+          }
         });
   }
 }
@@ -733,12 +774,19 @@ void Feed::loadDeckAtIndex(int i) {
                 decks[i].isLoading = false;
               });
             });
+          } else {
+            networkErrorAtIndex(i);
           }
         });
   }
 }
 
 void Feed::layoutCoreViews(int i) {
+  if (!decks[i].coreView) {
+    // This can happen if there is an error loading the scenedata
+    return;
+  }
+
   float FEED_BOTTOM_ACTIONS_INITIAL_RIGHT
       = CoreViews::getInstance().getNumConstant("FEED_BOTTOM_ACTIONS_INITIAL_RIGHT");
   float FEED_BOTTOM_ACTIONS_TEXT_RIGHT_PADDING
@@ -831,10 +879,9 @@ void Feed::layoutCoreViews(int i) {
 void Feed::loadDeckFromDeckJson(int i) {
   decks[i].player = std::make_shared<Player>(bridge);
   decks[i].coreView
-      = CoreViews::getInstance().getRenderer("FEED", cardWidth, windowHeight - (cardHeight + 20));
-  decks[i].coreView->updateProp("container", "top", std::to_string(cardHeight + 20));
-  decks[i].coreView->updateProp(
-      "container", "height", std::to_string(windowHeight - (cardHeight + 20)));
+      = CoreViews::getInstance().getRenderer("FEED", cardWidth, windowHeight - cardHeight);
+  decks[i].coreView->updateProp("container", "top", std::to_string(cardHeight));
+  decks[i].coreView->updateProp("container", "height", std::to_string(windowHeight - cardHeight));
   decks[i].coreView->updateProp("container", "width", std::to_string(cardWidth));
   decks[i].coreView->registerTapHandler([i, this](std::string id) {
     if (id == "reaction-icon" || id == "reaction-count") {
@@ -976,6 +1023,8 @@ void Feed::loadDeckFromDeckJson(int i) {
             decks[i].isLoaded = true;
           });
           t2.detach();
+        } else {
+          networkErrorAtIndex(i);
         }
       });
     });
@@ -984,18 +1033,38 @@ void Feed::loadDeckFromDeckJson(int i) {
   layoutCoreViews(i);
 }
 
-void Feed::unloadDeckAtIndex(int i) {
+void Feed::networkErrorAtIndex(int i) {
+  decks[i].isLoading = true;
+  decks[i].errorCoreView
+      = CoreViews::getInstance().getRenderer("FEED_ERROR", cardWidth, cardHeight);
+  decks[i].errorCoreView->updateProp("error-text", "text", "Error loading deck");
+  decks[i].errorCoreView->registerTapHandler([i, this](std::string id) {
+    if (id == "reload-icon") {
+      unloadDeckAtIndex(i, true);
+      decks[i].hasNetworkError = false;
+      decks[i].isLoading = false;
+      // loadDeckAtIndex will get called in update
+      // would be nice to clean up errorCoreView, but can't do it here
+      // decks[i].errorCoreView.reset();
+    }
+  });
+  decks[i].hasNetworkError = true;
+}
+
+void Feed::unloadDeckAtIndex(int i, bool force) {
   if (i >= (int)decks.size() || i < 0) {
     return;
   }
 
-  if (!decks[i].player) {
-    return;
-  }
+  if (!force) {
+    if (!decks[i].player) {
+      return;
+    }
 
-  // don't unload a deck that's in the middle of loading
-  if (!decks[i].isLoaded || !decks[i].hasRunUpdate || !decks[i].hasRendered) {
-    return;
+    // don't unload a deck that's in the middle of loading
+    if (!decks[i].isLoaded || !decks[i].hasRunUpdate || !decks[i].hasRendered) {
+      return;
+    }
   }
 
   decks[i].isLoaded = false;
