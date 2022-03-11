@@ -570,7 +570,7 @@ void Feed::draw() {
 void Feed::suspend() {
   paused = true;
   int idx = getCurrentIndex();
-  if (decks[idx].player) {
+  if (idx >= 0 && idx < (int)decks.size() && decks[idx].player) {
     decks[idx].player->suspend();
   }
 }
@@ -578,7 +578,7 @@ void Feed::suspend() {
 void Feed::resume() {
   paused = false;
   int idx = getCurrentIndex();
-  if (decks[idx].player) {
+  if (idx >= 0 && idx < (int)decks.size() && decks[idx].player) {
     decks[idx].player->resume();
   }
 }
