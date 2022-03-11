@@ -85,7 +85,11 @@ export const SearchInput = ({ onFocus, onCancel, ...props }) => {
       </View>
       {isFocused ? (
         <Pressable style={styles.cancelButton} onPress={cancelSearch}>
-          <Text style={styles.cancel}>Cancel</Text>
+          {({ pressed }) => (
+            <Text style={[styles.cancel, { color: pressed ? '#ccc' : Constants.colors.white }]}>
+              Cancel
+            </Text>
+          )}
         </Pressable>
       ) : null}
     </View>
