@@ -21,7 +21,7 @@ public:
     isViewAlive[viewId] = true;
   }
 
-  ~CoreView() {
+  virtual ~CoreView() {
     isViewAlive[viewId] = false;
   }
 
@@ -139,7 +139,8 @@ private:
   std::vector<CoreViewAnimation *> animations;
   std::mutex mutex;
 
-  std::optional<std::pair<CoreView *, CoreView *>> getViewForId(CoreView *root, std::string id);
+  std::optional<std::pair<CoreView *, CoreView *>> getViewForId(
+      CoreView *root, std::string id, CoreView *parent = nullptr);
   std::optional<CoreView *> getViewAtPoint(CoreView *root, float x, float y);
 };
 

@@ -21,6 +21,7 @@ const char *getAssetsDirectoryPath();
 //
 
 void CoreViewRenderer::render() {
+  lock();
   if (jsonVersion != CoreViews::getInstance().jsonVersion) {
     jsonVersion = CoreViews::getInstance().jsonVersion;
 
@@ -28,6 +29,7 @@ void CoreViewRenderer::render() {
   }
 
   renderView(layout.get(), 0, 0);
+  unlock();
 }
 
 void CoreViewRenderer::renderView(CoreView *view, float currentLeft, float currentTop) {
@@ -185,7 +187,7 @@ void CoreViewRenderer::updateProp(
   props[viewId][key] = value;
 
   auto views = getViewForId(layout.get(), viewId);
-  if (!views) {
+  if (!views || !views->first) {
     return;
   }
 
@@ -217,15 +219,19 @@ void CoreViewRenderer::updateJSGestureProp(std::string key, std::string value) {
 
 // view, parent
 std::optional<std::pair<CoreView *, CoreView *>> CoreViewRenderer::getViewForId(
-    CoreView *root, std::string id) {
+    CoreView *root, std::string id, CoreView *parent) {
+  if (!root) {
+    return std::nullopt;
+  }
+
   if (root->id == id) {
-    return std::make_pair(root, nullptr);
+    return std::make_pair(root, parent);
   }
 
   for (size_t i = 0; i < root->children.size(); i++) {
-    auto childResult = getViewForId(root->children[i].get(), id);
+    auto childResult = getViewForId(root->children[i].get(), id, root);
     if (childResult) {
-      return std::make_pair(childResult->first, root);
+      return childResult;
     }
   }
 

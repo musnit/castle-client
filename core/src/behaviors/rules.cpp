@@ -1229,7 +1229,6 @@ struct ShowLeaderboardResponse : BaseResponse {
     leaderboardView.updateProp("score-" + i, "text", reader.str("score", ""));
 
     reader.obj("user", [&]() {
-      std::string username = reader.str("username", "");
       leaderboardView.updateProp("username-" + i, "text", reader.str("username", ""));
       reader.obj("photo", [&]() {
         leaderboardView.updateProp("avatar-" + i, "url", reader.str("smallAvatarUrl", ""));
@@ -1251,7 +1250,11 @@ struct ShowLeaderboardResponse : BaseResponse {
     auto deckId = ctx.getScene().getDeckId();
     auto label = params.label();
 
-    if (name && deckId) {
+    if (deckId) {
+      if (!name) {
+        return;
+      }
+
       ctx.getScene().getLeaderboards().getLeaderboard(
           *deckId, *name, type, filter, [label](Reader &reader) {
             auto screen = Engine::getEngine().maybeGetScreen();
