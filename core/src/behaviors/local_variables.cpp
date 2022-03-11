@@ -22,25 +22,9 @@ void LocalVariablesBehavior::handleDisableComponent(
 // Read, write
 //
 
-void LocalVariableId::read(Reader &reader) {
-  if (auto str = reader.str(); str && (*str)[0] != '\0') {
-    name = *str;
-    if (auto scene = reader.getScene(); scene && !scene->getIsEditing()) {
-      auto &localVariablesBehavior = scene->getBehaviors().byType<LocalVariablesBehavior>();
-      token = localVariablesBehavior.map.getToken(name.c_str());
-    }
-  }
-}
-
-void LocalVariableId::write(Writer &writer) const {
-  writer.setStr(name);
-}
-
 void LocalVariablesBehavior::handleReadComponent(
     ActorId actorId, LocalVariablesComponent &component, Reader &reader) {
   auto isEditing = getScene().getIsEditing();
-
-  // Reset edit data
   if (isEditing) {
     if (component.editData) {
       *component.editData = {}; // Prevent new allocation if already allocated
@@ -48,21 +32,32 @@ void LocalVariablesBehavior::handleReadComponent(
       component.editData = std::make_unique<LocalVariablesComponent::EditData>();
     }
   }
-
-  // Read initial values
   reader.arr("localVariables", [&]() {
     reader.each([&]() {
-      auto maybeName = reader.str("name");
-      if (!maybeName) {
+      auto maybeVariableName = reader.str("name");
+      if (!maybeVariableName) {
         return;
       }
-      auto name = *maybeName;
-      auto value = reader.num("value", 0);
+      auto variableName = *maybeVariableName;
+      auto variableValue = reader.num("value", 0);
 
       if (isEditing) {
-        component.editData->localVariables.push_back({ name, value });
+        component.editData->localVariables.push_back({ variableName, variableValue });
       } else {
-        set(actorId, LocalVariableId { map.getToken(name) }, value);
+        // TODO: Factor below into `set(variableId, value)` to reuse in rules
+        auto variableId = LocalVariableId { map.getToken(variableName) };
+        auto mapElem = map.lookup(variableId.token);
+        if (!mapElem) {
+          map.insert(variableId.token, {});
+          mapElem = map.lookup(variableId.token);
+        }
+        if (mapElem) {
+          if (mapElem->entries.contains(actorId)) {
+            mapElem->entries.get(actorId).value = variableValue;
+          } else {
+            mapElem->entries.emplace(actorId, LocalVariableEntry { variableValue });
+          }
+        }
       }
     });
   });
@@ -96,42 +91,10 @@ void LocalVariablesBehavior::handlePerform(double dt) {
 
 
 //
-// Get, set
-//
-
-ExpressionValue LocalVariablesBehavior::get(
-    ActorId actorId, const LocalVariableId &localVariableId) const {
-  if (auto mapElem = map.lookup(localVariableId.token)) {
-    if (mapElem->entries.contains(actorId)) {
-      return mapElem->entries.get(actorId).value;
-    }
-  }
-  return {};
-}
-
-void LocalVariablesBehavior::set(
-    ActorId actorId, const LocalVariableId &localVariableId, ExpressionValue value) {
-  auto mapElem = map.lookup(localVariableId.token);
-  if (!mapElem) {
-    map.insert(localVariableId.token, {});
-    mapElem = map.lookup(localVariableId.token);
-  }
-  if (mapElem) {
-    if (mapElem->entries.contains(actorId)) {
-      mapElem->entries.get(actorId).value = value;
-    } else {
-      mapElem->entries.emplace(actorId, LocalVariableEntry { value });
-    }
-  }
-}
-
-
-//
 // Debug
 //
 
 void LocalVariablesBehavior::debugDisplay() {
-#if 1
   Debug::display("local variables:");
   forEachEnabledComponent([&](ActorId actorId, LocalVariablesComponent &component) {
     Debug::display("  actor {}:", actorId);
@@ -148,7 +111,6 @@ void LocalVariablesBehavior::debugDisplay() {
       });
     }
   });
-#endif
 }
 
 
@@ -188,7 +150,6 @@ struct EditorChangeLocalVariablesReceiver {
     auto component = localVariablesBehavior.maybeGetComponent(actorId);
     if (!component) {
       component = &localVariablesBehavior.addComponent(actorId);
-      component->disabled = false;
     }
 
     // Save old and new data so we can undo / redo
@@ -212,7 +173,6 @@ struct EditorChangeLocalVariablesReceiver {
       auto component = localVariablesBehavior.maybeGetComponent(actorId);
       if (!component) {
         component = &localVariablesBehavior.addComponent(actorId);
-        component->disabled = false;
       }
       archive.read([&](Reader &reader) {
         localVariablesBehavior.handleReadComponent(actorId, *component, reader);

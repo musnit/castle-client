@@ -55,10 +55,10 @@ public:
     void read(Reader &reader);
     void write(Writer &writer) const;
 
-    Map::Token token;
-
   private:
     friend class Variables;
+
+    Map::Token token;
 
     explicit Variable(Map::Token token_);
   };

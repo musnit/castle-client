@@ -9,7 +9,7 @@ import { InspectorPatternPicker } from './InspectorPatternPicker';
 import { InspectorTagPicker } from './InspectorTagPicker';
 import { InspectorTextInput } from './InspectorTextInput';
 import { InspectorTrackPicker } from './InspectorTrackPicker';
-import { InspectorLocalVariablePicker, InspectorVariablePicker } from './InspectorVariablePicker';
+import { InspectorVariablePicker } from './InspectorVariablePicker';
 
 import * as SceneCreatorUtilities from '../../SceneCreatorUtilities';
 
@@ -71,8 +71,6 @@ export const ParamInput = ({
           {...metadata}
         />
       );
-    case 'localVariable':
-      return <InspectorLocalVariablePicker value={value} onChange={setValue} {...metadata} />;
     case 'variable':
       return <InspectorVariablePicker value={value} onChange={setValue} {...metadata} />;
     case 'pattern':

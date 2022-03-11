@@ -39,54 +39,6 @@ const styles = StyleSheet.create({
   },
 });
 
-export const InspectorLocalVariablePicker = ({ value, onChange, style, ...props }) => {
-  let component = useCoreState('EDITOR_SELECTED_COMPONENT:LocalVariables');
-  if (!component) {
-    component = { props: { localVariables: [], undoRedoCount: 0 } };
-  }
-  const localVariables = component.props.localVariables;
-  const items = localVariables || [];
-
-  let selectedItem;
-  if (value && value !== 'none') {
-    selectedItem = items.find((item) => item.name === value);
-  }
-
-  const addVariable = React.useCallback(
-    (name) => {
-      if (name) {
-        onChange(name);
-      }
-    },
-    [onChange]
-  );
-
-  const popover = {
-    Component: DropdownItemsList,
-    items,
-    reverse: true,
-    selectedItem,
-    height: 192,
-    onSelectItem: (item) => onChange(item.name),
-    showAddItem: true,
-    onAddItem: addVariable,
-  };
-
-  let valueLabel = selectedItem ? formatVariableName(selectedItem.name) : '(none)';
-
-  return (
-    <View style={[styles.container, style]} {...props}>
-      <PopoverButton
-        style={styles.box}
-        activeStyle={[styles.box, styles.activeBox]}
-        popover={popover}
-      >
-        <Text>{valueLabel}</Text>
-      </PopoverButton>
-    </View>
-  );
-};
-
 export const InspectorVariablePicker = ({ value, onChange, style, ...props }) => {
   const variables = useCoreState('EDITOR_VARIABLES')?.variables;
   const items = variables || [];
@@ -134,8 +86,7 @@ export const InspectorVariablePicker = ({ value, onChange, style, ...props }) =>
       <PopoverButton
         style={styles.box}
         activeStyle={[styles.box, styles.activeBox]}
-        popover={popover}
-      >
+        popover={popover}>
         <Text>{valueLabel}</Text>
       </PopoverButton>
     </View>
