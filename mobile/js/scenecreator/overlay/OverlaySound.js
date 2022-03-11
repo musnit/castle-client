@@ -263,7 +263,14 @@ export const OverlaySound = ({ setActiveSheet, activeSheet }) => {
   const isClockShown = activeSheet.sound === 'soundClock';
 
   return (
-    <>
+    <KeyboardAvoidingView
+      keyboardVerticalOffset={100}
+      pointerEvents="box-none"
+      style={{
+        ...styles.keyboardContainer,
+        top: 0,
+      }}
+      behavior="padding">
       <View style={styles.container} pointerEvents="box-none">
         <View style={styles.leftContainer}>
           <View style={[styles.close, styles.button]}>
@@ -333,24 +340,15 @@ export const OverlaySound = ({ setActiveSheet, activeSheet }) => {
         </View>
       </View>
       {!activeSheet.sound ? (
-        <KeyboardAvoidingView
-          keyboardVerticalOffset={100}
-          pointerEvents="box-none"
-          style={{
-            ...styles.keyboardContainer,
-            top: 0,
-          }}
-          behavior={Platform.OS === 'iOS' ? 'padding' : 'height'}>
-          <View style={styles.keyboardInnerContainer} pointerEvents="box-none">
-            <View />
-            <OverlayPattern
-              isEditingInstrument={activeSheet.sound === 'soundTrackInspector'}
-              onPressEditInstrument={onPressEditInstrument}
-              soundToolState={soundToolState}
-            />
-          </View>
-        </KeyboardAvoidingView>
+        <View style={styles.keyboardInnerContainer} pointerEvents="box-none">
+          <View />
+          <OverlayPattern
+            isEditingInstrument={activeSheet.sound === 'soundTrackInspector'}
+            onPressEditInstrument={onPressEditInstrument}
+            soundToolState={soundToolState}
+          />
+        </View>
       ) : null}
-    </>
+    </KeyboardAvoidingView>
   );
 };
