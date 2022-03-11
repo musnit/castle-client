@@ -1092,7 +1092,7 @@ love::graphics::Canvas *Feed::newCanvas(int width, int height) {
   settings.width = width;
   settings.height = height;
   settings.dpiScale = 1;
-  settings.msaa = 4;
+  // settings.msaa = 4;
 
   return lv.graphics.newCanvas(settings);
 }
