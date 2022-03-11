@@ -54,13 +54,16 @@ ToveMeshUpdateFlags AbstractTesselator::graphicsToMesh(
 	int lineIndex = 0;
 
 	for (int i = 0; i < n; i++) {
-		updated |= pathToMesh(
-			update,
-			graphics->getPath(i),
-			i,
-			paintIndices->get(i),
-			fill, line,
-			fillIndex, lineIndex);
+    // jesse: we've only seen an out of range error in getPath but check both to be safe
+    if (i < graphics->getNumPaths() && i < paintIndices->getNumPaints()) {
+      updated |= pathToMesh(
+        update,
+        graphics->getPath(i),
+        i,
+        paintIndices->get(i),
+        fill, line,
+        fillIndex, lineIndex);
+    }
 	}
 
 	if (&fill != &line) {
