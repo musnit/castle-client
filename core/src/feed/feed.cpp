@@ -573,8 +573,19 @@ void Feed::draw() {
     return;
   }
 
-  int idx = getCurrentIndex();
   float padding = (windowWidth - cardWidth) / 2.0;
+
+  if (decks.size() == 0) {
+    lv.graphics.push(love::Graphics::STACK_ALL);
+    viewTransform.reset();
+    viewTransform.translate(padding, TOP_PADDING);
+    lv.graphics.applyTransform(&viewTransform);
+    renderCardTexture(nullptr, elapsedTime);
+    lv.graphics.pop();
+    return;
+  }
+
+  int idx = getCurrentIndex();
 
   renderCardAtPosition(idx - 1, offset + feedItemWidth * (idx - 1) + padding, false);
   renderCardAtPosition(idx, offset + feedItemWidth * idx + padding, !dragStarted && !isAnimating);
