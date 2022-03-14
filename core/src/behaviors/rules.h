@@ -15,6 +15,7 @@
 struct BaseResponse; // Forward declarations
 struct BaseExpression;
 class RuleContext;
+struct LocalVariableId;
 
 using ResponseRef = BaseResponse *; // Type for referencing other responses from responses
 template<>
@@ -209,6 +210,8 @@ public:
   bool hasTrigger(ActorId actorId) const;
 
   void fireVariablesTriggers(Variable variable, const ExpressionValue &value);
+  void fireLocalVariablesTriggers(
+      ActorId actorId, const LocalVariableId &localVariableId, const ExpressionValue &value);
   void fireBeatTriggers(Clock::Quantize unit, int index);
 
 

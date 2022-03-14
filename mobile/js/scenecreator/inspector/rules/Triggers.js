@@ -206,9 +206,14 @@ const LoseTag = ({ trigger }) => {
 
 const VariableReachesValue = ({ trigger, context }) => {
   const changeAllParams = {
-    paramNames: ['variableId', 'comparison', 'value'],
+    paramNames: ['variableId', 'localVariableId', 'comparison', 'value'],
     paramValues: { ...trigger.params },
   };
+  const isLocal =
+    trigger.params && (!trigger.params.variableId || trigger.params.variableId === '(none)');
+  const name = isLocal
+    ? trigger.params.localVariableId
+    : getVariableName(trigger.params?.variableId, context.variables);
   if (trigger.params) {
     return withWhen([
       {
@@ -217,7 +222,7 @@ const VariableReachesValue = ({ trigger, context }) => {
       },
       {
         type: 'selectParamSheet',
-        label: getVariableName(trigger.params.variableId, context.variables),
+        label: name,
         ...changeAllParams,
       },
       {
@@ -247,6 +252,11 @@ const VariableReachesValue = ({ trigger, context }) => {
 };
 
 const VariableChanges = ({ trigger, context }) => {
+  const isLocal =
+    trigger.params && (!trigger.params.variableId || trigger.params.variableId === '(none)');
+  const name = isLocal
+    ? trigger.params.localVariableId
+    : getVariableName(trigger.params?.variableId, context.variables);
   return withWhen([
     {
       type: 'selectEntry',
@@ -254,8 +264,8 @@ const VariableChanges = ({ trigger, context }) => {
     },
     {
       type: 'selectParamSheet',
-      label: getVariableName(trigger.params.variableId, context.variables),
-      paramName: 'variableId',
+      label: name,
+      paramName: isLocal ? 'localVariableId' : 'variableId',
       paramValue: trigger.params.variableId,
     },
   ]);

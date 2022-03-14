@@ -1059,6 +1059,10 @@ struct VariableChangesTrigger : BaseTrigger {
          Variable, variableId,
          .label("variable")
          );
+    PROP(
+         LocalVariableId, localVariableId,
+         .label("local variable")
+         );
   } params;
 };
 
@@ -1072,6 +1076,10 @@ struct VariableReachesValueTrigger : BaseTrigger {
     PROP(
          Variable, variableId,
          .label("variable")
+         );
+    PROP(
+         LocalVariableId, localVariableId,
+         .label("local variable")
          );
     PROP(ExpressionComparison, comparison);
     PROP(ExpressionRef, value) = 0;
@@ -1091,6 +1099,17 @@ void RulesBehavior::fireVariablesTriggers(Variable variable, const ExpressionVal
         return trigger.params.variableId() == variable
             && trigger.params.comparison().compare(value, evalIndependent(trigger.params.value()));
       });
+}
+
+void RulesBehavior::fireLocalVariablesTriggers(
+    ActorId actorId, const LocalVariableId &localVariableId, const ExpressionValue &value) {
+  fireIf<VariableChangesTrigger>(actorId, {}, [&](const VariableChangesTrigger &trigger) {
+    return trigger.params.localVariableId() == localVariableId;
+  });
+  fireIf<VariableReachesValueTrigger>(actorId, {}, [&](const VariableReachesValueTrigger &trigger) {
+    return trigger.params.localVariableId() == localVariableId
+        && trigger.params.comparison().compare(value, evalIndependent(trigger.params.value()));
+  });
 }
 
 struct VariableReachesValueTriggerOnAddMarker {
@@ -1156,7 +1175,7 @@ struct SetVariableResponse : BaseResponse {
       }
     } else {
       auto &localVariablesBehavior = ctx.getScene().getBehaviors().byType<LocalVariablesBehavior>();
-      auto localVariableId = params.localVariableId();
+      auto &localVariableId = params.localVariableId();
       if (params.relative() && value.is<double>()) {
         auto currValue = localVariablesBehavior.get(ctx.actorId, localVariableId).as<double>();
         localVariablesBehavior.set(
@@ -1188,8 +1207,7 @@ struct VariableMeetsConditionResponse : BaseResponse {
       return params.comparison().compare(variables.get(params.variableId()), value);
     } else {
       auto &localVariablesBehavior = ctx.getScene().getBehaviors().byType<LocalVariablesBehavior>();
-      auto currValue
-          = localVariablesBehavior.get(ctx.actorId, params.localVariableId()).as<double>();
+      auto &currValue = localVariablesBehavior.get(ctx.actorId, params.localVariableId());
       return params.comparison().compare(currValue, value);
     }
   }
@@ -1555,11 +1573,20 @@ void RulesBehavior::handlePerform(double dt) {
   // first frame to let variables be updated once before comparison (eg. to count initial actors).
   if (!firstFrame) {
     auto &variables = scene.getVariables();
+    auto &localVariablesBehavior = scene.getBehaviors().byType<LocalVariablesBehavior>();
     fireAllIf<VariableReachesValueTrigger, VariableReachesValueTriggerOnAddMarker>(
         {}, [&](ActorId actorId, const VariableReachesValueTrigger &trigger) {
-          auto &currValue = variables.get(trigger.params.variableId());
-          return trigger.params.comparison().compare(
-              currValue, evalIndependent(trigger.params.value()));
+          if (auto variableId = trigger.params.variableId(); variableId.token.index >= 0) {
+            auto &currValue = variables.get(variableId);
+            return trigger.params.comparison().compare(
+                currValue, evalIndependent(trigger.params.value()));
+          } else {
+            auto &localVariableId = trigger.params.localVariableId();
+            auto &currValue = localVariablesBehavior.get(actorId, localVariableId);
+            return trigger.params.comparison().compare(
+                currValue, evalIndependent(trigger.params.value()));
+          }
+          return false;
         });
     registry.clear<VariableReachesValueTriggerOnAddMarker>();
   }

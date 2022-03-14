@@ -356,7 +356,7 @@ const VariableMeetsCondition = ({ response, context }) => {
   const isLocal =
     response.params && (!response.params.variableId || response.params.variableId === '(none)');
   const name = isLocal
-    ? response.params.name
+    ? response.params.localVariableId
     : getVariableName(response.params?.variableId, context.variables);
   if (response.params) {
     return [
@@ -755,7 +755,7 @@ const SetVariable = ({ response, context }) => {
   const isLocal =
     response.params && (!response.params.variableId || response.params.variableId === '(none)');
   const name = isLocal
-    ? response.params.name
+    ? response.params.localVariableId
     : getVariableName(response.params?.variableId, context.variables);
   return [
     {

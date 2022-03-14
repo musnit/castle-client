@@ -62,7 +62,7 @@ void LocalVariablesBehavior::handleReadComponent(
       if (isEditing) {
         component.editData->localVariables.push_back({ name, value });
       } else {
-        set(actorId, LocalVariableId { map.getToken(name) }, value);
+        set(actorId, LocalVariableId { map.getToken(name) }, value, false);
       }
     });
   });
@@ -99,28 +99,39 @@ void LocalVariablesBehavior::handlePerform(double dt) {
 // Get, set
 //
 
-ExpressionValue LocalVariablesBehavior::get(
+const ExpressionValue &LocalVariablesBehavior::get(
     ActorId actorId, const LocalVariableId &localVariableId) const {
   if (auto mapElem = map.lookup(localVariableId.token)) {
     if (mapElem->entries.contains(actorId)) {
       return mapElem->entries.get(actorId).value;
     }
   }
-  return {};
+  static ExpressionValue empty;
+  return empty;
 }
 
-void LocalVariablesBehavior::set(
-    ActorId actorId, const LocalVariableId &localVariableId, ExpressionValue value) {
+void LocalVariablesBehavior::set(ActorId actorId, const LocalVariableId &localVariableId,
+    ExpressionValue value, bool fireTriggers) {
   auto mapElem = map.lookup(localVariableId.token);
   if (!mapElem) {
     map.insert(localVariableId.token, {});
     mapElem = map.lookup(localVariableId.token);
   }
   if (mapElem) {
+    auto changed = false;
     if (mapElem->entries.contains(actorId)) {
-      mapElem->entries.get(actorId).value = value;
+      auto &entry = mapElem->entries.get(actorId);
+      if (entry.value != value) {
+        entry.value = value;
+        changed = true;
+      }
     } else {
       mapElem->entries.emplace(actorId, LocalVariableEntry { value });
+      changed = true;
+    }
+    if (fireTriggers && changed) {
+      auto &rulesBehavior = getScene().getBehaviors().byType<RulesBehavior>();
+      rulesBehavior.fireLocalVariablesTriggers(actorId, localVariableId, value);
     }
   }
 }

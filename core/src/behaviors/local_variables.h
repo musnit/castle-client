@@ -26,6 +26,8 @@ struct LocalVariableId {
 
   void read(Reader &reader);
   void write(Writer &writer) const;
+
+  bool operator==(const LocalVariableId &other) const;
 };
 
 
@@ -68,8 +70,9 @@ public:
   void handlePerform(double dt);
 
 
-  ExpressionValue get(ActorId actorId, const LocalVariableId &localVariableId) const;
-  void set(ActorId actorId, const LocalVariableId &localVariableId, ExpressionValue value);
+  const ExpressionValue &get(ActorId actorId, const LocalVariableId &localVariableId) const;
+  void set(ActorId actorId, const LocalVariableId &localVariableId, ExpressionValue value,
+      bool fireTriggers = true);
 
 
   void debugDisplay();
@@ -82,3 +85,10 @@ private:
   // Only present during play
   LocalVariablesMap map;
 };
+
+
+// Inlined implementations
+
+inline bool LocalVariableId::operator==(const LocalVariableId &other) const {
+  return token == other.token;
+}
