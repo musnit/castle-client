@@ -92,6 +92,7 @@ Engine::Engine() {
 
 #ifdef __EMSCRIPTEN__
   auto screen = std::make_unique<Player>(bridge);
+  screen->resume();
   activeScreenId = "player:web";
   screens.insert(std::make_pair(activeScreenId, std::move(screen)));
 #endif
