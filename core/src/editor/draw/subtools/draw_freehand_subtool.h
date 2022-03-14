@@ -62,8 +62,7 @@ public:
       }
 
       for (size_t i = 0; i < currentPathDataList.size(); i++) {
-        ReleasePath(currentPathDataList[i].tovePath);
-        currentPathDataList[i].tovePath.ptr = NULL;
+        currentPathDataList[i].clearTovePath();
         drawTool.addPathData(currentPathDataList[i]);
       }
 

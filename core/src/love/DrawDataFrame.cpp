@@ -428,7 +428,7 @@ ToveGraphicsHolder *DrawDataFrame::graphics() {
     cleanUpPaths();
     _graphics = new ToveGraphicsHolder();
     for (size_t i = 0; i < pathDataList.size(); i++) {
-      _graphics->addPath(pathDataList[i].tovePath);
+      _graphics->addPath(pathDataList[i].getTovePath());
     }
   }
   return _graphics;
