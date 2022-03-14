@@ -73,7 +73,7 @@ public:
         archive.obj(i, pathData);
 
         if (pathData.isValid()) {
-          pathDataList.push_back(pathData);
+          pathDataList.push_back(std::move(pathData));
         }
       }
     });

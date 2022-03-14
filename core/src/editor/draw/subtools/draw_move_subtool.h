@@ -5,10 +5,10 @@
 #include "editor/draw/util.h"
 
 struct PathDataWithGrabPoint {
-  love::PathData pathData;
+  love::PathData &pathData;
   int grabPointIndex;
 
-  PathDataWithGrabPoint(love::PathData pathData, int grabPointIndex)
+  PathDataWithGrabPoint(love::PathData &pathData, int grabPointIndex)
       : pathData(pathData)
       , grabPointIndex(grabPointIndex) {
   }
@@ -104,7 +104,7 @@ public:
     if (touch.touch.released) {
       if (grabbedPaths.size() > 0) {
         for (size_t i = 0; i < grabbedPaths.size(); i++) {
-          drawTool.addPathData(grabbedPaths[i].pathData);
+          drawTool.addPathData(grabbedPaths[i].pathData.copy());
         }
 
         drawTool.getDrawDataFrame().resetGraphics();
@@ -119,7 +119,7 @@ public:
       drawTool.resetTempGraphics();
 
       for (size_t i = 0; i < grabbedPaths.size(); i++) {
-        drawTool.addTempPathData(grabbedPaths[i].pathData);
+        drawTool.addTempPathData(grabbedPaths[i].pathData.copy());
       }
     }
   }

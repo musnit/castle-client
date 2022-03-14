@@ -49,7 +49,7 @@ public:
         powf(initialCoord.x - touch.clampedX, 2.0) + powf(initialCoord.y - touch.clampedY, 2.0));
     if (dist > 0.2) {
       initialCoord = newCoord;
-      currentPathDataList.push_back(*currentPathData);
+      currentPathDataList.push_back(currentPathData->copy());
       currentPathData = std::nullopt;
     }
 
@@ -58,12 +58,12 @@ public:
           && (!DrawUtil::floatEquals(currentPathData->points[0].x, currentPathData->points[1].x)
               || !DrawUtil::floatEquals(
                   currentPathData->points[0].y, currentPathData->points[1].y))) {
-        currentPathDataList.push_back(*currentPathData);
+        currentPathDataList.push_back(currentPathData->copy());
       }
 
       for (size_t i = 0; i < currentPathDataList.size(); i++) {
         currentPathDataList[i].clearTovePath();
-        drawTool.addPathData(currentPathDataList[i]);
+        drawTool.addPathData(currentPathDataList[i].copy());
       }
 
       drawTool.getDrawDataFrame().resetGraphics();
@@ -76,11 +76,11 @@ public:
       drawTool.resetTempGraphics();
 
       for (size_t i = 0; i < currentPathDataList.size(); i++) {
-        drawTool.addTempPathData(currentPathDataList[i]);
+        drawTool.addTempPathData(currentPathDataList[i].copy());
       }
 
       if (currentPathData) {
-        drawTool.addTempPathData(*currentPathData);
+        drawTool.addTempPathData(currentPathData->copy());
       }
     }
   }

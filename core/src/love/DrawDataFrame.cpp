@@ -90,7 +90,7 @@ Bounds DrawDataFrame::getPathDataBounds(std::optional<Bounds> bounds) {
   maxY = maxY - (DRAW_LINE_WIDTH / 2);
   // we still need this because of isTransparent
   for (size_t i = 0; i < pathDataList.size(); i++) {
-    auto pathData = pathDataList[i];
+    auto &pathData = pathDataList[i];
     for (size_t j = 0; j < pathData.points.size(); j++) {
       auto x = pathData.points[j].x;
       auto y = pathData.points[j].y;

@@ -158,6 +158,11 @@ struct Point {
       , y(y) {
   }
 
+  Point(const Point &other) {
+    x = other.x;
+    y = other.y;
+  }
+
   bool operator==(const Point &other) {
     return x == other.x && y == other.y;
   }
@@ -216,6 +221,11 @@ private:
   std::vector<ToveSubpathRef> toveSubpaths;
 
 public:
+  PathData(const PathData &) = delete; // Prevent accidental copies
+  PathData &operator=(const PathData &) = delete;
+  PathData(PathData &&) = default; // Allow moves
+  PathData &operator=(PathData &&) = default;
+
   std::vector<Point> points;
   int style;
   std::optional<Point> bendPoint;
@@ -253,19 +263,20 @@ public:
     tovePath.ptr = NULL;
   }
 
-  PathData(const PathData &p1) {
-    points.clear();
-    for (size_t i = 0; i < p1.points.size(); i++) {
-      points.push_back(p1.points[i]);
+  PathData copy() {
+    PathData newPathData;
+
+    for (size_t i = 0; i < points.size(); i++) {
+      newPathData.points.push_back(points[i]);
     }
 
-    style = p1.style;
-    bendPoint = p1.bendPoint;
-    isFreehand = p1.isFreehand;
-    color = p1.color;
-    isTransparent = p1.isTransparent;
+    newPathData.style = style;
+    newPathData.bendPoint = bendPoint;
+    newPathData.isFreehand = isFreehand;
+    newPathData.color = color;
+    newPathData.isTransparent = isTransparent;
 
-    tovePath.ptr = NULL;
+    return newPathData;
   }
 
   bool isValid() const {
@@ -285,14 +296,14 @@ public:
       // TODO: uncommenting this breaks the eraser tool in some decks (try erasing the bottom of
       // the gem blueprint) For some reason, two different PathDatas have the same value for
       // tovePath.ptr.
-      /*for (auto &subpath : toveSubpaths) {
+      for (auto &subpath : toveSubpaths) {
         if (subpath.ptr) {
           ReleaseSubpath(subpath);
           subpath.ptr = NULL;
         }
       }
       ReleasePath(tovePath);
-      tovePath.ptr = NULL;*/
+      tovePath.ptr = NULL;
     }
   }
 

@@ -62,22 +62,24 @@ public:
 
     auto radius = getRadius();
 
-    std::vector<int> pathIndicesToRemove;
     std::vector<love::PathData> pathsToAdd;
 
     auto pathDataList = drawTool.selectedFramePathDataList();
     if (pathDataList) {
-      int index = 0;
-      for (auto &pathData : *pathDataList) {
+      auto it = pathDataList->begin();
+      while (it != pathDataList->end()) {
+        auto &pathData = *it;
         if (DrawUtil::pathIntersectsCircle(pathData, touch.touchX, touch.touchY, radius)) {
           // remove the intersecting path, then maybe replace it
-          pathIndicesToRemove.push_back(index);
+          didChange = true;
           if (!pathData.bendPoint && pathData.style == 1) {
             // we can potentially cut this path
-            maybeAddReplacementPaths(&pathsToAdd, pathData, touch.touchX, touch.touchY, radius);
+            // maybeAddReplacementPaths(&pathsToAdd, pathData, touch.touchX, touch.touchY, radius);
           }
+          it = pathDataList->erase(it);
+        } else {
+          ++it;
         }
-        index++;
       }
     }
 
@@ -94,17 +96,10 @@ public:
         drawTool.resetTempGraphics();
       }
     } else {
-      if (pathIndicesToRemove.size() > 0) {
-        didChange = true;
-      }
-      for (auto iter = pathIndicesToRemove.rbegin(); iter != pathIndicesToRemove.rend(); iter++) {
-        auto index = *iter;
-        pathDataList->erase(pathDataList->begin() + index);
-      }
-      for (auto pathData : pathsToAdd) {
+      for (auto &pathData : pathsToAdd) {
         // we may need to test the new paths for erasure later in this same gesture,
         // so add them to the final draw data
-        drawTool.addPathData(pathData);
+        // drawTool.addPathData(pathData);
       }
       if (didChange) {
         drawTool.getDrawDataFrame().resetGraphics();
@@ -137,7 +132,7 @@ private:
     newPath.copyAttributes(pathDataToReplace);
     newPath.points.push_back(p1);
     newPath.points.push_back(p2);
-    pathsToAdd->push_back(newPath);
+    pathsToAdd->push_back(newPath.copy());
   }
 
   void maybeAddReplacementPaths(std::vector<love::PathData> *pathsToAdd,
