@@ -263,22 +263,6 @@ public:
     tovePath.ptr = NULL;
   }
 
-  PathData copy() {
-    PathData newPathData;
-
-    for (size_t i = 0; i < points.size(); i++) {
-      newPathData.points.push_back(points[i]);
-    }
-
-    newPathData.style = style;
-    newPathData.bendPoint = bendPoint;
-    newPathData.isFreehand = isFreehand;
-    newPathData.color = color;
-    newPathData.isTransparent = isTransparent;
-
-    return newPathData;
-  }
-
   bool isValid() const {
     return points.size() >= 2;
   }
@@ -293,9 +277,6 @@ public:
 
   ~PathData() {
     if (tovePath.ptr) {
-      // TODO: uncommenting this breaks the eraser tool in some decks (try erasing the bottom of
-      // the gem blueprint) For some reason, two different PathDatas have the same value for
-      // tovePath.ptr.
       for (auto &subpath : toveSubpaths) {
         if (subpath.ptr) {
           ReleaseSubpath(subpath);
@@ -394,7 +375,7 @@ struct Bounds {
   }
 };
 
-typedef std::vector<PathData> PathDataList;
+typedef std::vector<std::shared_ptr<PathData>> PathDataList;
 
 class AnimationState {
 public:

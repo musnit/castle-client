@@ -62,19 +62,19 @@ public:
 
     auto radius = getRadius();
 
-    std::vector<love::PathData> pathsToAdd;
+    std::vector<std::shared_ptr<love::PathData>> pathsToAdd;
 
     auto pathDataList = drawTool.selectedFramePathDataList();
     if (pathDataList) {
       auto it = pathDataList->begin();
       while (it != pathDataList->end()) {
-        auto &pathData = *it;
-        if (DrawUtil::pathIntersectsCircle(pathData, touch.touchX, touch.touchY, radius)) {
+        auto pathData = *it;
+        if (DrawUtil::pathIntersectsCircle(*pathData, touch.touchX, touch.touchY, radius)) {
           // remove the intersecting path, then maybe replace it
           didChange = true;
-          if (!pathData.bendPoint && pathData.style == 1) {
+          if (!pathData->bendPoint && pathData->style == 1) {
             // we can potentially cut this path
-            // maybeAddReplacementPaths(&pathsToAdd, pathData, touch.touchX, touch.touchY, radius);
+            maybeAddReplacementPaths(&pathsToAdd, *pathData, touch.touchX, touch.touchY, radius);
           }
           it = pathDataList->erase(it);
         } else {
@@ -99,7 +99,7 @@ public:
       for (auto &pathData : pathsToAdd) {
         // we may need to test the new paths for erasure later in this same gesture,
         // so add them to the final draw data
-        // drawTool.addPathData(pathData);
+        drawTool.addPathData(pathData);
       }
       if (didChange) {
         drawTool.getDrawDataFrame().resetGraphics();
@@ -126,16 +126,16 @@ private:
     return sqrt(dx * dx + dy * dy) < radius;
   }
 
-  void addReplacementPathData(std::vector<love::PathData> *pathsToAdd,
+  void addReplacementPathData(std::vector<std::shared_ptr<love::PathData>> *pathsToAdd,
       love::PathData &pathDataToReplace, love::Point &p1, love::Point &p2) {
-    love::PathData newPath;
-    newPath.copyAttributes(pathDataToReplace);
-    newPath.points.push_back(p1);
-    newPath.points.push_back(p2);
-    pathsToAdd->push_back(newPath.copy());
+    std::shared_ptr<love::PathData> newPath = std::make_shared<love::PathData>();
+    newPath->copyAttributes(pathDataToReplace);
+    newPath->points.push_back(p1);
+    newPath->points.push_back(p2);
+    pathsToAdd->push_back(newPath);
   }
 
-  void maybeAddReplacementPaths(std::vector<love::PathData> *pathsToAdd,
+  void maybeAddReplacementPaths(std::vector<std::shared_ptr<love::PathData>> *pathsToAdd,
       love::PathData &pathDataToReplace, float centerX, float centerY, float radius) {
     for (int ii = 0, n = pathDataToReplace.points.size(); ii < n - 1; ii++) {
       auto p1 = pathDataToReplace.points[ii];

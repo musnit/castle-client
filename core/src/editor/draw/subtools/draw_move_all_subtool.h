@@ -74,16 +74,16 @@ public:
           || !DrawUtil::floatEquals(clampedDiff.y, 0.0)) {
         auto pathDataList = drawTool.selectedFramePathDataList();
         for (auto &pathData : *pathDataList) {
-          pathData.clearTovePath();
+          pathData->clearTovePath();
 
-          for (size_t i = 0; i < pathData.points.size(); i++) {
-            pathData.points[i].x = pathData.points[i].x + clampedDiff.x;
-            pathData.points[i].y = pathData.points[i].y + clampedDiff.y;
+          for (size_t i = 0; i < pathData->points.size(); i++) {
+            pathData->points[i].x = pathData->points[i].x + clampedDiff.x;
+            pathData->points[i].y = pathData->points[i].y + clampedDiff.y;
           }
 
-          if (pathData.bendPoint) {
-            pathData.bendPoint->x = pathData.bendPoint->x + clampedDiff.x;
-            pathData.bendPoint->y = pathData.bendPoint->y + clampedDiff.y;
+          if (pathData->bendPoint) {
+            pathData->bendPoint->x = pathData->bendPoint->x + clampedDiff.x;
+            pathData->bendPoint->y = pathData->bendPoint->y + clampedDiff.y;
           }
         }
 

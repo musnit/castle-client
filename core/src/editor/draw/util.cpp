@@ -75,22 +75,25 @@ love::Colorf DrawUtil::getRandomCastlePaletteColor() {
   return { rgb[0] / 255.0f, rgb[1] / 255.0f, rgb[2] / 255.0f, 1.0f };
 }
 
-void DrawUtil::makePathsFromPoints(love::PathData *paths, float *points, int numPoints) {
+void DrawUtil::makePathsFromPoints(
+    std::shared_ptr<love::PathData> *paths, float *points, int numPoints) {
   int pathIndex = 0;
   for (int i = 0; i < numPoints; i += 2) {
     auto nextI = i + 2;
     if (nextI >= numPoints) {
       nextI = nextI - numPoints;
     }
-    paths[pathIndex].style = 1;
-    paths[pathIndex].points.clear();
-    paths[pathIndex].points.emplace_back(points[i], points[i + 1]);
-    paths[pathIndex].points.emplace_back(points[nextI], points[nextI + 1]);
+    paths[pathIndex]->clearTovePath();
+    paths[pathIndex]->style = 1;
+    paths[pathIndex]->points.clear();
+    paths[pathIndex]->points.emplace_back(points[i], points[i + 1]);
+    paths[pathIndex]->points.emplace_back(points[nextI], points[nextI + 1]);
     pathIndex++;
   }
 }
 
-bool DrawUtil::getRectangleShape(love::PathData *paths, float x1, float y1, float x2, float y2) {
+bool DrawUtil::getRectangleShape(
+    std::shared_ptr<love::PathData> *paths, float x1, float y1, float x2, float y2) {
   if (isPointInBounds(x1, y1) && isPointInBounds(x2, y2) && !floatEquals(x1, x2)
       && !floatEquals(y1, y2)) {
     float points[] = { x1, y1, x1, y2, x2, y2, x2, y1 };
@@ -101,7 +104,7 @@ bool DrawUtil::getRectangleShape(love::PathData *paths, float x1, float y1, floa
 }
 
 bool DrawUtil::getRightTriangleShape(
-    love::PathData *paths, float x1, float y1, float x2, float y2) {
+    std::shared_ptr<love::PathData> *paths, float x1, float y1, float x2, float y2) {
   float x3 = x1, y3 = y2;
   auto isColinear = floatEquals((x2 - x1) * (y3 - y1), (x3 - x1) * (y2 - y1));
   if (!isColinear && isPointInBounds(x1, y1) && isPointInBounds(x2, y2)
@@ -113,8 +116,9 @@ bool DrawUtil::getRightTriangleShape(
   return false;
 }
 
-bool DrawUtil::getCircleShapeRoundToGrid(love::DrawData &drawData, love::PathData *paths, float x1,
-    float y1, float x2, float y2, float roundUnitX, float roundUnitY) {
+bool DrawUtil::getCircleShapeRoundToGrid(love::DrawData &drawData,
+    std::shared_ptr<love::PathData> *paths, float x1, float y1, float x2, float y2,
+    float roundUnitX, float roundUnitY) {
   // circle between p1 and p2, not rounded to grid
   float centerX = (x1 + x2) / 2.0f, centerY = (y1 + y2) / 2.0f,
         radius = sqrt(pow(x2 - x1, 2.0f) + pow(y2 - y1, 2.0f)) / 2.0f;
@@ -136,10 +140,10 @@ bool DrawUtil::getCircleShapeRoundToGrid(love::DrawData &drawData, love::PathDat
   if (radius > 0 && isPointInBounds(points[0], points[1]) && isPointInBounds(points[2], points[3])
       && isPointInBounds(points[4], points[5]) && isPointInBounds(points[6], points[7])) {
     makePathsFromPoints(paths, points, 8);
-    paths[0].style = 2;
-    paths[1].style = 3;
-    paths[2].style = 3;
-    paths[3].style = 2;
+    paths[0]->style = 2;
+    paths[1]->style = 3;
+    paths[2]->style = 3;
+    paths[3]->style = 2;
     return true;
   }
   return false;
@@ -216,8 +220,9 @@ bool DrawUtil::pickColor(
   // test paths first
   if (!frame.parentLayer()->isBitmap) {
     for (auto &pathData : frame.pathDataList) {
-      if (pathIntersectsCircle(pathData, x, y, radius)) {
-        outColor.set(pathData.color->r, pathData.color->g, pathData.color->b, pathData.color->a);
+      if (pathIntersectsCircle(*pathData, x, y, radius)) {
+        outColor.set(
+            pathData->color->r, pathData->color->g, pathData->color->b, pathData->color->a);
         return true;
       }
     }

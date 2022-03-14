@@ -38,12 +38,11 @@ public:
   // Subtool functions
   void resetTempGraphics();
   void clearTempGraphics();
-  void addTempPathData(love::PathData pathData);
+  void addTempPathData(std::shared_ptr<love::PathData> pathData);
   void setTempTranslation(float x, float y);
   float getPixelScale();
 
-  void addPathData(const std::shared_ptr<love::PathData> &pathData);
-  void addPathData(love::PathData pathData);
+  void addPathData(std::shared_ptr<love::PathData> &pathData);
   void saveDrawing(std::string commandDescription);
 
   love::DrawData &getDrawData();

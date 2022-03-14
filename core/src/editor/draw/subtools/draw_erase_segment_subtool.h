@@ -39,8 +39,8 @@ public:
     auto pathDataList = drawTool.selectedFramePathDataList();
     if (pathDataList) {
       int index = 0;
-      for (auto &pathData : *pathDataList) {
-        if (DrawUtil::pathIntersectsCircle(pathData, touch.touchX, touch.touchY, radius)) {
+      for (auto pathData : *pathDataList) {
+        if (DrawUtil::pathIntersectsCircle(*pathData, touch.touchX, touch.touchY, radius)) {
           pathIndicesToRemove.push_back(index);
         }
         index++;

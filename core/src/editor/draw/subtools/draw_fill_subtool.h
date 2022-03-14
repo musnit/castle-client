@@ -5,6 +5,8 @@
 #include "draw_subtool_interface.h"
 #include "editor/draw/util.h"
 
+#define FILL_RADIUS 0.3f
+
 class DrawFillSubtool : public DrawSubtool {
 public:
   explicit DrawFillSubtool(DrawTool &drawTool_)
@@ -26,7 +28,7 @@ public:
   }
 
   float getRadius() {
-    return 0.5f * drawTool.getZoomAmount();
+    return FILL_RADIUS * drawTool.getZoomAmount();
   }
 
   void onTouch(DrawSubtoolTouch &touch) {
@@ -38,9 +40,9 @@ public:
     if (pathDataList) {
       for (size_t i = 0; i < pathDataList->size(); i++) {
         if (DrawUtil::pathIntersectsCircle(
-                (*pathDataList)[i], touch.touchX, touch.touchY, radius)) {
+                *(*pathDataList)[i], touch.touchX, touch.touchY, radius)) {
           if (!love::DrawAlgorithms::colorsEqual(
-                  drawTool.selectedColor, (*pathDataList)[i].color)) {
+                  drawTool.selectedColor, (*pathDataList)[i]->color)) {
             pathIndicesToFill.insert(i);
           }
         }
@@ -56,7 +58,7 @@ public:
             }
 
             if (!drawTool.getDrawData().arePathDatasFloodFillable(
-                    (*pathDataList)[j], (*pathDataList)[j + 1])) {
+                    *(*pathDataList)[j], *(*pathDataList)[j + 1])) {
               break;
             }
 
@@ -69,7 +71,7 @@ public:
             }
 
             if (!drawTool.getDrawData().arePathDatasFloodFillable(
-                    (*pathDataList)[j - 1], (*pathDataList)[j])) {
+                    *(*pathDataList)[j - 1], *(*pathDataList)[j])) {
               break;
             }
 
@@ -81,8 +83,8 @@ public:
       for (size_t i = 0; i < pathDataList->size(); i++) {
         if (pathIndicesToFill.find(i) != pathIndicesToFill.end()) {
           auto &pathData = (*pathDataList)[i];
-          pathData.clearTovePath();
-          pathData.color = drawTool.selectedColor;
+          pathData->clearTovePath();
+          pathData->color = drawTool.selectedColor;
           filledPath = true;
         }
       }

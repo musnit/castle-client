@@ -47,9 +47,9 @@ public:
         auto &pathDataList = frame.pathDataList;
         if (!isBitmap) {
           for (auto &pathData : pathDataList) {
-            if (love::DrawAlgorithms::colorsEqual(pathData.color, colorToReplace)) {
-              pathData.clearTovePath();
-              pathData.color = drawTool.selectedColor;
+            if (love::DrawAlgorithms::colorsEqual(pathData->color, colorToReplace)) {
+              pathData->clearTovePath();
+              pathData->color = drawTool.selectedColor;
               filledPath = true;
             }
           }

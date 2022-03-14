@@ -7,16 +7,18 @@ namespace DrawUtil {
 const std::array<int, size_t(60)> &getCastlePalette();
 love::Colorf getRandomCastlePaletteColor();
 
-void makePathsFromPoints(love::PathData *paths, float *points, int numPoints);
+void makePathsFromPoints(std::shared_ptr<love::PathData> *paths, float *points, int numPoints);
 bool isPointInBounds(float x, float y);
 bool floatEquals(float a, float b);
 float unit(float f);
 bool areAnglesEqual(float a1, float a2);
 
-bool getRectangleShape(love::PathData *paths, float x1, float y1, float x2, float y2);
-bool getRightTriangleShape(love::PathData *paths, float x1, float y1, float x2, float y2);
-bool getCircleShapeRoundToGrid(love::DrawData &drawData, love::PathData *paths, float x1, float y1,
-    float x2, float y2, float roundUnitX, float roundUnitY);
+bool getRectangleShape(
+    std::shared_ptr<love::PathData> *paths, float x1, float y1, float x2, float y2);
+bool getRightTriangleShape(
+    std::shared_ptr<love::PathData> *paths, float x1, float y1, float x2, float y2);
+bool getCircleShapeRoundToGrid(love::DrawData &drawData, std::shared_ptr<love::PathData> *paths,
+    float x1, float y1, float x2, float y2, float roundUnitX, float roundUnitY);
 
 bool getRGBAFloat(love::image::Pixel &p, love::PixelFormat format, float *out);
 float distanceSquared(float *rgba1, float *rgba2); // ignores alpha
