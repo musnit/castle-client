@@ -41,7 +41,7 @@ public:
         if (!pathData.isFreehand
             && DrawUtil::pathIntersectsCircle(
                 pathData, touch.touchX, touch.touchY, 0.5 * drawTool.getZoomAmount())) {
-          grabbedPath = pathData;
+          grabbedPath = pathData.copy();
           pathDataList.erase(pathDataList.begin() + i);
           drawTool.getDrawDataFrame().resetGraphics();
           break;
@@ -78,7 +78,7 @@ public:
           }
         }
 
-        drawTool.addPathData(*grabbedPath);
+        drawTool.addPathData(grabbedPath->copy());
 
         drawTool.getDrawDataFrame().resetGraphics();
         drawTool.getDrawDataFrame().resetFill();
@@ -90,7 +90,7 @@ public:
     } else {
       if (grabbedPath) {
         drawTool.resetTempGraphics();
-        drawTool.addTempPathData(*grabbedPath);
+        drawTool.addTempPathData(grabbedPath->copy());
       }
     }
   }

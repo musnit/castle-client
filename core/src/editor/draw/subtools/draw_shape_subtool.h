@@ -78,7 +78,7 @@ public:
     if (touch.touch.released) {
       if (numPaths) {
         for (int ii = 0; ii < numPaths; ii++) {
-          drawTool.addPathData(paths[ii]);
+          drawTool.addPathData(paths[ii].copy());
         }
         drawTool.getDrawDataFrame().resetGraphics();
         drawTool.getDrawDataFrame().resetFill();
@@ -91,7 +91,7 @@ public:
       drawTool.resetTempGraphics();
       if (numPaths) {
         for (int ii = 0; ii < numPaths; ii++) {
-          drawTool.addTempPathData(paths[ii]);
+          drawTool.addTempPathData(paths[ii].copy());
         }
       }
     }

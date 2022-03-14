@@ -536,7 +536,7 @@ void DrawTool::addPathData(const std::shared_ptr<love::PathData> &pathData) {
     pathData->color = selectedColor;
   }
 
-  selectedFramePathDataList()->push_back(*pathData);
+  selectedFramePathDataList()->push_back(pathData->copy());
 }
 
 void DrawTool::addPathData(love::PathData pathData) {
@@ -549,7 +549,7 @@ void DrawTool::addPathData(love::PathData pathData) {
     pathData.color = selectedColor;
   }
 
-  selectedFramePathDataList()->push_back(pathData);
+  selectedFramePathDataList()->push_back(pathData.copy());
 }
 
 void DrawTool::setIsPlayingAnimation(bool isPlayingAnimation_) {

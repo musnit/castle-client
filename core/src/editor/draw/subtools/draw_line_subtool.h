@@ -37,7 +37,7 @@ public:
     pathData.isTransparent = false;
 
     if (touch.touch.released) {
-      drawTool.addPathData(pathData);
+      drawTool.addPathData(pathData.copy());
       drawTool.getDrawDataFrame().resetGraphics();
       drawTool.getDrawDataFrame().resetFill();
       drawTool.dirtySelectedFrameBounds();
@@ -46,7 +46,7 @@ public:
     } else {
       // repeatedly clear and draw the updated segment as we drag the touch around
       drawTool.resetTempGraphics();
-      drawTool.addTempPathData(pathData);
+      drawTool.addTempPathData(pathData.copy());
     }
   }
 
