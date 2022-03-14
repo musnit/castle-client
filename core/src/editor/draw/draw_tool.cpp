@@ -514,7 +514,7 @@ void DrawTool::addTempPathData(love::PathData pathData) {
   }
 
   drawData->updatePathDataRendering(&pathData);
-  tempGraphics->addPath(pathData.tovePath);
+  tempGraphics->addPath(pathData.getTovePath());
 }
 
 void DrawTool::setTempTranslation(float x, float y) {

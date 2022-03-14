@@ -146,7 +146,7 @@ bool DrawUtil::getCircleShapeRoundToGrid(love::DrawData &drawData, love::PathDat
 }
 
 bool DrawUtil::pathIntersectsCircle(love::PathData &path, float x, float y, float radius) {
-  for (auto &toveSubpath : path.toveSubpaths) {
+  for (auto &toveSubpath : path.getToveSubpaths()) {
     auto nearest = SubpathNearest(toveSubpath, x, y, 1e-4, radius);
     if (nearest.t >= 0) {
       return true;

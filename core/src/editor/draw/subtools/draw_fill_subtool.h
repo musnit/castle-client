@@ -81,8 +81,7 @@ public:
       for (size_t i = 0; i < pathDataList->size(); i++) {
         if (pathIndicesToFill.find(i) != pathIndicesToFill.end()) {
           auto &pathData = (*pathDataList)[i];
-          ReleasePath(pathData.tovePath);
-          pathData.tovePath.ptr = NULL;
+          pathData.clearTovePath();
           pathData.color = drawTool.selectedColor;
           filledPath = true;
         }

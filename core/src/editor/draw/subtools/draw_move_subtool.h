@@ -98,8 +98,7 @@ public:
       grabbedPaths[i].pathData.points[grabbedPaths[i].grabPointIndex].x = touch.roundedX;
       grabbedPaths[i].pathData.points[grabbedPaths[i].grabPointIndex].y = touch.roundedY;
 
-      ReleasePath(grabbedPaths[i].pathData.tovePath);
-      grabbedPaths[i].pathData.tovePath.ptr = NULL;
+      grabbedPaths[i].pathData.clearTovePath();
     }
 
     if (touch.touch.released) {

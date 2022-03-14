@@ -68,8 +68,7 @@ void DrawData::makeSubpathsFromSubpathData(PathData *pathData) {
   for (size_t i = 0; i < pathData->subpathDataList.size(); i++) {
     auto subpathData = pathData->subpathDataList[i];
     auto subpath = NewSubpath();
-    pathData->toveSubpaths.push_back(subpath);
-    PathAddSubpath(pathData->tovePath, subpath);
+    pathData->addToveSubpath(subpath);
     if (subpathData.type == line) {
       SubpathMoveTo(subpath, subpathData.p1.x, subpathData.p1.y);
       SubpathLineTo(subpath, subpathData.p2.x, subpathData.p2.y);
@@ -191,8 +190,7 @@ void DrawData::addSubpathDataForPoints(PathData *pathData, Point p1, Point p2) {
         if (pathData->style > 3) {
           pathData->style = 1;
         }
-        ReleasePath(pathData->tovePath);
-        pathData->tovePath.ptr = NULL;
+        pathData->clearTovePath();
         updatePathDataRendering(pathData);
         return;
       }
@@ -263,7 +261,7 @@ void DrawData::addSubpathDataForPoints(PathData *pathData, Point p1, Point p2) {
 }
 
 void DrawData::updatePathDataRendering(PathData *pathData) {
-  if (pathData->tovePath.ptr != NULL) {
+  if (pathData->getTovePath().ptr != NULL) {
     return;
   }
   TovePathRef path = NewPath(NULL);
@@ -280,7 +278,7 @@ void DrawData::updatePathDataRendering(PathData *pathData) {
   PathSetLineWidth(path, DRAW_LINE_WIDTH);
   PathSetMiterLimit(path, 1.0);
   PathSetLineJoin(path, TOVE_LINEJOIN_ROUND);
-  pathData->tovePath = path;
+  pathData->setTovePath(path);
 
   pathData->subpathDataList.clear();
   if (pathData->isTransparent) {

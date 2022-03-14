@@ -211,6 +211,11 @@ struct Subpath {
 };
 
 struct PathData {
+private:
+  TovePathRef tovePath;
+  std::vector<ToveSubpathRef> toveSubpaths;
+
+public:
   std::vector<Point> points;
   int style;
   std::optional<Point> bendPoint;
@@ -219,8 +224,30 @@ struct PathData {
   bool isTransparent = false;
 
   std::vector<Subpath> subpathDataList;
-  TovePathRef tovePath;
-  std::vector<ToveSubpathRef> toveSubpaths;
+
+  void addToveSubpath(ToveSubpathRef ref) {
+    toveSubpaths.push_back(ref);
+    PathAddSubpath(tovePath, ref);
+  }
+
+  void setTovePath(TovePathRef ref) {
+    tovePath = ref;
+  }
+
+  TovePathRef getTovePath() {
+    return tovePath;
+  }
+
+  std::vector<ToveSubpathRef> &getToveSubpaths() {
+    return toveSubpaths;
+  }
+
+  void clearTovePath() {
+    if (tovePath.ptr) {
+      ReleasePath(tovePath);
+      tovePath.ptr = NULL;
+    }
+  }
 
   PathData() {
     tovePath.ptr = NULL;
@@ -259,10 +286,10 @@ struct PathData {
       // the gem blueprint) For some reason, two different PathDatas have the same value for
       // tovePath.ptr.
       /*for (auto &subpath : toveSubpaths) {
-                      if (subpath.ptr) {
-        ReleaseSubpath(subpath);
-                              subpath.ptr = NULL;
-                      }
+        if (subpath.ptr) {
+          ReleaseSubpath(subpath);
+          subpath.ptr = NULL;
+        }
       }
       ReleasePath(tovePath);
       tovePath.ptr = NULL;*/

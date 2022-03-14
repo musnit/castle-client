@@ -61,8 +61,7 @@ public:
         grabbedPath->bendPoint = love::Point(touch.clampedX, touch.clampedY);
       }
 
-      ReleasePath(grabbedPath->tovePath);
-      grabbedPath->tovePath.ptr = NULL;
+      grabbedPath->clearTovePath();
     }
 
     if (touch.touch.released) {

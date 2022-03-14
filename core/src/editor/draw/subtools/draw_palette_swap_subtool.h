@@ -48,8 +48,7 @@ public:
         if (!isBitmap) {
           for (auto &pathData : pathDataList) {
             if (love::DrawAlgorithms::colorsEqual(pathData.color, colorToReplace)) {
-              ReleasePath(pathData.tovePath);
-              pathData.tovePath.ptr = NULL;
+              pathData.clearTovePath();
               pathData.color = drawTool.selectedColor;
               filledPath = true;
             }

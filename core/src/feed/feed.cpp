@@ -436,7 +436,9 @@ void Feed::renderCardAtPosition(int idx, float position, bool isActive) {
 
   renderCardTexture(canvas.get(), elapsedTime);
 
-  decks[idx].coreView->render();
+  if (decks[idx].coreView) {
+    decks[idx].coreView->render();
+  }
 
   lv.graphics.pop();
 }
