@@ -350,7 +350,7 @@ const ExpressionMeetsCondition = ({ response, context }) => {
 
 const VariableMeetsCondition = ({ response, context }) => {
   const changeAllParams = {
-    paramNames: ['variableId', 'localVariableName', 'comparison', 'value'],
+    paramNames: ['variableId', 'localVariableId', 'comparison', 'value'],
     paramValues: { ...response.params },
   };
   const isLocal =
