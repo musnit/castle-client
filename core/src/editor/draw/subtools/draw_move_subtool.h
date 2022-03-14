@@ -5,10 +5,10 @@
 #include "editor/draw/util.h"
 
 struct PathDataWithGrabPoint {
-  love::PathData &pathData;
+  std::shared_ptr<love::PathData> pathData;
   int grabPointIndex;
 
-  PathDataWithGrabPoint(love::PathData &pathData, int grabPointIndex)
+  PathDataWithGrabPoint(std::shared_ptr<love::PathData> pathData, int grabPointIndex)
       : pathData(pathData)
       , grabPointIndex(grabPointIndex) {
   }
@@ -43,10 +43,10 @@ public:
       auto &pathDataList = *(drawTool.selectedFramePathDataList());
       for (int i = pathDataList.size() - 1; i >= 0; i--) {
         auto &pathData = pathDataList[i];
-        if (!pathData.isFreehand) {
-          for (size_t p = 0; p < pathData.points.size(); p++) {
-            float distance = sqrtf(powf(touch.touchX - pathData.points[p].x, 2.0)
-                + powf(touch.touchY - pathData.points[p].y, 2.0));
+        if (!pathData->isFreehand) {
+          for (size_t p = 0; p < pathData->points.size(); p++) {
+            float distance = sqrtf(powf(touch.touchX - pathData->points[p].x, 2.0)
+                + powf(touch.touchY - pathData->points[p].y, 2.0));
 
             if (distance < drawTool.getDrawData().scale * 0.05) {
               grabbedPaths.push_back(PathDataWithGrabPoint(pathData, p));
@@ -60,23 +60,23 @@ public:
       if (grabbedPaths.size() == 0) {
         auto &pathDataList = *(drawTool.selectedFramePathDataList());
         for (int i = pathDataList.size() - 1; i >= 0; i--) {
-          auto &pathData = pathDataList[i];
+          auto &pathData = *(pathDataList[i]);
           if (!pathData.isFreehand) {
             if (DrawUtil::pathIntersectsCircle(
                     pathData, touch.touchX, touch.touchY, 0.5 * drawTool.getZoomAmount())) {
               love::Point touchPoint(touch.touchX, touch.touchY);
 
-              love::PathData newPathData1;
-              newPathData1.points.push_back(pathData.points[0]);
-              newPathData1.points.push_back(touchPoint);
-              newPathData1.style = pathData.style;
-              newPathData1.color = pathData.color;
+              std::shared_ptr<love::PathData> newPathData1 = std::make_shared<love::PathData>();
+              newPathData1->points.push_back(pathData.points[0]);
+              newPathData1->points.push_back(touchPoint);
+              newPathData1->style = pathData.style;
+              newPathData1->color = pathData.color;
 
-              love::PathData newPathData2;
-              newPathData2.points.push_back(touchPoint);
-              newPathData2.points.push_back(pathData.points[1]);
-              newPathData2.style = pathData.style;
-              newPathData2.color = pathData.color;
+              std::shared_ptr<love::PathData> newPathData2 = std::make_shared<love::PathData>();
+              newPathData2->points.push_back(touchPoint);
+              newPathData2->points.push_back(pathData.points[1]);
+              newPathData2->style = pathData.style;
+              newPathData2->color = pathData.color;
 
               grabbedPaths.push_back(PathDataWithGrabPoint(newPathData1, 1));
               grabbedPaths.push_back(PathDataWithGrabPoint(newPathData2, 0));
@@ -95,16 +95,16 @@ public:
     }
 
     for (size_t i = 0; i < grabbedPaths.size(); i++) {
-      grabbedPaths[i].pathData.points[grabbedPaths[i].grabPointIndex].x = touch.roundedX;
-      grabbedPaths[i].pathData.points[grabbedPaths[i].grabPointIndex].y = touch.roundedY;
+      grabbedPaths[i].pathData->points[grabbedPaths[i].grabPointIndex].x = touch.roundedX;
+      grabbedPaths[i].pathData->points[grabbedPaths[i].grabPointIndex].y = touch.roundedY;
 
-      grabbedPaths[i].pathData.clearTovePath();
+      grabbedPaths[i].pathData->clearTovePath();
     }
 
     if (touch.touch.released) {
       if (grabbedPaths.size() > 0) {
         for (size_t i = 0; i < grabbedPaths.size(); i++) {
-          drawTool.addPathData(grabbedPaths[i].pathData.copy());
+          drawTool.addPathData(grabbedPaths[i].pathData);
         }
 
         drawTool.getDrawDataFrame().resetGraphics();
@@ -119,7 +119,7 @@ public:
       drawTool.resetTempGraphics();
 
       for (size_t i = 0; i < grabbedPaths.size(); i++) {
-        drawTool.addTempPathData(grabbedPaths[i].pathData.copy());
+        drawTool.addTempPathData(grabbedPaths[i].pathData);
       }
     }
   }
@@ -129,9 +129,9 @@ public:
 
     auto pathDataList = drawTool.selectedFramePathDataList();
     for (auto &pathData : *pathDataList) {
-      if (!pathData.isFreehand) {
-        for (size_t p = 0; p < pathData.points.size(); p++) {
-          points.push_back(love::Vector2(pathData.points[p].x, pathData.points[p].y));
+      if (!pathData->isFreehand) {
+        for (size_t p = 0; p < pathData->points.size(); p++) {
+          points.push_back(love::Vector2(pathData->points[p].x, pathData->points[p].y));
         }
       }
     }

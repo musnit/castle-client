@@ -30,14 +30,14 @@ public:
       isGestureStarted = true;
     }
 
-    love::PathData pathData;
-    pathData.points.push_back(love::Point(initialCoord.x, initialCoord.y));
-    pathData.points.push_back(love::Point(touch.roundedX, touch.roundedY));
-    pathData.style = 1;
-    pathData.isTransparent = false;
+    std::shared_ptr<love::PathData> pathData = std::make_shared<love::PathData>();
+    pathData->points.push_back(love::Point(initialCoord.x, initialCoord.y));
+    pathData->points.push_back(love::Point(touch.roundedX, touch.roundedY));
+    pathData->style = 1;
+    pathData->isTransparent = false;
 
     if (touch.touch.released) {
-      drawTool.addPathData(pathData.copy());
+      drawTool.addPathData(pathData);
       drawTool.getDrawDataFrame().resetGraphics();
       drawTool.getDrawDataFrame().resetFill();
       drawTool.dirtySelectedFrameBounds();
@@ -46,7 +46,7 @@ public:
     } else {
       // repeatedly clear and draw the updated segment as we drag the touch around
       drawTool.resetTempGraphics();
-      drawTool.addTempPathData(pathData.copy());
+      drawTool.addTempPathData(pathData);
     }
   }
 

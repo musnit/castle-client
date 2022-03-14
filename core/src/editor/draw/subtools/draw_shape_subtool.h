@@ -15,9 +15,6 @@ public:
   explicit DrawShapeSubtool(DrawTool &drawTool_, Shape shape_)
       : DrawSubtool(drawTool_) {
     shape = shape_;
-    for (int ii = 0; ii < 4; ii++) {
-      paths[ii].isTransparent = false;
-    }
   }
 
   ~DrawShapeSubtool() {
@@ -51,6 +48,11 @@ public:
 
     int numPaths = 0;
 
+    for (int ii = 0; ii < 4; ii++) {
+      paths[ii] = std::make_shared<love::PathData>();
+      paths[ii]->isTransparent = false;
+    }
+
     switch (shape) {
     case Shape::Rectangle:
       if (DrawUtil::getRectangleShape(
@@ -76,9 +78,9 @@ public:
     }
 
     if (touch.touch.released) {
-      if (numPaths) {
+      if (numPaths > 0) {
         for (int ii = 0; ii < numPaths; ii++) {
-          drawTool.addPathData(paths[ii].copy());
+          drawTool.addPathData(paths[ii]);
         }
         drawTool.getDrawDataFrame().resetGraphics();
         drawTool.getDrawDataFrame().resetFill();
@@ -91,7 +93,7 @@ public:
       drawTool.resetTempGraphics();
       if (numPaths) {
         for (int ii = 0; ii < numPaths; ii++) {
-          drawTool.addTempPathData(paths[ii].copy());
+          drawTool.addTempPathData(paths[ii]);
         }
       }
     }
@@ -101,7 +103,7 @@ public:
   }
 
 private:
-  love::PathData paths[4];
+  std::shared_ptr<love::PathData> paths[4];
   bool isGestureStarted = false;
   love::Vector2 initialCoord;
   Shape shape;

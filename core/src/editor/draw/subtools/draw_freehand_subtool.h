@@ -22,7 +22,7 @@ public:
 
   void onReset() {
     isGestureStarted = false;
-    currentPathData = std::nullopt;
+    currentPathData = nullptr;
     currentPathDataList.clear();
   }
 
@@ -32,13 +32,13 @@ public:
 
       initialCoord.x = touch.clampedX;
       initialCoord.y = touch.clampedY;
-      currentPathData = std::nullopt;
+      currentPathData = nullptr;
       currentPathDataList.clear();
     }
 
     love::Point newCoord(touch.clampedX, touch.clampedY);
 
-    currentPathData = love::PathData();
+    currentPathData = std::make_shared<love::PathData>();
     currentPathData->points.push_back(initialCoord);
     currentPathData->points.push_back(newCoord);
     currentPathData->style = 1;
@@ -49,8 +49,8 @@ public:
         powf(initialCoord.x - touch.clampedX, 2.0) + powf(initialCoord.y - touch.clampedY, 2.0));
     if (dist > 0.2) {
       initialCoord = newCoord;
-      currentPathDataList.push_back(currentPathData->copy());
-      currentPathData = std::nullopt;
+      currentPathDataList.push_back(currentPathData);
+      currentPathData = nullptr;
     }
 
     if (touch.touch.released) {
@@ -58,12 +58,12 @@ public:
           && (!DrawUtil::floatEquals(currentPathData->points[0].x, currentPathData->points[1].x)
               || !DrawUtil::floatEquals(
                   currentPathData->points[0].y, currentPathData->points[1].y))) {
-        currentPathDataList.push_back(currentPathData->copy());
+        currentPathDataList.push_back(currentPathData);
       }
 
       for (size_t i = 0; i < currentPathDataList.size(); i++) {
-        currentPathDataList[i].clearTovePath();
-        drawTool.addPathData(currentPathDataList[i].copy());
+        currentPathDataList[i]->clearTovePath();
+        drawTool.addPathData(currentPathDataList[i]);
       }
 
       drawTool.getDrawDataFrame().resetGraphics();
@@ -76,11 +76,11 @@ public:
       drawTool.resetTempGraphics();
 
       for (size_t i = 0; i < currentPathDataList.size(); i++) {
-        drawTool.addTempPathData(currentPathDataList[i].copy());
+        drawTool.addTempPathData(currentPathDataList[i]);
       }
 
       if (currentPathData) {
-        drawTool.addTempPathData(currentPathData->copy());
+        drawTool.addTempPathData(currentPathData);
       }
     }
   }
@@ -90,7 +90,7 @@ public:
 
 private:
   love::Point initialCoord;
-  std::optional<love::PathData> currentPathData;
-  std::vector<love::PathData> currentPathDataList;
+  std::shared_ptr<love::PathData> currentPathData;
+  std::vector<std::shared_ptr<love::PathData>> currentPathDataList;
   bool isGestureStarted = false;
 };

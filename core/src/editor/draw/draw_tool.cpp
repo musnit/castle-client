@@ -508,13 +508,13 @@ void DrawTool::resetTempGraphics() {
   tempGraphics = std::make_shared<love::ToveGraphicsHolder>();
 }
 
-void DrawTool::addTempPathData(love::PathData pathData) {
-  if (!pathData.color) {
-    pathData.color = selectedColor;
+void DrawTool::addTempPathData(std::shared_ptr<love::PathData> pathData) {
+  if (!pathData->color) {
+    pathData->color = selectedColor;
   }
 
-  drawData->updatePathDataRendering(&pathData);
-  tempGraphics->addPath(pathData.getTovePath());
+  drawData->updatePathDataRendering(pathData.get());
+  tempGraphics->addPath(pathData->getTovePath());
 }
 
 void DrawTool::setTempTranslation(float x, float y) {
@@ -526,7 +526,7 @@ float DrawTool::getPixelScale() {
   return editor.getScene().getPixelScale();
 }
 
-void DrawTool::addPathData(const std::shared_ptr<love::PathData> &pathData) {
+void DrawTool::addPathData(std::shared_ptr<love::PathData> &pathData) {
   if (DrawUtil::floatEquals(pathData->points[0].x, pathData->points[1].x)
       && DrawUtil::floatEquals(pathData->points[0].y, pathData->points[1].y)) {
     return;
@@ -536,20 +536,7 @@ void DrawTool::addPathData(const std::shared_ptr<love::PathData> &pathData) {
     pathData->color = selectedColor;
   }
 
-  selectedFramePathDataList()->push_back(pathData->copy());
-}
-
-void DrawTool::addPathData(love::PathData pathData) {
-  if (DrawUtil::floatEquals(pathData.points[0].x, pathData.points[1].x)
-      && DrawUtil::floatEquals(pathData.points[0].y, pathData.points[1].y)) {
-    return;
-  }
-
-  if (!pathData.color) {
-    pathData.color = selectedColor;
-  }
-
-  selectedFramePathDataList()->push_back(pathData.copy());
+  selectedFramePathDataList()->push_back(pathData);
 }
 
 void DrawTool::setIsPlayingAnimation(bool isPlayingAnimation_) {

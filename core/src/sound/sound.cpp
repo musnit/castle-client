@@ -113,6 +113,7 @@ void Sound::suspend() {
   if (clockThread) {
     clockThread->finish();
     clockThread->wait();
+    delete clockThread;
     clockThread = nullptr;
   }
 }

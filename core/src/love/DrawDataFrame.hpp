@@ -69,11 +69,11 @@ public:
     isLinked = archive.boolean("isLinked", false);
     archive.arr("pathDataList", [&]() {
       for (auto i = 0; i < archive.size(); i++) {
-        PathData pathData;
-        archive.obj(i, pathData);
+        std::shared_ptr<PathData> pathData = std::make_shared<PathData>();
+        archive.obj(i, *pathData);
 
-        if (pathData.isValid()) {
-          pathDataList.push_back(std::move(pathData));
+        if (pathData->isValid()) {
+          pathDataList.push_back(pathData);
         }
       }
     });
@@ -88,8 +88,8 @@ public:
     archive.boolean("isLinked", isLinked);
     archive.arr("pathDataList", [&]() {
       for (size_t i = 0; i < pathDataList.size(); i++) {
-        if (pathDataList[i].isValid()) {
-          archive.obj(pathDataList[i]);
+        if (pathDataList[i]->isValid()) {
+          archive.obj(*pathDataList[i]);
         }
       }
     });

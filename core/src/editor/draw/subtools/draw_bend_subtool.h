@@ -4,6 +4,8 @@
 #include "draw_subtool_interface.h"
 #include "editor/draw/util.h"
 
+#define BEND_RADIUS 0.3f
+
 class DrawBendSubtool : public DrawSubtool {
 public:
   explicit DrawBendSubtool(DrawTool &drawTool_)
@@ -24,24 +26,24 @@ public:
   void onReset() {
     isGestureStarted = false;
     isUsingBendPoint = false;
-    grabbedPath = std::nullopt;
+    grabbedPath = nullptr;
   }
 
   void onTouch(DrawSubtoolTouch &touch) {
     if (!isGestureStarted) {
       isGestureStarted = true;
-      grabbedPath = std::nullopt;
+      grabbedPath = nullptr;
       initialCoord.x = touch.touchX;
       initialCoord.y = touch.touchY;
       isUsingBendPoint = false;
 
       auto &pathDataList = *(drawTool.selectedFramePathDataList());
       for (int i = pathDataList.size() - 1; i >= 0; i--) {
-        auto &pathData = pathDataList[i];
-        if (!pathData.isFreehand
+        auto pathData = pathDataList[i];
+        if (!pathData->isFreehand
             && DrawUtil::pathIntersectsCircle(
-                pathData, touch.touchX, touch.touchY, 0.5 * drawTool.getZoomAmount())) {
-          grabbedPath = pathData.copy();
+                *pathData, touch.touchX, touch.touchY, BEND_RADIUS * drawTool.getZoomAmount())) {
+          grabbedPath = pathData;
           pathDataList.erase(pathDataList.begin() + i);
           drawTool.getDrawDataFrame().resetGraphics();
           break;
@@ -78,7 +80,7 @@ public:
           }
         }
 
-        drawTool.addPathData(grabbedPath->copy());
+        drawTool.addPathData(grabbedPath);
 
         drawTool.getDrawDataFrame().resetGraphics();
         drawTool.getDrawDataFrame().resetFill();
@@ -90,7 +92,7 @@ public:
     } else {
       if (grabbedPath) {
         drawTool.resetTempGraphics();
-        drawTool.addTempPathData(grabbedPath->copy());
+        drawTool.addTempPathData(grabbedPath);
       }
     }
   }
@@ -99,7 +101,7 @@ public:
   }
 
 private:
-  std::optional<love::PathData> grabbedPath;
+  std::shared_ptr<love::PathData> grabbedPath;
   love::Vector2 initialCoord;
   bool isGestureStarted = false;
   bool isUsingBendPoint = false;

@@ -69,7 +69,7 @@ std::vector<float> DrawDataFrame::roundFloatArray(std::vector<float> a) {
 
 void DrawDataFrame::cleanUpPaths() {
   for (size_t i = 0; i < pathDataList.size(); i++) {
-    parentLayer()->parent()->updatePathDataRendering(&pathDataList[i]);
+    parentLayer()->parent()->updatePathDataRendering(pathDataList[i].get());
   }
 }
 
@@ -91,9 +91,9 @@ Bounds DrawDataFrame::getPathDataBounds(std::optional<Bounds> bounds) {
   // we still need this because of isTransparent
   for (size_t i = 0; i < pathDataList.size(); i++) {
     auto &pathData = pathDataList[i];
-    for (size_t j = 0; j < pathData.points.size(); j++) {
-      auto x = pathData.points[j].x;
-      auto y = pathData.points[j].y;
+    for (size_t j = 0; j < pathData->points.size(); j++) {
+      auto x = pathData->points[j].x;
+      auto y = pathData->points[j].y;
       if (x < minX) {
         minX = x;
       }
@@ -428,7 +428,7 @@ ToveGraphicsHolder *DrawDataFrame::graphics() {
     cleanUpPaths();
     _graphics = new ToveGraphicsHolder();
     for (size_t i = 0; i < pathDataList.size(); i++) {
-      _graphics->addPath(pathDataList[i].getTovePath());
+      _graphics->addPath(pathDataList[i]->getTovePath());
     }
   }
   return _graphics;

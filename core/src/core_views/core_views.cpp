@@ -734,7 +734,7 @@ class View : public CoreView {
 
 class ImageView : public CoreView {
 public:
-  ~ImageView() {
+  void cleanUp() {
     if (byteData) {
       byteData->release();
     }
@@ -746,6 +746,14 @@ public:
     if (image) {
       image->release();
     }
+
+    byteData = nullptr;
+    imageData = nullptr;
+    image = nullptr;
+  }
+
+  ~ImageView() {
+    cleanUp();
   }
 
   enum ResizeMode {
@@ -761,6 +769,7 @@ public:
   void read(Reader &reader, int viewportWidth, int viewportHeight) {
     auto url = reader.str("url");
     if (url) {
+      cleanUp();
       int myViewId = viewId;
       API::getData(*url, [myViewId, this](APIDataResponse &response) {
         if (response.success && isViewAlive[myViewId]) {
@@ -776,6 +785,7 @@ public:
 
     auto filename = reader.str("filename");
     if (filename) {
+      cleanUp();
       std::string filenameStr = *filename;
       byteData = EmbeddedImage::load(filenameStr);
 
