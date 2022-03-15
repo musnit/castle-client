@@ -7,6 +7,8 @@
 #include "core_views/core_views.h"
 #include "screen.h"
 
+#define NUM_FRAME_TIMES 5
+
 struct FeedItem {
   enum OptionalBool {
     Unset,
@@ -30,6 +32,10 @@ struct FeedItem {
   bool hasNetworkError = false;
   OptionalBool isCurrentUserReactionToggled = Unset;
   std::optional<int> reactionCount;
+  float frameTimes[NUM_FRAME_TIMES];
+  int frameIndex = 0;
+  float framesToSkip = 0.0;
+  bool isFrozen = false;
 };
 
 class Feed : public Screen {
@@ -103,7 +109,8 @@ private:
   love::graphics::Canvas *newCanvas(int width, int height);
   void renderToCanvas(love::graphics::Canvas *canvas, const std::function<void()> &lambda);
   void layoutCoreViews(int i);
-  void renderCardTexture(love::Texture *texture, float time);
+  void renderCardTexture(love::Texture *texture, float time, float brightness);
+  void runUpdateAtIndex(int i, double dt);
 
   Lv &lv { Lv::getInstance() };
   Bridge &bridge;

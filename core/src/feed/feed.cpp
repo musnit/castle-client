@@ -180,8 +180,6 @@ void Feed::update(double dt) {
   Debug::display("fps: {}", fps);
   elapsedTime += dt;
 
-  bool shouldSkipUpdate = fps < 20;
-
   gesture.update();
   gesture.withSingleTouch([&](const Touch &touch) {
     if (touch.pressed) {
@@ -306,7 +304,7 @@ void Feed::update(double dt) {
   }
 
   if (!dragStarted && !isAnimating) {
-    if (!shouldSkipUpdate && idx >= 0 && idx < (int)decks.size() && decks[idx].player) {
+    if (idx >= 0 && idx < (int)decks.size() && decks[idx].player) {
       if (decks[idx].player->hasScene()) {
         if (auto nextCardId = decks[idx].player->getScene().getNextCardId(); nextCardId) {
           API::loadCard(nextCardId->c_str(), true, [=](APIResponse &response) {
@@ -326,8 +324,7 @@ void Feed::update(double dt) {
 
       if (!paused) {
         decks[idx].player->resume();
-        decks[idx].player->update(dt);
-        decks[idx].hasRunUpdateSinceLastRender = true;
+        runUpdateAtIndex(idx, dt);
 
         if (decks[idx].deckId && decks[idx].cardId) {
           DeckPlays::getInstance().setDeckAndCardIds(*decks[idx].deckId, *decks[idx].cardId);
@@ -350,9 +347,8 @@ void Feed::update(double dt) {
 
     for (size_t i = 0; i < decks.size(); i++) {
       if (decks[i].isLoaded && !decks[i].hasRunUpdate) {
-        decks[i].player->update(dt);
+        runUpdateAtIndex(idx, dt);
         decks[i].hasRunUpdate = true;
-        decks[i].hasRunUpdateSinceLastRender = true;
 
         if (i != (size_t)idx) {
           decks[i].player->suspend();
@@ -368,6 +364,62 @@ void Feed::update(double dt) {
     loadDeckAtIndex(idx);
     loadDeckAtIndex(idx + 1);
     loadDeckAtIndex(idx + 2);
+  }
+}
+
+void Feed::runUpdateAtIndex(int idx, double dt) {
+  if (!decks[idx].player) {
+    return;
+  }
+
+  if (decks[idx].isFrozen) {
+    // don't run any more updates at this point
+    return;
+  }
+
+  if (decks[idx].framesToSkip > 1.0) {
+    decks[idx].framesToSkip -= 1.0;
+    if (decks[idx].framesToSkip < 0.0) {
+      decks[idx].framesToSkip = 0.0;
+    }
+    return;
+  }
+
+  if (decks[idx].frameIndex == 0) {
+    for (int i = 0; i < NUM_FRAME_TIMES; i++) {
+      decks[idx].frameTimes[i] = 0.0;
+    }
+  }
+
+  double start = lv.timer.getTime();
+  decks[idx].player->update(dt);
+  double time = lv.timer.getTime() - start;
+  decks[idx].hasRunUpdateSinceLastRender = true;
+
+  decks[idx].frameTimes[decks[idx].frameIndex % NUM_FRAME_TIMES] = time;
+  decks[idx].frameIndex++;
+
+  if (time > 1.5) {
+    decks[idx].isFrozen = true;
+  } else if (time > 1.0) {
+    decks[idx].framesToSkip += 20.0;
+  } else if (time > 0.5) {
+    decks[idx].framesToSkip += 5.0;
+  } else if (time > 0.2) {
+    decks[idx].framesToSkip += 1.0;
+  }
+
+  float avgTime = 0.0;
+  for (int i = 0; i < NUM_FRAME_TIMES; i++) {
+    avgTime += decks[idx].frameTimes[i];
+  }
+  avgTime /= (float)NUM_FRAME_TIMES;
+  if (avgTime > 0.5) {
+    decks[idx].isFrozen = true;
+  } else if (avgTime > 1.0 / 30.0) {
+    decks[idx].framesToSkip += 20.0;
+  } else if (avgTime > 1.0 / 60.0) {
+    decks[idx].framesToSkip += 5.0;
   }
 }
 
@@ -391,10 +443,10 @@ void Feed::renderCardAtPosition(int idx, float position, bool isActive) {
     }
 
     if (decks[idx].hasNetworkError) {
-      renderCardTexture(nullptr, 0.0);
+      renderCardTexture(nullptr, 0.0, 1.0);
       decks[idx].errorCoreView->render();
     } else {
-      renderCardTexture(nullptr, elapsedTime);
+      renderCardTexture(nullptr, elapsedTime, 1.0);
     }
 
     lv.graphics.pop();
@@ -434,7 +486,7 @@ void Feed::renderCardAtPosition(int idx, float position, bool isActive) {
   viewTransform.translate(position, TOP_PADDING);
   lv.graphics.applyTransform(&viewTransform);
 
-  renderCardTexture(canvas.get(), elapsedTime);
+  renderCardTexture(canvas.get(), elapsedTime, decks[idx].isFrozen ? 0.5 : 1.0);
 
   if (decks[idx].coreView) {
     decks[idx].coreView->render();
@@ -443,7 +495,7 @@ void Feed::renderCardAtPosition(int idx, float position, bool isActive) {
   lv.graphics.pop();
 }
 
-void Feed::renderCardTexture(love::Texture *texture, float time) {
+void Feed::renderCardTexture(love::Texture *texture, float time, float brightness) {
   static auto quad = [&]() {
     std::vector<love::graphics::Vertex> quadVerts {
       { 0, 0, 0, 0, { 0xff, 0xff, 0xff, 0xff } },
@@ -476,7 +528,11 @@ void Feed::renderCardTexture(love::Texture *texture, float time) {
     currentShader->updateUniform(info, 1);
   }
 
-  if (!texture) {
+  if (texture) {
+    auto info = currentShader->getUniformInfo("brightness");
+    info->floats[0] = brightness;
+    currentShader->updateUniform(info, 1);
+  } else {
     auto info = currentShader->getUniformInfo("time");
     info->floats[0] = time;
     currentShader->updateUniform(info, 1);
@@ -499,6 +555,7 @@ void Feed::makeShader() {
     uniform float radius;
     uniform float width;
     uniform float height;
+    uniform float brightness;
 
     vec4 effect(vec4 color, Image tex, vec2 texCoords, vec2 screenCoords) {
       float x = texCoords.x * width;
@@ -521,7 +578,8 @@ void Feed::makeShader() {
         discard;
       }
 
-      return Texel(tex, texCoords);
+      vec4 result = Texel(tex, texCoords);
+      return vec4(result.r * brightness, result.g * brightness, result.b * brightness, result.a);
     }
   )";
   shader.reset(
@@ -582,7 +640,7 @@ void Feed::draw() {
     viewTransform.reset();
     viewTransform.translate(padding, TOP_PADDING);
     lv.graphics.applyTransform(&viewTransform);
-    renderCardTexture(nullptr, elapsedTime);
+    renderCardTexture(nullptr, elapsedTime, 1.0);
     lv.graphics.pop();
     return;
   }
@@ -1084,6 +1142,9 @@ void Feed::unloadDeckAtIndex(int i, bool force) {
   decks[i].hasRunUpdate = false;
   decks[i].hasRunUpdateSinceLastRender = false;
   decks[i].hasRendered = false;
+  decks[i].frameIndex = 0;
+  decks[i].framesToSkip = 0.0;
+  decks[i].isFrozen = false;
   decks[i].player.reset();
   decks[i].canvas.reset();
   decks[i].coreView.reset();
