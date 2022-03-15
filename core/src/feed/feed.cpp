@@ -11,6 +11,7 @@
 #define TOP_PADDING 0
 #define BOTTOM_UI_MIN_HEIGHT 140
 // #define DEBUG_CLICK_TO_ADVANCE
+// #define DEBUG_AUTO_ADVANCE
 
 // creator.photo.url and initialCard.backgroundImage.smallUrl needed for DeckRemixesScreen
 const std::string GRAPHQL_DECK_FIELDS
@@ -290,6 +291,12 @@ void Feed::update(double dt) {
 #endif
     }
   });
+
+#ifdef DEBUG_AUTO_ADVANCE
+  if (rand() % 100 > 96) {
+    offset = -feedItemWidth * (float)(rand() % decks.size());
+  }
+#endif
 
   int idx = getCurrentIndex();
 
