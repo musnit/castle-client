@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Pressable, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { AppText as Text } from '../../../components/AppText';
 import { InspectorSegmentedControl } from '../components/InspectorSegmentedControl';
 import { SongPreview } from '../../sound/components/SongPreview';
 import { useOptimisticBehaviorValue } from '../InspectorUtilities';

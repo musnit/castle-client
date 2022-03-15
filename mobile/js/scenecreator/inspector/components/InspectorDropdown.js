@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { AppText as Text } from '../../../components/AppText';
 import { InspectorTextInput } from './InspectorTextInput';
 import { PopoverButton } from '../../../components/PopoverProvider';
 import * as Constants from '../../../Constants';

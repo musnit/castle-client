@@ -1,5 +1,6 @@
 import React from 'react';
-import { Animated, Easing, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Animated, Easing, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { AppText as Text } from '../components/AppText';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation, ANDROID_USE_NATIVE_NAVIGATION } from '../ReactNavigation';
 

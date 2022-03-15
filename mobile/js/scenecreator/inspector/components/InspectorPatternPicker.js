@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { AppText as Text } from '../../../components/AppText';
 import { PopoverButton } from '../../../components/PopoverProvider';
 import { DropdownItemsList } from './InspectorDropdown';
 import { makeDefaultPatternName } from '../../SceneCreatorUtilities';

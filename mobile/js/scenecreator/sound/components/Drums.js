@@ -1,5 +1,6 @@
 import React from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
+import { AppText as Text } from '../../../components/AppText';
 import { InspectorCheckbox } from '../../inspector/components/InspectorCheckbox';
 import { InspectorDropdown } from '../../inspector/components/InspectorDropdown';
 import { InspectorKnob } from '../../inspector/components/InspectorKnob';

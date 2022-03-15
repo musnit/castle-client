@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, TouchableOpacity } from 'react-native';
+import { AppText as Text } from '../../../components/AppText';
 import { useCoreState, sendBehaviorAction, sendAsync } from '../../../core/CoreEvents';
 import { InspectorNumberInput } from '../components/InspectorNumberInput';
 import { InspectorTextInput } from '../components/InspectorTextInput';
@@ -138,8 +139,7 @@ export default InspectorLocalVariables = ({}) => {
         {localVariables.map((localVariable, i) => (
           <View
             key={`${undoRedoCount}-${localVariables.length}-${i}`}
-            style={styles.variableInputContainer}
-          >
+            style={styles.variableInputContainer}>
             <View style={{ width: '47.5%', flexDirection: 'row', alignItems: 'center' }}>
               <Text style={styles.variablePrefix}>$</Text>
               <InspectorTextInput

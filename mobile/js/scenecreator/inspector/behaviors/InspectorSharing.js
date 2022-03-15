@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, TouchableOpacity } from 'react-native';
+import { AppText as Text } from '../../../components/AppText';
 import { useCardCreator } from '../../CreateCardContext';
 import { useOptimisticBehaviorValue } from '../InspectorUtilities';
 import FeatherIcon from 'react-native-vector-icons/Feather';

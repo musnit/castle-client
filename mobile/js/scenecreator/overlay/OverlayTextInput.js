@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, StyleSheet, Text, Platform } from 'react-native';
+import { View, StyleSheet, Platform } from 'react-native';
+import { AppText as Text } from '../../components/AppText';
 import { InspectorTextInput } from '../inspector/components/InspectorTextInput';
 import { useOptimisticBehaviorValue } from '../inspector/InspectorUtilities';
 import { useCoreState, sendBehaviorAction } from '../../core/CoreEvents';

@@ -5,9 +5,9 @@ import {
   Pressable,
   StatusBar,
   StyleSheet,
-  Text,
   View,
 } from 'react-native';
+import { AppText as Text } from '../../components/AppText';
 import { InstrumentIcon } from '../sound/components/InstrumentIcon';
 import { Pattern } from '../sound/components/Pattern';
 import { useCoreState, useListen, sendGlobalAction, sendAsync } from '../../core/CoreEvents';

@@ -1,5 +1,6 @@
 import React from 'react';
-import { Animated, Pressable as PressableRN, StyleSheet, Text, View } from 'react-native';
+import { Animated, Pressable as PressableRN, StyleSheet, View } from 'react-native';
+import { AppText as Text } from './AppText';
 import { gql } from '@apollo/client';
 import { SocialCount } from './SocialCount';
 

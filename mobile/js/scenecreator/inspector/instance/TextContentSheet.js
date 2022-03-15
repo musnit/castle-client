@@ -1,5 +1,6 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import { AppText as Text } from '../../../components/AppText';
 import { BottomSheetHeader } from '../../../components/BottomSheetHeader';
 import { CardCreatorBottomSheet } from '../../sheets/CardCreatorBottomSheet';
 import { useOptimisticBehaviorValue } from '../InspectorUtilities';
@@ -36,10 +37,10 @@ export const TextContentSheet = ({ isOpen }) => {
       [setContentValueAndSendAction]
     );
 
-      if (!hasSelection || !textComponent) return null;
-      return(
-        <View style={styles.container}>
-          <React.Fragment>
+    if (!hasSelection || !textComponent) return null;
+    return (
+      <View style={styles.container}>
+        <React.Fragment>
           <InspectorTextInput
             value={textContentValue}
             onChangeText={onChangeTextContentValue}
@@ -47,9 +48,9 @@ export const TextContentSheet = ({ isOpen }) => {
             multiline
           />
         </React.Fragment>
-        </View>
-      );
-    };
+      </View>
+    );
+  };
 
   return (
     <CardCreatorBottomSheet

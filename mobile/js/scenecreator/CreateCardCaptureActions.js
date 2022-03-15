@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
+import { AppText as Text } from '../components/AppText';
 import { useCardCreator } from './CreateCardContext';
 import { useCoreState, sendGlobalAction } from '../core/CoreEvents';
 import { useSession } from '../Session';

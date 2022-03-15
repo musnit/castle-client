@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import { AppText as Text } from './AppText';
 import * as Constants from '../Constants';
 
 const styles = StyleSheet.create({

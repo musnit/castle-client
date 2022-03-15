@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { StyleSheet, Text, Pressable, View } from 'react-native';
+import { StyleSheet, Pressable, View } from 'react-native';
+import { AppText as Text } from '../../../components/AppText';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import * as Constants from '../../../Constants';
 

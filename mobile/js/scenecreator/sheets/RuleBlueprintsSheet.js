@@ -1,6 +1,6 @@
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { AppText as Text } from '../../components/AppText';
 import { BottomSheetHeader } from '../../components/BottomSheetHeader';
 import { CardCreatorBottomSheet } from './CardCreatorBottomSheet';
 import { useCoreState } from '../../core/CoreEvents';

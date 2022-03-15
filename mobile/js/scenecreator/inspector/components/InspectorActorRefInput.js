@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import { AppText as Text } from '../../../components/AppText';
 import { InspectorDropdown } from './InspectorDropdown';
 import { InspectorTagPicker } from './InspectorTagPicker';
 

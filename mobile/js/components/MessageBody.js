@@ -1,5 +1,6 @@
 import React from 'react';
-import { Linking, Pressable, StyleSheet, Text, TouchableWithoutFeedback } from 'react-native';
+import { Linking, Pressable, StyleSheet, TouchableWithoutFeedback } from 'react-native';
+import { AppText as Text } from './AppText';
 import * as Utilities from '../common/utilities';
 
 const defaultStyles = StyleSheet.create({

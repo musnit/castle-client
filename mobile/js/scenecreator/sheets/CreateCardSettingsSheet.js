@@ -1,5 +1,6 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import { AppText as Text } from '../../components/AppText';
 import { InspectorCheckbox } from '../inspector/components/InspectorCheckbox';
 import { InspectorNumberInput } from '../inspector/components/InspectorNumberInput';
 import { useCardCreator } from '../CreateCardContext';

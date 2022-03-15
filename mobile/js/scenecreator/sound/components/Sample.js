@@ -3,11 +3,11 @@ import {
   ActivityIndicator,
   Platform,
   StyleSheet,
-  Text,
   TouchableOpacity,
   View,
   Alert,
 } from 'react-native';
+import { AppText as Text } from '../../../components/AppText';
 import { InspectorDropdown } from '../../inspector/components/InspectorDropdown';
 import { InspectorNumberInput } from '../../inspector/components/InspectorNumberInput';
 import { InspectorTextInput } from '../../inspector/components/InspectorTextInput';

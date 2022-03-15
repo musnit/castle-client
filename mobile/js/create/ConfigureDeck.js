@@ -1,5 +1,6 @@
 import React from 'react';
-import { TouchableOpacity, StyleSheet, Switch, Text, View } from 'react-native';
+import { TouchableOpacity, StyleSheet, Switch, View } from 'react-native';
+import { AppText as Text } from '../components/AppText';
 import { ConfigureInput } from '../components/ConfigureInput';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 

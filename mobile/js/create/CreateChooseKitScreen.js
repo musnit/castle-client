@@ -1,5 +1,6 @@
 import React from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { AppText as Text } from '../components/AppText';
 import { CardCell } from '../components/CardCell';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { useNavigation, ANDROID_USE_NATIVE_NAVIGATION } from '../ReactNavigation';

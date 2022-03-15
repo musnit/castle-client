@@ -4,13 +4,13 @@ import {
   RefreshControl,
   StatusBar,
   StyleSheet,
-  Text,
   TouchableHighlight,
   TouchableOpacity,
   View,
   Platform,
 } from 'react-native';
 import { Amplitude } from '@amplitude/react-native';
+import { AppText as Text } from '../components/AppText';
 import { FollowButton } from '../components/FollowButton';
 import { MessageBody } from '../components/MessageBody';
 import { NotificationsSettingsSheet } from './NotificationsSettingsSheet';

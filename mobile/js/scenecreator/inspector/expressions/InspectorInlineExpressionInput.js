@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { AppText as Text } from '../../../components/AppText';
 import { getRuleRenderContext } from '../rules/RuleRenderContext';
 import { InspectorNumberInput } from '../components/InspectorNumberInput';
 import { makeExpressionSummary } from '../../SceneCreatorUtilities';

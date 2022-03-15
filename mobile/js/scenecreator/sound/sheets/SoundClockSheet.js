@@ -1,5 +1,6 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import { AppText as Text } from '../../../components/AppText';
 import { BottomSheet } from '../../../components/BottomSheet';
 import { BottomSheetHeader } from '../../../components/BottomSheetHeader';
 import { ClockSettings } from '../../ClockSettings';

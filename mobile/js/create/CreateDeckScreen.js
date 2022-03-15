@@ -3,11 +3,11 @@ import {
   ActivityIndicator,
   InteractionManager,
   Pressable,
-  Text,
   TouchableOpacity,
   View,
   StyleSheet,
 } from 'react-native';
+import { AppText as Text } from '../components/AppText';
 import { CardsSet } from '../components/CardsSet';
 import { DeckSettingsSheet } from './DeckSettingsSheet';
 import { SafeAreaView } from 'react-native-safe-area-context';

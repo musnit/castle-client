@@ -3,12 +3,12 @@ import {
   ActivityIndicator,
   StatusBar,
   StyleSheet,
-  Text,
   TouchableOpacity,
   View,
   Platform,
   Pressable,
 } from 'react-native';
+import { AppText as Text } from '../components/AppText';
 import { useCoreState, sendGlobalAction, sendAsync } from '../core/CoreEvents';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 
@@ -109,8 +109,7 @@ https://github.com/th3rdwave/react-native-safe-area-context/issues/124
         style={[
           styles.actionsContainer,
           data.performing ? styles.actionsContainerPerforming : null,
-        ]}
-      >
+        ]}>
         {data.performing ? (
           <>
             <TouchableOpacity style={styles.action} onPress={() => sendGlobalAction('onRewind')}>
@@ -126,8 +125,7 @@ https://github.com/th3rdwave/react-native-safe-area-context/issues/124
             <TouchableOpacity
               style={styles.action}
               disabled={!data.actionsAvailable.onUndo}
-              onPress={() => sendGlobalAction('onUndo')}
-            >
+              onPress={() => sendGlobalAction('onUndo')}>
               <CastleIcon
                 name="undo"
                 size={22}
@@ -137,8 +135,7 @@ https://github.com/th3rdwave/react-native-safe-area-context/issues/124
             <TouchableOpacity
               style={styles.action}
               disabled={!data.actionsAvailable.onRedo}
-              onPress={() => sendGlobalAction('onRedo')}
-            >
+              onPress={() => sendGlobalAction('onRedo')}>
               <CastleIcon
                 name="redo"
                 size={22}
@@ -148,8 +145,7 @@ https://github.com/th3rdwave/react-native-safe-area-context/issues/124
             <TouchableOpacity
               style={styles.action}
               disabled={data.performing || data.editMode !== 'default'}
-              onPress={onPressSettings}
-            >
+              onPress={onPressSettings}>
               <CastleIcon
                 name="settings"
                 size={22}
@@ -172,10 +168,9 @@ https://github.com/th3rdwave/react-native-safe-area-context/issues/124
               isCardChanged && !loading && !pressed ? null : { opacity: 0.33, shadowOpacity: 0 },
             ]}
             onPress={onSave}
-            disabled={!isCardChanged}
-          >
+            disabled={!isCardChanged}>
             {loading ? (
-              <ActivityIndicator color="#000"/>
+              <ActivityIndicator color="#000" />
             ) : (
               <Text style={[Constants.styles.primaryButtonLabel, { textAlign: 'center' }]}>
                 Save

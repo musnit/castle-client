@@ -1,5 +1,6 @@
 import React from 'react';
-import { ActivityIndicator, StyleSheet, Pressable, Text, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, Pressable, View } from 'react-native';
+import { AppText as Text } from '../../components/AppText';
 import { BottomSheet } from '../../components/BottomSheet';
 import { BottomSheetHeader } from '../../components/BottomSheetHeader';
 import { InspectorNumberInput } from '../inspector/components/InspectorNumberInput';

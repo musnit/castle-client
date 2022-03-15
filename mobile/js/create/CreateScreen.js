@@ -6,11 +6,11 @@ import {
   ScrollView,
   StatusBar,
   StyleSheet,
-  Text,
   TouchableOpacity,
   View,
 } from 'react-native';
 import { Amplitude } from '@amplitude/react-native';
+import { AppText as Text } from '../components/AppText';
 import { AuthPrompt } from '../auth/AuthPrompt';
 import { CardCell } from '../components/CardCell';
 import { useNavigation, useFocusEffect, ANDROID_USE_NATIVE_NAVIGATION } from '../ReactNavigation';

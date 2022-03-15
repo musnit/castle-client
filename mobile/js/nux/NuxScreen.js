@@ -1,5 +1,6 @@
 import React from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
+import { AppText as Text } from '../components/AppText';
 import { PlayDeck } from '../play/PlayDeck';
 import { useQuery, gql } from '@apollo/client';
 import { SafeAreaView } from 'react-native-safe-area-context';

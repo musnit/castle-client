@@ -1,5 +1,6 @@
 import React from 'react';
-import { Animated, StyleSheet, Text, View } from 'react-native';
+import { Animated, StyleSheet, View } from 'react-native';
+import { AppText as Text } from '../../../components/AppText';
 import { PanGestureHandler, State } from 'react-native-gesture-handler';
 import * as Constants from '../../../Constants';
 

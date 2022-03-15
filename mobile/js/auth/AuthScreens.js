@@ -3,7 +3,6 @@ import {
   View,
   TouchableOpacity,
   StyleSheet,
-  Text,
   TextInput,
   Linking,
   ActivityIndicator,
@@ -11,6 +10,7 @@ import {
   DeviceEventEmitter,
 } from 'react-native';
 import { Amplitude } from '@amplitude/react-native';
+import { AppText as Text } from '../components/AppText';
 import { useNavigation } from '../ReactNavigation';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 

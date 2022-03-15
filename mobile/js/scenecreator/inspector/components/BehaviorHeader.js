@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { StyleSheet, Text, TouchableOpacity, Switch, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, Switch, View } from 'react-native';
+import { AppText as Text } from '../../../components/AppText';
 
 import Metadata from '../../Metadata';
 

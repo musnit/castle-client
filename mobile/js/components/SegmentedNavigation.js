@@ -1,5 +1,6 @@
 import React from 'react';
-import { StyleSheet, Text, Pressable, View } from 'react-native';
+import { StyleSheet, Pressable, View } from 'react-native';
+import { AppText as Text } from './AppText';
 import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import * as Constants from '../Constants';

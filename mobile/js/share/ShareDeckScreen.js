@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { Alert, Linking, Pressable, Text, TouchableOpacity, StyleSheet, View } from 'react-native';
+import { Alert, Linking, Pressable, TouchableOpacity, StyleSheet, View } from 'react-native';
+import { AppText as Text } from '../components/AppText';
 import { Amplitude } from '@amplitude/react-native';
 import { CardCell } from '../components/CardCell';
 import { SafeAreaView } from 'react-native-safe-area-context';

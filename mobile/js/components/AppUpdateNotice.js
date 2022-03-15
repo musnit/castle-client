@@ -1,5 +1,6 @@
 import React from 'react';
-import { Linking, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Linking, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { AppText as Text } from './AppText';
 import { CastleAsyncStorage } from '../common/CastleAsyncStorage';
 import { useQuery, gql } from '@apollo/client';
 import { SafeAreaView } from 'react-native-safe-area-context';

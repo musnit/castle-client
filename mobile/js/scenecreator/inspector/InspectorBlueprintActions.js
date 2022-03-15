@@ -1,5 +1,6 @@
 import React from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
+import { AppText as Text } from '../../components/AppText';
 import { useSession } from '../../Session';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import { useCardCreator } from '../CreateCardContext';

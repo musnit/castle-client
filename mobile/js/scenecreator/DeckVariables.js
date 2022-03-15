@@ -1,5 +1,6 @@
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { AppText as Text } from '../components/AppText';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import { InspectorNumberInput } from './inspector/components/InspectorNumberInput';
 import { InspectorTextInput } from './inspector/components/InspectorTextInput';

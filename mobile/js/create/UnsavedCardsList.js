@@ -1,5 +1,6 @@
 import React from 'react';
-import { Pressable, RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
+import { AppText as Text } from '../components/AppText';
 import { useQuery, useMutation, gql } from '@apollo/client';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
