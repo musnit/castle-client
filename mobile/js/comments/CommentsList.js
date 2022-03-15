@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, FlatList, Pressable, StyleSheet, View } from 'react-native';
+import { AppText as Text } from '../components/AppText';
 import { MessageBody } from '../components/MessageBody';
 import { toRecentDate } from '../common/date-utilities';
 import { UserAvatar } from '../components/UserAvatar';
@@ -379,10 +380,14 @@ export const CommentsList = ({ deck, isOpen, setReplyingToComment, newComment })
         variables: { commentId: commentToDelete.commentId },
       });
 
-      let newComments = comments.filter(comment => comment.commentId != commentToDelete.commentId);
-      newComments = newComments.map(comment => {
+      let newComments = comments.filter(
+        (comment) => comment.commentId != commentToDelete.commentId
+      );
+      newComments = newComments.map((comment) => {
         if (comment.childComments && comment.childComments.comments) {
-          comment.childComments.comments = comment.childComments.comments.filter(childComment => childComment.commentId != commentToDelete.commentId);
+          comment.childComments.comments = comment.childComments.comments.filter(
+            (childComment) => childComment.commentId != commentToDelete.commentId
+          );
         }
 
         return comment;

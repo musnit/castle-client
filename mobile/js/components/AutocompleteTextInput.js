@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Pressable, StyleSheet, TextInput, View } from 'react-native';
+import { AppText as Text } from './AppText';
 import { gql } from '@apollo/client';
 
 import * as Session from '../Session';

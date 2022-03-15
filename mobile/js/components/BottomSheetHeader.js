@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { AppText as Text } from './AppText';
 
 import * as SceneCreatorConstants from '../scenecreator/SceneCreatorConstants';
 import { CastleIcon } from '../Constants';

@@ -1,7 +1,6 @@
 import React, { Fragment, useState } from 'react';
 import {
   StyleSheet,
-  Text,
   View,
   TouchableOpacity,
   Keyboard,
@@ -13,6 +12,7 @@ import { useActionSheet } from '@expo/react-native-action-sheet';
 import { gql } from '@apollo/client';
 import Viewport from '../common/viewport';
 
+import { AppText as Text } from '../components/AppText';
 import { AutocompleteTextInput } from '../components/AutocompleteTextInput';
 import { BottomSheetHeader } from '../components/BottomSheetHeader';
 import { BottomSheet } from '../components/BottomSheet';

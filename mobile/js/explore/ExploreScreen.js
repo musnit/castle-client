@@ -1,6 +1,7 @@
 import * as React from 'react';
-import { StatusBar, ScrollView, View, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { StatusBar, ScrollView, View, StyleSheet, TouchableOpacity } from 'react-native';
 import { Amplitude } from '@amplitude/react-native';
+import { AppText as Text } from '../components/AppText';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { SearchInput } from './SearchInput';
 import { SearchResults } from './SearchResults';

@@ -1,6 +1,6 @@
 import React from 'react';
-import { StyleSheet, Switch, Text, View, Platform } from 'react-native';
-
+import { StyleSheet, Switch, View, Platform } from 'react-native';
+import { AppText as Text } from '../components/AppText';
 import { gql, useLazyQuery, useMutation } from '@apollo/client';
 import { AndroidNavigationContext } from '../ReactNavigation';
 import { BottomSheetHeader } from '../components/BottomSheetHeader';

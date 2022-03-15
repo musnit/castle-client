@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, TouchableOpacity } from 'react-native';
+import { AppText as Text } from '../../../components/AppText';
 import { useOptimisticBehaviorValue } from '../InspectorUtilities';
 import { EditLayout } from '../instance/InstanceLayout';
 import { InspectorNumberInput } from '../components/InspectorNumberInput';

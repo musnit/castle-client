@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { gql } from '@apollo/client';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
+import { AppText as Text } from '../components/AppText';
 import { DecksGrid } from '../components/DecksGrid';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { UserAvatar } from '../components/UserAvatar';

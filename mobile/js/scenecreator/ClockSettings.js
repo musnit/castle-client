@@ -1,5 +1,6 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import { AppText as Text } from '../components/AppText';
 import { InspectorNumberInput } from './inspector/components/InspectorNumberInput';
 import { useCoreState, sendAsync } from '../core/CoreEvents';
 

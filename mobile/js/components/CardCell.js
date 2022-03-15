@@ -1,5 +1,6 @@
 import React from 'react';
-import { Image, StyleSheet, Text, Pressable, View } from 'react-native';
+import { Image, StyleSheet, Pressable, View } from 'react-native';
+import { AppText as Text } from './AppText';
 import { UserAvatar } from '../components/UserAvatar';
 
 import FastImage from 'react-native-fast-image';

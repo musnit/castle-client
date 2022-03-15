@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { Pressable, StyleSheet, Text, FlatList, View } from 'react-native';
+import { Pressable, StyleSheet, FlatList, View } from 'react-native';
+import { AppText as Text } from '../components/AppText';
 import { Amplitude } from '@amplitude/react-native';
 import { CardCell } from '../components/CardCell';
 import { useNavigation } from '../ReactNavigation';

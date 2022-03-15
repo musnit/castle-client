@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { AppText as Text } from '../../../components/AppText';
 import { BehaviorPropertyInputRow } from '../components/BehaviorPropertyInputRow';
 import { InspectorSegmentedControl } from '../components/InspectorSegmentedControl';
 import { useCoreState, sendBehaviorAction } from '../../../core/CoreEvents';

@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { StyleSheet, TouchableOpacity, Text, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { AppText as Text } from '../../../components/AppText';
 import { ConfigureRuleEntry } from './ConfigureRuleEntry';
 import { getRuleRenderContext } from './RuleRenderContext';
 

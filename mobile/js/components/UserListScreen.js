@@ -1,5 +1,6 @@
 import React from 'react';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, Pressable, View } from 'react-native';
+import { ScrollView, StyleSheet, TouchableOpacity, Pressable, View } from 'react-native';
+import { AppText as Text } from './AppText';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ScreenHeader } from './ScreenHeader';
 import { useNavigation } from '../ReactNavigation';
@@ -46,9 +47,10 @@ export const UserListScreen = ({ users, route }) => {
   if (!users && route?.params) {
     users = route.params.users;
   }
-  const navigateToUser = React.useCallback((user) => push('Profile', { userId: user.userId }), [
-    push,
-  ]);
+  const navigateToUser = React.useCallback(
+    (user) => push('Profile', { userId: user.userId }),
+    [push]
+  );
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>

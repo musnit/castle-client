@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { AppText as Text } from './AppText';
 import { PopoverButton } from './PopoverProvider';
 
 import Icon from 'react-native-vector-icons/MaterialIcons';

@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
+import { AppText as Text } from '../components/AppText';
 import { AutocompleteTextInput } from '../components/AutocompleteTextInput';
 import * as Constants from '../Constants';
 import { useListen, sendAsync, useCoreEvents } from '../core/CoreEvents';
@@ -98,7 +99,12 @@ export const CommentInput = ({ onAddComment, replyingToComment, clearReplyingToC
           parentCommentId = replyingToComment.commentId;
         }
       }
-      onAddComment(message, parentCommentId, commentBodyCache.current, imageFile ? imageFile.fileId : null);
+      onAddComment(
+        message,
+        parentCommentId,
+        commentBodyCache.current,
+        imageFile ? imageFile.fileId : null
+      );
       setValue(undefined);
       clearReplyingToComment();
       setImageFile(null);
@@ -153,7 +159,9 @@ export const CommentInput = ({ onAddComment, replyingToComment, clearReplyingToC
             style={[Constants.styles.buttonOnWhite, styles.button]}
             onPress={() => addScreenshot()}
             disabled={loadingScreenshot}>
-            <Text style={Constants.styles.buttonLabelOnWhite}>{loadingScreenshot ? "Capturing..." : "Screenshot"}</Text>
+            <Text style={Constants.styles.buttonLabelOnWhite}>
+              {loadingScreenshot ? 'Capturing...' : 'Screenshot'}
+            </Text>
           </Pressable>
         )}
         <Pressable

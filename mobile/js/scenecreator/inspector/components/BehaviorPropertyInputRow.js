@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import { AppText as Text } from '../../../components/AppText';
 import { useOptimisticBehaviorValue } from '../InspectorUtilities';
 import { getUIProps } from '../../Metadata';
 import { InspectorCheckbox } from './InspectorCheckbox';

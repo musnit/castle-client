@@ -1,5 +1,6 @@
 import React, { useCallback } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
+import { AppText as Text } from '../../components/AppText';
 import { BottomSheet } from '../../components/BottomSheet';
 import { launchImageLibrary } from '../../common/utilities';
 import { ScrollView } from 'react-native-gesture-handler';

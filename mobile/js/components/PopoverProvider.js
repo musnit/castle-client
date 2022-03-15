@@ -3,12 +3,12 @@ import {
   Animated,
   Pressable,
   StyleSheet,
-  Text,
   TouchableWithoutFeedback,
   View,
   Platform,
   Keyboard,
 } from 'react-native';
+import { AppText as Text } from './AppText';
 import { useKeyboard } from '../common/utilities';
 
 import Viewport from '../common/viewport';

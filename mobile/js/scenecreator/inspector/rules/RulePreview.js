@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import { AppText as Text } from '../../../components/AppText';
 import { Responses } from './Responses';
 import { Triggers } from './Triggers';
 import { VectorIcon } from '../../../components/VectorIcon';

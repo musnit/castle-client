@@ -1,5 +1,6 @@
 import React from 'react';
-import { Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Pressable, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import { AppText as Text } from '../../../components/AppText';
 import { InstrumentIcon } from '../components/InstrumentIcon';
 import { InspectorNumberInput } from '../../inspector/components/InspectorNumberInput';
 import { PopoverButton } from '../../../components/PopoverProvider';

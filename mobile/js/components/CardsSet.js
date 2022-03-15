@@ -1,13 +1,6 @@
 import React from 'react';
-import {
-  FlatList,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { FlatList, ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import { AppText as Text } from './AppText';
 import { CardCell } from './CardCell';
 
 import Feather from 'react-native-vector-icons/Feather';

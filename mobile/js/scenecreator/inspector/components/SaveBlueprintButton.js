@@ -1,5 +1,6 @@
 import React from 'react';
-import { Text, TouchableOpacity } from 'react-native';
+import { TouchableOpacity } from 'react-native';
+import { AppText as Text } from '../../../components/AppText';
 import { sendAsync } from '../../../core/CoreEvents';
 
 import * as SceneCreatorConstants from '../../SceneCreatorConstants';

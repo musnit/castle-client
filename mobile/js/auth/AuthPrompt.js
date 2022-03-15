@@ -1,5 +1,6 @@
 import React from 'react';
-import { Animated, Easing, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Animated, Easing, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { AppText as Text } from '../components/AppText';
 import { useNavigation } from '../ReactNavigation';
 
 import FastImage from 'react-native-fast-image';

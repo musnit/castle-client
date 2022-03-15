@@ -1,5 +1,6 @@
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { AppText as Text } from '../../../components/AppText';
 import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import { BottomSheetHeader } from '../../../components/BottomSheetHeader';

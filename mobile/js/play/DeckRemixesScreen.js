@@ -1,5 +1,6 @@
 import React from 'react';
-import { StyleSheet, View, Text, Pressable } from 'react-native';
+import { StyleSheet, View, Pressable } from 'react-native';
+import { AppText as Text } from '../components/AppText';
 import { DecksGrid } from '../components/DecksGrid';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useQuery, gql } from '@apollo/client';

@@ -1,5 +1,6 @@
 import React from 'react';
-import { Linking, StyleSheet, Text, Pressable, View } from 'react-native';
+import { Linking, StyleSheet, Pressable, View } from 'react-native';
+import { AppText as Text } from '../components/AppText';
 import { flattenMessageBody } from '../common/chat-utilities';
 import { FollowButton } from '../components/FollowButton';
 import { MessageBody } from '../components/MessageBody';
