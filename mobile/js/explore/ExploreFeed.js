@@ -112,7 +112,7 @@ export const ExploreFeed = ({ route }) => {
                 // TODO: support loading more decks from native feed
                 decks,
                 initialDeckIndex: index,
-                title: 'Recent',
+                title,
                 paginateFeedId: feedId,
               },
               {
