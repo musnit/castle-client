@@ -5,6 +5,7 @@
 #include "js.h"
 #include "screenshot.h"
 
+#define MAX_ACTORS 8000
 
 //
 // Constructor, destructor
@@ -148,6 +149,10 @@ void Scene::write(Writer &writer) const {
 //
 
 ActorId Scene::addActor(const ActorDesc &params) {
+  if (numActors() > MAX_ACTORS) {
+    return nullActor;
+  }
+
   // Find parent entry
   const LibraryEntry *maybeParentEntry = nullptr;
   if (params.parentEntryId) {

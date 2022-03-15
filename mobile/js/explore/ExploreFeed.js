@@ -109,7 +109,6 @@ export const ExploreFeed = ({ route }) => {
             navigate(
               'PlayDeck',
               {
-                // TODO: support loading more decks from native feed
                 decks,
                 initialDeckIndex: index,
                 title,
