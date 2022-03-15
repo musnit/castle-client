@@ -16,6 +16,9 @@ class Sound {
   inline static bool hasInitializedSoloud = false;
   inline static int soloudRefs = 0;
   inline static SoLoud::Soloud soloud;
+  inline static int sInstanceId = 0;
+  inline static std::map<int, bool> isInstanceAlive;
+  int instanceId;
 
 public:
   Sound(const Sound &) = delete; // Prevent accidental copies
