@@ -244,7 +244,7 @@ let coreViews = {
         onTap: (params) => {
           params.onPressComments({
             deck: {
-              deckId: params.deckId,
+              ...JSON.parse(params.deck),
               commentsEnabled: params.commentsEnabled == 'true',
             },
           });
@@ -270,7 +270,7 @@ let coreViews = {
         onTap: (params) => {
           params.onPressComments({
             deck: {
-              deckId: params.deckId,
+              ...JSON.parse(params.deck),
               commentsEnabled: params.commentsEnabled == 'true',
             },
           });
