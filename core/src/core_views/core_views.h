@@ -16,13 +16,17 @@ public:
   };
 
   CoreView() {
+    mutex.lock();
     currentViewId++;
     viewId = currentViewId;
     isViewAlive[viewId] = true;
+    mutex.unlock();
   }
 
   virtual ~CoreView() {
+    mutex.lock();
     isViewAlive[viewId] = false;
+    mutex.unlock();
   }
 
   virtual void read(Reader &reader, int viewportWidth, int viewportHeight) = 0;
@@ -70,6 +74,8 @@ public:
   int viewId;
   inline static std::map<int, bool> isViewAlive;
   inline static int currentViewId = 0;
+  // feed errors can trigger coreviews changes on api response thread
+  inline static std::mutex mutex;
 };
 
 class CoreViewAnimation {
