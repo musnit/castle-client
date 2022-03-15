@@ -163,6 +163,17 @@ const getViewModePreference = async (deckId) => {
   return preference ?? 'carousel';
 };
 
+const TAB_ITEMS = [
+  {
+    name: 'Detail',
+    value: 'carousel',
+  },
+  {
+    name: 'Grid',
+    value: 'grid',
+  },
+];
+
 export const CreateDeckScreen = (props) => {
   let lastFocusedTime;
   const navigation = useNavigation();
@@ -419,16 +430,14 @@ export const CreateDeckScreen = (props) => {
     [setDeck, saveDeck, deck, deckId]
   );
 
-  const TAB_ITEMS = [
-    {
-      name: 'Detail',
-      value: 'carousel',
-    },
-    {
-      name: 'Grid',
-      value: 'grid',
-    },
-  ];
+  const onSelectSegmentedNavItem = React.useCallback(
+    (item) =>
+      setViewMode({
+        mode: item.value,
+        deckId: deck?.deckId,
+      }),
+    [deck]
+  );
 
   return (
     <React.Fragment>
@@ -469,12 +478,7 @@ export const CreateDeckScreen = (props) => {
                 <SegmentedNavigation
                   items={TAB_ITEMS}
                   selectedItem={TAB_ITEMS.find((item) => item.value === viewMode)}
-                  onSelectItem={(item) =>
-                    setViewMode({
-                      mode: item.value,
-                      deckId: deck.deckId,
-                    })
-                  }
+                  onSelectItem={onSelectSegmentedNavItem}
                   compact={true}
                 />
               </View>
