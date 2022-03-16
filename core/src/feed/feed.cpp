@@ -464,7 +464,18 @@ void Feed::renderCardAtPosition(
     return;
   }
 
+  bool isDeckVisible = true;
+  if (focusedIdx < idx - 1) {
+    isDeckVisible = false;
+  } else if (focusedIdx != idx && fabs(dragAmount) < 0.01) {
+    isDeckVisible = false;
+  }
+
   if (!decks[idx].player || !decks[idx].hasRunUpdate || decks[idx].hasNetworkError) {
+    if (!isDeckVisible) {
+      return;
+    }
+
     lv.graphics.push(love::Graphics::STACK_ALL);
     viewTransform.reset();
     viewTransform.translate(position, TOP_PADDING);
@@ -533,10 +544,12 @@ void Feed::renderCardAtPosition(
 
   lv.graphics.setColor({ 1.0, 1.0, 1.0, 1.0f - (percentFromCenter * 0.5f) });
 
-  renderCardTexture(canvas.get(), elapsedTime, decks[idx].isFrozen ? 0.5 : 1.0);
+  if (isDeckVisible) {
+    renderCardTexture(canvas.get(), elapsedTime, decks[idx].isFrozen ? 0.5 : 1.0);
 
-  if (decks[idx].coreView) {
-    decks[idx].coreView->render();
+    if (decks[idx].coreView) {
+      decks[idx].coreView->render();
+    }
   }
 
   if (decks[idx].avatarCoreView) {
