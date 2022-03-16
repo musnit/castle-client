@@ -3,7 +3,7 @@ import { StyleSheet, Text } from 'react-native';
 
 const base = StyleSheet.create({
   text: {
-    fontFamily: 'Helvetica',
+    fontFamily: 'BaltoTrial-Book',
   },
 });
 
