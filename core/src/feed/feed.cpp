@@ -540,12 +540,15 @@ void Feed::renderCardAtPosition(
   viewTransform.reset();
   viewTransform.translate(position, TOP_PADDING);
   lv.graphics.applyTransform(&viewTransform);
+  lv.graphics.setColor({1, 1, 1, 1});
+
+  if (isDeckVisible) {
+    renderCardTexture(canvas.get(), elapsedTime, decks[idx].isFrozen ? 0.5 : 1.0);
+  }
 
   lv.graphics.setColor({ 1.0, 1.0, 1.0, 1.0f - (percentFromCenter * 0.5f) });
 
   if (isDeckVisible) {
-    renderCardTexture(canvas.get(), elapsedTime, decks[idx].isFrozen ? 0.5 : 1.0);
-
     if (decks[idx].coreView) {
       decks[idx].coreView->render();
     }
@@ -596,8 +599,8 @@ void Feed::renderCardAtPosition(
       }
     }
 
-    //left = smoothstep(left, animateLeft, percent,
-    //    CoreViews::getInstance().getNumConstant("AVATAR_ANIMATION_EASING_FUNCTION"));
+    // left = smoothstep(left, animateLeft, percent,
+    //     CoreViews::getInstance().getNumConstant("AVATAR_ANIMATION_EASING_FUNCTION"));
     left = animateLeft * percent + left * (1.0 - percent);
     decks[idx].avatarCoreViewLeft = left;
 
