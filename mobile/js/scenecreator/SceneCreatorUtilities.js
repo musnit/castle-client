@@ -23,6 +23,9 @@ export const getVariableName = (variableId, variables) => {
   return variableName;
 };
 
+export const ruleHasLocalVariableValue = (params) =>
+  params && (!params.variableId || params.variableId === '(none)') && params.localVariableId;
+
 const COMPARISON_OPERATORS = {
   equal: 'equals',
   'not equal': 'does not equal',

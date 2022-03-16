@@ -165,7 +165,6 @@ const InspectorMultiVariablePicker = ({ variableProps, ...props }) => {
 
   const setValue = React.useCallback(
     (value) => {
-      console.log(`setValue: ${value}`);
       // when setting value for one scope, need to also clear values for other scopes
       const selectedScope = SCOPE_ITEMS[selectedScopeIndex];
       if (selectedScope?.id === 'global') {

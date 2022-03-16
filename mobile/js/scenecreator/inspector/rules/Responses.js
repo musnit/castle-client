@@ -4,6 +4,7 @@ import {
   formatTag,
   makeExpressionSummary,
   readableOperator,
+  ruleHasLocalVariableValue,
   makeDefaultPatternName,
   makeTrackName,
 } from '../../SceneCreatorUtilities';
@@ -353,8 +354,7 @@ const VariableMeetsCondition = ({ response, context }) => {
     paramNames: ['variableId', 'localVariableId', 'comparison', 'value'],
     paramValues: { ...response.params },
   };
-  const isLocal =
-    response.params && (!response.params.variableId || response.params.variableId === '(none)');
+  const isLocal = ruleHasLocalVariableValue(response.params);
   const name = isLocal
     ? response.params.localVariableId
     : getVariableName(response.params?.variableId, context.variables);
@@ -752,8 +752,7 @@ const SetVariable = ({ response, context }) => {
       ...response.params,
     },
   };
-  const isLocal =
-    response.params && (!response.params.variableId || response.params.variableId === '(none)');
+  const isLocal = ruleHasLocalVariableValue(response.params);
   const name = isLocal
     ? response.params.localVariableId
     : getVariableName(response.params?.variableId, context.variables);

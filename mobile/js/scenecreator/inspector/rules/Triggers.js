@@ -3,6 +3,7 @@ import {
   formatTag,
   makeExpressionSummary,
   readableOperator,
+  ruleHasLocalVariableValue,
   makeTrackName,
 } from '../../SceneCreatorUtilities';
 
@@ -209,10 +210,7 @@ const VariableReachesValue = ({ trigger, context }) => {
     paramNames: ['variableId', 'localVariableId', 'comparison', 'value'],
     paramValues: { ...trigger.params },
   };
-  const isLocal =
-    trigger.params &&
-    (!trigger.params.variableId || trigger.params.variableId === '(none)') &&
-    trigger.params.localVariableId;
+  const isLocal = ruleHasLocalVariableValue(trigger.params);
   const name = isLocal
     ? trigger.params.localVariableId
     : getVariableName(trigger.params?.variableId, context.variables);
@@ -255,8 +253,7 @@ const VariableReachesValue = ({ trigger, context }) => {
 };
 
 const VariableChanges = ({ trigger, context }) => {
-  const isLocal =
-    trigger.params && (!trigger.params.variableId || trigger.params.variableId === '(none)');
+  const isLocal = ruleHasLocalVariableValue(trigger.params);
   const name = isLocal
     ? trigger.params.localVariableId
     : getVariableName(trigger.params?.variableId, context.variables);
