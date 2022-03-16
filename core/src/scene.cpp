@@ -557,6 +557,7 @@ void Scene::draw(std::optional<SceneDrawingOptions> options) const {
   leaderboardViewTransform.reset();
   leaderboardViewTransform.scale(windowWidth / 800, windowWidth / 800);
   lv.graphics.applyTransform(&leaderboardViewTransform);
+  lv.graphics.setColor({ 1.0, 1.0, 1.0, 1.0 });
   leaderboardView->render();
   lv.graphics.pop();
 }

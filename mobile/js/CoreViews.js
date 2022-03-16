@@ -10,7 +10,7 @@ let FEED_TEXT_TOP = '3.45vw';
 
 let coreViews = {
   CONSTANTS: {
-    FEED_BOTTOM_ACTIONS_INITIAL_RIGHT: 9.5,
+    FEED_BOTTOM_ACTIONS_INITIAL_RIGHT: 12.5,
 
     FEED_BOTTOM_ACTIONS_TEXT_RIGHT_PADDING: 3,
 
@@ -106,7 +106,7 @@ let coreViews = {
       },
     ],
   },
-  FEED: {
+  FEED_AVATAR: {
     id: 'container',
     type: 'view',
     left: 0,
@@ -121,7 +121,7 @@ let coreViews = {
         id: 'avatar',
         type: 'image',
         borderRadius: '3.2vw',
-        left: '3.5vw',
+        left: 0,//'3.5vw',
         top: '2.5vw',
         width: '6.4vw',
         height: '6.4vw',
@@ -135,10 +135,23 @@ let coreViews = {
           params.push('Profile', { userId: params.userId });
         },
       },
+    ],
+  },
+  FEED: {
+    id: 'container',
+    type: 'view',
+    left: 0,
+    top: '100%',
+    width: '100%',
+    height: 60,
+    // backgroundColor: '#f00',
+    touch: 'enabled',
+    children: [
+      // User
       {
         id: 'username',
         type: 'text',
-        left: '12vw',
+        left: '15vw',
         top: FEED_TEXT_TOP,
         width: '35vw',
         height: '5vw',
@@ -316,7 +329,7 @@ let coreViews = {
         id: 'share-icon',
         filename: Platform.OS === 'android' ? 'share-android.png' : 'share-ios.png',
         type: 'image',
-        right: '3vw',
+        right: '6vw',
         top: '2.5vw',
         width: FEED_ICON_SIZE,
         height: FEED_ICON_SIZE,

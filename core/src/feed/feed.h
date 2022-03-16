@@ -18,12 +18,16 @@ struct FeedItem {
 
   std::optional<std::string> deckId;
   std::optional<std::string> cardId;
+  std::optional<std::string> creatorUserId;
   std::optional<std::string> deckJson;
   std::optional<std::string> lastModified;
+  std::optional<std::string> avatarUrl;
   std::shared_ptr<Player> player;
   std::shared_ptr<love::graphics::Canvas> canvas;
   std::shared_ptr<CoreViewRenderer> coreView;
+  std::shared_ptr<CoreViewRenderer> avatarCoreView;
   std::shared_ptr<CoreViewRenderer> errorCoreView;
+  float avatarCoreViewLeft = 0;
   bool isLoading = false;
   bool isLoaded = false;
   bool hasRunUpdate = false;
@@ -101,11 +105,15 @@ private:
   void makeShader();
   void fetchMoreDecks();
   int getCurrentIndex();
+  float getDragAmount();
   void loadDeckAtIndex(int i);
   void loadDeckFromDeckJson(int i);
   void unloadDeckAtIndex(int i, bool force = false);
+  void loadAvatarAtIndex(int i);
+  void unloadAvatarAtIndex(int i);
   void networkErrorAtIndex(int i);
-  void renderCardAtPosition(int idx, float position, bool isActive);
+  void renderCardAtPosition(
+      int idx, float position, bool isActive, int focusedIdx, float dragAmount);
   love::graphics::Canvas *newCanvas(int width, int height);
   void renderToCanvas(love::graphics::Canvas *canvas, const std::function<void()> &lambda);
   void layoutCoreViews(int i);

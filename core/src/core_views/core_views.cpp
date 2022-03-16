@@ -638,9 +638,12 @@ void CoreView::baseRender() {
           quadVerts, love::graphics::PRIMITIVE_TRIANGLE_FAN, love::graphics::vertex::USAGE_STATIC);
     }();
 
-    lv.graphics.setColor({ backgroundColor[0], backgroundColor[1], backgroundColor[2],
-        isTouchDown ? TOUCH_DOWN_ALPHA : 1.0f });
+    auto graphicsColor = lv.graphics.getColor();
+    lv.graphics.setColor({ graphicsColor.r * backgroundColor[0],
+        graphicsColor.g * backgroundColor[1], graphicsColor.b * backgroundColor[2],
+        (isTouchDown ? TOUCH_DOWN_ALPHA : 1.0f) * graphicsColor.a });
     quad->draw(&lv.graphics, love::Matrix4(0, 0, 0, width, height, 0, 0, 0, 0));
+    lv.graphics.setColor({ 1, 1, 1, 1 });
   } else if (borderRadius > 0) {
     if (!borderRadiusImageShader) {
       static const char vert[] = R"(
@@ -675,7 +678,7 @@ void CoreView::baseRender() {
             discard;
           }
 
-          return vec4(Texel(tex, texCoords).rgb, alpha);
+          return color * vec4(Texel(tex, texCoords).rgb, alpha);
         }
       )";
       borderRadiusImageShader.reset(
@@ -839,7 +842,9 @@ public:
           quadVerts, love::graphics::PRIMITIVE_TRIANGLE_FAN, love::graphics::vertex::USAGE_STATIC);
     }();
 
-    lv.graphics.setColor({ 1.0, 1.0, 1.0, isTouchDown ? TOUCH_DOWN_ALPHA : 1.0f });
+    auto graphicsColor = lv.graphics.getColor();
+    lv.graphics.setColor({ graphicsColor.r, graphicsColor.g, graphicsColor.b,
+        (isTouchDown ? TOUCH_DOWN_ALPHA : 1.0f) * graphicsColor.a });
     quad->setTexture(image);
 
     if (resizeMode == ResizeMode::Stretch) {
@@ -940,7 +945,9 @@ class TextView : public CoreView {
       y = (height - (downscale * font->getHeight())) * 0.5;
     }
 
-    lv.graphics.setColor({ color[0], color[1], color[2], isTouchDown ? TOUCH_DOWN_ALPHA : 1.0f });
+    auto graphicsColor = lv.graphics.getColor();
+    lv.graphics.setColor({ graphicsColor.r * color[0], graphicsColor.g * color[1],
+        graphicsColor.b * color[2], (isTouchDown ? TOUCH_DOWN_ALPHA : 1.0f) * graphicsColor.a });
     lv.graphics.scale(downscale, downscale);
 
     lv.graphics.setFont(font);

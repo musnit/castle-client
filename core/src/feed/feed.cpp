@@ -127,6 +127,10 @@ void Feed::setWindowSize(int w, int h) {
         decks[i].coreView->updateProp("container", "top", std::to_string(cardHeight));
       }
 
+      if (decks[i].avatarCoreView) {
+        decks[i].avatarCoreView->updateProp("container", "top", std::to_string(cardHeight));
+      }
+
       if (decks[i].player && decks[i].player->hasScene()) {
         decks[i].player->getScene().getGesture().setBounds(
             cardLeft, TOP_PADDING, cardWidth, cardHeight);
@@ -149,6 +153,11 @@ int Feed::getCurrentIndex() {
   }
 
   return idx;
+}
+
+// if draging to right, goes from 0 to 0.5 and then switches to -0.5 to 0
+float Feed::getDragAmount() {
+  return ((float)-offset / feedItemWidth) - getCurrentIndex();
 }
 
 bool Feed::hasScene() {
@@ -214,6 +223,10 @@ void Feed::update(double dt) {
             if (decks[idx].coreView) {
               decks[idx].coreView->cancelGestures();
             }
+
+            if (decks[idx].avatarCoreView) {
+              decks[idx].avatarCoreView->cancelGestures();
+            }
           }
         }
       }
@@ -277,8 +290,7 @@ void Feed::update(double dt) {
         if (animateToOffset > 0.0) {
           animateToOffset = 0.0;
         }
-        if (usingFixedDecksList
-            && animateToOffset < (-feedItemWidth * ((float)decks.size() - 1.0))) {
+        if (animateToOffset < (-feedItemWidth * ((float)decks.size() - 1.0))) {
           animateToOffset = (-feedItemWidth * ((float)decks.size() - 1.0));
         }
       }
@@ -341,6 +353,10 @@ void Feed::update(double dt) {
 
       decks[idx].coreView->update(dt);
       decks[idx].coreView->handleGesture(gesture, cardLeft, TOP_PADDING);
+
+      decks[idx].avatarCoreView->update(dt);
+      decks[idx].avatarCoreView->handleGesture(
+          gesture, cardLeft + decks[idx].avatarCoreViewLeft, TOP_PADDING);
     }
 
     if (idx >= 0 && idx < (int)decks.size() && decks[idx].errorCoreView
@@ -371,6 +387,14 @@ void Feed::update(double dt) {
     loadDeckAtIndex(idx);
     loadDeckAtIndex(idx + 1);
     loadDeckAtIndex(idx + 2);
+
+    // load more avatars since you can see the previous/next ones when viewing a deck
+    loadAvatarAtIndex(idx - 2);
+    loadAvatarAtIndex(idx - 1);
+    loadAvatarAtIndex(idx);
+    loadAvatarAtIndex(idx + 1);
+    loadAvatarAtIndex(idx + 2);
+    loadAvatarAtIndex(idx + 3);
   }
 }
 
@@ -430,7 +454,8 @@ void Feed::runUpdateAtIndex(int idx, double dt) {
   }
 }
 
-void Feed::renderCardAtPosition(int idx, float position, bool isActive) {
+void Feed::renderCardAtPosition(
+    int idx, float position, bool isActive, int focusedIdx, float dragAmount) {
   if (idx < 0) {
     return;
   }
@@ -449,6 +474,7 @@ void Feed::renderCardAtPosition(int idx, float position, bool isActive) {
       elapsedTime = 0.0;
     }
 
+    lv.graphics.setColor({ 1.0, 1.0, 1.0, 1.0 });
     if (decks[idx].hasNetworkError) {
       renderCardTexture(nullptr, 0.0, 1.0);
       decks[idx].errorCoreView->render();
@@ -493,15 +519,76 @@ void Feed::renderCardAtPosition(int idx, float position, bool isActive) {
     decks[idx].hasRunUpdateSinceLastRender = false;
   }
 
+  float padding = (windowWidth - cardWidth) / 2.0;
+  float percentFromCenter = fabs((float)(position - padding) / windowWidth);
+  percentFromCenter -= 0.15;
+  if (percentFromCenter < 0) {
+    percentFromCenter = 0.0;
+  }
+
   lv.graphics.push(love::Graphics::STACK_ALL);
   viewTransform.reset();
   viewTransform.translate(position, TOP_PADDING);
   lv.graphics.applyTransform(&viewTransform);
 
+  lv.graphics.setColor({ 1.0, 1.0, 1.0, 1.0f - (percentFromCenter * 0.5f) });
+
   renderCardTexture(canvas.get(), elapsedTime, decks[idx].isFrozen ? 0.5 : 1.0);
 
   if (decks[idx].coreView) {
     decks[idx].coreView->render();
+  }
+
+  if (decks[idx].avatarCoreView) {
+    float left = 6.5 * (float)cardWidth / 100.0;
+    float avatarWidth = 6.4 * (float)cardWidth / 100.0;
+    float percent = fabs(1.0 + dragAmount);
+
+    float animateLeft = left;
+    if (idx == focusedIdx - 1) {
+      /*percent += 0.02;
+      if (percent >= 1.01) {
+        percent = 2.02 - percent;
+      }*/
+      // icon on left and swiping right
+      if (percent >= 1) {
+        percent = 2.0 - percent;
+        left -= windowWidth * 0.25;
+        animateLeft = cardWidth + padding - avatarWidth / 2.0;
+      }
+      // icon was previous main, becoming new left
+      else {
+        animateLeft = cardWidth + padding - avatarWidth / 2.0;
+      }
+    } else if (idx == focusedIdx) {
+      // icon is main, becoming new left
+      if (percent > 1.0) {
+        percent -= 1.0;
+        animateLeft = cardWidth + padding - avatarWidth / 2.0;
+      }
+      // icon is main, becoming new right
+      else {
+        percent = 1.0 - percent;
+        animateLeft = -padding - avatarWidth / 2.0;
+      }
+    } else if (idx == focusedIdx + 1) {
+      // icon on right and swiping left
+      if (percent <= 1.0) {
+        left += windowWidth * 0.25;
+        animateLeft = -padding - avatarWidth / 2.0;
+      }
+      // icon on right and swiping right
+      else {
+        percent = 2.0 - percent;
+        animateLeft = -padding - avatarWidth / 2.0;
+      }
+    }
+
+    left = animateLeft * percent + left * (1.0 - percent);
+    decks[idx].avatarCoreViewLeft = left;
+
+    lv.graphics.translate(left, 0.0);
+    decks[idx].avatarCoreView->render();
   }
 
   lv.graphics.pop();
@@ -551,7 +638,6 @@ void Feed::renderCardTexture(love::Texture *texture, float time, float brightnes
   }
 
   quad->setTexture(texture);
-  lv.graphics.setColor({ 1.0, 1.0, 1.0, 1.0 });
   quad->draw(&lv.graphics, love::Matrix4(0.0, 0.0, 0, cardWidth, cardHeight, 0, 0, 0, 0));
   quad->setTexture(nullptr);
   lv.graphics.setShader();
@@ -591,7 +677,7 @@ void Feed::makeShader() {
       }
 
       vec4 result = Texel(tex, texCoords);
-      return vec4(result.r * brightness, result.g * brightness, result.b * brightness, result.a);
+      return color * vec4(result.r * brightness, result.g * brightness, result.b * brightness, result.a);
     }
   )";
   shader.reset(
@@ -624,7 +710,7 @@ void Feed::makeShader() {
         discard;
       }
 
-      return vec4(0.15, 0.15, 0.15, 0.75 + cos(time * 4.0) * 0.25);
+      return color * vec4(0.15, 0.15, 0.15, 0.75 + cos(time * 4.0) * 0.25);
     }
   )";
   loadingShader.reset(
@@ -652,17 +738,23 @@ void Feed::draw() {
     viewTransform.reset();
     viewTransform.translate(padding, TOP_PADDING);
     lv.graphics.applyTransform(&viewTransform);
+    lv.graphics.setColor({ 1.0, 1.0, 1.0, 1.0 });
     renderCardTexture(nullptr, elapsedTime, 1.0);
     lv.graphics.pop();
     return;
   }
 
   int idx = getCurrentIndex();
+  float dragAmount = getDragAmount();
 
-  renderCardAtPosition(idx - 1, offset + feedItemWidth * (idx - 1) + padding, false);
-  renderCardAtPosition(idx, offset + feedItemWidth * idx + padding, !dragStarted && !isAnimating);
-  renderCardAtPosition(idx + 1, offset + feedItemWidth * (idx + 1) + padding, false);
-  renderCardAtPosition(idx + 2, offset + feedItemWidth * (idx + 2) + padding, false);
+  renderCardAtPosition(
+      idx - 1, offset + feedItemWidth * (idx - 1) + padding, false, idx, dragAmount);
+  renderCardAtPosition(
+      idx, offset + feedItemWidth * idx + padding, !dragStarted && !isAnimating, idx, dragAmount);
+  renderCardAtPosition(
+      idx + 1, offset + feedItemWidth * (idx + 1) + padding, false, idx, dragAmount);
+  renderCardAtPosition(
+      idx + 2, offset + feedItemWidth * (idx + 2) + padding, false, idx, dragAmount);
 
   // this releases a canvas, so we want to run it in render
   for (int i = 0; i <= idx - 2; i++) {
@@ -671,6 +763,14 @@ void Feed::draw() {
 
   for (int i = idx + 3; i < (int)decks.size(); i++) {
     unloadDeckAtIndex(i);
+  }
+
+  for (int i = 0; i <= idx - 3; i++) {
+    unloadAvatarAtIndex(i);
+  }
+
+  for (int i = idx + 4; i < (int)decks.size(); i++) {
+    unloadAvatarAtIndex(i);
   }
 }
 
@@ -864,6 +964,45 @@ void Feed::loadDeckAtIndex(int i) {
   }
 }
 
+void Feed::loadAvatarAtIndex(int i) {
+  if (i >= (int)decks.size() || i < 0) {
+    return;
+  }
+
+  if (decks[i].avatarCoreView || !decks[i].deckJson) {
+    return;
+  }
+
+  if (!decks[i].avatarUrl || !decks[i].creatorUserId) {
+    auto deckArchive = Archive::fromJson(decks[i].deckJson->c_str());
+    deckArchive.read([&](Reader &reader) {
+      reader.obj("creator", [&]() {
+        decks[i].creatorUserId = reader.str("userId", "");
+        reader.obj("photo", [&]() {
+          decks[i].avatarUrl = reader.str("smallAvatarUrl", DEFAULT_AVATAR_URL);
+        });
+      });
+    });
+  }
+
+  decks[i].avatarCoreView
+      = CoreViews::getInstance().getRenderer("FEED_AVATAR", cardWidth, windowHeight - cardHeight);
+  decks[i].avatarCoreView->updateProp("container", "top", std::to_string(cardHeight));
+  decks[i].avatarCoreView->updateProp(
+      "container", "height", std::to_string(windowHeight - cardHeight));
+  decks[i].avatarCoreView->updateProp("container", "width", std::to_string(cardWidth));
+  decks[i].avatarCoreView->updateJSGestureProp("userId", *decks[i].creatorUserId);
+  decks[i].avatarCoreView->updateProp("avatar", "url", *decks[i].avatarUrl);
+}
+
+void Feed::unloadAvatarAtIndex(int i) {
+  if (i >= (int)decks.size() || i < 0) {
+    return;
+  }
+
+  decks[i].avatarCoreView.reset();
+}
+
 void Feed::layoutCoreViews(int i) {
   if (!decks[i].coreView) {
     // This can happen if there is an error loading the scenedata
@@ -1020,12 +1159,8 @@ void Feed::loadDeckFromDeckJson(int i) {
 
     reader.obj("creator", [&]() {
       decks[i].coreView->updateProp("username", "text", reader.str("username", ""));
-      decks[i].coreView->updateJSGestureProp("userId", reader.str("userId", ""));
-
-      reader.obj("photo", [&]() {
-        decks[i].coreView->updateProp(
-            "avatar", "url", reader.str("smallAvatarUrl", DEFAULT_AVATAR_URL));
-      });
+      decks[i].creatorUserId = reader.str("userId", "");
+      decks[i].coreView->updateJSGestureProp("userId", *decks[i].creatorUserId);
     });
 
     int childDecksCount = reader.num("childDecksCount", 0);
