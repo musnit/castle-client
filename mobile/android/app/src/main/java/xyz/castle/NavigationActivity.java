@@ -500,7 +500,11 @@ public class NavigationActivity extends FragmentActivity implements DefaultHardw
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        getReactGateway().onActivityResult(this, requestCode, resultCode, data);
+        try {
+            getReactGateway().onActivityResult(this, requestCode, resultCode, data);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         if (requestCode == RC_SAVE) {
             if (resultCode == RESULT_OK) {
