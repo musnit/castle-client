@@ -293,7 +293,7 @@ void Feed::update(double dt) {
   });
 
 #ifdef DEBUG_AUTO_ADVANCE
-  if (rand() % 100 > 96) {
+  if (rand() % 100 > 94) {
     offset = -feedItemWidth * (float)(rand() % decks.size());
   }
 #endif
@@ -471,6 +471,11 @@ void Feed::renderCardAtPosition(int idx, float position, bool isActive) {
 
   if (!decks[idx].canvas) {
     decks[idx].canvas = std::shared_ptr<love::graphics::Canvas>(newCanvas(cardWidth, cardHeight));
+    if (((love::graphics::opengl::Canvas *)decks[idx].canvas.get())->getStatus()
+        != GL_FRAMEBUFFER_COMPLETE) {
+      decks[idx].canvas.reset();
+      return;
+    }
   }
   std::shared_ptr<love::graphics::Canvas> canvas = decks[idx].canvas;
 

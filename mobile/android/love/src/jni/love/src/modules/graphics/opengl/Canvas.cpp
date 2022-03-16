@@ -179,8 +179,9 @@ Canvas::Canvas(const Settings &settings)
 	initQuad();
 	loadVolatile();
 
-	if (status != GL_FRAMEBUFFER_COMPLETE)
-		throw love::Exception("Cannot create Canvas: %s", OpenGL::framebufferStatusString(status));
+  // jesse: check this later instead of throwing error
+	/*if (status != GL_FRAMEBUFFER_COMPLETE)
+		throw love::Exception("Cannot create Canvas: %s", OpenGL::framebufferStatusString(status));*/
 }
 
 Canvas::~Canvas()
