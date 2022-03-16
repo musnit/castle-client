@@ -210,7 +210,9 @@ const VariableReachesValue = ({ trigger, context }) => {
     paramValues: { ...trigger.params },
   };
   const isLocal =
-    trigger.params && (!trigger.params.variableId || trigger.params.variableId === '(none)');
+    trigger.params &&
+    (!trigger.params.variableId || trigger.params.variableId === '(none)') &&
+    trigger.params.localVariableId;
   const name = isLocal
     ? trigger.params.localVariableId
     : getVariableName(trigger.params?.variableId, context.variables);
