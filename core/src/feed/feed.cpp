@@ -596,9 +596,9 @@ void Feed::renderCardAtPosition(
       }
     }
 
-    left = smoothstep(left, animateLeft, percent,
-        CoreViews::getInstance().getNumConstant("AVATAR_ANIMATION_EASING_FUNCTION"));
-    // left = animateLeft * percent + left * (1.0 - percent);
+    //left = smoothstep(left, animateLeft, percent,
+    //    CoreViews::getInstance().getNumConstant("AVATAR_ANIMATION_EASING_FUNCTION"));
+    left = animateLeft * percent + left * (1.0 - percent);
     decks[idx].avatarCoreViewLeft = left;
 
     lv.graphics.translate(left, 0.0);
