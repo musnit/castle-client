@@ -88,6 +88,9 @@
 		<string>Synco.ttf</string>
 		<string>Tektur.ttf</string>
 		<string>YatraOne.ttf</string>
+		<string>BaltoTrial-Book.otf</string>
+		<string>BaltoTrial-BookItalic.otf</string>
+		<string>BaltoTrial-Medium.otf</string>
 	</array>
 	<key>UIBackgroundModes</key>
 	<array>

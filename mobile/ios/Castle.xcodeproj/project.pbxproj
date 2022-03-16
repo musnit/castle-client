@@ -95,6 +95,9 @@
 		D6DCCD34B7CB4C00ADD9AA65 /* Piazzolla.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C88B61BFAF13485C90AFB824 /* Piazzolla.ttf */; };
 		E312261820854542B25A07CC /* BreiteGrotesk.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A539EC0211804772B08372F4 /* BreiteGrotesk.ttf */; };
 		FD974DF143C544B1A8CBD6AB /* Basteleur-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = DF503A7241834DF1A0DA901E /* Basteleur-Bold.otf */; };
+		7CDFE28BFA8C45329E4EF700 /* BaltoTrial-Book.otf in Resources */ = {isa = PBXBuildFile; fileRef = D04C2F68119E42ADB8EE7D4F /* BaltoTrial-Book.otf */; };
+		91E9DF0985F44FC4AEC1B454 /* BaltoTrial-BookItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 8C9A47CCEF344BD7957EDFEF /* BaltoTrial-BookItalic.otf */; };
+		D5F35BE99CA94566AF496639 /* BaltoTrial-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = FD1729541A0540BA8257D02C /* BaltoTrial-Medium.otf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -328,6 +331,9 @@
 		F4E08291B4014C9CACAED812 /* Fontisto.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Fontisto.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Fontisto.ttf"; sourceTree = "<group>"; };
 		F98BBBB599F046D4B53CD795 /* Entypo.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Entypo.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Entypo.ttf"; sourceTree = "<group>"; };
 		FDE84D3722CE4562AC058B77 /* Bore.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Bore.ttf; path = ../assets/fonts/Bore.ttf; sourceTree = "<group>"; };
+		D04C2F68119E42ADB8EE7D4F /* BaltoTrial-Book.otf */ = {isa = PBXFileReference; name = "BaltoTrial-Book.otf"; path = "../assets/fonts/BaltoTrial-Book.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		8C9A47CCEF344BD7957EDFEF /* BaltoTrial-BookItalic.otf */ = {isa = PBXFileReference; name = "BaltoTrial-BookItalic.otf"; path = "../assets/fonts/BaltoTrial-BookItalic.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		FD1729541A0540BA8257D02C /* BaltoTrial-Medium.otf */ = {isa = PBXFileReference; name = "BaltoTrial-Medium.otf"; path = "../assets/fonts/BaltoTrial-Medium.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -691,6 +697,9 @@
 				2E90A37BC4AA47EDAEC6B692 /* Octicons.ttf */,
 				1A6C19ED2FAA4992AAB8A619 /* SimpleLineIcons.ttf */,
 				1516D44EF73F4F619BB3A53D /* Zocial.ttf */,
+				D04C2F68119E42ADB8EE7D4F /* BaltoTrial-Book.otf */,
+				8C9A47CCEF344BD7957EDFEF /* BaltoTrial-BookItalic.otf */,
+				FD1729541A0540BA8257D02C /* BaltoTrial-Medium.otf */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -873,6 +882,9 @@
 				8730B5D0536D4E18B118F8C8 /* Synco.ttf in Resources */,
 				41F570D7DAB8462EADC1BFFF /* Tektur.ttf in Resources */,
 				035F60057B1744EBA710A52C /* YatraOne.ttf in Resources */,
+				7CDFE28BFA8C45329E4EF700 /* BaltoTrial-Book.otf in Resources */,
+				91E9DF0985F44FC4AEC1B454 /* BaltoTrial-BookItalic.otf in Resources */,
+				D5F35BE99CA94566AF496639 /* BaltoTrial-Medium.otf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
