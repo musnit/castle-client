@@ -9,7 +9,7 @@ import { InspectorPatternPicker } from './InspectorPatternPicker';
 import { InspectorTagPicker } from './InspectorTagPicker';
 import { InspectorTextInput } from './InspectorTextInput';
 import { InspectorTrackPicker } from './InspectorTrackPicker';
-import { InspectorLocalVariablePicker, InspectorVariablePicker } from './InspectorVariablePicker';
+import { InspectorVariablePicker } from './InspectorVariablePicker';
 
 import * as SceneCreatorUtilities from '../../SceneCreatorUtilities';
 
@@ -71,9 +71,9 @@ export const ParamInput = ({
           {...metadata}
         />
       );
-    case 'localVariable':
-      return <InspectorLocalVariablePicker value={value} onChange={setValue} {...metadata} />;
     case 'variable':
+      // this assumes local vars are always part of a global/local scope picker.
+      // if we have a case where only local vars are allowed, could add a separate thing here
       return <InspectorVariablePicker value={value} onChange={setValue} {...metadata} />;
     case 'pattern':
       return <InspectorPatternPicker value={value} onChange={setValue} {...metadata} />;

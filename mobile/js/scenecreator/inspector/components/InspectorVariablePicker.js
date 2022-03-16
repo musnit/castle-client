@@ -1,9 +1,11 @@
 import * as React from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { AppText as Text } from '../../../components/AppText';
 import { PopoverButton } from '../../../components/PopoverProvider';
+import { StyleSheet, View } from 'react-native';
 import { DropdownItemsList } from './InspectorDropdown';
 import { formatVariableName } from '../../SceneCreatorUtilities';
+import { InspectorSegmentedControl } from './InspectorSegmentedControl';
+import { PopoverButton } from '../../../components/PopoverProvider';
 import { sendAsync, useCoreState } from '../../../core/CoreEvents';
 
 import 'react-native-get-random-values'; // required for uuid
@@ -38,9 +40,11 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 16,
   },
+  scopeContainer: { flexDirection: 'row', alignItems: 'center' },
+  scopePicker: { flexShrink: 1, maxWidth: 128, marginRight: 8 },
 });
 
-export const InspectorLocalVariablePicker = ({ value, onChange, style, ...props }) => {
+const InspectorLocalVariablePicker = ({ value, onChange, style, ...props }) => {
   let component = useCoreState('EDITOR_SELECTED_COMPONENT:LocalVariables');
   if (!component) {
     component = { props: { localVariables: [], undoRedoCount: 0 } };
@@ -80,15 +84,14 @@ export const InspectorLocalVariablePicker = ({ value, onChange, style, ...props 
       <PopoverButton
         style={styles.box}
         activeStyle={[styles.box, styles.activeBox]}
-        popover={popover}
-      >
-        <Text>{valueLabel}</Text>
+        popover={popover}>
+        <Text style={styles.label}>{valueLabel}</Text>
       </PopoverButton>
     </View>
   );
 };
 
-export const InspectorVariablePicker = ({ value, onChange, style, ...props }) => {
+const InspectorGlobalVariablePicker = ({ value, onChange, style, ...props }) => {
   const variables = useCoreState('EDITOR_VARIABLES')?.variables;
   const items = variables || [];
 
@@ -135,10 +138,70 @@ export const InspectorVariablePicker = ({ value, onChange, style, ...props }) =>
       <PopoverButton
         style={styles.box}
         activeStyle={[styles.box, styles.activeBox]}
-        popover={popover}
-      >
-        <Text>{valueLabel}</Text>
+        popover={popover}>
+        <Text style={styles.label}>{valueLabel}</Text>
       </PopoverButton>
     </View>
   );
+};
+
+const SCOPE_ITEMS = [
+  {
+    id: 'global',
+    name: 'Deck',
+  },
+  {
+    id: 'local',
+    name: 'Actor',
+  },
+];
+
+const InspectorMultiVariablePicker = ({ variableProps, ...props }) => {
+  const { localValue, setLocalValue } = variableProps;
+  const { value: globalValue, onChange: setGlobalValue } = props;
+
+  const [selectedScopeIndex, setSelectedScopeIndex] = React.useState(localValue?.length ? 1 : 0);
+  const selectedScope = SCOPE_ITEMS[selectedScopeIndex];
+
+  const setValue = React.useCallback(
+    (value) => {
+      console.log(`setValue: ${value}`);
+      // when setting value for one scope, need to also clear values for other scopes
+      const selectedScope = SCOPE_ITEMS[selectedScopeIndex];
+      if (selectedScope?.id === 'global') {
+        setLocalValue('');
+        setGlobalValue(value);
+      } else {
+        setGlobalValue('(none)');
+        setLocalValue(value);
+      }
+    },
+    [selectedScopeIndex, setLocalValue, setGlobalValue]
+  );
+
+  return (
+    <View style={styles.scopeContainer}>
+      <InspectorSegmentedControl
+        items={SCOPE_ITEMS}
+        selectedItemIndex={selectedScopeIndex}
+        onChange={setSelectedScopeIndex}
+        style={styles.scopePicker}
+      />
+      {selectedScope.id === 'global' ? (
+        <InspectorGlobalVariablePicker {...props} value={globalValue} onChange={setValue} />
+      ) : (
+        <InspectorLocalVariablePicker {...props} value={localValue} onChange={setValue} />
+      )}
+    </View>
+  );
+};
+
+export const InspectorVariablePicker = ({ variableProps, ...props }) => {
+  const scopes = variableProps?.scopes || 'all';
+  if (scopes === 'all') {
+    return <InspectorMultiVariablePicker variableProps={variableProps} {...props} />;
+  } else {
+    // scopes not specified, fall back to global-only behavior
+    return <InspectorGlobalVariablePicker {...props} />;
+  }
 };

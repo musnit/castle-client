@@ -6,7 +6,7 @@ import { RuleBlueprintsSheet } from '../../sheets/RuleBlueprintsSheet';
 import { SelectBehaviorPropertySheet } from '../components/SelectBehaviorPropertySheet';
 import { SelectBehaviorSheet } from '../components/SelectBehaviorSheet';
 import { CardDestinationPickerSheet } from '../../sheets/CardDestinationPickerSheet';
-import RuleParamInputSheet from './RuleParamInputSheet';
+import { RuleParamInputSheet } from './RuleParamInputSheet';
 import * as Constants from '../../../Constants';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 
@@ -66,24 +66,28 @@ export const ConfigureRuleEntry = ({
   onChangeParams,
   addChildSheet,
 }) => {
-  const showEditParamSheet = (paramNames, initialValues, title) =>
+  const showEditParamSheet = ({ paramNames, paramValues, ...cell }) =>
     addChildSheet({
       key: 'ruleParamInput',
       Component: RuleParamInputSheet,
-      title,
       entry,
       triggerFilter,
       paramNames,
-      initialValues,
+      initialValues: paramValues,
       onChangeParams,
       useAllBehaviors,
+      ...cell,
     });
 
   const showEditParamSheetForCell = (cell) => {
     if (cell.paramNames) {
-      showEditParamSheet(cell.paramNames, cell.paramValues, cell.title);
+      showEditParamSheet(cell);
     } else {
-      showEditParamSheet([cell.paramName], { [cell.paramName]: cell.paramValue }, cell.title);
+      showEditParamSheet({
+        paramNames: [cell.paramName],
+        paramValues: { [cell.paramName]: cell.paramValue },
+        ...cell,
+      });
     }
   };
 

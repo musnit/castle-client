@@ -225,6 +225,7 @@ const VariableReachesValue = ({ trigger, context }) => {
       {
         type: 'selectParamSheet',
         label: name,
+        containsVariableScopePicker: true,
         ...changeAllParams,
       },
       {
