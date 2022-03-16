@@ -12,6 +12,8 @@ static std::map<int, const std::function<void(bool, std::string, unsigned char *
 static std::mutex requestLock;
 
 static jclass apiClass;
+static jclass bridgeModuleClass;
+static jclass gameActivityClass;
 
 JNIEnv *getEnv() {
   return (JNIEnv *)SDL_AndroidGetJNIEnv();
@@ -20,6 +22,16 @@ JNIEnv *getEnv() {
 void initJNI() {
   auto env = getEnv();
   apiClass = (jclass)env->NewGlobalRef(env->FindClass("xyz/castle/api/API"));
+  bridgeModuleClass = (jclass)env->NewGlobalRef(env->FindClass("ghost/CastleCoreBridgeModule"));
+  gameActivityClass = (jclass)env->NewGlobalRef(env->FindClass("ghost/CoreGameActivity"));
+}
+
+jclass getBridgeModuleClass() {
+  return bridgeModuleClass;
+}
+
+jclass getGameActivityClass() {
+  return gameActivityClass;
 }
 
 void graphqlPostRequest(

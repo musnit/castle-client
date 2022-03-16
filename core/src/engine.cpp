@@ -7,8 +7,10 @@
 #include "behaviors/text.h"
 
 #ifdef ANDROID
+#include <jni.h>
 namespace CastleAPI {
 void initJNI();
+jclass getGameActivityClass();
 }
 #endif
 
@@ -43,13 +45,11 @@ extern "C" bool ghostChildWindowCloseEventReceived; // Whether the OS tried to c
 
 double androidGetGhostScreenScaling() {
   JNIEnv *env = (JNIEnv *)SDL_AndroidGetJNIEnv();
-  jclass activity = env->FindClass("ghost/CoreGameActivity");
+  jclass activity = CastleAPI::getGameActivityClass();
 
   jmethodID getGhostScreenScaling
       = env->GetStaticMethodID(activity, "getGhostScreenScaling", "()D");
   double screenScaling = (jdouble)env->CallStaticDoubleMethod(activity, getGhostScreenScaling);
-
-  env->DeleteLocalRef(activity);
 
   return screenScaling;
 }

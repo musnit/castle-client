@@ -1,6 +1,13 @@
 #include "bridge.h"
 
 
+#ifdef ANDROID
+#include <jni.h>
+namespace CastleAPI {
+jclass getBridgeModuleClass();
+}
+#endif
+
 //
 // To JS
 //
@@ -63,12 +70,8 @@ void Bridge::flushPendingReceives() {
 // To JS
 namespace CastleCore {
 void sendEventToJS(const char *eventJson) {
-  auto oldEnv = (JNIEnv *)SDL_AndroidGetJNIEnv();
-  JavaVM *jvm = nullptr;
-  oldEnv->GetJavaVM(&jvm);
-  JNIEnv *env = nullptr;
-  jvm->AttachCurrentThread(&env, nullptr);
-  auto klass = env->FindClass("ghost/CastleCoreBridgeModule");
+  auto env = (JNIEnv *)SDL_AndroidGetJNIEnv();
+  auto klass = CastleAPI::getBridgeModuleClass();
   auto method = env->GetStaticMethodID(klass, "staticSendEventToJS", "(Ljava/lang/String;)V");
   auto jEventJson = env->NewStringUTF(eventJson);
   env->CallStaticVoidMethod(klass, method, jEventJson);
