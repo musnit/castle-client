@@ -196,7 +196,7 @@ const InspectorMultiVariablePicker = ({ variableProps, ...props }) => {
 };
 
 export const InspectorVariablePicker = ({ variableProps, ...props }) => {
-  const scopes = variableProps?.scopes || 'all';
+  const scopes = variableProps?.scopes || 'global';
   if (scopes === 'all') {
     return <InspectorMultiVariablePicker variableProps={variableProps} {...props} />;
   } else {

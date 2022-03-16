@@ -367,6 +367,7 @@ const VariableMeetsCondition = ({ response, context }) => {
       {
         type: 'selectParamSheet',
         label: formatVariableName(name),
+        containsVariableScopePicker: true,
         ...changeAllParams,
       },
       {
@@ -764,6 +765,7 @@ const SetVariable = ({ response, context }) => {
     {
       type: 'selectParamSheet',
       label: formatVariableName(name),
+      containsVariableScopePicker: true,
       ...changeAllParams,
     },
     {
@@ -773,6 +775,7 @@ const SetVariable = ({ response, context }) => {
     {
       type: 'selectParamSheet',
       label: makeExpressionSummary(response.params?.setToValue ?? 0, context),
+      containsVariableScopePicker: true,
       ...changeAllParams,
     },
     {

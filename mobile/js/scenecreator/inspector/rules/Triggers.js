@@ -265,8 +265,9 @@ const VariableChanges = ({ trigger, context }) => {
     {
       type: 'selectParamSheet',
       label: name,
-      paramName: isLocal ? 'localVariableId' : 'variableId',
-      paramValue: trigger.params.variableId,
+      paramNames: ['localVariableId', 'variableId'],
+      paramValues: { ...trigger.params },
+      containsVariableScopePicker: true,
     },
   ]);
 };
