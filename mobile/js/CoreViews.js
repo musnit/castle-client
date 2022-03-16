@@ -37,6 +37,7 @@ let coreViews = {
      * 8 - circEaseOut
      */
     ANIMATION_EASING_FUNCTION: 4,
+    AVATAR_ANIMATION_EASING_FUNCTION: 1,
 
     // The time it takes to move to the next card after touch is released
     SCROLL_ANIMATION_TIME: 0.3,

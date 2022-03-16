@@ -66,10 +66,8 @@ float circEaseOut(float t) {
   return sqrtf(1.0 - t * t);
 }
 
-float smoothstep(float a, float b, float t) {
-  int ANIMATION_EASING_FUNCTION
-      = CoreViews::getInstance().getNumConstant("ANIMATION_EASING_FUNCTION");
-  switch (ANIMATION_EASING_FUNCTION) {
+float smoothstep(float a, float b, float t, int easingFunction) {
+  switch (easingFunction) {
   case 0:
     return (b - a) * cubicEaseIn(t) + a;
   case 1:
@@ -313,8 +311,9 @@ void Feed::update(double dt) {
   int idx = getCurrentIndex();
 
   if (isAnimating) {
-    offset = smoothstep(
-        animateFromOffset, animateToOffset, animationTimeElapsed / SCROLL_ANIMATION_TIME);
+    offset = smoothstep(animateFromOffset, animateToOffset,
+        animationTimeElapsed / SCROLL_ANIMATION_TIME,
+        CoreViews::getInstance().getNumConstant("ANIMATION_EASING_FUNCTION"));
     animationTimeElapsed += dt;
     if (animationTimeElapsed >= SCROLL_ANIMATION_TIME) {
       isAnimating = false;
@@ -597,7 +596,9 @@ void Feed::renderCardAtPosition(
       }
     }
 
-    left = animateLeft * percent + left * (1.0 - percent);
+    left = smoothstep(left, animateLeft, percent,
+        CoreViews::getInstance().getNumConstant("AVATAR_ANIMATION_EASING_FUNCTION"));
+    // left = animateLeft * percent + left * (1.0 - percent);
     decks[idx].avatarCoreViewLeft = left;
 
     lv.graphics.translate(left, 0.0);
