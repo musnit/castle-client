@@ -151,6 +151,9 @@ export const makeExpressionSummary = (expression, context, depth = 0) => {
     }
     case 'variable': {
       let variableLabel;
+      if (ruleHasLocalVariableValue(expression.params)) {
+        return formatVariableName(expression.params.localVariableId);
+      }
       if (context?.variables) {
         const variable = context.variables.find(
           (v) => v.variableId === expression.params.variableId

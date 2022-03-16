@@ -126,6 +126,18 @@ const wrapExpression = ({ expression, expressions, wrappingType }) => {
   return result;
 };
 
+const validateExpressionParams = (paramNameToSet, params) => {
+  // kinda kludgey: when switching between variable scopes, we want to simultaneously clear other
+  // scopes without capturing stale values. could be solved by some generic multi-set
+  if (paramNameToSet === 'variableId') {
+    params.localVariableId = '';
+  }
+  if (paramNameToSet === 'localVariableId') {
+    params.variableId = '(none)';
+  }
+  return params;
+};
+
 // TODO: use returnType to filter available expression types
 const InspectorExpressionInput = ({
   label,
@@ -163,10 +175,10 @@ const InspectorExpressionInput = ({
     }
     onChange({
       ...value,
-      params: {
+      params: validateExpressionParams(name, {
         ...value.params,
         [name]: paramValue,
-      },
+      }),
     });
   };
 
