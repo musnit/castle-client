@@ -30,6 +30,16 @@ struct LocalVariableId {
   bool operator==(const LocalVariableId &other) const;
 };
 
+struct VariableRef {
+  Variable variableId;
+  LocalVariableId localVariableId;
+
+  void read(Reader &reader);
+  void write(Writer &writer) const;
+
+  bool isLocal() const;
+};
+
 
 //
 // Behavior
@@ -88,6 +98,10 @@ private:
 
 
 // Inlined implementations
+
+inline bool VariableRef::isLocal() const {
+  return !(variableId.token.index >= 0);
+}
 
 inline bool LocalVariableId::operator==(const LocalVariableId &other) const {
   return token == other.token;

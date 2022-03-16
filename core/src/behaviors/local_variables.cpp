@@ -22,6 +22,44 @@ void LocalVariablesBehavior::handleDisableComponent(
 // Read, write
 //
 
+void VariableRef::read(Reader &reader) {
+  if (auto str = reader.str(); str && (*str)[0] != '\0' && !(std::strcmp(*str, "(none)") == 0)) {
+    // Legacy: value is just a string, read it as global
+    variableId.read(reader);
+  } else {
+    if (auto scope = reader.str("scope")) {
+      reader.obj("id", [&]() {
+        switch ((*scope)[0]) {
+        case 'g': { // "global"
+          variableId.read(reader);
+          break;
+        }
+        case 'a': { // "actor"
+          localVariableId.read(reader);
+          break;
+        }
+        }
+      });
+    }
+  }
+}
+
+void VariableRef::write(Writer &writer) const {
+  writer.obj([&]() {
+    if (!isLocal()) {
+      writer.str("scope", "global");
+      writer.obj("id", [&]() {
+        variableId.write(writer);
+      });
+    } else {
+      writer.str("scope", "actor");
+      writer.obj("id", [&]() {
+        localVariableId.write(writer);
+      });
+    }
+  });
+}
+
 void LocalVariableId::read(Reader &reader) {
   if (auto str = reader.str(); str && (*str)[0] != '\0') {
     name = *str;

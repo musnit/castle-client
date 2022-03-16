@@ -1056,12 +1056,8 @@ struct VariableChangesTrigger : BaseTrigger {
 
   struct Params {
     PROP(
-         Variable, variableId,
+         VariableRef, variableId,
          .label("variable")
-         );
-    PROP(
-         LocalVariableId, localVariableId,
-         .label("local variable")
          );
   } params;
 };
@@ -1074,12 +1070,8 @@ struct VariableReachesValueTrigger : BaseTrigger {
 
   struct Params {
     PROP(
-         Variable, variableId,
+         VariableRef, variableId,
          .label("variable")
-         );
-    PROP(
-         LocalVariableId, localVariableId,
-         .label("local variable")
          );
     PROP(ExpressionComparison, comparison);
     PROP(ExpressionRef, value) = 0;
@@ -1092,11 +1084,13 @@ void RulesBehavior::fireVariablesTriggers(Variable variable, const ExpressionVal
   //       those mappings as actors are added / removed.
   fireAllIf<VariableChangesTrigger>(
       {}, [&](ActorId actorId, const VariableChangesTrigger &trigger) {
-        return trigger.params.variableId() == variable;
+        auto &variableRef = trigger.params.variableId();
+        return !variableRef.isLocal() && variableRef.variableId == variable;
       });
   fireAllIf<VariableReachesValueTrigger>(
       {}, [&](ActorId actorId, const VariableReachesValueTrigger &trigger) {
-        return trigger.params.variableId() == variable
+        auto &variableRef = trigger.params.variableId();
+        return !variableRef.isLocal() && variableRef.variableId == variable
             && trigger.params.comparison().compare(value, evalIndependent(trigger.params.value()));
       });
 }
@@ -1104,10 +1098,12 @@ void RulesBehavior::fireVariablesTriggers(Variable variable, const ExpressionVal
 void RulesBehavior::fireLocalVariablesTriggers(
     ActorId actorId, const LocalVariableId &localVariableId, const ExpressionValue &value) {
   fireIf<VariableChangesTrigger>(actorId, {}, [&](const VariableChangesTrigger &trigger) {
-    return trigger.params.localVariableId() == localVariableId;
+    auto &variableRef = trigger.params.variableId();
+    return variableRef.isLocal() && variableRef.localVariableId == localVariableId;
   });
   fireIf<VariableReachesValueTrigger>(actorId, {}, [&](const VariableReachesValueTrigger &trigger) {
-    return trigger.params.localVariableId() == localVariableId
+    auto &variableRef = trigger.params.variableId();
+    return variableRef.isLocal() && variableRef.localVariableId == localVariableId
         && trigger.params.comparison().compare(value, evalIndependent(trigger.params.value()));
   });
 }
@@ -1158,28 +1154,28 @@ struct SetVariableResponse : BaseResponse {
   static constexpr auto description = "Modify the value of a variable";
 
   struct Params {
-    PROP(Variable, variableId, .label("variable"));
-    PROP(LocalVariableId, localVariableId, .label("Local variable name"));
+    PROP(VariableRef, variableId, .label("variable"));
     PROP(ExpressionRef, setToValue, .label("set to value"));
     PROP(bool, relative);
   } params;
 
   void run(RuleContext &ctx) override {
     auto value = params.setToValue().eval(ctx);
-    if (auto variableId = params.variableId(); variableId.token.index >= 0) {
+    auto &variableRef = params.variableId();
+    if (!variableRef.isLocal()) {
       auto &variables = ctx.getScene().getVariables();
       if (params.relative() && value.is<double>()) {
-        variables.set(variableId, variables.get(variableId).as<double>() + value.as<double>());
+        auto currValue = variables.get(variableRef.variableId).as<double>();
+        variables.set(variableRef.variableId, currValue + value.as<double>());
       } else {
-        variables.set(variableId, value);
+        variables.set(variableRef.variableId, value);
       }
     } else {
       auto &localVariablesBehavior = ctx.getScene().getBehaviors().byType<LocalVariablesBehavior>();
-      auto &localVariableId = params.localVariableId();
+      auto &localVariableId = variableRef.localVariableId;
       if (params.relative() && value.is<double>()) {
         auto currValue = localVariablesBehavior.get(ctx.actorId, localVariableId).as<double>();
-        localVariablesBehavior.set(
-            ctx.actorId, params.localVariableId(), currValue + value.as<double>());
+        localVariablesBehavior.set(ctx.actorId, localVariableId, currValue + value.as<double>());
       } else {
         localVariablesBehavior.set(ctx.actorId, localVariableId, value);
       }
@@ -1194,20 +1190,20 @@ struct VariableMeetsConditionResponse : BaseResponse {
   static constexpr auto description = "If a variable meets a condition";
 
   struct Params {
-    PROP(Variable, variableId, .label("variable"));
-    PROP(LocalVariableId, localVariableId, .label("Local variable name"));
+    PROP(VariableRef, variableId, .label("variable"));
     PROP(ExpressionComparison, comparison);
     PROP(ExpressionRef, value);
   } params;
 
   bool eval(RuleContext &ctx) override {
     auto value = params.value().eval(ctx);
-    if (auto variableId = params.variableId(); variableId.token.index >= 0) {
+    auto &variableRef = params.variableId();
+    if (!variableRef.isLocal()) {
       auto &variables = ctx.getScene().getVariables();
-      return params.comparison().compare(variables.get(params.variableId()), value);
+      return params.comparison().compare(variables.get(variableRef.variableId), value);
     } else {
       auto &localVariablesBehavior = ctx.getScene().getBehaviors().byType<LocalVariablesBehavior>();
-      auto &currValue = localVariablesBehavior.get(ctx.actorId, params.localVariableId());
+      auto &currValue = localVariablesBehavior.get(ctx.actorId, variableRef.localVariableId);
       return params.comparison().compare(currValue, value);
     }
   }
@@ -1576,13 +1572,13 @@ void RulesBehavior::handlePerform(double dt) {
     auto &localVariablesBehavior = scene.getBehaviors().byType<LocalVariablesBehavior>();
     fireAllIf<VariableReachesValueTrigger, VariableReachesValueTriggerOnAddMarker>(
         {}, [&](ActorId actorId, const VariableReachesValueTrigger &trigger) {
-          if (auto variableId = trigger.params.variableId(); variableId.token.index >= 0) {
-            auto &currValue = variables.get(variableId);
+          auto &variableRef = trigger.params.variableId();
+          if (!variableRef.isLocal()) {
+            auto &currValue = variables.get(variableRef.variableId);
             return trigger.params.comparison().compare(
                 currValue, evalIndependent(trigger.params.value()));
           } else {
-            auto &localVariableId = trigger.params.localVariableId();
-            auto &currValue = localVariablesBehavior.get(actorId, localVariableId);
+            auto &currValue = localVariablesBehavior.get(actorId, variableRef.localVariableId);
             return trigger.params.comparison().compare(
                 currValue, evalIndependent(trigger.params.value()));
           }

@@ -25,16 +25,16 @@ struct VariableExpression : BaseExpression {
   static constexpr auto description = "the value of a variable";
 
   struct Params {
-    PROP(Variable, variableId, .label("Variable name"));
-    PROP(LocalVariableId, localVariableId, .label("Local variable name"));
+    PROP(VariableRef, variableId, .label("Variable name"));
   } params;
 
   ExpressionValue eval(RuleContext &ctx) override {
-    if (auto variableId = params.variableId(); variableId.token.index >= 0) {
-      return ctx.getScene().getVariables().get(params.variableId());
+    auto &variableRef = params.variableId();
+    if (!variableRef.isLocal()) {
+      return ctx.getScene().getVariables().get(variableRef.variableId);
     } else {
       auto &localVariablesBehavior = ctx.getScene().getBehaviors().byType<LocalVariablesBehavior>();
-      return localVariablesBehavior.get(ctx.actorId, params.localVariableId());
+      return localVariablesBehavior.get(ctx.actorId, variableRef.localVariableId);
     }
   }
 };
