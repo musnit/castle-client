@@ -156,7 +156,7 @@ const SCOPE_ITEMS = [
   },
 ];
 
-const InspectorMultiVariablePicker = ({ variableProps, ...props }) => {
+const InspectorMultiVariablePicker = ({ variableProps, style, ...props }) => {
   const { localValue, setLocalValue } = variableProps;
   const { value: globalValue, onChange: setGlobalValue } = props;
 
@@ -179,7 +179,7 @@ const InspectorMultiVariablePicker = ({ variableProps, ...props }) => {
   );
 
   return (
-    <View style={styles.scopeContainer}>
+    <View style={[styles.scopeContainer, style]}>
       <InspectorSegmentedControl
         items={SCOPE_ITEMS}
         selectedItemIndex={selectedScopeIndex}
@@ -199,6 +199,8 @@ export const InspectorVariablePicker = ({ variableProps, ...props }) => {
   const scopes = variableProps?.scopes || 'global';
   if (scopes === 'all') {
     return <InspectorMultiVariablePicker variableProps={variableProps} {...props} />;
+  } else if (scopes === 'local') {
+    return <InspectorLocalVariablePicker {...props} />;
   } else {
     // scopes not specified, fall back to global-only behavior
     return <InspectorGlobalVariablePicker {...props} />;

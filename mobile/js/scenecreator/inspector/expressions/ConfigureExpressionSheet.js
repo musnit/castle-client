@@ -208,6 +208,16 @@ const InspectorExpressionInput = ({
     [expressionParamSpecs, value]
   );
 
+  const containsVariableScopePicker = expressionType === 'variable';
+  let variableProps = {};
+  if (containsVariableScopePicker) {
+    variableProps = {
+      scopes: 'all',
+      localValue: value.params?.localVariableId,
+      setLocalValue: (paramValue) => onChangeParam('localVariableId', paramValue),
+    };
+  }
+
   return (
     <View style={style}>
       <View style={styles.expressionTypeRow}>
@@ -231,6 +241,10 @@ const InspectorExpressionInput = ({
         ) : (
           expressionParamSpecs.map((spec, ii) => {
             const { name } = spec;
+            if (containsVariableScopePicker && name === 'localVariableId') {
+              // skip, merge into `variableId`
+              return null;
+            }
             const paramValue = value.params ? value.params[name] : value;
             const setValue = (paramValue) => onChangeParam(name, paramValue);
             const onConfigureExpression = () => {
@@ -263,10 +277,13 @@ const InspectorExpressionInput = ({
                     setValue={setValue}
                     expressions={expressions}
                     onConfigureExpression={onConfigureExpression}
+                    variableProps={variableProps}
                     lastNativeUpdate={lastNativeUpdate}
                   />
                 </View>
-                {expressionParamSpecs.length == 2 && ii < expressionParamSpecs.length - 1 ? (
+                {expressionParamSpecs.length == 2 &&
+                !containsVariableScopePicker &&
+                ii < expressionParamSpecs.length - 1 ? (
                   <View key={`swap-expression-param-${expressionType}-${ii}`} style={styles.swap}>
                     <View style={styles.swapLine} />
                     <View style={styles.swapButtonWrapper}>
