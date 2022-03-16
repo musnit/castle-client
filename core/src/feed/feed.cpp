@@ -540,7 +540,7 @@ void Feed::renderCardAtPosition(
   viewTransform.reset();
   viewTransform.translate(position, TOP_PADDING);
   lv.graphics.applyTransform(&viewTransform);
-  lv.graphics.setColor({1, 1, 1, 1});
+  lv.graphics.setColor({ 1, 1, 1, 1 });
 
   if (isDeckVisible) {
     renderCardTexture(canvas.get(), elapsedTime, decks[idx].isFrozen ? 0.5 : 1.0);
