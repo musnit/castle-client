@@ -23,9 +23,11 @@ void LocalVariablesBehavior::handleDisableComponent(
 //
 
 void VariableRef::read(Reader &reader) {
-  if (auto str = reader.str(); str && (*str)[0] != '\0' && !(std::strcmp(*str, "(none)") == 0)) {
+  if (auto str = reader.str()) {
     // Legacy: value is just a string, read it as global
-    variableId.read(reader);
+    if ((*str)[0] != '\0' && !(std::strcmp(*str, "(none)") == 0)) {
+      variableId.read(reader);
+    }
   } else {
     if (auto scope = reader.str("scope")) {
       reader.obj("id", [&]() {
