@@ -132,7 +132,9 @@ inline Editor *Engine::maybeGetEditor() {
 
 inline void Engine::clearScreen() {
   if (screens.find(activeScreenId) != screens.end()) {
-    if (activeScreenId != "featuredFeed") {
+    if (activeScreenId == "featuredFeed") {
+      screens[activeScreenId]->suspend();
+    } else {
       screens.erase(activeScreenId);
       activeScreenId = "";
     }

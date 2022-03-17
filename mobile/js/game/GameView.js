@@ -6,6 +6,7 @@ import CastleCoreView from '../core/CastleCoreView';
 import * as Constants from '../Constants';
 
 import { GameLoading } from './GameLoading';
+import { useFocusEffect } from '../ReactNavigation';
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
@@ -103,6 +104,12 @@ export const GameView = React.forwardRef(({
     eventName: 'SCENE_LOADED',
     handler: onLoaded,
   });
+
+  useFocusEffect(React.useCallback(() => {
+    return () => {
+      engineDidUnmount();
+    }
+  }, []));
 
   return (
     <View style={styles.container} ref={ref} collapsable={false}>
