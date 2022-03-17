@@ -7,4 +7,7 @@ rm -f ../src/data/fonts.h
 for f in *.ttf; do
   xxd -i $f >> ../src/data/fonts.h
 done
+for f in *.otf; do
+  xxd -i $f >> ../src/data/fonts.h
+done
 popd > /dev/null
