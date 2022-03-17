@@ -148,6 +148,10 @@ inline LibraryClipboard &Engine::getLibraryClipboard() {
 }
 
 inline void Engine::setPaused(bool paused_) {
+  if (paused == paused_) {
+    return;
+  }
+
   paused = paused_;
 
   auto screen = maybeGetScreen();

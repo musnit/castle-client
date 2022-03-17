@@ -308,8 +308,6 @@ void Feed::update(double dt) {
   }
 #endif
 
-  int idx = getCurrentIndex();
-
   if (isAnimating) {
     offset = smoothstep(animateFromOffset, animateToOffset,
         animationTimeElapsed / SCROLL_ANIMATION_TIME,
@@ -320,6 +318,8 @@ void Feed::update(double dt) {
       offset = animateToOffset;
     }
   }
+
+  int idx = getCurrentIndex();
 
   if (!dragStarted && !isAnimating) {
     if (idx >= 0 && idx < (int)decks.size() && decks[idx].player) {
