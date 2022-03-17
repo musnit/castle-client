@@ -63,7 +63,8 @@ void TextBehavior::loadFontResources(Lv &lv) {
   loadFontResource("Bore", Bore_ttf);
   loadFontResource("Synco", Synco_ttf);
   loadFontResource("Tektur", Tektur_ttf);
-  loadFontResource("Balto", Balto_otf);
+  loadFontResource("BaltoMedium", baltomobile_medium_ttf);
+  loadFontResource("BaltoBook", baltomobile_book_ttf);
 }
 
 void TextBehavior::unloadFontResources() {
