@@ -4,7 +4,6 @@ import {
   formatTag,
   makeExpressionSummary,
   readableOperator,
-  ruleHasLocalVariableValue,
   makeDefaultPatternName,
   makeTrackName,
 } from '../../SceneCreatorUtilities';
@@ -351,13 +350,9 @@ const ExpressionMeetsCondition = ({ response, context }) => {
 
 const VariableMeetsCondition = ({ response, context }) => {
   const changeAllParams = {
-    paramNames: ['variableId', 'localVariableId', 'comparison', 'value'],
+    paramNames: ['variableId', 'comparison', 'value'],
     paramValues: { ...response.params },
   };
-  const isLocal = ruleHasLocalVariableValue(response.params);
-  const name = isLocal
-    ? response.params.localVariableId
-    : getVariableName(response.params?.variableId, context.variables);
   if (response.params) {
     return [
       {
@@ -366,8 +361,7 @@ const VariableMeetsCondition = ({ response, context }) => {
       },
       {
         type: 'selectParamSheet',
-        label: formatVariableName(name),
-        containsVariableScopePicker: true,
+        label: getVariableName(response.params.variableId, context.variables),
         ...changeAllParams,
       },
       {
@@ -748,24 +742,20 @@ const ResetVariable = ({ response, context }) => {
 
 const SetVariable = ({ response, context }) => {
   const changeAllParams = {
-    paramNames: ['variableId', 'localVariableId', 'setToValue'],
+    paramNames: ['variableId', 'setToValue'],
     paramValues: {
       ...response.params,
     },
   };
-  const isLocal = ruleHasLocalVariableValue(response.params);
-  const name = isLocal
-    ? response.params.localVariableId
-    : getVariableName(response.params?.variableId, context.variables);
+  const isLocal = response.params?.variableId?.scope === 'actor';
   return [
     {
       type: 'showEntryOptions',
-      label: isLocal ? 'Modify local variable value' : 'Modify variable value',
+      label: isLocal ? 'Modify actor variable' : 'Modify variable',
     },
     {
       type: 'selectParamSheet',
-      label: formatVariableName(name),
-      containsVariableScopePicker: true,
+      label: getVariableName(response.params?.variableId, context.variables),
       ...changeAllParams,
     },
     {
@@ -775,7 +765,6 @@ const SetVariable = ({ response, context }) => {
     {
       type: 'selectParamSheet',
       label: makeExpressionSummary(response.params?.setToValue ?? 0, context),
-      containsVariableScopePicker: true,
       ...changeAllParams,
     },
     {

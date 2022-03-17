@@ -126,18 +126,6 @@ const wrapExpression = ({ expression, expressions, wrappingType }) => {
   return result;
 };
 
-const validateExpressionParams = (paramNameToSet, params) => {
-  // kinda kludgey: when switching between variable scopes, we want to simultaneously clear other
-  // scopes without capturing stale values. could be solved by some generic multi-set
-  if (paramNameToSet === 'variableId') {
-    params.localVariableId = '';
-  }
-  if (paramNameToSet === 'localVariableId') {
-    params.variableId = '(none)';
-  }
-  return params;
-};
-
 // TODO: use returnType to filter available expression types
 const InspectorExpressionInput = ({
   label,
@@ -175,10 +163,10 @@ const InspectorExpressionInput = ({
     }
     onChange({
       ...value,
-      params: validateExpressionParams(name, {
+      params: {
         ...value.params,
         [name]: paramValue,
-      }),
+      },
     });
   };
 
@@ -220,16 +208,6 @@ const InspectorExpressionInput = ({
     [expressionParamSpecs, value]
   );
 
-  const containsVariableScopePicker = expressionType === 'variable';
-  let variableProps = {};
-  if (containsVariableScopePicker) {
-    variableProps = {
-      scopes: 'all',
-      localValue: value.params?.localVariableId,
-      setLocalValue: (paramValue) => onChangeParam('localVariableId', paramValue),
-    };
-  }
-
   return (
     <View style={style}>
       <View style={styles.expressionTypeRow}>
@@ -253,10 +231,6 @@ const InspectorExpressionInput = ({
         ) : (
           expressionParamSpecs.map((spec, ii) => {
             const { name } = spec;
-            if (containsVariableScopePicker && name === 'localVariableId') {
-              // skip, merge into `variableId`
-              return null;
-            }
             const paramValue = value.params ? value.params[name] : value;
             const setValue = (paramValue) => onChangeParam(name, paramValue);
             const onConfigureExpression = () => {
@@ -289,7 +263,6 @@ const InspectorExpressionInput = ({
                     setValue={setValue}
                     expressions={expressions}
                     onConfigureExpression={onConfigureExpression}
-                    variableProps={variableProps}
                     lastNativeUpdate={lastNativeUpdate}
                   />
                 </View>

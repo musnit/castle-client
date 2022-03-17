@@ -41,7 +41,6 @@ export const RuleParamInputSheet = ({
   paramNames,
   initialValues,
   useAllBehaviors = false,
-  containsVariableScopePicker = false,
   isOpen,
   onClose,
   addChildSheet,
@@ -84,26 +83,12 @@ export const RuleParamInputSheet = ({
     });
   };
 
-  // if params contains `variableId` and `localVariableId` then we render a single row with both
-  let variableProps = {};
-  if (containsVariableScopePicker) {
-    variableProps = {
-      scopes: 'all',
-      localValue: values.localVariableId,
-      setLocalValue: (value) => changeValues({ paramName: 'localVariableId', value }),
-    };
-  }
-
   const renderContent = () => (
     <View style={styles.container}>
       <View style={styles.description}>
         <Text style={styles.descriptionText}>{entry.description}</Text>
       </View>
       {paramNames.map((paramName, ii) => {
-        if (containsVariableScopePicker && paramName === 'localVariableId') {
-          // skip, merge into `variableId`
-          return null;
-        }
         const paramSpec = findParamSpec(paramName);
         const value = values[paramName];
         const setValue = (value) => changeValues({ paramName, value });
@@ -117,7 +102,6 @@ export const RuleParamInputSheet = ({
               paramSpec={paramSpec}
               value={value}
               setValue={setValue}
-              variableProps={variableProps}
               style={styles.inputRow}
               onConfigureExpression={() =>
                 onConfigureExpression({ paramSpec, value, onChange: setValue })

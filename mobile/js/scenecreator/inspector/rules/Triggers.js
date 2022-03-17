@@ -3,7 +3,6 @@ import {
   formatTag,
   makeExpressionSummary,
   readableOperator,
-  ruleHasLocalVariableValue,
   makeTrackName,
 } from '../../SceneCreatorUtilities';
 
@@ -207,13 +206,9 @@ const LoseTag = ({ trigger }) => {
 
 const VariableReachesValue = ({ trigger, context }) => {
   const changeAllParams = {
-    paramNames: ['variableId', 'localVariableId', 'comparison', 'value'],
+    paramNames: ['variableId', 'comparison', 'value'],
     paramValues: { ...trigger.params },
   };
-  const isLocal = ruleHasLocalVariableValue(trigger.params);
-  const name = isLocal
-    ? trigger.params.localVariableId
-    : getVariableName(trigger.params?.variableId, context.variables);
   if (trigger.params) {
     return withWhen([
       {
@@ -222,8 +217,7 @@ const VariableReachesValue = ({ trigger, context }) => {
       },
       {
         type: 'selectParamSheet',
-        label: name,
-        containsVariableScopePicker: true,
+        label: getVariableName(trigger.params.variableId, context.variables),
         ...changeAllParams,
       },
       {
@@ -253,10 +247,7 @@ const VariableReachesValue = ({ trigger, context }) => {
 };
 
 const VariableChanges = ({ trigger, context }) => {
-  const isLocal = ruleHasLocalVariableValue(trigger.params);
-  const name = isLocal
-    ? trigger.params.localVariableId
-    : getVariableName(trigger.params?.variableId, context.variables);
+  const name = getVariableName(trigger.params?.variableId, context.variables);
   return withWhen([
     {
       type: 'selectEntry',
@@ -265,9 +256,8 @@ const VariableChanges = ({ trigger, context }) => {
     {
       type: 'selectParamSheet',
       label: name,
-      paramNames: ['localVariableId', 'variableId'],
-      paramValues: { ...trigger.params },
-      containsVariableScopePicker: true,
+      paramName: 'variableId',
+      paramValue: trigger.params?.variableId,
     },
   ]);
 };

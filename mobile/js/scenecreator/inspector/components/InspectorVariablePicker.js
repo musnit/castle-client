@@ -151,31 +151,20 @@ const SCOPE_ITEMS = [
     name: 'Deck',
   },
   {
-    id: 'local',
+    id: 'actor',
     name: 'Actor',
   },
 ];
 
-const InspectorMultiVariablePicker = ({ variableProps, style, ...props }) => {
-  const { localValue, setLocalValue } = variableProps;
-  const { value: globalValue, onChange: setGlobalValue } = props;
-
-  const [selectedScopeIndex, setSelectedScopeIndex] = React.useState(localValue?.length ? 1 : 0);
+const InspectorMultiVariablePicker = ({ style, value, onChange, ...props }) => {
+  const selectedScopeIndex = value.scope === 'actor' ? 1 : 0;
   const selectedScope = SCOPE_ITEMS[selectedScopeIndex];
 
-  const setValue = React.useCallback(
-    (value) => {
-      // when setting value for one scope, need to also clear values for other scopes
-      const selectedScope = SCOPE_ITEMS[selectedScopeIndex];
-      if (selectedScope?.id === 'global') {
-        setLocalValue('');
-        setGlobalValue(value);
-      } else {
-        setGlobalValue('(none)');
-        setLocalValue(value);
-      }
-    },
-    [selectedScopeIndex, setLocalValue, setGlobalValue]
+  const setId = React.useCallback((id) => onChange({ ...value, id }), [value, onChange]);
+  const setScope = React.useCallback(
+    // reset id when changing scope
+    (scopeIndex) => onChange({ scope: SCOPE_ITEMS[scopeIndex].id, id: '' }),
+    [value, onChange]
   );
 
   return (
@@ -183,26 +172,40 @@ const InspectorMultiVariablePicker = ({ variableProps, style, ...props }) => {
       <InspectorSegmentedControl
         items={SCOPE_ITEMS}
         selectedItemIndex={selectedScopeIndex}
-        onChange={setSelectedScopeIndex}
+        onChange={setScope}
         style={styles.scopePicker}
       />
       {selectedScope.id === 'global' ? (
-        <InspectorGlobalVariablePicker {...props} value={globalValue} onChange={setValue} />
+        <InspectorGlobalVariablePicker {...props} value={value.id} onChange={setId} />
       ) : (
-        <InspectorLocalVariablePicker {...props} value={localValue} onChange={setValue} />
+        <InspectorLocalVariablePicker {...props} value={value.id} onChange={setId} />
       )}
     </View>
   );
 };
 
-export const InspectorVariablePicker = ({ variableProps, ...props }) => {
-  const scopes = variableProps?.scopes || 'global';
-  if (scopes === 'all') {
-    return <InspectorMultiVariablePicker variableProps={variableProps} {...props} />;
-  } else if (scopes === 'local') {
-    return <InspectorLocalVariablePicker {...props} />;
+const migrateLegacyValue = (value) => {
+  if (typeof value === 'string') {
+    return {
+      scope: 'global',
+      id: value,
+    };
+  }
+  return value;
+};
+
+export const InspectorVariablePicker = (props) => {
+  // props.value can either be a string like "none" (if it's from an old deck) or an object
+  // like { scope: 'actor', id: '' }
+  const { scopes, ...childProps } = props;
+
+  if (!scopes || scopes === 'all') {
+    // migrate legacy variables which only consist of global variable id string
+    childProps.value = migrateLegacyValue(childProps.value);
+    return <InspectorMultiVariablePicker {...childProps} />;
+  } else if (scopes === 'actor') {
+    return <InspectorLocalVariablePicker {...childProps} />;
   } else {
-    // scopes not specified, fall back to global-only behavior
-    return <InspectorGlobalVariablePicker {...props} />;
+    return <InspectorGlobalVariablePicker {...childProps} />;
   }
 };

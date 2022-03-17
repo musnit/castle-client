@@ -71,18 +71,13 @@ export const ParamInput = ({
           {...metadata}
         />
       );
-    case 'localVariable':
-      // unused?
-      return (
-        <InspectorVariablePicker
-          value={value}
-          onChange={setValue}
-          variableProps={{ scopes: 'local' }}
-          {...metadata}
-        />
-      );
-    case 'variable':
+    case 'variableRef':
       return <InspectorVariablePicker value={value} onChange={setValue} {...metadata} />;
+    case 'variable':
+      // only a variable id - assume global scope
+      return (
+        <InspectorVariablePicker value={value} onChange={setValue} scopes="global" {...metadata} />
+      );
     case 'pattern':
       return <InspectorPatternPicker value={value} onChange={setValue} {...metadata} />;
     case 'track':

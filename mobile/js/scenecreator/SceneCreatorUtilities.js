@@ -10,21 +10,35 @@ export const formatVariableName = (name) => `\$${name}`;
 
 export const formatTag = (tag) => `#${tag}`;
 
-export const getVariableName = (variableId, variables) => {
+export const getVariableName = (variable, variables) => {
   let variableName = '(none)';
-  if (variableId && variableId !== 'none') {
-    if (variables) {
-      const selectedVar = variables.find((v) => v.variableId === variableId);
-      if (selectedVar) {
-        variableName = selectedVar.name;
+  if (variable) {
+    if (typeof variable === 'string') {
+      // this is only a variable id
+      if (variables && variable !== 'none' && variable !== '(none)') {
+        const selectedVar = variables.find((v) => v.variableId === variable);
+        if (selectedVar) {
+          variableName = selectedVar.name;
+        }
+      }
+    } else {
+      // this is a scoped variable object
+      if (variable.scope === 'actor') {
+        if (variable.id.length) {
+          variableName = variable.id;
+        }
+      } else {
+        if (variables) {
+          const selectedVar = variables.find((v) => v.variableId === variable.id);
+          if (selectedVar) {
+            variableName = selectedVar.name;
+          }
+        }
       }
     }
   }
   return variableName;
 };
-
-export const ruleHasLocalVariableValue = (params) =>
-  params && (!params.variableId || params.variableId === '(none)') && params.localVariableId;
 
 const COMPARISON_OPERATORS = {
   equal: 'equals',
@@ -150,21 +164,7 @@ export const makeExpressionSummary = (expression, context, depth = 0) => {
       return `${expression.expressionType}(${mean}, ${sigma})`;
     }
     case 'variable': {
-      let variableLabel;
-      if (ruleHasLocalVariableValue(expression.params)) {
-        return formatVariableName(expression.params.localVariableId);
-      }
-      if (context?.variables) {
-        const variable = context.variables.find(
-          (v) => v.variableId === expression.params.variableId
-        );
-        if (variable) {
-          variableLabel = variable.name;
-        }
-      }
-      if (!variableLabel) {
-        variableLabel = expression.params.variableId;
-      }
+      let variableLabel = getVariableName(expression.params.variableId, context.variables);
       return formatVariableName(variableLabel);
     }
     case 'counter value': {
