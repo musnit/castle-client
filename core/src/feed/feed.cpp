@@ -283,13 +283,17 @@ void Feed::update(double dt) {
         } else {
           animateToOffset = round((offset) / feedItemWidth) * feedItemWidth;
         }
-
-        // Don't allow animating to before the first card
-        if (animateToOffset > 0.0) {
-          animateToOffset = 0.0;
-        }
-        if (animateToOffset < (-feedItemWidth * ((float)decks.size() - 1.0))) {
-          animateToOffset = (-feedItemWidth * ((float)decks.size() - 1.0));
+      } else if (!touch.movedFar && touchDuration < 0.3) {
+        if (touch.screenPos.x > windowWidth * 0.95) {
+          isAnimating = true;
+          animateFromOffset = offset;
+          animationTimeElapsed = 0.0;
+          animateToOffset = (round(touchStartOffset / feedItemWidth) - 1) * feedItemWidth;
+        } else if (touch.screenPos.x < windowWidth * 0.05) {
+          isAnimating = true;
+          animateFromOffset = offset;
+          animationTimeElapsed = 0.0;
+          animateToOffset = (round(touchStartOffset / feedItemWidth) + 1) * feedItemWidth;
         }
       }
 
@@ -299,6 +303,14 @@ void Feed::update(double dt) {
       animationTimeElapsed = 0.0;
       animateToOffset = (round(touchStartOffset / feedItemWidth) - 1) * feedItemWidth;
 #endif
+
+      // Don't allow animating to before the first card
+      if (animateToOffset > 0.0) {
+        animateToOffset = 0.0;
+      }
+      if (animateToOffset < (-feedItemWidth * ((float)decks.size() - 1.0))) {
+        animateToOffset = (-feedItemWidth * ((float)decks.size() - 1.0));
+      }
     }
   });
 
@@ -826,8 +838,8 @@ void Feed::fetchInitialDecks(std::vector<std::string> deckIds, int initialDeckIn
   } else {
     usingFixedDecksList = false;
     fetchingDecks = true;
-    API::graphql(
-        "{\n  infiniteFeedV2(limit: 1) {\n    sessionId\n    decks {" + GRAPHQL_DECK_FIELDS + "}\n  }\n}",
+    API::graphql("{\n  infiniteFeedV2(limit: 1) {\n    sessionId\n    decks {" + GRAPHQL_DECK_FIELDS
+            + "}\n  }\n}",
         [=](APIResponse &response) {
           if (response.success) {
             auto &reader = response.reader;
