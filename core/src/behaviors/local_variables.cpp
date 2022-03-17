@@ -47,7 +47,7 @@ void VariableRef::read(Reader &reader) {
 }
 
 void VariableRef::write(Writer &writer) const {
-  writer.obj([&]() {
+  writer.obj("value", [&]() {
     if (!isLocal()) {
       writer.str("scope", "global");
       writer.obj("id", [&]() {
