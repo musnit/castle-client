@@ -240,7 +240,7 @@ void Feed::update(double dt) {
             multiplier = 0.0;
           }
           offset += (touch.screenPos.x - lastTouchPosition) * multiplier;
-        } else if (usingFixedDecksList && offset < (-feedItemWidth * ((float)decks.size() - 1.0))) {
+        } else if (offset < (-feedItemWidth * ((float)decks.size() - 1.0))) {
           // Scrolling past the last deck
           float distancePastEnd = (-feedItemWidth * ((float)decks.size() - 1)) - offset;
           float multiplier = (200.0 - distancePastEnd) / 150.0;
@@ -504,28 +504,26 @@ void Feed::renderCardAtPosition(
   }
 
   if (!decks[idx].player || !decks[idx].hasRunUpdate || decks[idx].hasNetworkError) {
-    if (!isDeckVisible) {
-      return;
+    if (isDeckVisible) {
+      lv.graphics.push(love::Graphics::STACK_ALL);
+      viewTransform.reset();
+      viewTransform.translate(position, TOP_PADDING);
+      lv.graphics.applyTransform(&viewTransform);
+
+      if (decks[idx].hasNetworkError) {
+        elapsedTime = 0.0;
+      }
+
+      lv.graphics.setColor({ 1.0, 1.0, 1.0, 1.0 });
+      if (decks[idx].hasNetworkError) {
+        renderCardTexture(nullptr, 0.0, 1.0);
+        decks[idx].errorCoreView->render();
+      } else {
+        renderCardTexture(nullptr, elapsedTime, 1.0);
+      }
+
+      lv.graphics.pop();
     }
-
-    lv.graphics.push(love::Graphics::STACK_ALL);
-    viewTransform.reset();
-    viewTransform.translate(position, TOP_PADDING);
-    lv.graphics.applyTransform(&viewTransform);
-
-    if (decks[idx].hasNetworkError) {
-      elapsedTime = 0.0;
-    }
-
-    lv.graphics.setColor({ 1.0, 1.0, 1.0, 1.0 });
-    if (decks[idx].hasNetworkError) {
-      renderCardTexture(nullptr, 0.0, 1.0);
-      decks[idx].errorCoreView->render();
-    } else {
-      renderCardTexture(nullptr, elapsedTime, 1.0);
-    }
-
-    lv.graphics.pop();
   } else {
     bool shouldDraw = isActive;
 
