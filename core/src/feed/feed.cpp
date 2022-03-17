@@ -827,13 +827,13 @@ void Feed::fetchInitialDecks(std::vector<std::string> deckIds, int initialDeckIn
     usingFixedDecksList = false;
     fetchingDecks = true;
     API::graphql(
-        "{\n  infiniteFeed {\n    sessionId\n    decks {" + GRAPHQL_DECK_FIELDS + "}\n  }\n}",
+        "{\n  infiniteFeedV2(limit: 1) {\n    sessionId\n    decks {" + GRAPHQL_DECK_FIELDS + "}\n  }\n}",
         [=](APIResponse &response) {
           if (response.success) {
             auto &reader = response.reader;
 
             reader.obj("data", [&]() {
-              reader.obj("infiniteFeed", [&]() {
+              reader.obj("infiniteFeedV2", [&]() {
                 sessionId = reader.str("sessionId", "");
 
                 reader.arr("decks", [&]() {
@@ -915,14 +915,14 @@ void Feed::fetchMoreDecks() {
   } else {
     fetchingDecks = true;
 
-    API::graphql("{\n  infiniteFeed(sessionId: \"" + sessionId + "\") {\n    decks {"
+    API::graphql("{\n  infiniteFeedV2(sessionId: \"" + sessionId + "\") {\n    decks {"
             + GRAPHQL_DECK_FIELDS + "}\n  }\n}",
         [=](APIResponse &response) {
           if (response.success) {
             auto &reader = response.reader;
 
             reader.obj("data", [&]() {
-              reader.obj("infiniteFeed", [&]() {
+              reader.obj("infiniteFeedV2", [&]() {
                 reader.arr("decks", [&]() {
                   reader.each([&]() {
                     std::string deckId = reader.str("deckId", "");
