@@ -30,7 +30,7 @@ void VariableRef::read(Reader &reader) {
     }
   } else {
     if (auto scope = reader.str("scope")) {
-      reader.obj("id", [&]() {
+      reader.enter("id", [&]() {
         switch ((*scope)[0]) {
         case 'g': { // "global"
           variableId.read(reader);
@@ -47,19 +47,17 @@ void VariableRef::read(Reader &reader) {
 }
 
 void VariableRef::write(Writer &writer) const {
-  writer.obj("value", [&]() {
-    if (!isLocal()) {
-      writer.str("scope", "global");
-      writer.obj("id", [&]() {
-        variableId.write(writer);
-      });
-    } else {
-      writer.str("scope", "actor");
-      writer.obj("id", [&]() {
-        localVariableId.write(writer);
-      });
-    }
-  });
+  if (!isLocal()) {
+    writer.str("scope", "global");
+    writer.obj("id", [&]() {
+      variableId.write(writer);
+    });
+  } else {
+    writer.str("scope", "actor");
+    writer.obj("id", [&]() {
+      localVariableId.write(writer);
+    });
+  }
 }
 
 void LocalVariableId::read(Reader &reader) {

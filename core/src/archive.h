@@ -119,6 +119,8 @@ public:
   void arr(const char *key, F &&f); // Enter the sub-array at key if found
   template<typename F>
   void obj(const char *key, F &&f); // Enter the sub-object at key if found
+  template<typename F>
+  void enter(const char *key, F &&f); // Enter value at key (of any type) if found
 
 
   // By array index
@@ -536,6 +538,15 @@ template<typename F>
 void Reader::obj(const char *key, F &&f) {
   if (cur->IsObject()) {
     if (auto mem = find(key); mem != cur->MemberEnd() && mem->value.IsObject()) {
+      enter(&mem->value, f);
+    }
+  }
+}
+
+template<typename F>
+void Reader::enter(const char *key, F &&f) {
+  if (cur->IsObject()) {
+    if (auto mem = find(key); mem != cur->MemberEnd()) {
       enter(&mem->value, f);
     }
   }
