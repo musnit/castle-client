@@ -150,6 +150,14 @@ void CoreViewRenderer::handleGesture(Gesture &gesture, int offsetX, int offsetY)
   });
 }
 
+std::optional<std::string> CoreViewRenderer::gestureViewId() {
+  if (!touchView) {
+    return std::nullopt;
+  }
+
+  return (*touchView)->id;
+}
+
 void CoreViewRenderer::cancelGestures() {
   if (touchView && isTouchOverView) {
     (*touchView)->baseHandleTouch(CoreView::TouchEvent::Up);

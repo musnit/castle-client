@@ -110,6 +110,7 @@ public:
 
   void update(double dt);
   void handleGesture(Gesture &gesture, int offsetX = 0, int offsetY = 0);
+  std::optional<std::string> gestureViewId();
   void render();
   void cancelGestures();
   void registerTapHandler(const std::function<void(std::string)> handler);

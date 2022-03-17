@@ -10,6 +10,7 @@
 
 #define TOP_PADDING 0
 #define BOTTOM_UI_MIN_HEIGHT 140
+#define PREV_NEXT_TAP_MAX_DURATION 0.3
 // #define DEBUG_CLICK_TO_ADVANCE
 // #define DEBUG_AUTO_ADVANCE
 
@@ -86,6 +87,8 @@ float smoothstep(float a, float b, float t, int easingFunction) {
     return (b - a) * expoEaseOut(t) + a;
   case 8:
     return (b - a) * circEaseOut(t) + a;
+  case 9:
+    return (b - a) * t + a;
   default:
     return 0;
   }
@@ -283,17 +286,28 @@ void Feed::update(double dt) {
         } else {
           animateToOffset = round((offset) / feedItemWidth) * feedItemWidth;
         }
-      } else if (!touch.movedFar && touchDuration < 0.3) {
-        if (touch.screenPos.x > windowWidth * 0.95) {
-          isAnimating = true;
-          animateFromOffset = offset;
-          animationTimeElapsed = 0.0;
-          animateToOffset = (round(touchStartOffset / feedItemWidth) - 1) * feedItemWidth;
-        } else if (touch.screenPos.x < windowWidth * 0.05) {
-          isAnimating = true;
-          animateFromOffset = offset;
-          animationTimeElapsed = 0.0;
-          animateToOffset = (round(touchStartOffset / feedItemWidth) + 1) * feedItemWidth;
+      } else if (!touch.movedFar && touchDuration < PREV_NEXT_TAP_MAX_DURATION) {
+        bool coreViewHasGesture = false;
+        int idx = getCurrentIndex();
+        if (decks[idx].coreView) {
+          auto gestureViewId = decks[idx].coreView->gestureViewId();
+          if (gestureViewId && *gestureViewId != "container") {
+            coreViewHasGesture = true;
+          }
+        }
+
+        if (!coreViewHasGesture) {
+          if (touch.screenPos.x > windowWidth * 0.9) {
+            isAnimating = true;
+            animateFromOffset = offset;
+            animationTimeElapsed = 0.0;
+            animateToOffset = (round(touchStartOffset / feedItemWidth) - 1) * feedItemWidth;
+          } else if (touch.screenPos.x < windowWidth * 0.1) {
+            isAnimating = true;
+            animateFromOffset = offset;
+            animationTimeElapsed = 0.0;
+            animateToOffset = (round(touchStartOffset / feedItemWidth) + 1) * feedItemWidth;
+          }
         }
       }
 
@@ -482,6 +496,13 @@ void Feed::renderCardAtPosition(
     isDeckVisible = false;
   }
 
+  float padding = (windowWidth - cardWidth) / 2.0;
+  float percentFromCenter = fabs((float)(position - padding) / windowWidth);
+  percentFromCenter -= 0.15;
+  if (percentFromCenter < 0) {
+    percentFromCenter = 0.0;
+  }
+
   if (!decks[idx].player || !decks[idx].hasRunUpdate || decks[idx].hasNetworkError) {
     if (!isDeckVisible) {
       return;
@@ -505,59 +526,57 @@ void Feed::renderCardAtPosition(
     }
 
     lv.graphics.pop();
-    return;
-  }
+  } else {
+    bool shouldDraw = isActive;
 
-  bool shouldDraw = isActive;
-
-  if (!decks[idx].hasRendered) {
-    decks[idx].hasRendered = true;
-    shouldDraw = true;
-  } else if (!decks[idx].hasRunUpdateSinceLastRender) {
-    shouldDraw = false;
-  }
-
-  if (!decks[idx].canvas) {
-    decks[idx].canvas = std::shared_ptr<love::graphics::Canvas>(newCanvas(cardWidth, cardHeight));
-    if (((love::graphics::opengl::Canvas *)decks[idx].canvas.get())->getStatus()
-        != GL_FRAMEBUFFER_COMPLETE) {
-      decks[idx].canvas.reset();
-      return;
+    if (!decks[idx].hasRendered) {
+      decks[idx].hasRendered = true;
+      shouldDraw = true;
+    } else if (!decks[idx].hasRunUpdateSinceLastRender) {
+      shouldDraw = false;
     }
-  }
-  std::shared_ptr<love::graphics::Canvas> canvas = decks[idx].canvas;
 
-  if (shouldDraw) {
-    renderToCanvas(canvas.get(), [&]() {
-      lv.graphics.push(love::Graphics::STACK_ALL);
-      viewTransform.reset();
-      viewTransform.scale(cardWidth / 800.0, cardHeight / 1120.0);
-      lv.graphics.applyTransform(&viewTransform);
-      lv.graphics.setColor({ 1.0, 1.0, 1.0, 1.0 });
-      decks[idx].player->draw();
-      lv.graphics.pop();
-    });
+    if (!decks[idx].canvas) {
+      decks[idx].canvas = std::shared_ptr<love::graphics::Canvas>(newCanvas(cardWidth, cardHeight));
+      if (((love::graphics::opengl::Canvas *)decks[idx].canvas.get())->getStatus()
+          != GL_FRAMEBUFFER_COMPLETE) {
+        decks[idx].canvas.reset();
+        return;
+      }
+    }
+    std::shared_ptr<love::graphics::Canvas> canvas = decks[idx].canvas;
 
-    decks[idx].hasRunUpdateSinceLastRender = false;
-  }
+    if (shouldDraw) {
+      renderToCanvas(canvas.get(), [&]() {
+        lv.graphics.push(love::Graphics::STACK_ALL);
+        viewTransform.reset();
+        viewTransform.scale(cardWidth / 800.0, cardHeight / 1120.0);
+        lv.graphics.applyTransform(&viewTransform);
+        lv.graphics.setColor({ 1.0, 1.0, 1.0, 1.0 });
+        decks[idx].player->draw();
+        lv.graphics.pop();
+      });
 
-  float padding = (windowWidth - cardWidth) / 2.0;
-  float percentFromCenter = fabs((float)(position - padding) / windowWidth);
-  percentFromCenter -= 0.15;
-  if (percentFromCenter < 0) {
-    percentFromCenter = 0.0;
+      decks[idx].hasRunUpdateSinceLastRender = false;
+    }
+
+    lv.graphics.push(love::Graphics::STACK_ALL);
+    viewTransform.reset();
+    viewTransform.translate(position, TOP_PADDING);
+    lv.graphics.applyTransform(&viewTransform);
+    lv.graphics.setColor({ 1, 1, 1, 1 });
+
+    if (isDeckVisible) {
+      renderCardTexture(canvas.get(), elapsedTime, decks[idx].isFrozen ? 0.5 : 1.0);
+    }
+
+    lv.graphics.pop();
   }
 
   lv.graphics.push(love::Graphics::STACK_ALL);
   viewTransform.reset();
   viewTransform.translate(position, TOP_PADDING);
   lv.graphics.applyTransform(&viewTransform);
-  lv.graphics.setColor({ 1, 1, 1, 1 });
-
-  if (isDeckVisible) {
-    renderCardTexture(canvas.get(), elapsedTime, decks[idx].isFrozen ? 0.5 : 1.0);
-  }
-
   lv.graphics.setColor({ 1.0, 1.0, 1.0, 1.0f - (percentFromCenter * 0.5f) });
 
   if (isDeckVisible) {
@@ -570,17 +589,14 @@ void Feed::renderCardAtPosition(
     float left = 6.5 * (float)cardWidth / 100.0;
     float avatarWidth = 6.4 * (float)cardWidth / 100.0;
     float percent = fabs(1.0 + dragAmount);
+    float moveAwayPercent = 0.05;
 
     float animateLeft = left;
     if (idx == focusedIdx - 1) {
-      /*percent += 0.02;
-      if (percent >= 1.01) {
-        percent = 2.02 - percent;
-      }*/
       // icon on left and swiping right
       if (percent >= 1) {
         percent = 2.0 - percent;
-        left -= windowWidth * 0.25;
+        left -= windowWidth * moveAwayPercent;
         animateLeft = cardWidth + padding - avatarWidth / 2.0;
       }
       // icon was previous main, becoming new left
@@ -601,7 +617,7 @@ void Feed::renderCardAtPosition(
     } else if (idx == focusedIdx + 1) {
       // icon on right and swiping left
       if (percent <= 1.0) {
-        left += windowWidth * 0.25;
+        left += windowWidth * moveAwayPercent;
         animateLeft = -padding - avatarWidth / 2.0;
       }
       // icon on right and swiping right
@@ -611,8 +627,8 @@ void Feed::renderCardAtPosition(
       }
     }
 
-    // left = smoothstep(left, animateLeft, percent,
-    //     CoreViews::getInstance().getNumConstant("AVATAR_ANIMATION_EASING_FUNCTION"));
+    percent = cubicEaseIn(percent);
+
     left = animateLeft * percent + left * (1.0 - percent);
     decks[idx].avatarCoreViewLeft = left;
 
