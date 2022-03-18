@@ -59,13 +59,15 @@ const styles = StyleSheet.create({
     borderColor: Constants.colors.white,
     borderRadius: 4,
     paddingHorizontal: 12,
-    marginVertical: 8,
     fontSize: 16,
   },
   disabledTextInput: {
     color: Constants.colors.grayText,
     borderColor: Constants.colors.grayText,
   },
+  paddingView: {
+    height: 16,
+  }
 });
 
 const parseErrors = (e) => {
@@ -215,6 +217,7 @@ const LoginForm = ({ route }) => {
         keyboardType="email-address"
         onSubmitEditing={() => pwInput.current.focus()}
       />
+      <View style={styles.paddingView} />
       <TextInput
         ref={pwInput}
         style={signingIn ? [styles.textInput, styles.disabledTextInput] : styles.textInput}
@@ -307,6 +310,7 @@ const CreateAccountForm = ({ route }) => {
         autoFocus={true}
         onSubmitEditing={() => nameInput.current.focus()}
       />
+      <View style={styles.paddingView} />
       <TextInput
         ref={nameInput}
         style={creatingAccount ? [styles.textInput, styles.disabledTextInput] : styles.textInput}
@@ -319,6 +323,7 @@ const CreateAccountForm = ({ route }) => {
         autoCorrect={false}
         onSubmitEditing={() => emailInput.current.focus()}
       />
+      <View style={styles.paddingView} />
       <TextInput
         ref={emailInput}
         style={creatingAccount ? [styles.textInput, styles.disabledTextInput] : styles.textInput}
@@ -333,6 +338,7 @@ const CreateAccountForm = ({ route }) => {
         keyboardType="email-address"
         onSubmitEditing={() => pwInput.current.focus()}
       />
+      <View style={styles.paddingView} />
       <TextInput
         ref={pwInput}
         style={creatingAccount ? [styles.textInput, styles.disabledTextInput] : styles.textInput}
@@ -345,6 +351,7 @@ const CreateAccountForm = ({ route }) => {
         returnKeyType="go"
         onSubmitEditing={onPressCreateAccount}
       />
+      <View style={styles.paddingView} />
       <TouchableOpacity onPress={onPressCreateAccount}>
         <Button text="Create Account" spinner={creatingAccount} />
       </TouchableOpacity>
