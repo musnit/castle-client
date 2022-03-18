@@ -359,7 +359,15 @@ export const DecksFeed = ({
         );
       }
     },
-    [currentCardIndex, isPlaying, paused, props?.onRefresh, onPressComments, isCommentsOpen]
+    [
+      currentCardIndex,
+      isPlaying,
+      paused,
+      appState,
+      props?.onRefresh,
+      onPressComments,
+      isCommentsOpen,
+    ]
   );
 
   // FlatList doesn't allow changing `onViewableItemsChanged` so we need to use a ref and
