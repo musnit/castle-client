@@ -15,6 +15,7 @@ Sentry.init({
     'You need to be logged in to do that',
     `JSON Parse error: Unrecognized token '<'`,
   ],
+  enableNdkScopeSync: true,
 });
 
 if (AMPLITUDE_KEY) {
