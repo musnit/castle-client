@@ -296,6 +296,13 @@ void Feed::update(double dt) {
           }
         }
 
+        if (!coreViewHasGesture && decks[idx].avatarCoreView) {
+          auto gestureViewId = decks[idx].avatarCoreView->gestureViewId();
+          if (gestureViewId && *gestureViewId != "container") {
+            coreViewHasGesture = true;
+          }
+        }
+
         if (!coreViewHasGesture) {
           if (touch.screenPos.x > windowWidth * 0.9) {
             isAnimating = true;
