@@ -22,7 +22,8 @@ const styles = StyleSheet.create({
   },
   input: {
     color: Constants.colors.white,
-    paddingVertical: 6,
+    paddingTop: 6,
+    paddingBottom: 6,
     paddingLeft: 6,
     paddingRight: 10,
     fontSize: 16,
