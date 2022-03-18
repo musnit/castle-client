@@ -327,9 +327,9 @@ PODS:
   - RNScreens (3.9.0):
     - React-Core
     - React-RCTImage
-  - RNSentry (3.2.3):
+  - RNSentry (3.3.3):
     - React-Core
-    - Sentry (= 7.5.1)
+    - Sentry (= 7.10.2)
   - RNVectorIcons (7.1.0):
     - React
   - SDWebImage (5.11.1):
@@ -338,9 +338,9 @@ PODS:
   - SDWebImageWebPCoder (0.8.4):
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.10)
-  - Sentry (7.5.1):
-    - Sentry/Core (= 7.5.1)
-  - Sentry/Core (7.5.1)
+  - Sentry (7.10.2):
+    - Sentry/Core (= 7.10.2)
+  - Sentry/Core (7.10.2)
   - SPTPersistentCache (1.1.0)
   - Yoga (1.14.0)
 
@@ -556,11 +556,11 @@ SPEC CHECKSUMS:
   RNPermissions: 4b54095940aea8c03fa3e6c92d4ac3647b31ed4e
   RNReanimated: 514a11da3a2bcc6c3dfd9de32b38e2b9bf101926
   RNScreens: 4d79118be80f79fa1f4aa131909a1d6e86280af3
-  RNSentry: 97bc62fa65b7d663daee16fbf9771470852217cf
+  RNSentry: e18c74a900defb174302793c5bedbbe8bcb1120e
   RNVectorIcons: bc69e6a278b14842063605de32bec61f0b251a59
   SDWebImage: a7f831e1a65eb5e285e3fb046a23fcfbf08e696d
   SDWebImageWebPCoder: f93010f3f6c031e2f8fb3081ca4ee6966c539815
-  Sentry: 0718c3ad7a08e1107599610795adaf08864102f3
+  Sentry: 7bf9bfe713692cf87812e55f0999260494ba7982
   SPTPersistentCache: df36ea46762d7cf026502bbb86a8b79d0080dff4
   Yoga: 575c581c63e0d35c9a83f4b46d01d63abc1100ac
 
