@@ -361,7 +361,7 @@ const VariableMeetsCondition = ({ response, context }) => {
       },
       {
         type: 'selectParamSheet',
-        label: getVariableName(response.params.variableId, context.variables),
+        label: formatVariableName(getVariableName(response.params.variableId, context.variables)),
         ...changeAllParams,
       },
       {
@@ -755,7 +755,7 @@ const SetVariable = ({ response, context }) => {
     },
     {
       type: 'selectParamSheet',
-      label: getVariableName(response.params?.variableId, context.variables),
+      label: formatVariableName(getVariableName(response.params?.variableId, context.variables)),
       ...changeAllParams,
     },
     {

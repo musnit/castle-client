@@ -1,6 +1,7 @@
 import {
   getVariableName,
   formatTag,
+  formatVariableName,
   makeExpressionSummary,
   readableOperator,
   makeTrackName,
@@ -217,7 +218,7 @@ const VariableReachesValue = ({ trigger, context }) => {
       },
       {
         type: 'selectParamSheet',
-        label: getVariableName(trigger.params.variableId, context.variables),
+        label: formatVariableName(getVariableName(trigger.params.variableId, context.variables)),
         ...changeAllParams,
       },
       {
@@ -247,7 +248,7 @@ const VariableReachesValue = ({ trigger, context }) => {
 };
 
 const VariableChanges = ({ trigger, context }) => {
-  const name = getVariableName(trigger.params?.variableId, context.variables);
+  const name = formatVariableName(getVariableName(trigger.params?.variableId, context.variables));
   return withWhen([
     {
       type: 'selectEntry',

@@ -6,12 +6,17 @@ export const isParamNumeric = (paramSpec) =>
 
 export const canParamBePromotedToExpression = (paramSpec) => paramSpec.type === 'expression';
 
-export const formatVariableName = (name) => `\$${name}`;
+export const formatVariableName = (name) => {
+  if (name?.length) {
+    return `\$${name}`;
+  }
+  return '(none)';
+};
 
 export const formatTag = (tag) => `#${tag}`;
 
 export const getVariableName = (variable, variables) => {
-  let variableName = '(none)';
+  let variableName = '';
   if (variable) {
     if (typeof variable === 'string') {
       // this is only a variable id
