@@ -171,8 +171,6 @@ export default InspectorLocalVariables = ({}) => {
           </View>
         ))}
       </View>
-      <View style={{ height: 16 }} />
-      <Text>{JSON.stringify(component.props, null, 2)}</Text>
     </View>
   );
 };
