@@ -631,7 +631,7 @@ export const saveDeck = async (
     cardId: parentCardId ? LocalId.makeId() : card.cardId,
     title: card.title,
     backgroundImageFileId: card.backgroundImage ? card.backgroundImage.fileId : undefined,
-    sceneData: card.changedSceneData ? card.changedSceneData : card.scene.data,
+    sceneData: card.changedSceneData ? card.changedSceneData : card.scene?.data,
     blocks: [], // TODO: server requires this legacy field, would like to remove it
     makeInitialCard: card.makeInitialCard || undefined,
   };
