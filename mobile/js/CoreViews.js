@@ -1,7 +1,9 @@
+import React from 'react';
 import { Platform } from 'react-native';
 import { useListen } from './core/CoreEvents';
 import { useNavigation } from './ReactNavigation';
 import { shareDeck } from './common/utilities';
+import { useFocusEffect } from './ReactNavigation';
 
 let FEED_ICON_SIZE = '5.5vw';
 let FEED_ICON_TOP = '2.7vw';
@@ -563,9 +565,23 @@ export function getCoreViews() {
 export function useCoreViews(opts) {
   const { push, navigate } = useNavigation();
 
+  const [isFocused, setIsFocused] = React.useState(true);
+
+  useFocusEffect(React.useCallback(() => {
+    setIsFocused(true);
+
+    return () => {
+      setIsFocused(false);
+    }
+  }, []));
+
   useListen({
     eventName: 'CORE_VIEWS_GESTURE',
-    handler: (params) => {
+    handler: React.useCallback((params) => {
+      if (!isFocused) {
+        return;
+      }
+
       let props = {};
       try {
         props = JSON.parse(params.props);
@@ -582,7 +598,7 @@ export function useCoreViews(opts) {
       if (coreViewGestureHandlers[gestureHandlerId]) {
         coreViewGestureHandlers[gestureHandlerId](props);
       }
-    },
+    }, [isFocused]),
   });
 }
 
