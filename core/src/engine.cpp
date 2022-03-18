@@ -5,6 +5,7 @@
 #include "expressions/expression.h"
 #include "sound/sound.h"
 #include "behaviors/text.h"
+#include <common/delay.h>
 
 #ifdef ANDROID
 #include <jni.h>
@@ -88,6 +89,9 @@ Engine::PreInit::PreInit() {
 Engine::Engine() {
 #ifdef ANDROID
   CastleAPI::initJNI();
+
+  flushPendingReceivesThread = new FlushPendingReceivesThread(*this);
+  flushPendingReceivesThread->start();
 #endif
 
 #ifdef __EMSCRIPTEN__
@@ -111,7 +115,13 @@ Engine::Engine() {
 }
 
 Engine::~Engine() {
+  shuttingDown = true;
   TextBehavior::unloadFontResources();
+
+#ifdef ANDROID
+  flushPendingReceivesThread->wait();
+  delete flushPendingReceivesThread;
+#endif
 }
 
 
@@ -192,9 +202,14 @@ void Engine::setInitialParams(const char *initialParamsJson) {
     screenId = screenIdPrefix;
   }
 
+  if (activeScreenId == "featuredFeed" && screenId != "featuredFeed") {
+    screens["featuredFeed"]->suspend();
+  }
+
   activeScreenId = screenId;
 
   if (screens.find(screenId) != screens.end()) {
+    screens[screenId]->resume();
     return;
   }
 
@@ -354,6 +369,10 @@ void Engine::androidHandleBackPressed() {
 //
 
 bool Engine::frame() {
+#ifdef ANDROID
+  flushPendingReceivesMutex.lock();
+#endif
+
   // Based on the main loop from 'boot.lua' in the Love codebase
 
   // In web, if the window is unfocused reduce loop frequency and pause to keep CPU usage low.
@@ -415,10 +434,23 @@ bool Engine::frame() {
 
   // Process events. Quit if the window was closed.
   lv.event.pump();
+
+#ifdef ANDROID
+  // android freezes here when view is unmounted, so we need to release the lock
+  flushPendingReceivesMutex.unlock();
+#endif
   lv.event.clear();
   if (ghostChildWindowCloseEventReceived) {
+#ifdef ANDROID
+    flushPendingReceivesMutex.unlock();
+#endif
+
     return false;
   }
+
+#ifdef ANDROID
+  flushPendingReceivesMutex.lock();
+#endif
 
   // Process bridge
   bridge.flushPendingReceives();
@@ -435,7 +467,26 @@ bool Engine::frame() {
   draw();
   lv.graphics.present(nullptr);
 
+#ifdef ANDROID
+  flushPendingReceivesMutex.unlock();
+#endif
+
   return !shouldQuit;
+}
+
+void Engine::FlushPendingReceivesThread::threadFunction() {
+  while (true) {
+    owner.flushPendingReceivesMutex.lock();
+    owner.bridge.flushPendingReceives();
+    owner.flushPendingReceivesMutex.unlock();
+
+    for (int i = 0; i < 10; i++) {
+      if (owner.shuttingDown) {
+        return;
+      }
+      love::sleep(10);
+    }
+  }
 }
 
 
