@@ -195,7 +195,8 @@ class ViewSourceScreenDataProvider extends React.Component {
     // we already fetched the whole deck - assemble new snapshot representing next card
     let nextCard = this.state.deck.cards.find((card) => card.cardId == cardId);
     if (!nextCard) {
-      throw new Error(`Unable to fetch existing card id: ${cardId}`);
+      // don't error - this can happen if the deck contains a reference to a deleted card
+      return;
     }
     const nextSnapshotJson = {
       variables: this._variables, // engine will ignore if already playing
