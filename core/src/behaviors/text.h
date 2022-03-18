@@ -151,7 +151,7 @@ private:
 
   void updateFont(ActorId actorId, TextComponent &component);
 
-  std::string formatContent(const std::string &content) const;
+  std::string formatContent(ActorId actorId, const std::string &content) const;
   void asciifyContent(std::string &content);
 };
 

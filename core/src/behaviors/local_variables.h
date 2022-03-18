@@ -81,6 +81,7 @@ public:
 
 
   const ExpressionValue &get(ActorId actorId, const LocalVariableId &localVariableId) const;
+  const ExpressionValue *getByName(ActorId actorId, const std::string &name) const;
   void set(ActorId actorId, const LocalVariableId &localVariableId, ExpressionValue value,
       bool fireTriggers = true);
 
@@ -93,7 +94,7 @@ private:
   friend struct LocalVariableExpression;
 
   // Only present during play
-  LocalVariablesMap map;
+  mutable LocalVariablesMap map;
 };
 
 

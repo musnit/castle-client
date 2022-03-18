@@ -148,6 +148,27 @@ const ExpressionValue &LocalVariablesBehavior::get(
   return empty;
 }
 
+const ExpressionValue *LocalVariablesBehavior::getByName(
+    ActorId actorId, const std::string &name) const {
+  if (getScene().getIsEditing()) {
+    if (auto component = maybeGetComponent(actorId); component && component->editData) {
+      for (auto &localVariable : component->editData->localVariables) {
+        if (localVariable.name == name) {
+          return &localVariable.value;
+        }
+      }
+    }
+    return nullptr;
+  } else {
+    if (auto mapElem = map.lookup(map.getToken(name.c_str()))) {
+      if (mapElem->entries.contains(actorId)) {
+        return &mapElem->entries.get(actorId).value;
+      }
+    }
+    return nullptr;
+  }
+}
+
 void LocalVariablesBehavior::set(ActorId actorId, const LocalVariableId &localVariableId,
     ExpressionValue value, bool fireTriggers) {
   auto mapElem = map.lookup(localVariableId.token);

@@ -291,7 +291,7 @@ bool TextBehavior::handleDrawComponent(ActorId actorId, const TextComponent &com
         // Only padded rectangle in blueprint highlight mode
         std::vector<std::string> lines;
         font->getWrap(
-            { { formatContent(component.props.content()), { 1, 1, 1, 1 } } }, wrap, lines);
+            { { formatContent(actorId, component.props.content()), { 1, 1, 1, 1 } } }, wrap, lines);
         auto boundsHeight = bounds.maxY() - bounds.minY();
         auto height = std::max(boundsHeight, font->getHeight() * float(lines.size()));
         lv.graphics.setColor({ 0, 0, 0, 1 });
@@ -301,7 +301,8 @@ bool TextBehavior::handleDrawComponent(ActorId actorId, const TextComponent &com
             0.5f * padding, 10);
       } else {
         lv.graphics.setFont(font);
-        lv.graphics.printf({ { formatContent(component.props.content()), { 1, 1, 1, 1 } } }, wrap,
+        lv.graphics.printf(
+            { { formatContent(actorId, component.props.content()), { 1, 1, 1, 1 } } }, wrap,
             alignment, love::Matrix4(bounds.minX(), bounds.minY(), 0, 1, 1, 0, 0, 0, 0));
       }
 
@@ -381,7 +382,7 @@ void TextBehavior::handleDrawOverlay() const {
 
     // Compute height
     float downscale = 0.1f * 0.0342f * fontScale;
-    auto formatted = formatContent(component->props.content());
+    auto formatted = formatContent(actorId, component->props.content());
     std::vector<std::string> lines;
     font->getWrap({ { formatted, { 1, 1, 1, 1 } } }, textWidth / downscale, lines);
     auto textHeight = downscale * fontHeight * float(lines.size());
@@ -547,23 +548,32 @@ void TextBehavior::updateEmsPerLine(ActorId actorId, TextComponent &component) {
 // Content formatting
 //
 
-std::string TextBehavior::formatContent(const std::string &content) const {
+std::string TextBehavior::formatContent(ActorId actorId, const std::string &content) const {
+  auto &scene = getScene();
+  auto editVariables = scene.getEditVariables();
+  auto &variables = scene.getVariables();
+  auto &localVariables = scene.getBehaviors().byType<LocalVariablesBehavior>();
+
   std::string result;
   static std::regex re("\\$([a-zA-Z0-9_-]+)");
   auto it = content.begin(), end = content.end();
-  auto editVariables = getScene().getEditVariables();
-  auto &variables = getScene().getVariables();
   for (std::smatch match; std::regex_search(it, end, match, re); it = match[0].second) {
     result += match.prefix();
     auto name = match.str(1);
+
     std::optional<ExpressionValue> value;
-    if (editVariables) {
-      if (auto editVariable = editVariables->getByName(name)) {
-        value = editVariable->initialValue;
-      }
+    if (auto maybeValue = localVariables.getByName(actorId, name)) {
+      value = *maybeValue;
     } else {
-      value = variables.get(name);
+      if (editVariables) {
+        if (auto editVariable = editVariables->getByName(name)) {
+          value = editVariable->initialValue;
+        }
+      } else {
+        value = variables.get(name);
+      }
     }
+
     if (value) {
       // We want to remove trailing zeros and show at most 5 digits after the decimal point.
       // `.5f` keeps trailing zeros, while `.5g` counts digits before the decimal point. So we need
