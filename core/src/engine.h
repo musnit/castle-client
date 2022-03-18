@@ -62,6 +62,8 @@ public:
   Screen *maybeGetScreen();
   Editor *maybeGetEditor();
   void clearScreen();
+  void suspendScreen();
+  void resumeScreen();
   LibraryClipboard &getLibraryClipboard();
 
 private:
@@ -132,12 +134,22 @@ inline Editor *Engine::maybeGetEditor() {
 
 inline void Engine::clearScreen() {
   if (screens.find(activeScreenId) != screens.end()) {
-    if (activeScreenId == "featuredFeed") {
-      screens[activeScreenId]->suspend();
-    } else {
+    if (activeScreenId != "featuredFeed") {
       screens.erase(activeScreenId);
       activeScreenId = "";
     }
+  }
+}
+
+inline void Engine::suspendScreen() {
+  if (screens.find(activeScreenId) != screens.end()) {
+    screens[activeScreenId]->suspend();
+  }
+}
+
+inline void Engine::resumeScreen() {
+  if (screens.find(activeScreenId) != screens.end()) {
+    screens[activeScreenId]->resume();
   }
 }
 

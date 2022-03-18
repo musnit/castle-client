@@ -525,6 +525,32 @@ void Engine::draw() {
 // Bridge events
 //
 
+struct SuspendSceneReceiver {
+  inline static const BridgeRegistration<SuspendSceneReceiver> registration { "SUSPEND_SCENE" };
+
+  struct Params {
+    PROP(int, code) = 0;
+  } params;
+
+  void receive(Engine &engine) {
+    Debug::log("core: received SUSPEND_SCENE");
+    engine.suspendScreen();
+  }
+};
+
+struct ResumeSceneReceiver {
+  inline static const BridgeRegistration<ResumeSceneReceiver> registration { "RESUME_SCENE" };
+
+  struct Params {
+    PROP(int, code) = 0;
+  } params;
+
+  void receive(Engine &engine) {
+    Debug::log("core: received RESUME_SCENE");
+    engine.resumeScreen();
+  }
+};
+
 struct ClearSceneReceiver {
   inline static const BridgeRegistration<ClearSceneReceiver> registration { "CLEAR_SCENE" };
 

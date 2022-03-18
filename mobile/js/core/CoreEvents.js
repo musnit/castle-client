@@ -89,10 +89,20 @@ export const Provider = (props) => {
     });
   };
 
+  const engineDidSuspend = (eventsId) => {
+    sendAsync('SUSPEND_SCENE');
+  };
+
+  const engineDidResume = (eventsId) => {
+    sendAsync('RESUME_SCENE');
+  };
+
   const value = {
     ...state,
     engineDidMount,
     engineDidUnmount,
+    engineDidSuspend,
+    engineDidResume,
   };
 
   return <CoreEventsContext.Provider value={value}>{props.children}</CoreEventsContext.Provider>;

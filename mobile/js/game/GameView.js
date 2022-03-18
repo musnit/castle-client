@@ -83,7 +83,7 @@ export const GameView = React.forwardRef(({
     },
   });
 
-  const { engineDidMount, engineDidUnmount } = useCoreEvents();
+  const { engineDidMount, engineDidUnmount, engineDidSuspend, engineDidResume } = useCoreEvents();
 
   useEffect(() => {
     const id = Math.floor(Math.random() * Math.floor(1000));
@@ -106,8 +106,10 @@ export const GameView = React.forwardRef(({
   });
 
   useFocusEffect(React.useCallback(() => {
+    engineDidResume();
+
     return () => {
-      engineDidUnmount();
+      engineDidSuspend();
     }
   }, []));
 
