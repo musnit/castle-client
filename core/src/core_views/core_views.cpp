@@ -176,6 +176,7 @@ void CoreViewRenderer::reset() {
   jsGestureProps.clear();
   jsonVersion--;
   isTouchOverView = false;
+  touchView = std::nullopt;
 }
 
 void CoreViewRenderer::lock() {
