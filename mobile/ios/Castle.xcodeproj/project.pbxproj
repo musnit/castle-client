@@ -70,9 +70,9 @@
 		A14FE3F22355CF2D003B7EA0 /* lpvm.c in Sources */ = {isa = PBXBuildFile; fileRef = A14FE3E92355CF2D003B7EA0 /* lpvm.c */; };
 		A14FE3F32355CF2D003B7EA0 /* lpprint.c in Sources */ = {isa = PBXBuildFile; fileRef = A14FE3EA2355CF2D003B7EA0 /* lpprint.c */; };
 		A14FE3F42355CF2D003B7EA0 /* lpcap.c in Sources */ = {isa = PBXBuildFile; fileRef = A14FE3EB2355CF2D003B7EA0 /* lpcap.c */; };
-		A187917627BE490F00FB2D53 /* libbox2d.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A187916827BE477700FB2D53 /* libbox2d.a */; };
-		A187917727BE490F00FB2D53 /* libcastle-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A187916A27BE477700FB2D53 /* libcastle-core.a */; };
-		A187917927BE490F00FB2D53 /* libsoloud.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A187916E27BE477700FB2D53 /* libsoloud.a */; };
+		A164637827E5450700C6569E /* libbox2d.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A187916827BE477700FB2D53 /* libbox2d.a */; };
+		A164637927E5450700C6569E /* libcastle-core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A187916A27BE477700FB2D53 /* libcastle-core.a */; };
+		A164637A27E5450A00C6569E /* libsoloud.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A187916E27BE477700FB2D53 /* libsoloud.a */; };
 		A1959DF42410A026000C61E0 /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1959DEC2410A026000C61E0 /* CoreTelephony.framework */; };
 		A1959DF62410A032000C61E0 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1959DF52410A032000C61E0 /* WebKit.framework */; };
 		A1959DF82410A0CC000C61E0 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1959DF72410A0CC000C61E0 /* Accelerate.framework */; };
@@ -335,9 +335,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A187917627BE490F00FB2D53 /* libbox2d.a in Frameworks */,
-				A187917727BE490F00FB2D53 /* libcastle-core.a in Frameworks */,
-				A187917927BE490F00FB2D53 /* libsoloud.a in Frameworks */,
+				A164637A27E5450A00C6569E /* libsoloud.a in Frameworks */,
+				A164637827E5450700C6569E /* libbox2d.a in Frameworks */,
+				A164637927E5450700C6569E /* libcastle-core.a in Frameworks */,
 				B56CFBE7273AE2AC0015B910 /* StoreKit.framework in Frameworks */,
 				A14FE3AE2355CC0E003B7EA0 /* libssl.a in Frameworks */,
 				A14FE3AB2355CBE3003B7EA0 /* libbz2.tbd in Frameworks */,
