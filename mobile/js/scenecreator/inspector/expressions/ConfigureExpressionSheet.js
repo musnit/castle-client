@@ -267,7 +267,6 @@ const InspectorExpressionInput = ({
                   />
                 </View>
                 {expressionParamSpecs.length == 2 &&
-                !containsVariableScopePicker &&
                 ii < expressionParamSpecs.length - 1 ? (
                   <View key={`swap-expression-param-${expressionType}-${ii}`} style={styles.swap}>
                     <View style={styles.swapLine} />
