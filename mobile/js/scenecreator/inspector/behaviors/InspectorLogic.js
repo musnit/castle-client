@@ -127,15 +127,17 @@ export default InspectorRules = ({ behaviors, addChildSheet }) => {
         <View style={SceneCreatorConstants.styles.inspectorSectionHeader}>
           <Text style={SceneCreatorConstants.styles.inspectorSectionHeaderLabel}>Rules</Text>
           <View style={SceneCreatorConstants.styles.inspectorSectionHeaderActions}>
-            <TouchableOpacity
-              style={{
-                paddingVertical: 4,
-                paddingHorizontal: 8,
-                marginRight: 4,
-              }}
-              onPress={() => sendSetRules(RulesClipboard.paste(rulesItems))}>
-              <Text style={{ fontSize: 14 }}>Paste</Text>
-            </TouchableOpacity>
+            {rulesData && !RulesClipboard.isEmpty() ? (
+              <TouchableOpacity
+                style={{
+                  paddingVertical: 4,
+                  paddingHorizontal: 8,
+                  marginRight: 4,
+                }}
+                onPress={() => sendSetRules(RulesClipboard.paste(rulesItems))}>
+                <Text style={{ fontSize: 14 }}>Paste</Text>
+              </TouchableOpacity>
+            ) : null}
             <TouchableOpacity
               style={SceneCreatorConstants.styles.inspectorSectionHeaderButton}
               onPress={onAddRule}>
