@@ -32,12 +32,12 @@ const styles = StyleSheet.create({
     fontSize: 14,
     textTransform: 'uppercase',
     marginTop: 8,
-    marginBottom: 8,
     color: '#888',
   },
   variableInputContainer: {
     flexDirection: 'row',
-    marginBottom: 12,
+    marginTop: 8,
+    marginBottom: 4,
   },
   variableInputColumn: {
     width: '50%',
@@ -157,7 +157,7 @@ export default InspectorLocalVariables = ({}) => {
                 onChangeText={(text) => changeVariableName(i, text)}
               />
             </View>
-            <View style={styles.variableInputColumn}>
+            <View style={[styles.variableInputColumn, { paddingRight: 3 }]}>
               <InspectorNumberInput
                 value={localVariable.value}
                 style={{ flex: 1, marginRight: 8 }}
@@ -168,7 +168,7 @@ export default InspectorLocalVariables = ({}) => {
                 onChange={(value) => changeVariableValue(i, value)}
               />
               <TouchableOpacity onPress={() => deleteVariable(i)}>
-                <Constants.CastleIcon name="trash" size={22} color="#000" />
+                <Constants.CastleIcon name="trash" size={20} color="#000" />
               </TouchableOpacity>
             </View>
           </View>
