@@ -1,5 +1,4 @@
 import React from 'react';
-import { withNavigation, withNavigationFocus } from '../ReactNavigation';
 import { CreateCardScreen } from './CreateCardScreen';
 import { sendAsync } from '../core/CoreEvents';
 
@@ -44,8 +43,7 @@ class ViewSourceScreenDataProvider extends React.Component {
     if (
       !prevProps ||
       prevDeckIdToEdit !== params.deckIdToEdit ||
-      prevCardIdToEdit !== params.cardIdToEdit ||
-      (props.isFocused && !prevProps.isFocused)
+      prevCardIdToEdit !== params.cardIdToEdit
     ) {
       if (!params.deckIdToEdit || !params.cardIdToEdit) {
         throw new Error(`ViewSourceScreen requires a deck id and card id`);
@@ -270,4 +268,4 @@ class ViewSourceScreenDataProvider extends React.Component {
   }
 }
 
-export default withNavigationFocus(withNavigation(ViewSourceScreenDataProvider));
+export default ViewSourceScreenDataProvider;

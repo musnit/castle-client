@@ -1,7 +1,6 @@
 import React from 'react';
 import { Amplitude } from '@amplitude/react-native';
 import { gql } from '@apollo/client';
-import { withNavigation, withNavigationFocus } from '../ReactNavigation';
 import { CreateCardScreen } from './CreateCardScreen';
 import { sendAsync } from '../core/CoreEvents';
 
@@ -56,8 +55,7 @@ class CreateCardScreenDataProvider extends React.Component {
       !prevProps ||
       prevDeckIdToEdit !== params.deckIdToEdit ||
       prevCardIdToEdit !== params.cardIdToEdit ||
-      prevKitDeckId !== params.kitDeckId ||
-      (props.isFocused && !prevProps.isFocused)
+      prevKitDeckId !== params.kitDeckId
     ) {
       if (!params.deckIdToEdit || !params.cardIdToEdit) {
         throw new Error(`CreateCardScreen requires a deck id and card id`);
@@ -393,4 +391,4 @@ class CreateCardScreenDataProvider extends React.Component {
   }
 }
 
-export default withNavigationFocus(withNavigation(CreateCardScreenDataProvider));
+export default CreateCardScreenDataProvider;

@@ -1,7 +1,7 @@
 import React from 'react';
 import { LogBox } from 'react-native';
 import { enableScreens } from 'react-native-screens';
-import { createNativeStackNavigator } from 'react-native-screens/native-stack';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useSession, maybeFetchNotificationsAsync, setNotifBadge } from './Session';
@@ -168,17 +168,18 @@ const TabNavigator = () => {
   return (
     <Tab.Navigator
       initialRouteName={initialPushData ? 'Notifications' : 'Browse'}
-      tabBarOptions={{
-        activeTintColor: '#fff',
-        inactiveTintColor: '#888',
-        style: {
+      screenOptions={{
+        headerShown: false,
+        tabBarActiveTintColor: '#fff',
+        tabBarInactiveTintColor: '#888',
+        tabBarStyle: {
           borderTopColor: '#888',
           backgroundColor: '#000',
         },
-        showLabel: false,
+        tabBarShowLabel: false,
       }}>
       <Tab.Screen
-        name="Browse"
+        name="BrowseTab"
         component={BrowseNavigator}
         options={({ route }) => {
           const isHome = route.state?.index === 0;
@@ -204,7 +205,7 @@ const TabNavigator = () => {
         }}
       />
       <Tab.Screen
-        name="Explore"
+        name="ExploreTab"
         component={ExploreNavigator}
         options={({ route }) => {
           return {
@@ -225,7 +226,7 @@ const TabNavigator = () => {
         }}
       />
       <Tab.Screen
-        name="Create"
+        name="CreateTab"
         component={CreateNavigator}
         options={({ route }) => {
           let isEditing = false;
@@ -250,7 +251,7 @@ const TabNavigator = () => {
         }}
       />
       <Tab.Screen
-        name="Notifications"
+        name="NotificationsTab"
         component={NotificationsNavigator}
         options={({ route }) => ({
           tabBarVisible: !route.state || route.state.index == 0,
@@ -270,7 +271,7 @@ const TabNavigator = () => {
         })}
       />
       <Tab.Screen
-        name="Profile"
+        name="ProfileTab"
         component={ProfileNavigator}
         options={({ route }) => ({
           tabBarVisible: !route.state || route.state.index == 0,
@@ -389,7 +390,7 @@ const MainAppNavigator = () => (
   <Stack.Navigator
     screenOptions={{
       headerShown: false,
-      stackPresentation: 'modal',
+      presentation: 'modal',
     }}>
     <Stack.Screen name="TabNavigator" component={TabNavigator} />
     <Stack.Screen name="AuthNavigator" component={AuthNavigator} />

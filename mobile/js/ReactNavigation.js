@@ -5,10 +5,6 @@ import {
   useFocusEffect as realUseFocusEffect,
   useScrollToTop as realUseScrollToTop,
 } from '@react-navigation/native';
-import {
-  withNavigation as realWithNavigation,
-  withNavigationFocus as realWithNavigationFocus,
-} from '@react-navigation/compat';
 import { Platform, DeviceEventEmitter } from 'react-native';
 import * as GhostChannels from './ghost/GhostChannels';
 
@@ -61,7 +57,7 @@ export const useNavigation = (...args) => {
         );
       },
 
-      dangerouslyGetState: () => {
+      getState: () => {
         return {
           index: navigatorStackDepth ? navigatorStackDepth : 0,
         };
@@ -143,30 +139,5 @@ export const useScrollToTop = (...args) => {
   if (Platform.OS === 'ios') {
     return realUseScrollToTop(...args);
   } else {
-  }
-};
-
-export const withNavigation = (Component) => {
-  if (Platform.OS === 'ios') {
-    return realWithNavigation(Component);
-  } else {
-    const WrappedComponent = ({ onRef, ...rest }) => {
-      const navigation = useNavigation();
-      return <Component ref={onRef} navigation={navigation} {...rest} />;
-    };
-
-    return WrappedComponent;
-  }
-};
-
-export const withNavigationFocus = (Component) => {
-  if (Platform.OS === 'ios') {
-    return realWithNavigationFocus(Component);
-  } else {
-    const WrappedComponent = ({ onRef, ...rest }) => {
-      return <Component ref={onRef} isFocused={true} {...rest} />;
-    };
-
-    return WrappedComponent;
   }
 };

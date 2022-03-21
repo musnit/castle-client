@@ -44,10 +44,10 @@ const styles = StyleSheet.create({
 });
 
 export const ScreenHeader = ({ title, onBackButtonPress, RightButtonComponent }) => {
-  const { pop, dangerouslyGetState } = useNavigation();
+  const { pop, getState } = useNavigation();
 
   // don't useNavigationState() because we don't want to rerender if this changes.
-  const navigationStackIndex = dangerouslyGetState().index;
+  const navigationStackIndex = getState().index;
   const showBackButton = navigationStackIndex > 0;
 
   const onPressBack = onBackButtonPress ?? (() => pop());

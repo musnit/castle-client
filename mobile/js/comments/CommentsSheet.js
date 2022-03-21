@@ -24,12 +24,12 @@ const needsTabBarHeight = ({ isFullScreen }) => {
 };
 
 export const CommentsSheet = ({ isOpen, onClose, deck, isFullScreen, ...props }) => {
-  const { dangerouslyGetState } = useNavigation();
+  const { getState } = useNavigation();
   const { isAnonymous } = useSession();
   const [newComment, setNewComment] = React.useState(null);
 
   const insets = useSafeAreaInsets();
-  const navigationIndex = dangerouslyGetState().index;
+  const navigationIndex = getState().index;
   const maxSheetHeight =
     Viewport.vh * 100 -
     insets.top -
