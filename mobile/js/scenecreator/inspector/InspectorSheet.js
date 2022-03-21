@@ -18,8 +18,8 @@ const TAB_ITEMS = [
     value: 'movement',
   },
   {
-    name: 'Rules',
-    value: 'rules',
+    name: 'Logic',
+    value: 'logic',
   },
 ];
 
