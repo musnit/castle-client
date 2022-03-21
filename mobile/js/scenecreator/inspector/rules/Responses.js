@@ -11,7 +11,6 @@ import { makeCardPreviewTitle } from '../../../common/utilities';
 import { SFXR_CATEGORIES } from '../../sound/components/Sample';
 
 import Metadata from '../../Metadata';
-import { USE_CLOCK } from '../../SceneCreatorConstants';
 
 /**
  *  This file exports functions for rendering response cells.
@@ -203,21 +202,13 @@ const InfiniteRepeat = ({ response, context }) => {
     (response.params?.interval?.expressionType === 'number' &&
       response.params.duration.params.value === 1);
 
-  let intervalTypeItem;
-  if (USE_CLOCK) {
-    const intervalType = response.params?.intervalType ?? 'second';
-    intervalTypeItem = {
-      type: 'selectParamSheet',
-      paramName: 'intervalType',
-      paramValue: intervalType,
-      label: `${intervalType}${singular ? '' : 's'}`,
-    };
-  } else {
-    intervalTypeItem = {
-      type: 'text',
-      label: `second${singular ? '' : 's'}`,
-    };
-  }
+  const intervalType = response.params?.intervalType ?? 'second';
+  const intervalTypeItem = {
+    type: 'selectParamSheet',
+    paramName: 'intervalType',
+    paramValue: intervalType,
+    label: `${intervalType}${singular ? '' : 's'}`,
+  };
 
   return [
     {
@@ -252,24 +243,14 @@ const Wait = ({ response, context }) => {
     response.params?.duration === 1 ||
     (response.params?.duration?.expressionType === 'number' &&
       response.params.duration.params.value === 1);
-  const intervalType =
-    response.params?.intervalType && USE_CLOCK ? response.params.intervalType : 'second';
-  const quantize = response.params?.quantize && USE_CLOCK ? response.params.quantize : false;
-
-  let intervalTypeItem;
-  if (USE_CLOCK) {
-    intervalTypeItem = {
-      type: 'selectParamSheet',
-      paramName: 'intervalType',
-      paramValue: intervalType,
-      label: `${intervalType}${singular ? '' : 's'}`,
-    };
-  } else {
-    intervalTypeItem = {
-      type: 'text',
-      label: `second${singular ? '' : 's'}`,
-    };
-  }
+  const intervalType = response.params?.intervalType ?? 'second';
+  const quantize = response.params?.quantize ?? false;
+  const intervalTypeItem = {
+    type: 'selectParamSheet',
+    paramName: 'intervalType',
+    paramValue: intervalType,
+    label: `${intervalType}${singular ? '' : 's'}`,
+  };
 
   return [
     {

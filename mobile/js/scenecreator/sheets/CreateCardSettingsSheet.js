@@ -4,7 +4,6 @@ import { InspectorCheckbox } from '../inspector/components/InspectorCheckbox';
 import { InspectorNumberInput } from '../inspector/components/InspectorNumberInput';
 import { useCardCreator } from '../CreateCardContext';
 import { useCoreState, sendAsync } from '../../core/CoreEvents';
-import { USE_CLOCK } from '../SceneCreatorConstants';
 
 import { BottomSheet } from '../../components/BottomSheet';
 import { BottomSheetHeader } from '../../components/BottomSheetHeader';

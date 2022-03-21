@@ -10,8 +10,6 @@ import { useCardCreator } from '../CreateCardContext';
 import { CreateCardSettings } from './CreateCardSettingsSheet';
 import { CastleIcon } from './../../Constants';
 
-import { USE_CLOCK } from '../SceneCreatorConstants';
-
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#fff',
@@ -64,13 +62,11 @@ export const CardToolsSheet = ({ isOpen, onClose, ...props }) => {
       name: 'Layout',
       value: 'layout',
     },
-  ];
-  if (USE_CLOCK) {
-    TAB_ITEMS.push({
+    {
       name: 'Clock',
       value: 'clock',
-    });
-  }
+    },
+  ];
   if (saveAction === 'save') {
     // neither 'clone' nor 'none'
     TAB_ITEMS.push({

@@ -1,5 +1,3 @@
-import { USE_CLOCK } from './SceneCreatorConstants';
-
 /**
  *  This file is an index of frontend-specific metadata for rules, behaviors, and their props.
  *  When possible, prefer to put UI props directly in React components.
@@ -10,7 +8,16 @@ import { USE_CLOCK } from './SceneCreatorConstants';
  */
 
 const data = {
-  triggerCategoryOrder: ['general', 'controls', 'state', 'motion', 'camera', 'draw'],
+  triggerCategoryOrder: [
+    'general',
+    'controls',
+    'state',
+    'motion',
+    'clock',
+    'sound',
+    'camera',
+    'draw',
+  ],
   responseCategoryOrder: [
     'general',
     'order',
@@ -21,6 +28,7 @@ const data = {
     'visible',
     'motion',
     'sound',
+    'clock',
     'camera',
     'meta',
   ],
@@ -31,6 +39,8 @@ const data = {
     'randomness',
     'spatial relationships',
     'arithmetic',
+    'clock',
+    'music',
     'functions',
   ],
   addMotionBehaviors: [
@@ -338,6 +348,10 @@ const data = {
               name: 'generated effect',
             },
             {
+              id: 'tone',
+              name: 'tone',
+            },
+            {
               id: 'microphone',
               name: 'recorded from my microphone',
             },
@@ -353,13 +367,13 @@ const data = {
       category: 'sound',
     },
     ['play song']: {
-      category: USE_CLOCK ? 'sound' : 'clock',
+      category: 'sound',
     },
     ['stop song']: {
-      category: USE_CLOCK ? 'sound' : 'clock',
+      category: 'sound',
     },
     ['stop track']: {
-      category: USE_CLOCK ? 'sound' : 'clock',
+      category: 'sound',
       props: {
         trackIndex: {
           type: 'track',
@@ -367,7 +381,7 @@ const data = {
       },
     },
     ['play pattern']: {
-      category: USE_CLOCK ? 'sound' : 'clock',
+      category: 'sound',
       props: {
         patternId: {
           type: 'pattern',
@@ -378,7 +392,7 @@ const data = {
       },
     },
     ['play pattern step']: {
-      category: USE_CLOCK ? 'sound' : 'clock',
+      category: 'sound',
       props: {
         patternId: {
           type: 'pattern',
@@ -389,7 +403,7 @@ const data = {
       },
     },
     ['mute track']: {
-      category: USE_CLOCK ? 'sound' : 'clock',
+      category: 'sound',
       props: {
         trackIndex: {
           type: 'track',
@@ -397,7 +411,7 @@ const data = {
       },
     },
     ['unmute track']: {
-      category: USE_CLOCK ? 'sound' : 'clock',
+      category: 'sound',
       props: {
         trackIndex: {
           type: 'track',
@@ -547,7 +561,7 @@ const data = {
       category: 'functions',
     },
     time: {
-      category: USE_CLOCK ? 'clock' : 'functions',
+      category: 'clock',
     },
     ['beats elapsed']: {
       category: 'clock',
@@ -591,18 +605,6 @@ const data = {
     },
   },
 };
-
-if (USE_CLOCK) {
-  data.triggerCategoryOrder.splice(-2, 0, 'clock');
-  data.triggerCategoryOrder.splice(-2, 0, 'sound');
-  data.responseCategoryOrder.splice(-2, 0, 'clock');
-  data.expressionCategoryOrder.splice(-1, 0, 'clock');
-  data.expressionCategoryOrder.splice(-1, 0, 'music');
-  data.responses['play sound'].props.type.labeledItems.splice(1, 0, {
-    id: 'tone',
-    name: 'tone',
-  });
-}
 
 export default data;
 
