@@ -125,7 +125,10 @@ export const FeedbackScreen = () => {
                 placeholderTextColor={Constants.colors.grayOnBlackText}
                 autoFocus
               />
-              <TouchableOpacity style={Constants.styles.buttonOnWhite} onPress={maybeSendFeedback}>
+              <TouchableOpacity
+                style={Constants.styles.buttonOnWhite}
+                disabled={loading}
+                onPress={maybeSendFeedback}>
                 <Text style={Constants.styles.buttonLabelOnWhite}>Send</Text>
               </TouchableOpacity>
             </View>
