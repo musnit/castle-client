@@ -88,6 +88,31 @@ export const styles = {
     borderTopLeftRadius: 6,
     borderColor: '#ccc',
   },
+  inspectorSection: {
+    padding: 16,
+    borderColor: '#ccc',
+  },
+  inspectorSectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  inspectorSectionHeaderLabel: {
+    fontWeight: '600',
+    fontSize: 16,
+  },
+  inspectorSectionHeaderActions: {},
+  inspectorSectionHeaderButton: {
+    ...Constants.styles.dropShadow,
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: '#000',
+    borderRadius: 4,
+    padding: 4,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
 };
 
 export const EMPTY_VARIABLE = {
