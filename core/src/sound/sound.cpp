@@ -10,7 +10,7 @@
 #include <common/delay.h>
 
 #define STREAM_LATE_TOLERANCE 0.75
-#define DEBUG_DISABLE_SOUND
+// #define DEBUG_DISABLE_SOUND
 
 Sound::ClockThread::ClockThread(Sound &owner_)
     : owner(owner_) {
