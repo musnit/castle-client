@@ -101,7 +101,10 @@ export const styles = {
     fontWeight: '600',
     fontSize: 16,
   },
-  inspectorSectionHeaderActions: {},
+  inspectorSectionHeaderActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   inspectorSectionHeaderButton: {
     ...Constants.styles.dropShadow,
     backgroundColor: '#fff',

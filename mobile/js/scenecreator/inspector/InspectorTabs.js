@@ -127,7 +127,7 @@ export const InspectorTabs = React.memo(({ selectedTab, addChildSheet }) => {
   let tabContents;
   switch (selectedTab) {
     case 'logic': {
-      tabContents = <Inspector.Rules behaviors={behaviors} addChildSheet={addChildSheet} />;
+      tabContents = <Inspector.Logic behaviors={behaviors} addChildSheet={addChildSheet} />;
       break;
     }
     case 'movement': {
