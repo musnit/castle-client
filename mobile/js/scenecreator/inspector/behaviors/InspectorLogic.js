@@ -134,7 +134,7 @@ export default InspectorRules = ({ behaviors, addChildSheet }) => {
                 marginRight: 4,
               }}
               onPress={() => sendSetRules(RulesClipboard.paste(rulesItems))}>
-              <Text style={{ fontSize: 16 }}>Paste</Text>
+              <Text style={{ fontSize: 14 }}>Paste</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={SceneCreatorConstants.styles.inspectorSectionHeaderButton}
