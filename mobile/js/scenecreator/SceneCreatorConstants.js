@@ -112,7 +112,7 @@ export const styles = {
     borderBottomWidth: 1,
     borderColor: '#000',
     borderRadius: 4,
-    padding: 4,
+    padding: 5,
     flexDirection: 'row',
     alignItems: 'center',
   },

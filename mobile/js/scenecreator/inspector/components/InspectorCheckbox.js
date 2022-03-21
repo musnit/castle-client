@@ -15,9 +15,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     ...Constants.styles.dropShadow,
     borderColor: '#000',
-    borderRadius: 3,
-    width: 32,
-    height: 32,
+    borderRadius: 4,
+    width: 28,
+    height: 28,
     alignItems: 'center',
     justifyContent: 'center',
     flexShrink: 0,
@@ -34,7 +34,7 @@ export const InspectorCheckbox = ({ value, label, onChange, style, ...props }) =
     <View style={[styles.container, style]} {...props}>
       {label?.length ? <Text style={styles.label}>{label}</Text> : null}
       <Pressable onPress={onPress} style={styles.box}>
-        {value ? <Constants.CastleIcon name="checkmark" size={22} color="#000" /> : null}
+        {value ? <Constants.CastleIcon name="checkmark" size={18} color="#000" /> : null}
       </Pressable>
     </View>
   );
