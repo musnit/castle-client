@@ -4,6 +4,8 @@ import { useListen } from './core/CoreEvents';
 import { useNavigation } from './ReactNavigation';
 import { shareDeck } from './common/utilities';
 import { useFocusEffect } from './ReactNavigation';
+import { apolloClient } from './Session';
+import { gql } from '@apollo/client';
 
 let FEED_ICON_SIZE = '5.5vw';
 let FEED_ICON_TOP = '2.7vw';
@@ -427,7 +429,7 @@ let coreViews = {
             width: 46,
             height: 46,
             resizeMode: 'contain',
-            url: 'https://castle.imgix.net/ff31916ab885f90b224a7365f556064b?auto=compress',
+            filename: 'leaderboard-x.png',
           },
         ],
       },
@@ -577,7 +579,8 @@ export function getCoreViews() {
     stripGestureHandlersFromView(view);
   }
 
-  // printCoreViewsJSON(coreViews);
+  //printCoreViewsJSON(coreViews);
+  //printEmbeddedDecks();
 
   return JSON.stringify(coreViews);
 }
@@ -622,18 +625,172 @@ export function useCoreViews(opts) {
   });
 }
 
-function printCoreViewsJSON(json) {
-  let str = JSON.stringify(json);
-  let result = '\n#pragma once\n\n#include "precomp.h"\n\nconst std::string CORE_VIEWS_JSON = \n';
+function printCXXString(str, includeSemicolon = true) {
+  let result = "\n";
   let charsPerLine = 80;
   for (let i = 0; i < str.length; i += charsPerLine) {
     result += '  ' + JSON.stringify(str.substring(i, Math.min(str.length, i + charsPerLine)));
     if (i + charsPerLine < str.length) {
       result += '\n';
     } else {
-      result += ';\n';
+      if (includeSemicolon) {
+        result += ';';
+      }
+
+      result += '\n';
+    }
+  }
+  return result;
+}
+
+function printCoreViewsJSON(json) {
+  let str = JSON.stringify(json);
+  let result = '\n#pragma once\n\n#include "precomp.h"\n\nconst std::string CORE_VIEWS_JSON = ' + printCXXString(str);
+
+  console.log(result);
+}
+
+function unsignedCharArrayFromString(str) {
+  let result = '{';
+  let length = 0;
+
+  for (var i = 0; i < str.length; i++) {
+    let char = str.charCodeAt(i).toString(16);
+    length++;
+    if (char.length > 2) {
+      /*console.log(char + '  ' + str.charAt(i) + '  ' + char.substring(0, 2) + '  ' + char.substring(2))
+
+      length++;
+      if (char.length < 4) {
+        char = '0' + char;
+      }
+
+      result += '0x' + char.substring(0, 2) + ', '
+
+      char = char.substring(2);*/
+
+      char = ' '.charCodeAt(0).toString(16);
+    }
+
+    if (char.length == 1) {
+      char = '0' + char;
+    } else if (char.length == 0) {
+      char = '00';
+    }
+    char = '0x' + char;
+
+    result += char;
+    if (i < str.length - 1) {
+      result += ', ';
+    }
+
+    if (i % 10 == 9) {
+      result += '\n';
     }
   }
 
-  console.log(result);
+  result += '}';
+
+  return {
+    result,
+    length,
+  }
+}
+
+let printedEmbeddedDecks = false;
+async function printEmbeddedDecks() {
+  if (printedEmbeddedDecks) {
+    return;
+  }
+  printedEmbeddedDecks = true;
+
+  let decks = [];
+  let cards = [];
+  await addEmbeddedDeck('4JQS0nAXr', decks, cards);
+
+  let arraySection = '';
+  let id = 0;
+
+  let result = '';
+  result += 'const std::unordered_map<std::string, std::pair<unsigned char *, unsigned int>> DECK_ID_TO_DATA = {\n';
+  let deckIds = Object.keys(decks);
+  for (let i = 0; i < deckIds.length; i++) {
+    let deckId = deckIds[i];
+    let currentId = 'EMBEDDED_DECK_DATA_' + id++;
+    let charArray = unsignedCharArrayFromString(decks[deckId]);
+    arraySection += 'unsigned char ' + currentId + '[] = ' + charArray.result + ';\n\n';
+    result += '{"' + deckId + '", std::make_pair(' + currentId + ', (unsigned int)' + charArray.length + ')}';
+
+    result += ',\n';
+  }
+  result += '};\n\n';
+
+  result += 'const std::unordered_map<std::string, std::pair<unsigned char *, unsigned int>> CARD_ID_TO_DATA = {\n';
+  let cardIds = Object.keys(cards);
+  for (let i = 0; i < cardIds.length; i++) {
+    let cardId = cardIds[i];
+    let currentId = 'EMBEDDED_DECK_DATA_' + id++;
+    let charArray = unsignedCharArrayFromString(cards[cardId]);
+    arraySection += 'unsigned char ' + currentId + '[] = ' + charArray.result + ';\n\n';
+    result += '{"' + cardId + '", std::make_pair(' + currentId + ', (unsigned int)' + charArray.length + ')}';
+
+    result += ',\n';
+  }
+  result += '};\n';
+
+  console.log('\n#pragma once\n\n#include "precomp.h"\n\n' + arraySection + result);
+}
+
+async function addEmbeddedDeck(deckId, decks, cards) {
+  const result = await apolloClient.query({
+    query: gql`
+      query GetDeck($deckId: ID!) {
+        deck(deckId: $deckId) {
+          deckId
+          caption
+          lastModified
+          variables
+          childDecksCount
+          creator {
+            userId
+            username
+            photo {
+              smallAvatarUrl
+              url
+            }
+          }
+          cards {
+            cardId
+            sceneDataUrl
+          }
+          initialCard {
+            cardId
+            sceneDataUrl
+            backgroundImage {
+              smallUrl
+            }
+          }
+          commentsEnabled
+          comments {
+            count
+          }
+          reactions {
+            reactionId
+            isCurrentUserToggled
+            count
+          }
+        }
+      }
+    `,
+    variables: { deckId },
+    fetchPolicy: 'no-cache',
+  });
+
+  decks[result.data.deck.deckId] = JSON.stringify(result.data.deck);
+
+  for (let i = 0; i < result.data.deck.cards.length; i++) {
+    let sceneDataUrl = result.data.deck.cards[i].sceneDataUrl;
+    let dataResponse = await fetch(sceneDataUrl);
+    cards[result.data.deck.cards[i].cardId] = JSON.stringify((await dataResponse.json()).snapshot);
+  }
 }

@@ -7,6 +7,8 @@
 #include <thread>
 #include "utils/format_number.h"
 #include "deck_plays.h"
+#include "data/embedded_deck_data.h"
+#include "archive.h"
 
 #define TOP_PADDING 0
 #define BOTTOM_UI_MIN_HEIGHT 140
@@ -382,16 +384,27 @@ void Feed::update(double dt) {
     if (idx >= 0 && idx < (int)decks.size() && decks[idx].player) {
       if (decks[idx].player->hasScene()) {
         if (auto nextCardId = decks[idx].player->getScene().getNextCardId(); nextCardId) {
-          API::loadCard(nextCardId->c_str(), true, [=](APIResponse &response) {
-            if (response.success && idx == getCurrentIndex()) {
-              auto reader = response.reader;
+          if (CARD_ID_TO_DATA.find(*nextCardId) != CARD_ID_TO_DATA.end()) {
+            std::string cardData(reinterpret_cast<char *>(CARD_ID_TO_DATA.at(*nextCardId).first),
+                CARD_ID_TO_DATA.at(*nextCardId).second);
+            auto archive = Archive::fromJson(cardData.c_str());
+            archive.read([&](Reader &reader) {
               decks[idx].player->readScene(reader, decks[idx].player->getScene().getDeckId());
               decks[idx].player->getScene().getGesture().setBounds(
                   cardLeft, TOP_PADDING, cardWidth, cardHeight);
-            }
+            });
+          } else {
+            API::loadCard(nextCardId->c_str(), true, [=](APIResponse &response) {
+              if (response.success && idx == getCurrentIndex()) {
+                auto reader = response.reader;
+                decks[idx].player->readScene(reader, decks[idx].player->getScene().getDeckId());
+                decks[idx].player->getScene().getGesture().setBounds(
+                    cardLeft, TOP_PADDING, cardWidth, cardHeight);
+              }
 
-            // TODO: show error?
-          });
+              // TODO: show error?
+            });
+          }
           decks[idx].player->getScene().setNextCardId(std::nullopt);
           decks[idx].cardId = nextCardId;
         }
@@ -611,6 +624,11 @@ void Feed::renderCardAtPosition(
   viewTransform.translate(position, TOP_PADDING);
   lv.graphics.applyTransform(&viewTransform);
   lv.graphics.setColor({ 1.0, 1.0, 1.0, 1.0f - (percentFromCenter * 0.5f) });
+
+  if (isShowingNux && idx > 0) {
+    lv.graphics.setColor(
+        { 1.0, 1.0, 1.0, (1.0f - (percentFromCenter * 0.5f)) * (1.0f - nuxAlpha) });
+  }
 
   if (isDeckVisible) {
     if (decks[idx].coreView) {
@@ -859,6 +877,10 @@ void Feed::draw() {
 }
 
 void Feed::showNux() {
+  if (isShowingNux) {
+    return;
+  }
+
   isShowingNux = true;
   nuxAnimationTime = 0.0;
 
@@ -872,6 +894,12 @@ void Feed::showNux() {
       decks[idx].avatarCoreView->cancelGestures();
     }
   }
+
+  FeedItem feedItem;
+  std::string introDeckId = "4JQS0nAXr";
+  feedItem.deckJson = std::string(reinterpret_cast<char *>(DECK_ID_TO_DATA.at(introDeckId).first),
+      DECK_ID_TO_DATA.at(introDeckId).second);
+  decks.insert(decks.begin(), 1, std::move(feedItem));
 }
 
 void Feed::renderNux() {
@@ -918,7 +946,7 @@ void Feed::fetchInitialDecks(std::vector<std::string> deckIds, int initialDeckIn
     std::optional<std::string> paginateFeedId_) {
   initialDeckIndex = initialDeckIndex_;
   paginateFeedId = paginateFeedId_;
-  showNux();
+  // showNux();
 
   if (deckIds.size() > 0) {
     usingFixedDecksList = true;
@@ -1350,23 +1378,36 @@ void Feed::loadDeckFromDeckJson(int i) {
     });
 
     reader.obj("initialCard", [&]() {
-      decks[i].cardId = reader.str("cardId", "");
+      auto cardId = reader.str("cardId", "");
+      decks[i].cardId = cardId;
 
-      auto sceneDataUrl = reader.str("sceneDataUrl", "");
-      API::loadSceneData(sceneDataUrl, [=](APIResponse &response) {
-        if (response.success) {
-          const std::string readerJson = response.reader.toJson();
-          std::thread t2([=] {
-            decks[i].player->readScene(readerJson, deckId);
-            decks[i].player->getScene().getGesture().setBounds(
-                cardLeft, TOP_PADDING, cardWidth, cardHeight);
-            decks[i].isLoaded = true;
-          });
-          t2.detach();
-        } else {
-          networkErrorAtIndex(i);
-        }
-      });
+      if (CARD_ID_TO_DATA.find(cardId) != CARD_ID_TO_DATA.end()) {
+        std::string cardData(reinterpret_cast<char *>(CARD_ID_TO_DATA.at(cardId).first),
+            CARD_ID_TO_DATA.at(cardId).second);
+        auto archive = Archive::fromJson(cardData.c_str());
+        archive.read([&](Reader &reader) {
+          decks[i].player->readScene(reader, deckId);
+          decks[i].player->getScene().getGesture().setBounds(
+              cardLeft, TOP_PADDING, cardWidth, cardHeight);
+          decks[i].isLoaded = true;
+        });
+      } else {
+        auto sceneDataUrl = reader.str("sceneDataUrl", "");
+        API::loadSceneData(sceneDataUrl, [=](APIResponse &response) {
+          if (response.success) {
+            const std::string readerJson = response.reader.toJson();
+            std::thread t2([=] {
+              decks[i].player->readScene(readerJson, deckId);
+              decks[i].player->getScene().getGesture().setBounds(
+                  cardLeft, TOP_PADDING, cardWidth, cardHeight);
+              decks[i].isLoaded = true;
+            });
+            t2.detach();
+          } else {
+            networkErrorAtIndex(i);
+          }
+        });
+      }
     });
   });
 
