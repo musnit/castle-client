@@ -226,7 +226,7 @@ export default InspectorDrawing = ({ drawing2 }) => {
     <View style={styles.container}>
       <Text style={styles.label}>Artwork</Text>
 
-      <ScrollView horizontal style={{ flexDirection: 'row', marginBottom: 20, paddingBottom: 1 }}>
+      <ScrollView horizontal style={{ flexDirection: 'row', marginBottom: 16, paddingBottom: 1 }}>
         {framePreviews?.base64PngFrames?.length
           ? framePreviews.base64PngFrames.map((base64Png, ii) => {
               let isInitialFrame = initialFrame === ii + 1;
@@ -246,9 +246,9 @@ export default InspectorDrawing = ({ drawing2 }) => {
         <AddFrameButton onPress={openDrawToolAtNewFrame} />
       </ScrollView>
 
-      <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 16 }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
         <View style={{ width: '50%' }}>
-          <Text style={{ fontSize: 16 }}>Animation</Text>
+          <Text style={{ fontSize: 16 }}>Play when created</Text>
         </View>
         <InspectorSegmentedControl
           style={{ width: '50%' }}
