@@ -145,6 +145,33 @@ const ProfileNavigator = () => (
   </Stack.Navigator>
 );
 
+const getIsTabBarVisible = ({ route, navigation }) => {
+  const tabState = navigation.getState();
+  let isVisible = true;
+  if (tabState?.routes) {
+    const currentTabState = tabState.routes[tabState.index];
+    const stackIndex = currentTabState?.state?.index;
+    isVisible = !stackIndex || stackIndex === 0;
+
+    if (tabState.index === 0) {
+      // home tab
+      let isPlayingFeedDeck = false;
+      if (currentTabState?.state?.routes && currentTabState.state.routes.length) {
+        isPlayingFeedDeck = currentTabState.state.routes[0].params?.deckId !== undefined;
+      }
+      isVisible = isVisible && !isPlayingFeedDeck;
+    } else if (tabState.index === 2) {
+      // create tab
+      let isEditing = false;
+      if (currentTabState?.state?.routes && currentTabState.state.routes.length > 1) {
+        isEditing = currentTabState.state.routes[1].params?.cardIdToEdit;
+      }
+      return isVisible || !isEditing;
+    }
+  }
+  return isVisible;
+};
+
 const TabNavigator = () => {
   const { notificationsBadgeCount } = useSession();
   // fetch notifications when a notif arrives while we're running
@@ -168,93 +195,78 @@ const TabNavigator = () => {
   return (
     <Tab.Navigator
       initialRouteName={initialPushData ? 'Notifications' : 'Browse'}
-      screenOptions={{
-        headerShown: false,
-        tabBarActiveTintColor: '#fff',
-        tabBarInactiveTintColor: '#888',
-        tabBarStyle: {
-          borderTopColor: '#888',
-          backgroundColor: '#000',
-        },
-        tabBarShowLabel: false,
+      screenOptions={(props) => {
+        const isTabBarVisible = getIsTabBarVisible(props);
+        return {
+          headerShown: false,
+          tabBarActiveTintColor: '#fff',
+          tabBarInactiveTintColor: '#888',
+          tabBarStyle: {
+            borderTopColor: '#888',
+            backgroundColor: '#000',
+            display: isTabBarVisible ? undefined : 'none',
+          },
+          tabBarShowLabel: false,
+        };
       }}>
       <Tab.Screen
         name="BrowseTab"
         component={BrowseNavigator}
-        options={({ route }) => {
-          const isHome = route.state?.index === 0;
-          let isPlayingFeedDeck = false;
-          if (route?.state?.routes && route.state.routes.length) {
-            isPlayingFeedDeck = route.state.routes[0].params?.deckId !== undefined;
-          }
-          return {
-            tabBarVisible: !route.state || (isHome && !isPlayingFeedDeck),
-            tabBarIcon: ({ focused, color }) => {
-              return (
-                <FastImage
-                  tintColor={color}
-                  style={{
-                    width: ICON_SIZE,
-                    height: ICON_SIZE,
-                  }}
-                  source={require('../assets/images/BottomTabs-browse.png')}
-                />
-              );
-            },
-          };
+        options={{
+          tabBarIcon: ({ focused, color }) => {
+            return (
+              <FastImage
+                tintColor={color}
+                style={{
+                  width: ICON_SIZE,
+                  height: ICON_SIZE,
+                }}
+                source={require('../assets/images/BottomTabs-browse.png')}
+              />
+            );
+          },
         }}
       />
       <Tab.Screen
         name="ExploreTab"
         component={ExploreNavigator}
-        options={({ route }) => {
-          return {
-            tabBarVisible: !route.state || route.state.index == 0,
-            tabBarIcon: ({ focused, color }) => {
-              return (
-                <FastImage
-                  tintColor={color}
-                  style={{
-                    width: ICON_SIZE,
-                    height: ICON_SIZE,
-                  }}
-                  source={require('../assets/images/BottomTabs-explore.png')}
-                />
-              );
-            },
-          };
+        options={{
+          tabBarIcon: ({ focused, color }) => {
+            return (
+              <FastImage
+                tintColor={color}
+                style={{
+                  width: ICON_SIZE,
+                  height: ICON_SIZE,
+                }}
+                source={require('../assets/images/BottomTabs-explore.png')}
+              />
+            );
+          },
         }}
       />
       <Tab.Screen
         name="CreateTab"
         component={CreateNavigator}
-        options={({ route }) => {
-          let isEditing = false;
-          if (route?.state?.routes && route?.state?.routes.length > 1) {
-            isEditing = route?.state?.routes[1]?.params?.cardIdToEdit;
-          }
-          return {
-            tabBarVisible: !route.state || route.state.index == 0 || !isEditing,
-            tabBarIcon: ({ focused, color }) => {
-              return (
-                <FastImage
-                  tintColor={color}
-                  style={{
-                    width: ICON_SIZE,
-                    height: ICON_SIZE,
-                  }}
-                  source={require('../assets/images/BottomTabs-create.png')}
-                />
-              );
-            },
-          };
+        options={{
+          tabBarIcon: ({ focused, color }) => {
+            return (
+              <FastImage
+                tintColor={color}
+                style={{
+                  width: ICON_SIZE,
+                  height: ICON_SIZE,
+                }}
+                source={require('../assets/images/BottomTabs-create.png')}
+              />
+            );
+          },
         }}
       />
       <Tab.Screen
         name="NotificationsTab"
         component={NotificationsNavigator}
-        options={({ route }) => ({
-          tabBarVisible: !route.state || route.state.index == 0,
+        options={{
           tabBarBadge: notificationsBadgeCount > 0 ? notificationsBadgeCount : null,
           tabBarIcon: ({ focused, color }) => {
             return (
@@ -268,13 +280,12 @@ const TabNavigator = () => {
               />
             );
           },
-        })}
+        }}
       />
       <Tab.Screen
         name="ProfileTab"
         component={ProfileNavigator}
-        options={({ route }) => ({
-          tabBarVisible: !route.state || route.state.index == 0,
+        options={{
           tabBarIcon: ({ focused, color }) => {
             return (
               <FastImage
@@ -287,7 +298,7 @@ const TabNavigator = () => {
               />
             );
           },
-        })}
+        }}
       />
     </Tab.Navigator>
   );
