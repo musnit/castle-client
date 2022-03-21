@@ -368,6 +368,11 @@ void Feed::update(double dt) {
     if (animationTimeElapsed >= SCROLL_ANIMATION_TIME) {
       isAnimating = false;
       offset = animateToOffset;
+
+      int newIdx = getCurrentIndex();
+      if (newIdx > 0) {
+        isShowingNux = false;
+      }
     }
   }
 
@@ -829,9 +834,6 @@ void Feed::draw() {
   renderCardAtPosition(
       idx + 2, offset + feedItemWidth * (idx + 2) + padding, false, idx, dragAmount);
 
-  if (idx > 0) {
-    isShowingNux = false;
-  }
   if (isShowingNux) {
     renderNux();
   } else {
