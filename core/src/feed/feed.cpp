@@ -141,6 +141,10 @@ void Feed::setWindowSize(int w, int h) {
 
       decks[i].canvas.reset();
     }
+
+    if (nuxCoreView) {
+      nuxCoreView->updateProp("container", "top", std::to_string(cardHeight));
+    }
   }
 
   hasSetWindowSize = true;
