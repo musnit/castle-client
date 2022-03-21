@@ -141,3 +141,17 @@ export const useScrollToTop = (...args) => {
   } else {
   }
 };
+
+export const withNavigation = (Component) => {
+  if (Platform.OS === 'ios') {
+    // navigation prop is already added to Screens on iOS
+    return Component;
+  } else {
+    const WrappedComponent = ({ onRef, ...rest }) => {
+      const navigation = useNavigation();
+      return <Component ref={onRef} navigation={navigation} {...rest} />;
+    };
+
+    return WrappedComponent;
+  }
+};

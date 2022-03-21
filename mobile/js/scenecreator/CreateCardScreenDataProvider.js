@@ -1,6 +1,7 @@
 import React from 'react';
 import { Amplitude } from '@amplitude/react-native';
 import { gql } from '@apollo/client';
+import { withNavigation } from '../ReactNavigation';
 import { CreateCardScreen } from './CreateCardScreen';
 import { sendAsync } from '../core/CoreEvents';
 
@@ -391,4 +392,4 @@ class CreateCardScreenDataProvider extends React.Component {
   }
 }
 
-export default CreateCardScreenDataProvider;
+export default withNavigation(CreateCardScreenDataProvider);

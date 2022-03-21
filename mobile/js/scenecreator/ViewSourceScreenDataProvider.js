@@ -1,4 +1,5 @@
 import React from 'react';
+import { withNavigation } from '../ReactNavigation';
 import { CreateCardScreen } from './CreateCardScreen';
 import { sendAsync } from '../core/CoreEvents';
 
@@ -268,4 +269,4 @@ class ViewSourceScreenDataProvider extends React.Component {
   }
 }
 
-export default ViewSourceScreenDataProvider;
+export default withNavigation(ViewSourceScreenDataProvider);
