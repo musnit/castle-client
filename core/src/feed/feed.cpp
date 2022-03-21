@@ -11,6 +11,8 @@
 #define TOP_PADDING 0
 #define BOTTOM_UI_MIN_HEIGHT 140
 #define PREV_NEXT_TAP_MAX_DURATION 0.3
+#define NUX_ANIMATION_TIME 3.0
+#define NUX_ANIMATION_ALPHA_TIME 0.5;
 // #define DEBUG_CLICK_TO_ADVANCE
 // #define DEBUG_AUTO_ADVANCE
 
@@ -190,6 +192,19 @@ void Feed::update(double dt) {
   int fps = lv.timer.getFPS();
   Debug::display("fps: {}", fps);
   elapsedTime += dt;
+  nuxAnimationTime += dt;
+  if (dragStarted || isAnimating) {
+    nuxAlpha -= dt / NUX_ANIMATION_ALPHA_TIME;
+    if (nuxAlpha < 0.0) {
+      nuxAlpha = 0.0;
+      nuxAnimationTime = 0.0;
+    }
+  } else {
+    nuxAlpha += dt / NUX_ANIMATION_ALPHA_TIME;
+    if (nuxAlpha > 1.0) {
+      nuxAlpha = 1.0;
+    }
+  }
 
   gesture.update();
   gesture.withSingleTouch([&](const Touch &touch) {
@@ -384,11 +399,15 @@ void Feed::update(double dt) {
       }
 
       decks[idx].coreView->update(dt);
-      decks[idx].coreView->handleGesture(gesture, cardLeft, TOP_PADDING);
+      if (!isShowingNux) {
+        decks[idx].coreView->handleGesture(gesture, cardLeft, TOP_PADDING);
+      }
 
       decks[idx].avatarCoreView->update(dt);
-      decks[idx].avatarCoreView->handleGesture(
-          gesture, cardLeft + decks[idx].avatarCoreViewLeft, TOP_PADDING);
+      if (!isShowingNux) {
+        decks[idx].avatarCoreView->handleGesture(
+            gesture, cardLeft + decks[idx].avatarCoreViewLeft, TOP_PADDING);
+      }
     }
 
     if (idx >= 0 && idx < (int)decks.size() && decks[idx].errorCoreView
@@ -806,6 +825,15 @@ void Feed::draw() {
   renderCardAtPosition(
       idx + 2, offset + feedItemWidth * (idx + 2) + padding, false, idx, dragAmount);
 
+  if (idx > 0) {
+    isShowingNux = false;
+  }
+  if (isShowingNux) {
+    renderNux();
+  } else {
+    nuxCoreView.reset();
+  }
+
   // this releases a canvas, so we want to run it in render
   for (int i = 0; i <= idx - 2; i++) {
     unloadDeckAtIndex(i);
@@ -822,6 +850,43 @@ void Feed::draw() {
   for (int i = idx + 4; i < (int)decks.size(); i++) {
     unloadAvatarAtIndex(i);
   }
+}
+
+void Feed::showNux() {
+  isShowingNux = true;
+  nuxAnimationTime = 0.0;
+
+  int idx = getCurrentIndex();
+  if (idx >= 0 && idx < (int)decks.size()) {
+    if (decks[idx].coreView) {
+      decks[idx].coreView->cancelGestures();
+    }
+
+    if (decks[idx].avatarCoreView) {
+      decks[idx].avatarCoreView->cancelGestures();
+    }
+  }
+}
+
+void Feed::renderNux() {
+  if (!nuxCoreView) {
+    nuxCoreView = CoreViews::getInstance().getRenderer("FEED_NUX", windowWidth, windowHeight);
+    nuxCoreView->updateProp("container", "top", std::to_string(cardHeight));
+    nuxCoreView->updateProp("container", "height", std::to_string(windowHeight - cardHeight));
+  }
+
+  float perc = cubicEaseInOut(fmod(nuxAnimationTime, NUX_ANIMATION_TIME) / NUX_ANIMATION_TIME);
+  float x = (float)windowWidth - ((float)windowWidth * 2.0) * perc;
+
+  lv.graphics.push(love::Graphics::STACK_ALL);
+  viewTransform.reset();
+  viewTransform.translate(x, 0.0);
+  lv.graphics.applyTransform(&viewTransform);
+  lv.graphics.setColor({ 1.0, 1.0, 1.0, nuxAlpha });
+
+  nuxCoreView->render();
+
+  lv.graphics.pop();
 }
 
 void Feed::suspend() {
@@ -847,6 +912,7 @@ void Feed::fetchInitialDecks(std::vector<std::string> deckIds, int initialDeckIn
     std::optional<std::string> paginateFeedId_) {
   initialDeckIndex = initialDeckIndex_;
   paginateFeedId = paginateFeedId_;
+  showNux();
 
   if (deckIds.size() > 0) {
     usingFixedDecksList = true;

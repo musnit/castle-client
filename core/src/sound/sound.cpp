@@ -10,6 +10,7 @@
 #include <common/delay.h>
 
 #define STREAM_LATE_TOLERANCE 0.75
+#define DEBUG_DISABLE_SOUND
 
 Sound::ClockThread::ClockThread(Sound &owner_)
     : owner(owner_) {
@@ -67,12 +68,20 @@ void Sound::ClockThread::finish() {
 //
 
 Sound::Sound() {
+#ifdef DEBUG_DISABLE_SOUND
+  return;
+#endif
+
   retainSoloud();
   instanceId = sInstanceId++;
   isInstanceAlive[instanceId] = true;
 }
 
 Sound::~Sound() {
+#ifdef DEBUG_DISABLE_SOUND
+  return;
+#endif
+
   clear();
   releaseSoloud();
   isInstanceAlive[instanceId] = false;
@@ -93,6 +102,10 @@ void Sound::addClock(Clock *clock) {
 }
 
 void Sound::resume() {
+#ifdef DEBUG_DISABLE_SOUND
+  return;
+#endif
+
   if (!isRunning) {
     if (!clockThread) {
       clockThread = new ClockThread(*this);
@@ -110,6 +123,10 @@ void Sound::resume() {
 }
 
 void Sound::suspend() {
+#ifdef DEBUG_DISABLE_SOUND
+  return;
+#endif
+
   isRunning = false;
   // do not clear streams - just pause time
   stopCurrentlyPlayingSounds();
@@ -122,6 +139,10 @@ void Sound::suspend() {
 }
 
 void Sound::clear() {
+#ifdef DEBUG_DISABLE_SOUND
+  return;
+#endif
+
   // pause time
   suspend();
 

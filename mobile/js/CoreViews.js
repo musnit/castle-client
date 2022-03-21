@@ -109,6 +109,26 @@ let coreViews = {
       },
     ],
   },
+  FEED_NUX: {
+    id: 'container',
+    type: 'view',
+    left: 0,
+    top: '100%',
+    width: '100%',
+    height: 60,
+    children: [
+      {
+        id: 'nux-gesture',
+        type: 'image',
+        top: 0,
+        left: 0,
+        width: '80vw',
+        height: '24vw',
+        filename: 'nux-gesture.png',
+        resizeMode: 'contain',
+      }
+    ],
+  },
   FEED_AVATAR: {
     id: 'container',
     type: 'view',

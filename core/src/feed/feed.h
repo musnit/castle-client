@@ -102,6 +102,14 @@ private:
   std::string sessionId;
   std::shared_ptr<CoreViewRenderer> globalErrorCoreView;
 
+  // Nux
+  std::shared_ptr<CoreViewRenderer> nuxCoreView;
+  bool isShowingNux = false;
+  float nuxAnimationTime = 0.0;
+  float nuxAlpha = 1.0;
+  void renderNux();
+  void showNux();
+
   void makeShader();
   void fetchMoreDecks();
   int getCurrentIndex();
