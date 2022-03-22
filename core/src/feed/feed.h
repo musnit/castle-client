@@ -105,8 +105,10 @@ private:
   // Nux
   std::shared_ptr<CoreViewRenderer> nuxCoreView;
   bool isShowingNux = false;
+  bool nuxIsHidingControls = false;
   float nuxAnimationTime = 0.0;
   float nuxAlpha = 1.0;
+  float nuxControlsAlpha = 0.0;
   void renderNux();
   void showNux();
 

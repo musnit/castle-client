@@ -15,6 +15,10 @@
 #define PREV_NEXT_TAP_MAX_DURATION 0.3
 #define NUX_ANIMATION_TIME 3.0
 #define NUX_ANIMATION_ALPHA_TIME 0.5;
+#define NUX_DECK_ID "4JQS0nAXr"
+//#define NUX_LAST_CARD_ID "kwruZ1zJJp"
+#define NUX_LAST_CARD_ID "hX8B1Z6zP"
+
 // #define DEBUG_CLICK_TO_ADVANCE
 // #define DEBUG_AUTO_ADVANCE
 
@@ -211,11 +215,21 @@ void Feed::update(double dt) {
       nuxAlpha = 1.0;
     }
   }
+  if (nuxControlsAlpha < 1.0 && !nuxIsHidingControls) {
+    nuxControlsAlpha += dt / NUX_ANIMATION_ALPHA_TIME;
+    if (nuxControlsAlpha > 1.0) {
+      nuxControlsAlpha = 1.0;
+    }
+  }
 
   gesture.update();
   gesture.withSingleTouch([&](const Touch &touch) {
     if (touch.pressed) {
       ignoreCurrentTouch = touch.screenPos.y < cardHeight + TOP_PADDING;
+    }
+
+    if (nuxIsHidingControls) {
+      return;
     }
 
     if (ignoreCurrentTouch) {
@@ -384,6 +398,11 @@ void Feed::update(double dt) {
     if (idx >= 0 && idx < (int)decks.size() && decks[idx].player) {
       if (decks[idx].player->hasScene()) {
         if (auto nextCardId = decks[idx].player->getScene().getNextCardId(); nextCardId) {
+          if (nextCardId == NUX_LAST_CARD_ID) {
+            nuxIsHidingControls = false;
+            nuxAnimationTime = 0.0;
+          }
+
           if (CARD_ID_TO_DATA.find(*nextCardId) != CARD_ID_TO_DATA.end()) {
             std::string cardData(reinterpret_cast<char *>(CARD_ID_TO_DATA.at(*nextCardId).first),
                 CARD_ID_TO_DATA.at(*nextCardId).second);
@@ -630,6 +649,10 @@ void Feed::renderCardAtPosition(
         { 1.0, 1.0, 1.0, (1.0f - (percentFromCenter * 0.5f)) * (1.0f - nuxAlpha) });
   }
 
+  if (isShowingNux && idx == 0) {
+    lv.graphics.setColor({ 1.0, 1.0, 1.0, (1.0f - (percentFromCenter * 0.5f)) * nuxControlsAlpha });
+  }
+
   if (isDeckVisible) {
     if (decks[idx].coreView) {
       decks[idx].coreView->render();
@@ -852,7 +875,7 @@ void Feed::draw() {
   renderCardAtPosition(
       idx + 2, offset + feedItemWidth * (idx + 2) + padding, false, idx, dragAmount);
 
-  if (isShowingNux) {
+  if (isShowingNux && !nuxIsHidingControls) {
     renderNux();
   } else {
     nuxCoreView.reset();
@@ -882,6 +905,7 @@ void Feed::showNux() {
   }
 
   isShowingNux = true;
+  nuxIsHidingControls = true;
   nuxAnimationTime = 0.0;
 
   int idx = getCurrentIndex();
@@ -896,7 +920,7 @@ void Feed::showNux() {
   }
 
   FeedItem feedItem;
-  std::string introDeckId = "4JQS0nAXr";
+  std::string introDeckId = NUX_DECK_ID;
   feedItem.deckJson = std::string(reinterpret_cast<char *>(DECK_ID_TO_DATA.at(introDeckId).first),
       DECK_ID_TO_DATA.at(introDeckId).second);
   decks.insert(decks.begin(), 1, std::move(feedItem));
@@ -946,7 +970,7 @@ void Feed::fetchInitialDecks(std::vector<std::string> deckIds, int initialDeckIn
     std::optional<std::string> paginateFeedId_) {
   initialDeckIndex = initialDeckIndex_;
   paginateFeedId = paginateFeedId_;
-  // showNux();
+  showNux();
 
   if (deckIds.size() > 0) {
     usingFixedDecksList = true;
