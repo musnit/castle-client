@@ -64,6 +64,7 @@ export default function TopTabBar({ state, navigation, descriptors, insets, styl
     tabBarInactiveTintColor,
     tabBarActiveBackgroundColor,
     tabBarInactiveBackgroundColor,
+    tabBarNuxHideIcons, // CASTLE: independent from visible, fade out icons if nux not completed
   } = focusedOptions;
 
   const dimensions = useSafeAreaFrame();
@@ -82,6 +83,7 @@ export default function TopTabBar({ state, navigation, descriptors, insets, styl
   const [isTabBarHidden, setIsTabBarHidden] = React.useState(!shouldShowTabBar);
 
   const [visible] = React.useState(() => new Animated.Value(shouldShowTabBar ? 1 : 0));
+  const [nuxTransition] = React.useState(() => new Animated.Value(tabBarNuxHideIcons ? 0 : 1));
 
   React.useEffect(() => {
     const visibilityAnimationConfig = visibilityAnimationConfigRef.current;
@@ -116,6 +118,34 @@ export default function TopTabBar({ state, navigation, descriptors, insets, styl
 
     return () => visible.stopAnimation();
   }, [visible, shouldShowTabBar]);
+
+  React.useEffect(() => {
+    const visibilityAnimationConfig = visibilityAnimationConfigRef.current;
+
+    if (tabBarNuxHideIcons) {
+      const animation =
+        visibilityAnimationConfig?.show?.animation === 'spring' ? Animated.spring : Animated.timing;
+
+      animation(nuxTransition, {
+        toValue: 0,
+        useNativeDriver,
+        duration: 250,
+        ...visibilityAnimationConfig?.show?.config,
+      }).start();
+    } else {
+      const animation =
+        visibilityAnimationConfig?.hide?.animation === 'spring' ? Animated.spring : Animated.timing;
+
+      animation(nuxTransition, {
+        toValue: 1,
+        useNativeDriver,
+        duration: 200,
+        ...visibilityAnimationConfig?.hide?.config,
+      }).start();
+    }
+
+    return () => nuxTransition.stopAnimation();
+  }, [nuxTransition, tabBarNuxHideIcons]);
 
   const [layout, setLayout] = React.useState({
     height: 0,
@@ -186,7 +216,10 @@ export default function TopTabBar({ state, navigation, descriptors, insets, styl
       <View pointerEvents="none" style={StyleSheet.absoluteFill}>
         {tabBarBackgroundElement}
       </View>
-      <View accessibilityRole="tablist" style={styles.content}>
+      <Animated.View
+        accessibilityRole="tablist"
+        pointerEvents={tabBarNuxHideIcons ? 'none' : 'auto'}
+        style={[styles.content, { opacity: nuxTransition }]}>
         {routes.map((route, index) => {
           const focused = index === state.index;
           const { options } = descriptors[route.key];
@@ -260,7 +293,7 @@ export default function TopTabBar({ state, navigation, descriptors, insets, styl
             </NavigationContext.Provider>
           );
         })}
-      </View>
+      </Animated.View>
     </Animated.View>
   );
 }

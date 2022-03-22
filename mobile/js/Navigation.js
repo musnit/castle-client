@@ -198,6 +198,7 @@ const TabNavigator = () => {
       screenOptions={(props) => {
         const isTabBarVisible = getIsTabBarVisible(props);
         return {
+          tabBarNuxHideIcons: false, // TODO: set to `true` if nux not completed
           headerShown: false,
           tabBarActiveTintColor: '#fff',
           tabBarInactiveTintColor: '#888',
