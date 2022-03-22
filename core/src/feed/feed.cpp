@@ -1434,13 +1434,10 @@ void Feed::loadDeckFromDeckJson(int i) {
         API::loadSceneData(sceneDataUrl, [=](APIResponse &response) {
           if (response.success) {
             const std::string readerJson = response.reader.toJson();
-            std::thread t2([=] {
-              decks[i].player->readScene(readerJson, deckId);
-              decks[i].player->getScene().getGesture().setBounds(
-                  cardLeft, TOP_PADDING, cardWidth, cardHeight);
-              decks[i].isLoaded = true;
-            });
-            t2.detach();
+            decks[i].player->readScene(readerJson, deckId);
+            decks[i].player->getScene().getGesture().setBounds(
+                cardLeft, TOP_PADDING, cardWidth, cardHeight);
+            decks[i].isLoaded = true;
           } else {
             networkErrorAtIndex(i);
           }
