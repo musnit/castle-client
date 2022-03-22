@@ -13,6 +13,7 @@
 #define TOP_PADDING 0
 #define BOTTOM_UI_MIN_HEIGHT 140
 #define PREV_NEXT_TAP_MAX_DURATION 0.3
+#define MIN_TIME_BETWEEN_TAP_GESTURES 0.5
 #define NUX_ANIMATION_TIME 3.0
 #define NUX_ANIMATION_ALPHA_TIME 0.5;
 #define NUX_DECK_ID "4JQS0nAXr"
@@ -203,6 +204,7 @@ void Feed::update(double dt) {
   Debug::display("fps: {}", fps);
   elapsedTime += dt;
   nuxAnimationTime += dt;
+  timeSinceLastTapGesture += dt;
   if (dragStarted || isAnimating) {
     nuxAlpha -= dt / NUX_ANIMATION_ALPHA_TIME;
     if (nuxAlpha < 0.0) {
@@ -225,7 +227,11 @@ void Feed::update(double dt) {
   gesture.update();
   gesture.withSingleTouch([&](const Touch &touch) {
     if (touch.pressed) {
-      ignoreCurrentTouch = touch.screenPos.y < cardHeight + TOP_PADDING;
+      // ignore the touch if the current animation is from a tap gesture
+      // for tap gestures, we don't allow you to interrupt the animation since that feels bad if
+      // you are spamming taps
+      // for swipe gestures, allow interrupting the animation since it's usually intentional
+      ignoreCurrentTouch = touch.screenPos.y < cardHeight + TOP_PADDING || isTapGestureAnimation;
     }
 
     if (nuxIsHidingControls) {
@@ -237,6 +243,7 @@ void Feed::update(double dt) {
     }
 
     isAnimating = false;
+    isTapGestureAnimation = false;
 
     if (!hasTouch) {
       hasTouch = true;
@@ -321,7 +328,9 @@ void Feed::update(double dt) {
         } else {
           animateToOffset = round((offset) / feedItemWidth) * feedItemWidth;
         }
-      } else if (!touch.movedFar && touchDuration < PREV_NEXT_TAP_MAX_DURATION) {
+      } else if (!touch.movedFar && touchDuration < PREV_NEXT_TAP_MAX_DURATION
+          && timeSinceLastTapGesture > MIN_TIME_BETWEEN_TAP_GESTURES && !isShowingNux
+          && !isAnimating) {
         bool coreViewHasGesture = false;
         int idx = getCurrentIndex();
         if (decks[idx].coreView) {
@@ -340,12 +349,16 @@ void Feed::update(double dt) {
 
         if (!coreViewHasGesture) {
           if (touch.screenPos.x > windowWidth * 0.9) {
+            timeSinceLastTapGesture = 0.0;
             isAnimating = true;
+            isTapGestureAnimation = true;
             animateFromOffset = offset;
             animationTimeElapsed = 0.0;
             animateToOffset = (round(touchStartOffset / feedItemWidth) - 1) * feedItemWidth;
           } else if (touch.screenPos.x < windowWidth * 0.1) {
+            timeSinceLastTapGesture = 0.0;
             isAnimating = true;
+            isTapGestureAnimation = true;
             animateFromOffset = offset;
             animationTimeElapsed = 0.0;
             animateToOffset = (round(touchStartOffset / feedItemWidth) + 1) * feedItemWidth;
@@ -383,6 +396,7 @@ void Feed::update(double dt) {
     animationTimeElapsed += dt;
     if (animationTimeElapsed >= SCROLL_ANIMATION_TIME) {
       isAnimating = false;
+      isTapGestureAnimation = false;
       offset = animateToOffset;
 
       int newIdx = getCurrentIndex();

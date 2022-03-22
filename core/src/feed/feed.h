@@ -77,6 +77,7 @@ private:
   float touchStartOffset = 0.0;
   float touchDuration = 0.0;
   bool isAnimating = false;
+  bool isTapGestureAnimation = false;
   bool fetchingDecks = false;
   float animateFromOffset = 0.0;
   float animateToOffset = 0.0;
@@ -91,6 +92,7 @@ private:
   std::optional<std::string> paginateFeedId;
   bool lastFeedPageWasEmpty = false;
   bool hasGlobalNetworkError = false;
+  float timeSinceLastTapGesture = 1.0;
 
   int cardLeft = 0;
   int cardWidth = 800;
