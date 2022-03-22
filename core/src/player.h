@@ -45,7 +45,7 @@ private:
   std::optional<std::string> deckId;
 
   void setScene(std::unique_ptr<Scene> scene_);
-  Archive sceneArchive;
+  std::string sceneArchive;
   std::unique_ptr<Scene> scene;
 };
 

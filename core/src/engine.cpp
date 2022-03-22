@@ -13,6 +13,8 @@ namespace CastleAPI {
 void initJNI();
 jclass getGameActivityClass();
 }
+
+// #define USE_FLUSH_PENDING_RECEIVES_THREAD
 #endif
 
 //
@@ -89,7 +91,9 @@ Engine::PreInit::PreInit() {
 Engine::Engine() {
 #ifdef ANDROID
   CastleAPI::initJNI();
+#endif
 
+#ifdef USE_FLUSH_PENDING_RECEIVES_THREAD
   flushPendingReceivesThread = new FlushPendingReceivesThread(*this);
   flushPendingReceivesThread->start();
 #endif
@@ -118,7 +122,7 @@ Engine::~Engine() {
   shuttingDown = true;
   TextBehavior::unloadFontResources();
 
-#ifdef ANDROID
+#ifdef USE_FLUSH_PENDING_RECEIVES_THREAD
   flushPendingReceivesThread->wait();
   delete flushPendingReceivesThread;
 #endif
@@ -369,7 +373,7 @@ void Engine::androidHandleBackPressed() {
 //
 
 bool Engine::frame() {
-#ifdef ANDROID
+#ifdef USE_FLUSH_PENDING_RECEIVES_THREAD
   flushPendingReceivesMutex.lock();
 #endif
 
@@ -435,20 +439,20 @@ bool Engine::frame() {
   // Process events. Quit if the window was closed.
   lv.event.pump();
 
-#ifdef ANDROID
+#ifdef USE_FLUSH_PENDING_RECEIVES_THREAD
   // android freezes here when view is unmounted, so we need to release the lock
   flushPendingReceivesMutex.unlock();
 #endif
   lv.event.clear();
   if (ghostChildWindowCloseEventReceived) {
-#ifdef ANDROID
+#ifdef USE_FLUSH_PENDING_RECEIVES_THREAD
     flushPendingReceivesMutex.unlock();
 #endif
 
     return false;
   }
 
-#ifdef ANDROID
+#ifdef USE_FLUSH_PENDING_RECEIVES_THREAD
   flushPendingReceivesMutex.lock();
 #endif
 
@@ -467,7 +471,7 @@ bool Engine::frame() {
   draw();
   lv.graphics.present(nullptr);
 
-#ifdef ANDROID
+#ifdef USE_FLUSH_PENDING_RECEIVES_THREAD
   flushPendingReceivesMutex.unlock();
 #endif
 
