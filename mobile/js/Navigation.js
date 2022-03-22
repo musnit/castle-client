@@ -3,7 +3,6 @@ import { LogBox } from 'react-native';
 import { enableScreens } from 'react-native-screens';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useSession, maybeFetchNotificationsAsync, setNotifBadge } from './Session';
 
 import { LoginScreen, CreateAccountScreen, ForgotPasswordScreen } from './auth/AuthScreens';
@@ -25,6 +24,7 @@ import { UserListScreen } from './components/UserListScreen';
 import { ViewSourceNavigator } from './create/ViewSourceNavigator';
 import { DeckRemixesScreen } from './play/DeckRemixesScreen';
 
+import createTopTabNavigator from './navigator/createTopTabNavigator';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import * as DeepLinks from './DeepLinks';
@@ -36,7 +36,7 @@ import FastImage from 'react-native-fast-image';
 
 enableScreens();
 const Stack = createNativeStackNavigator();
-const Tab = createBottomTabNavigator();
+const Tab = createTopTabNavigator();
 
 // we access the navigation route's "secret" index in order to decide whether to show the tab bar.
 // the solution recommended by the react-nav authors isn't sufficient for our case,
