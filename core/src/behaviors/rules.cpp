@@ -1173,11 +1173,12 @@ struct SetVariableResponse : BaseResponse {
     } else {
       auto &localVariablesBehavior = ctx.getScene().getBehaviors().byType<LocalVariablesBehavior>();
       auto &localVariableId = variableRef.localVariableId;
+      auto actorId = variableRef.actorRef.eval(ctx);
       if (params.relative() && value.is<double>()) {
-        auto currValue = localVariablesBehavior.get(ctx.actorId, localVariableId).as<double>();
-        localVariablesBehavior.set(ctx.actorId, localVariableId, currValue + value.as<double>());
+        auto currValue = localVariablesBehavior.get(actorId, localVariableId).as<double>();
+        localVariablesBehavior.set(actorId, localVariableId, currValue + value.as<double>());
       } else {
-        localVariablesBehavior.set(ctx.actorId, localVariableId, value);
+        localVariablesBehavior.set(actorId, localVariableId, value);
       }
     }
   }
@@ -1203,7 +1204,8 @@ struct VariableMeetsConditionResponse : BaseResponse {
       return params.comparison().compare(variables.get(variableRef.variableId), value);
     } else {
       auto &localVariablesBehavior = ctx.getScene().getBehaviors().byType<LocalVariablesBehavior>();
-      auto &currValue = localVariablesBehavior.get(ctx.actorId, variableRef.localVariableId);
+      auto actorId = variableRef.actorRef.eval(ctx);
+      auto &currValue = localVariablesBehavior.get(actorId, variableRef.localVariableId);
       return params.comparison().compare(currValue, value);
     }
   }

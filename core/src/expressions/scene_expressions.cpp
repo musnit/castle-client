@@ -1,6 +1,9 @@
+#include "expressions/scene_expressions.h"
+
 #include "expression.h"
 #include "behaviors/all.h"
 #include "variables.h"
+
 
 void ExpressionRegistrar::registerSceneExpressions() {
 }
@@ -34,7 +37,8 @@ struct VariableExpression : BaseExpression {
       return ctx.getScene().getVariables().get(variableRef.variableId);
     } else {
       auto &localVariablesBehavior = ctx.getScene().getBehaviors().byType<LocalVariablesBehavior>();
-      return localVariablesBehavior.get(ctx.actorId, variableRef.localVariableId);
+      auto actorId = variableRef.actorRef.eval(ctx);
+      return localVariablesBehavior.get(actorId, variableRef.localVariableId);
     }
   }
 };
@@ -55,63 +59,58 @@ struct NumberOfActorsExpression : BaseExpression {
   }
 };
 
-struct ActorRef {
-  PROP(std::string, kind) = "self";
-  PROP(Tag, tag);
-
-  ActorId eval(RuleContext &ctx) {
-    switch (kind()[0]) {
-    case 's': { // "self"
-      return ctx.actorId;
-    }
-    case 'c': { // "closest"
-      auto &scene = ctx.getScene();
-      auto &tagsBehavior = scene.getBehaviors().byType<TagsBehavior>();
-      if (auto numActors = tagsBehavior.numActorsWithTag(tag()); numActors == 0) {
-        return nullActor;
-      } else if (numActors == 1) {
-        // Only one actor with this tag -- avoid extra logic and just return it
-        return tagsBehavior.indexActorWithTag(tag(), 0);
-      } else {
-        // Multiple actors with this tag
-        auto actorId = ctx.actorId;
-        auto &bodyBehavior = scene.getBehaviors().byType<BodyBehavior>();
-        if (auto body = bodyBehavior.maybeGetPhysicsBody(actorId)) {
-          // Current actor has a body -- return closest with tag
-          auto pos = body->GetPosition();
-          auto closestActorId = nullActor;
-          auto closestSqDist = std::numeric_limits<float>::max();
-          tagsBehavior.forEachActorWithTag(tag(), [&](ActorId taggedActorId) {
-            if (taggedActorId != actorId) {
-              if (auto taggedBody = bodyBehavior.maybeGetPhysicsBody(taggedActorId)) {
-                // Has a body -- check if closer
-                auto sqDist = (taggedBody->GetPosition() - pos).LengthSquared();
-                if (sqDist < closestSqDist) {
-                  closestActorId = taggedActorId;
-                  closestSqDist = sqDist;
-                }
-              } else {
-                // Doesn't have a body -- assume it's at infinity
-                if (closestSqDist == std::numeric_limits<float>::max()) {
-                  closestActorId = taggedActorId;
-                }
+ActorId ActorRef::eval(RuleContext &ctx) {
+  switch (kind()[0]) {
+  case 's': { // "self"
+    return ctx.actorId;
+  }
+  case 'c': { // "closest"
+    auto &scene = ctx.getScene();
+    auto &tagsBehavior = scene.getBehaviors().byType<TagsBehavior>();
+    if (auto numActors = tagsBehavior.numActorsWithTag(tag()); numActors == 0) {
+      return nullActor;
+    } else if (numActors == 1) {
+      // Only one actor with this tag -- avoid extra logic and just return it
+      return tagsBehavior.indexActorWithTag(tag(), 0);
+    } else {
+      // Multiple actors with this tag
+      auto actorId = ctx.actorId;
+      auto &bodyBehavior = scene.getBehaviors().byType<BodyBehavior>();
+      if (auto body = bodyBehavior.maybeGetPhysicsBody(actorId)) {
+        // Current actor has a body -- return closest with tag
+        auto pos = body->GetPosition();
+        auto closestActorId = nullActor;
+        auto closestSqDist = std::numeric_limits<float>::max();
+        tagsBehavior.forEachActorWithTag(tag(), [&](ActorId taggedActorId) {
+          if (taggedActorId != actorId) {
+            if (auto taggedBody = bodyBehavior.maybeGetPhysicsBody(taggedActorId)) {
+              // Has a body -- check if closer
+              auto sqDist = (taggedBody->GetPosition() - pos).LengthSquared();
+              if (sqDist < closestSqDist) {
+                closestActorId = taggedActorId;
+                closestSqDist = sqDist;
+              }
+            } else {
+              // Doesn't have a body -- assume it's at infinity
+              if (closestSqDist == std::numeric_limits<float>::max()) {
+                closestActorId = taggedActorId;
               }
             }
-          });
-          return closestActorId;
-        } else {
-          // Current actor doesn't have a body -- return first actor with tag
-          return tagsBehavior.indexActorWithTag(tag(), 0);
-        }
+          }
+        });
+        return closestActorId;
+      } else {
+        // Current actor doesn't have a body -- return first actor with tag
+        return tagsBehavior.indexActorWithTag(tag(), 0);
       }
     }
-    case 'o': { // "other"
-      return ctx.extras.otherActorId;
-    }
-    }
-    return nullActor;
   }
-};
+  case 'o': { // "other"
+    return ctx.extras.otherActorId;
+  }
+  }
+  return nullActor;
+}
 
 struct BehaviorPropertyExpression : BaseExpression {
   inline static const RuleRegistration<BehaviorPropertyExpression> registration {

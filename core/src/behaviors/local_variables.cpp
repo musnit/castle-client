@@ -30,18 +30,21 @@ void VariableRef::read(Reader &reader) {
     }
   } else {
     if (auto scope = reader.str("scope")) {
-      reader.enter("id", [&]() {
-        switch ((*scope)[0]) {
-        case 'g': { // "global"
+      switch ((*scope)[0]) {
+      case 'g': { // "global"
+        reader.enter("id", [&]() {
           variableId.read(reader);
-          break;
-        }
-        case 'a': { // "actor"
+        });
+        break;
+      }
+      case 'a': { // "actor"
+        reader.enter("id", [&]() {
           localVariableId.read(reader);
-          break;
-        }
-        }
-      });
+        });
+        reader.obj("actorRef", actorRef);
+        break;
+      }
+      }
     }
   }
 }
@@ -57,6 +60,7 @@ void VariableRef::write(Writer &writer) const {
     writer.obj("id", [&]() {
       localVariableId.write(writer);
     });
+    writer.obj("actorRef", actorRef);
   }
 }
 

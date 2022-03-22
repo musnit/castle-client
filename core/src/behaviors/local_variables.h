@@ -4,6 +4,7 @@
 
 #include "behaviors/base.h"
 #include "props.h"
+#include "expressions/scene_expressions.h"
 
 
 //
@@ -33,6 +34,7 @@ struct LocalVariableId {
 struct VariableRef {
   Variable variableId;
   LocalVariableId localVariableId;
+  ActorRef actorRef;
 
   void read(Reader &reader);
   void write(Writer &writer) const;
