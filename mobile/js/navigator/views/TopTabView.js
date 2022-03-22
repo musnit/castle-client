@@ -68,6 +68,9 @@ export default function TopTabView(props) {
 
   return (
     <SafeAreaProviderCompat>
+      <TopTabBarHeightCallbackContext.Provider value={setTabBarHeight}>
+        {renderTabBar()}
+      </TopTabBarHeightCallbackContext.Provider>
       <MaybeScreenContainer enabled={detachInactiveScreens} hasTwoStates style={styles.container}>
         {routes.map((route, index) => {
           const descriptor = descriptors[route.key];
@@ -117,9 +120,6 @@ export default function TopTabView(props) {
           );
         })}
       </MaybeScreenContainer>
-      <TopTabBarHeightCallbackContext.Provider value={setTabBarHeight}>
-        {renderTabBar()}
-      </TopTabBarHeightCallbackContext.Provider>
     </SafeAreaProviderCompat>
   );
 }
