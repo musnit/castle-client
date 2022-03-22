@@ -12,7 +12,7 @@ import 'react-native-gesture-handler';
 import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 import { ApolloProvider } from '@apollo/client';
 import { RootNavigator } from './Navigation';
-import { AndroidNavigationContext } from './ReactNavigation';
+import { AndroidNavigationContext, ANDROID_USE_NATIVE_NAVIGATION } from './ReactNavigation';
 import BootSplash from 'react-native-bootsplash';
 import { DeckRemixesScreen } from './play/DeckRemixesScreen';
 import * as CoreEvents from './core/CoreEvents';
@@ -92,7 +92,7 @@ const MainProvider = (props) => {
   );
 };
 
-if (Platform.OS === 'android') {
+if (Platform.OS === 'android' && ANDROID_USE_NATIVE_NAVIGATION) {
   const WaitForSession = (props) => {
     const { initialized } = Session.useSession();
     GameViewAndroidBackHandler.listen();

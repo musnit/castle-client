@@ -38,6 +38,7 @@ import org.json.JSONObject;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentActivity;
 
 import java.util.Date;
@@ -57,7 +58,9 @@ import xyz.castle.navigation.CastleStackNavigator;
 import xyz.castle.navigation.CastleSwapNavigator;
 import xyz.castle.navigation.CastleTabNavigator;
 
-public class NavigationActivity extends FragmentActivity implements DefaultHardwareBackBtnHandler, PermissionAwareActivity, JsDevReloadHandler.ReloadListener {
+public class NavigationActivity extends AppCompatActivity implements DefaultHardwareBackBtnHandler, PermissionAwareActivity, JsDevReloadHandler.ReloadListener {
+
+    private static boolean USE_NATIVE_NAVIGATION = false;
 
     public static final int RC_SAVE = 1234;
     public static final int RC_READ = 1235;
@@ -181,7 +184,7 @@ public class NavigationActivity extends FragmentActivity implements DefaultHardw
            mainNavigatorType = "InitialAuthStack";
         }
 
-        navigator = new CastleSwapNavigator(this, mainNavigatorType);
+        navigator = new CastleSwapNavigator(this, USE_NATIVE_NAVIGATION ? mainNavigatorType : "Castle");
         navigator.setId("Root");
         navigator.bindViews(null, 0, 0);
 
