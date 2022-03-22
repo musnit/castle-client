@@ -15,11 +15,6 @@ import * as Constants from '../../../Constants';
 import * as SceneCreatorConstants from '../../SceneCreatorConstants';
 
 const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 12,
-  },
   box: {
     backgroundColor: '#fff',
     borderWidth: 1,
@@ -40,8 +35,12 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 16,
   },
-  scopeContainer: { flexDirection: 'row', alignItems: 'center' },
-  scopePicker: { flexShrink: 1, maxWidth: 128, marginRight: 8 },
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  scopePicker: { width: '40%' },
 });
 
 const InspectorLocalVariablePicker = ({ value, onChange, style, ...props }) => {
@@ -80,7 +79,7 @@ const InspectorLocalVariablePicker = ({ value, onChange, style, ...props }) => {
   let valueLabel = selectedItem ? formatVariableName(selectedItem.name) : '(none)';
 
   return (
-    <View style={[styles.container, style]} {...props}>
+    <View {...props}>
       <PopoverButton
         style={styles.box}
         activeStyle={[styles.box, styles.activeBox]}
@@ -134,7 +133,7 @@ const InspectorGlobalVariablePicker = ({ value, onChange, style, ...props }) => 
   let valueLabel = selectedItem ? formatVariableName(selectedItem.name) : '(none)';
 
   return (
-    <View style={[styles.container, style]} {...props}>
+    <View {...props}>
       <PopoverButton
         style={styles.box}
         activeStyle={[styles.box, styles.activeBox]}
@@ -168,18 +167,24 @@ const InspectorMultiVariablePicker = ({ style, value, onChange, ...props }) => {
   );
 
   return (
-    <View style={[styles.scopeContainer, style]}>
-      <InspectorSegmentedControl
-        items={SCOPE_ITEMS}
-        selectedItemIndex={selectedScopeIndex}
-        onChange={setScope}
-        style={styles.scopePicker}
-      />
-      {selectedScope.id === 'global' ? (
-        <InspectorGlobalVariablePicker {...props} value={value.id} onChange={setId} />
-      ) : (
-        <InspectorLocalVariablePicker {...props} value={value.id} onChange={setId} />
-      )}
+    <View style={style}>
+      <View style={styles.row}>
+        <Text style={styles.label}>Type</Text>
+        <InspectorSegmentedControl
+          items={SCOPE_ITEMS}
+          selectedItemIndex={selectedScopeIndex}
+          onChange={setScope}
+          style={styles.scopePicker}
+        />
+      </View>
+      <View style={[styles.row, { marginTop: 4 }]}>
+        <Text style={styles.label}>Name</Text>
+        {selectedScope.id === 'global' ? (
+          <InspectorGlobalVariablePicker {...props} value={value.id} onChange={setId} />
+        ) : (
+          <InspectorLocalVariablePicker {...props} value={value.id} onChange={setId} />
+        )}
+      </View>
     </View>
   );
 };
