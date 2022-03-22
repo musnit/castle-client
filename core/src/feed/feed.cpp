@@ -934,7 +934,7 @@ void Feed::renderNux() {
   }
 
   float perc = cubicEaseInOut(fmod(nuxAnimationTime, NUX_ANIMATION_TIME) / NUX_ANIMATION_TIME);
-  float x = (float)windowWidth - ((float)windowWidth * 2.0) * perc;
+  float x = (float)windowWidth - ((float)windowWidth * 1.5) * perc;
 
   lv.graphics.push(love::Graphics::STACK_ALL);
   viewTransform.reset();
