@@ -5,6 +5,7 @@
 #include "behaviors/base.h"
 #include "props.h"
 #include "editor/draw/physics_body_data.h"
+#include "utils/lru_cache.h"
 
 
 struct Drawing2Component : BaseComponent {
@@ -63,8 +64,9 @@ struct DrawingEditorDataCache {
   };
 
   // component hash -> Item
-  // TODO: use LRU eviction
-  std::unordered_map<std::string, Item> items;
+  // this cache is only added to when the inspector is opened or a drawing is edited
+  // it doesn't need to store all of the drawings in a scene
+  LruCache<std::string, Item> items { 5 };
 };
 
 class Drawing2Behavior : public BaseBehavior<Drawing2Behavior, Drawing2Component> {
@@ -97,6 +99,10 @@ public:
 
   // editor only: send drawing frames over bridge
   struct EditorSelectedDrawingFramesEvent {
+    // copiedFrames stores the data and base64PngFrames is a pointer to copiedFrames
+    // TODO: update the serialization library so that base64PngFrames doesn't need
+    // to be a pointer
+    std::vector<std::string> copiedFrames;
     PROP(std::vector<std::string> *, base64PngFrames);
   };
   void writeBase64PngFrames(

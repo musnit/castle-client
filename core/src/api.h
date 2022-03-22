@@ -2,6 +2,7 @@
 
 #include "precomp.h"
 #include "archive.h"
+#include "utils/lru_cache.h"
 #include <thread>
 
 namespace CastleAPI {
@@ -77,7 +78,8 @@ private:
   inline static std::mutex completedRequestsLock;
   inline static std::unordered_map<std::string, std::list<std::function<void(APIResponse &)>>>
       urlToPendingCallbacks;
-  inline static std::unordered_map<std::string, APICacheResponse> cachedResponses;
+  // This is only used for scenedata
+  inline static LruCache<std::string, APICacheResponse> cachedResponses { 8 };
   // These are requests that just finished and have pending callbacks. Once the callbacks
   // are handled they'll be moved to cachedResponses
   inline static std::unordered_map<std::string, APICacheResponse> completedRequests;
@@ -256,8 +258,8 @@ public:
 
   static void get(const std::string &url, const std::function<void(APIResponse &)> &callback) {
     bool usingCache = false;
-    if (cachedResponses.find(url) != cachedResponses.end()) {
-      cachedResponses[url].loadAPIResponse(callback);
+    if (cachedResponses.contains(url)) {
+      cachedResponses.get(url)->loadAPIResponse(callback);
 
       usingCache = true;
     } else {
@@ -291,7 +293,7 @@ public:
 
       cacheLock.lock();
 
-      cachedResponses[url] = result;
+      cachedResponses.insert(url, result);
       auto callbacks = urlToPendingCallbacks[url];
       urlToPendingCallbacks.erase(url);
       cacheLock.unlock();
