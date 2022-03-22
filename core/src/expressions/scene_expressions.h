@@ -1,3 +1,5 @@
+#pragma once
+
 #include "expression.h"
 #include "behaviors/tags.h"
 #include "behaviors/rules.h"
