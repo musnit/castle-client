@@ -30,8 +30,7 @@ const DEFAULT_MAX_TAB_ITEM_WIDTH = 125;
 
 const useNativeDriver = Platform.OS !== 'web';
 
-const getPaddingBottom = (insets) =>
-  Math.max(insets.bottom - Platform.select({ ios: 4, default: 0 }), 0);
+const getPaddingTop = (insets) => Math.max(insets.top - Platform.select({ ios: 4, default: 0 }), 0);
 
 export const getTabBarHeight = ({ state, descriptors, dimensions, insets, style, ...rest }) => {
   // @ts-ignore
@@ -42,9 +41,9 @@ export const getTabBarHeight = ({ state, descriptors, dimensions, insets, style,
   }
 
   const isLandscape = dimensions.width > dimensions.height;
-  const paddingBottom = getPaddingBottom(insets);
+  const paddingTop = getPaddingTop(insets);
 
-  return DEFAULT_TABBAR_HEIGHT + paddingBottom;
+  return DEFAULT_TABBAR_HEIGHT + paddingTop;
 };
 
 export default function TopTabBar({ state, navigation, descriptors, insets, style }) {
@@ -142,7 +141,7 @@ export default function TopTabBar({ state, navigation, descriptors, insets, styl
 
   const { routes } = state;
 
-  const paddingBottom = getPaddingBottom(insets);
+  const paddingTop = getPaddingTop(insets);
   const tabBarHeight = getTabBarHeight({
     state,
     descriptors,
@@ -167,7 +166,7 @@ export default function TopTabBar({ state, navigation, descriptors, insets, styl
             {
               translateY: visible.interpolate({
                 inputRange: [0, 1],
-                outputRange: [layout.height + paddingBottom + StyleSheet.hairlineWidth, 0],
+                outputRange: [layout.height + paddingTop + StyleSheet.hairlineWidth, 0],
               }),
             },
           ],
@@ -177,7 +176,7 @@ export default function TopTabBar({ state, navigation, descriptors, insets, styl
         },
         {
           height: tabBarHeight,
-          paddingBottom,
+          paddingTop,
           paddingHorizontal: Math.max(insets.left, insets.right),
         },
         tabBarStyle,
@@ -268,10 +267,10 @@ export default function TopTabBar({ state, navigation, descriptors, insets, styl
 
 const styles = StyleSheet.create({
   tabBar: {
+    top: 0,
     left: 0,
     right: 0,
-    bottom: 0,
-    borderTopWidth: StyleSheet.hairlineWidth,
+    borderBottomWidth: StyleSheet.hairlineWidth,
     elevation: 8,
   },
   content: {
