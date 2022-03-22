@@ -89,7 +89,7 @@ void Player::tryLoadNextCard() {
   deckId = JS_getDeckId();
 
   if (auto sceneDataJson = JS_getNextCardSceneData()) {
-    sceneArchive = Archive::fromJson(sceneDataJson);
+    sceneArchive = sceneDataJson;
     sceneArchive.read([&](Reader &reader) {
       reader.obj("snapshot", [&]() {
         setScene(std::make_unique<Scene>(bridge, variables, sound, clock, deckId, false, &reader));
@@ -101,15 +101,16 @@ void Player::tryLoadNextCard() {
 }
 
 void Player::readScene(Reader &reader, std::optional<std::string> deckId_) {
-  sceneArchive = Archive::fromJson(reader.toJson().c_str());
+  sceneArchive = reader.toJson();
   deckId = deckId_;
   setScene(std::make_unique<Scene>(bridge, variables, sound, clock, deckId, false, &reader));
 }
 
 void Player::readScene(const std::string &readerJson, std::optional<std::string> deckId_) {
-  sceneArchive = Archive::fromJson(readerJson.c_str());
+  sceneArchive = readerJson;
   deckId = deckId_;
-  sceneArchive.read([&](Reader &reader) {
+  auto archive = Archive::fromJson(sceneArchive.c_str());
+  archive.read([&](Reader &reader) {
     setScene(std::make_unique<Scene>(bridge, variables, sound, clock, deckId, false, &reader));
   });
 }
@@ -129,7 +130,8 @@ void Player::update(double dt) {
   // Update scene
   if (scene) {
     if (scene->isRestartRequested()) {
-      sceneArchive.read([&](Reader &reader) {
+      auto archive = Archive::fromJson(sceneArchive.c_str());
+      archive.read([&](Reader &reader) {
         if (reader.has("snapshot")) {
           reader.obj("snapshot", [&]() {
             setScene(
