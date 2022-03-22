@@ -8,10 +8,12 @@ import {
 import { Platform, DeviceEventEmitter } from 'react-native';
 import * as GhostChannels from './ghost/GhostChannels';
 
+export const ANDROID_USE_NATIVE_NAVIGATION = false;
+
 export const AndroidNavigationContext = React.createContext({});
 
 export const useNavigation = (...args) => {
-  if (Platform.OS === 'ios') {
+  if (Platform.OS === 'ios' || !ANDROID_USE_NATIVE_NAVIGATION) {
     return realUseNavigation(...args);
   } else {
     const { navigatorId, navigatorStackDepth } = React.useContext(AndroidNavigationContext);
@@ -69,7 +71,7 @@ export const useNavigation = (...args) => {
 };
 
 export const useIsFocused = () => {
-  if (Platform.OS === 'ios') {
+  if (Platform.OS === 'ios' || !ANDROID_USE_NATIVE_NAVIGATION) {
     return realUseIsFocused();
   } else {
     const { viewId } = React.useContext(AndroidNavigationContext);
@@ -98,7 +100,7 @@ export const useIsFocused = () => {
 };
 
 export const useFocusEffect = (...args) => {
-  if (Platform.OS === 'ios') {
+  if (Platform.OS === 'ios' || !ANDROID_USE_NATIVE_NAVIGATION) {
     return realUseFocusEffect(...args);
   } else {
     const { viewId } = React.useContext(AndroidNavigationContext);
@@ -136,14 +138,14 @@ export const useFocusEffect = (...args) => {
 };
 
 export const useScrollToTop = (...args) => {
-  if (Platform.OS === 'ios') {
+  if (Platform.OS === 'ios' || !ANDROID_USE_NATIVE_NAVIGATION) {
     return realUseScrollToTop(...args);
   } else {
   }
 };
 
 export const withNavigation = (Component) => {
-  if (Platform.OS === 'ios') {
+  if (Platform.OS === 'ios' || !ANDROID_USE_NATIVE_NAVIGATION) {
     // navigation prop is already added to Screens on iOS
     return Component;
   } else {
