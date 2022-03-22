@@ -970,7 +970,6 @@ void Feed::fetchInitialDecks(std::vector<std::string> deckIds, int initialDeckIn
     std::optional<std::string> paginateFeedId_) {
   initialDeckIndex = initialDeckIndex_;
   paginateFeedId = paginateFeedId_;
-  showNux();
 
   if (deckIds.size() > 0) {
     usingFixedDecksList = true;
@@ -981,6 +980,7 @@ void Feed::fetchInitialDecks(std::vector<std::string> deckIds, int initialDeckIn
       seenDeckIds.insert(deckIds[i]);
     }
   } else {
+    showNux();
     usingFixedDecksList = false;
     fetchingDecks = true;
     API::graphql("{\n  infiniteFeedV2(limit: 1) {\n    sessionId\n    decks {" + GRAPHQL_DECK_FIELDS
