@@ -164,7 +164,7 @@ const InspectorMultiVariablePicker = ({ style, value, onChange, ...props }) => {
   const setId = React.useCallback((id) => onChange({ ...value, id }), [value, onChange]);
   const setScope = React.useCallback(
     // reset id when changing scope
-    (scopeIndex) => onChange({ scope: SCOPE_ITEMS[scopeIndex].id, id: '' }),
+    (scopeIndex) => onChange({ ...value, scope: SCOPE_ITEMS[scopeIndex].id, id: '' }),
     [value, onChange]
   );
   const setActorRef = React.useCallback(
