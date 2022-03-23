@@ -344,6 +344,10 @@ public class NavigationActivity extends AppCompatActivity implements DefaultHard
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(CastleSharedPreferences.AuthTokenEvent event) {
+        if (!USE_NATIVE_NAVIGATION) {
+            return;
+        }
+
         if (event.token == null) {
             navigator.navigate("InitialAuthStack");
         } else {
