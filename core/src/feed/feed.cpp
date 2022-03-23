@@ -14,6 +14,7 @@
 #define BOTTOM_UI_MIN_HEIGHT 140
 #define PREV_NEXT_TAP_MAX_DURATION 0.3
 #define MIN_TIME_BETWEEN_TAP_GESTURES 0.5
+#define CORE_VIEWS_GESTURE_INACTIVE_AFTER_SWIPE_TIME 0.4
 #define NUX_ANIMATION_TIME 3.0
 #define NUX_ANIMATION_ALPHA_TIME 0.5;
 #define NUX_DECK_ID "4JQS0nAXr"
@@ -187,6 +188,8 @@ Scene &Feed::getScene() {
 }
 
 void Feed::update(double dt) {
+  bool wasLongFrame = dt > 0.1;
+
   if (dt > 0.5) {
     dt = 1.0 / 60.0;
   }
@@ -207,6 +210,7 @@ void Feed::update(double dt) {
   elapsedTime += dt;
   nuxAnimationTime += dt;
   timeSinceLastTapGesture += dt;
+  timeSinceLastSwipeGesture += dt;
   if (dragStarted || isAnimating) {
     nuxAlpha -= dt / NUX_ANIMATION_ALPHA_TIME;
     if (nuxAlpha < 0.0) {
@@ -318,14 +322,18 @@ void Feed::update(double dt) {
             && fabs(offset - touchStartOffset) > FAST_SWIPE_MIN_OFFSET) {
           if (offset - touchStartOffset > 0) {
             animateToOffset = (round(touchStartOffset / feedItemWidth) + 1) * feedItemWidth;
+            timeSinceLastSwipeGesture = 0.0;
           } else {
             animateToOffset = (round(touchStartOffset / feedItemWidth) - 1) * feedItemWidth;
+            timeSinceLastSwipeGesture = 0.0;
           }
         } else if (fabs(dragVelocity) > FAST_SWIPE_MIN_DRAG_VELOCITY) {
           if (dragVelocity > 0) {
             animateToOffset = (round(touchStartOffset / feedItemWidth) + 1) * feedItemWidth;
+            timeSinceLastSwipeGesture = 0.0;
           } else {
             animateToOffset = (round(touchStartOffset / feedItemWidth) - 1) * feedItemWidth;
+            timeSinceLastSwipeGesture = 0.0;
           }
         } else {
           animateToOffset = round((offset) / feedItemWidth) * feedItemWidth;
@@ -460,12 +468,18 @@ void Feed::update(double dt) {
       }
 
       decks[idx].coreView->update(dt);
-      if (!isShowingNux) {
+      if (!isShowingNux
+          && timeSinceLastSwipeGesture
+              > CORE_VIEWS_GESTURE_INACTIVE_AFTER_SWIPE_TIME + SCROLL_ANIMATION_TIME
+          && !wasLongFrame) {
         decks[idx].coreView->handleGesture(gesture, cardLeft, TOP_PADDING);
       }
 
       decks[idx].avatarCoreView->update(dt);
-      if (!isShowingNux) {
+      if (!isShowingNux
+          && timeSinceLastSwipeGesture
+              > CORE_VIEWS_GESTURE_INACTIVE_AFTER_SWIPE_TIME + SCROLL_ANIMATION_TIME
+          && !wasLongFrame) {
         decks[idx].avatarCoreView->handleGesture(
             gesture, cardLeft + decks[idx].avatarCoreViewLeft, TOP_PADDING);
       }
@@ -1113,6 +1127,7 @@ void Feed::fetchMoreDecks() {
             fetchingDecks = false;
           } else {
             // TODO: show error?
+            fetchingDecks = false;
           }
         });
   } else {
@@ -1144,6 +1159,7 @@ void Feed::fetchMoreDecks() {
             fetchingDecks = false;
           } else {
             // TODO: show error?
+            fetchingDecks = false;
           }
         });
   }
