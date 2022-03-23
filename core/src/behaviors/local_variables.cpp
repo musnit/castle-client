@@ -41,7 +41,9 @@ void VariableRef::read(Reader &reader) {
         reader.enter("id", [&]() {
           localVariableId.read(reader);
         });
-        reader.obj("actorRef", actorRef);
+        reader.obj("actorRef", [&]() {
+          reader.read(actorRef);
+        });
         break;
       }
       }
@@ -60,7 +62,9 @@ void VariableRef::write(Writer &writer) const {
     writer.obj("id", [&]() {
       localVariableId.write(writer);
     });
-    writer.obj("actorRef", actorRef);
+    writer.obj("actorRef", [&]() {
+      writer.write(actorRef);
+    });
   }
 }
 
