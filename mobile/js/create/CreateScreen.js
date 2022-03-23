@@ -13,7 +13,7 @@ import {
 import { Amplitude } from '@amplitude/react-native';
 import { AuthPrompt } from '../auth/AuthPrompt';
 import { CardCell } from '../components/CardCell';
-import { useNavigation, useFocusEffect } from '../ReactNavigation';
+import { useNavigation, useFocusEffect, ANDROID_USE_NATIVE_NAVIGATION } from '../ReactNavigation';
 import { EmptyFeed } from '../home/EmptyFeed';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLazyQuery, gql } from '@apollo/client';
@@ -378,7 +378,7 @@ const CreateScreenAuthenticated = () => {
   }, [query.called, query.loading, query.error, query.data]);
 
   const onPressCreateDeck = React.useCallback(() => {
-    if (Constants.iOS) {
+    if (Constants.iOS || !ANDROID_USE_NATIVE_NAVIGATION) {
       // use native modal on iOS
       navigate('ModalCreateDeckNavigator', { screen: 'CreateChooseKitScreen' });
     } else {

@@ -239,7 +239,7 @@ export const NotificationsScreen = () => {
   const handlePushNotificationClicked = React.useCallback(
     (notifications, data) => {
       // NavigationActivity already handles this on android
-      if (Platform.OS === 'android') {
+      if (Platform.OS === 'android' && ANDROID_USE_NATIVE_NAVIGATION) {
         return;
       }
 
