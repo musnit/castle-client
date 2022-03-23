@@ -76,7 +76,7 @@ export const AuthPrompt = ({ title, message }) => {
   }, []);
 
   const onPressCreateAccount = React.useCallback(() => {
-    if (Constants.iOS) {
+    if (Constants.iOS || !ANDROID_USE_NATIVE_NAVIGATION) {
       // use native modal on iOS
       navigate('AuthNavigator', { screen: 'CreateAccountScreen' });
     } else {
