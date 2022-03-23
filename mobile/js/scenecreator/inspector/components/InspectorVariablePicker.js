@@ -76,14 +76,15 @@ const InspectorLocalVariablePicker = ({ value, onChange, style, ...props }) => {
     onAddItem: addVariable,
   };
 
-  let valueLabel = selectedItem ? formatVariableName(selectedItem.name) : '(none)';
+  let valueLabel = selectedItem ? formatVariableName(selectedItem.name) : value;
 
   return (
     <View {...props}>
       <PopoverButton
         style={styles.box}
         activeStyle={[styles.box, styles.activeBox]}
-        popover={popover}>
+        popover={popover}
+      >
         <Text style={styles.label}>{valueLabel}</Text>
       </PopoverButton>
     </View>
@@ -137,7 +138,8 @@ const InspectorGlobalVariablePicker = ({ value, onChange, style, ...props }) => 
       <PopoverButton
         style={styles.box}
         activeStyle={[styles.box, styles.activeBox]}
-        popover={popover}>
+        popover={popover}
+      >
         <Text style={styles.label}>{valueLabel}</Text>
       </PopoverButton>
     </View>
