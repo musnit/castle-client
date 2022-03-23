@@ -94,6 +94,7 @@ private:
   bool lastFeedPageWasEmpty = false;
   bool hasGlobalNetworkError = false;
   float timeSinceLastTapGesture = 1.0;
+  float timeSinceLastSwipeGesture = 1.0;
 
   int cardLeft = 0;
   int cardWidth = 800;
