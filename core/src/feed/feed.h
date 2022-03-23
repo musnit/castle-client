@@ -55,7 +55,8 @@ public:
   void resume();
   void clearState();
   void fetchInitialDecks(std::vector<std::string> deckIds, int initialDeckIndex = 0,
-      std::optional<std::string> paginateFeedId = std::nullopt);
+      std::optional<std::string> paginateFeedId = std::nullopt, bool isNuxCompleted = false,
+      bool isNativeFeedNuxCompleted = false);
   void setWindowSize(int w, int h);
   bool hasScene();
   Scene &getScene();
@@ -113,6 +114,7 @@ private:
   float nuxControlsAlpha = 0.0;
   void renderNux();
   void showNux();
+  void showNativeFeedNux();
 
   void makeShader();
   void fetchMoreDecks();

@@ -103,6 +103,8 @@ float smoothstep(float a, float b, float t, int easingFunction) {
   }
 }
 
+struct NuxCompletedEvent {};
+
 void Feed::setWindowSize(int w, int h) {
   windowWidth = w;
   windowHeight = h;
@@ -401,7 +403,11 @@ void Feed::update(double dt) {
 
       int newIdx = getCurrentIndex();
       if (newIdx > 0) {
-        isShowingNux = false;
+        if (isShowingNux) {
+          isShowingNux = false;
+          NuxCompletedEvent ev;
+          bridge.sendEvent("NUX_COMPLETED", ev);
+        }
       }
     }
   }
@@ -940,6 +946,26 @@ void Feed::showNux() {
   decks.insert(decks.begin(), 1, std::move(feedItem));
 }
 
+void Feed::showNativeFeedNux() {
+  if (isShowingNux) {
+    return;
+  }
+
+  isShowingNux = true;
+  nuxAnimationTime = 0.0;
+
+  int idx = getCurrentIndex();
+  if (idx >= 0 && idx < (int)decks.size()) {
+    if (decks[idx].coreView) {
+      decks[idx].coreView->cancelGestures();
+    }
+
+    if (decks[idx].avatarCoreView) {
+      decks[idx].avatarCoreView->cancelGestures();
+    }
+  }
+}
+
 void Feed::renderNux() {
   if (!nuxCoreView) {
     nuxCoreView = CoreViews::getInstance().getRenderer("FEED_NUX", windowWidth, windowHeight);
@@ -981,7 +1007,8 @@ void Feed::clearState() {
 }
 
 void Feed::fetchInitialDecks(std::vector<std::string> deckIds, int initialDeckIndex_,
-    std::optional<std::string> paginateFeedId_) {
+    std::optional<std::string> paginateFeedId_, bool isNuxCompleted,
+    bool isNativeFeedNuxCompleted) {
   initialDeckIndex = initialDeckIndex_;
   paginateFeedId = paginateFeedId_;
 
@@ -994,7 +1021,12 @@ void Feed::fetchInitialDecks(std::vector<std::string> deckIds, int initialDeckIn
       seenDeckIds.insert(deckIds[i]);
     }
   } else {
-    showNux();
+    if (!isNuxCompleted) {
+      showNux();
+    } else if (!isNativeFeedNuxCompleted) {
+      showNativeFeedNux();
+    }
+
     usingFixedDecksList = false;
     fetchingDecks = true;
     API::graphql("{\n  infiniteFeedV2(limit: 1) {\n    sessionId\n    decks {" + GRAPHQL_DECK_FIELDS

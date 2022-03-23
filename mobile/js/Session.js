@@ -23,6 +23,7 @@ let gAuthToken,
   gUserId,
   gIsAnonymous = false,
   gIsNuxCompleted = false,
+  gIsNativeFeedNuxCompleted = false,
   gIsMuted = false;
 let gNotificationState = {};
 const TEST_AUTH_TOKEN = null;
@@ -71,7 +72,9 @@ PushNotifications.addTokenListener(async (token) => {
 export async function loadAuthTokenAsync() {
   if (SKIP_NUX) {
     gIsNuxCompleted = true;
+    gIsNativeFeedNuxCompleted = true;
     await CastleAsyncStorage.setItem('IS_NUX_COMPLETED', gIsNuxCompleted.toString());
+    await CastleAsyncStorage.setItem('IS_NATIVE_FEED_NUX_COMPLETED', gIsNuxCompleted.toString());
   }
 
   if (gAuthToken) {
@@ -85,6 +88,8 @@ export async function loadAuthTokenAsync() {
     gUserId = await CastleAsyncStorage.getItem('USER_ID');
     const isNuxCompletedStorageValue = await CastleAsyncStorage.getItem('IS_NUX_COMPLETED');
     gIsNuxCompleted = isNuxCompletedStorageValue === 'true' || isNuxCompletedStorageValue === true;
+    const isNativeFeedNuxCompletedStorageValue = await CastleAsyncStorage.getItem('IS_NATIVE_FEED_NUX_COMPLETED');
+    gIsNativeFeedNuxCompleted = isNativeFeedNuxCompletedStorageValue === 'true' || isNativeFeedNuxCompletedStorageValue === true;
     const isAnonStorageValue = await CastleAsyncStorage.getItem('USER_IS_ANONYMOUS');
     gIsAnonymous = isAnonStorageValue === 'true' || isAnonStorageValue === true;
     const isMutedStorageValue = await CastleAsyncStorage.getItem('IS_MUTED');
@@ -115,6 +120,7 @@ export class Provider extends React.Component {
       markNotificationsReadAsync: this.markNotificationsReadAsync,
       markFollowingFeedRead: this.markFollowingFeedRead,
       setIsNuxCompleted: this.setIsNuxCompleted,
+      setIsNativeFeedNuxCompleted: this.setIsNativeFeedNuxCompleted,
       setIsMuted: this.setIsMuted,
       ...gNotificationState,
     };
@@ -131,6 +137,7 @@ export class Provider extends React.Component {
           isSignedIn: !!gAuthToken,
           isAnonymous: gIsAnonymous,
           isNuxCompleted: gIsNuxCompleted,
+          isNativeFeedNuxCompleted: gIsNativeFeedNuxCompleted,
           isMuted: gIsMuted,
           userId: gUserId,
           initialized: true,
@@ -162,6 +169,15 @@ export class Provider extends React.Component {
     }
     await CastleAsyncStorage.setItem('IS_NUX_COMPLETED', gIsNuxCompleted.toString());
     return this.setState({ isNuxCompleted: gIsNuxCompleted });
+  };
+
+  setIsNativeFeedNuxCompleted = async (isNativeFeedNuxCompleted) => {
+    gIsNativeFeedNuxCompleted = !!isNativeFeedNuxCompleted;
+    if (Platform.OS === 'android') {
+      GhostChannels.markNuxComplete();
+    }
+    await CastleAsyncStorage.setItem('IS_NATIVE_FEED_NUX_COMPLETED', gIsNativeFeedNuxCompleted.toString());
+    return this.setState({ isNativeFeedNuxCompleted: gIsNativeFeedNuxCompleted });
   };
 
   /**

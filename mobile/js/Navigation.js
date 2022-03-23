@@ -179,7 +179,7 @@ const getIsTabBarVisible = ({ route, navigation }) => {
 };
 
 const TabNavigator = () => {
-  const { notificationsBadgeCount } = useSession();
+  const { notificationsBadgeCount, isNuxCompleted, isNativeFeedNuxCompleted } = useSession();
   // fetch notifications when a notif arrives while we're running
   const handlePushNotification = React.useCallback(({ data, clicked }) => {
     if (data?.numUnseenNotifications && !clicked) {
@@ -204,7 +204,7 @@ const TabNavigator = () => {
       screenOptions={(props) => {
         const isTabBarVisible = getIsTabBarVisible(props);
         return {
-          tabBarNuxHideIcons: false, // TODO: set to `true` if nux not completed
+          tabBarNuxHideIcons: !isNuxCompleted || !isNativeFeedNuxCompleted,
           headerShown: false,
           tabBarActiveTintColor: '#fff',
           tabBarInactiveTintColor: '#888',

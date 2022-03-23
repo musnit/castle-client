@@ -258,6 +258,10 @@ public class NavigationActivity extends AppCompatActivity implements DefaultHard
     }
 
     private void openDeckId(String deckId) {
+        if (!USE_NATIVE_NAVIGATION) {
+            return;
+        }
+
         navigator.enableOverlay();
 
         API.getInstance().graphql(GraphQLOperation.Query("deck")
@@ -361,6 +365,10 @@ public class NavigationActivity extends AppCompatActivity implements DefaultHard
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(CastleSharedPreferences.NuxCompleteEvent event) {
+        if (!USE_NATIVE_NAVIGATION) {
+            return;
+        }
+
         navigator.navigate("LoggedInRootStack");
     };
 
