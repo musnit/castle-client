@@ -28,7 +28,7 @@ struct VariableExpression : BaseExpression {
   static constexpr auto description = "the value of a variable";
 
   struct Params {
-    PROP(VariableRef, variableId, .label("Variable name"));
+    PROP(VariableRef, variableId, .label("variable"));
   } params;
 
   ExpressionValue eval(RuleContext &ctx) override {
