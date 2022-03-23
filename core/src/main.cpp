@@ -22,15 +22,23 @@ void loop(F &&frame) {
 #ifdef ANDROID
 #include <jni.h>
 
+static bool hasInitializedEngine = false;
 static Engine &getEngine() {
+  hasInitializedEngine = true;
   static Engine engine;
   return engine;
+}
+
+static Engine *tryGetEngine() {
+  if (hasInitializedEngine) {
+    return &getEngine();
+  }
+  return nullptr;
 }
 
 static const char *newInitialParams = NULL;
 static const char *newCoreViews = NULL;
 static double newBeltHeightFraction = 0.0;
-static bool enginePaused = false;
 
 extern "C" void Java_ghost_CoreGameActivity_castleCoreViewSetInitialParams(
     JNIEnv *env, jclass thiz, jstring initialParamsJString) {
@@ -49,7 +57,9 @@ extern "C" void Java_ghost_CoreGameActivity_castleCoreViewSetBeltHeightFraction(
 
 extern "C" void Java_ghost_CoreGameActivity_castleCoreViewSetPaused(
     JNIEnv *env, jclass thiz, bool paused) {
-  enginePaused = paused;
+  if (tryGetEngine()) {
+    tryGetEngine()->setPaused(paused);
+  }
 }
 
 int SDL_main(int argc, char *argv[]) {
@@ -63,7 +73,6 @@ int SDL_main(int argc, char *argv[]) {
       newCoreViews = NULL;
     }
     getEngine().setBeltHeightFraction(newBeltHeightFraction);
-    getEngine().setPaused(enginePaused);
 
     return getEngine().frame();
   });

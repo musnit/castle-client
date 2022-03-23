@@ -390,6 +390,9 @@ bool Engine::frame() {
 #ifdef USE_FLUSH_PENDING_RECEIVES_THREAD
   flushPendingReceivesMutex.lock();
 #endif
+#ifdef ANDROID
+  setPausedMutex.lock();
+#endif
 
   // Based on the main loop from 'boot.lua' in the Love codebase
 
@@ -457,10 +460,16 @@ bool Engine::frame() {
   // android freezes here when view is unmounted, so we need to release the lock
   flushPendingReceivesMutex.unlock();
 #endif
+#ifdef ANDROID
+  setPausedMutex.unlock();
+#endif
   lv.event.clear();
   if (ghostChildWindowCloseEventReceived) {
 #ifdef USE_FLUSH_PENDING_RECEIVES_THREAD
     flushPendingReceivesMutex.unlock();
+#endif
+#ifdef ANDROID
+    setPausedMutex.unlock();
 #endif
 
     return false;
@@ -468,6 +477,9 @@ bool Engine::frame() {
 
 #ifdef USE_FLUSH_PENDING_RECEIVES_THREAD
   flushPendingReceivesMutex.lock();
+#endif
+#ifdef ANDROID
+  setPausedMutex.lock();
 #endif
 
   // Process bridge
@@ -487,6 +499,9 @@ bool Engine::frame() {
 
 #ifdef USE_FLUSH_PENDING_RECEIVES_THREAD
   flushPendingReceivesMutex.unlock();
+#endif
+#ifdef ANDROID
+  setPausedMutex.unlock();
 #endif
 
   return !shouldQuit;

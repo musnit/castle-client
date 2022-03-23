@@ -117,6 +117,7 @@ private:
 
   FlushPendingReceivesThread *flushPendingReceivesThread;
   std::mutex flushPendingReceivesMutex;
+  std::mutex setPausedMutex;
   std::vector<std::function<bool()>> androidBackButtonHandlers;
   bool shuttingDown = false;
 };
@@ -183,6 +184,8 @@ inline void Engine::setPaused(bool paused_) {
     return;
   }
 
+  setPausedMutex.lock();
+
   paused = paused_;
 
   auto screen = maybeGetScreen();
@@ -193,4 +196,6 @@ inline void Engine::setPaused(bool paused_) {
       screen->resume();
     }
   }
+
+  setPausedMutex.unlock();
 }
