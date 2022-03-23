@@ -18,6 +18,7 @@ class Sound {
   inline static SoLoud::Soloud soloud;
   inline static int sInstanceId = 0;
   inline static std::map<int, bool> isInstanceAlive;
+  inline static std::map<int, bool> isInstanceRunning;
   int instanceId;
 
 public:
