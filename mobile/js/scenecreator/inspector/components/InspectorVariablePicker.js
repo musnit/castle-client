@@ -4,6 +4,7 @@ import { PopoverButton } from '../../../components/PopoverProvider';
 import { StyleSheet, View } from 'react-native';
 import { DropdownItemsList } from './InspectorDropdown';
 import { formatVariableName } from '../../SceneCreatorUtilities';
+import { InspectorActorRefInput } from './InspectorActorRefInput';
 import { InspectorSegmentedControl } from './InspectorSegmentedControl';
 import { PopoverButton } from '../../../components/PopoverProvider';
 import { sendAsync, useCoreState } from '../../../core/CoreEvents';
@@ -39,8 +40,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    marginTop: 8,
   },
-  scopePicker: { width: '40%' },
+  scopePicker: { width: '40%', marginBottom: 0 },
 });
 
 const InspectorLocalVariablePicker = ({ value, onChange, style, ...props }) => {
@@ -76,15 +78,14 @@ const InspectorLocalVariablePicker = ({ value, onChange, style, ...props }) => {
     onAddItem: addVariable,
   };
 
-  let valueLabel = selectedItem ? formatVariableName(selectedItem.name) : value;
+  let valueLabel = selectedItem ? formatVariableName(selectedItem.name) : formatVariableName(value);
 
   return (
     <View {...props}>
       <PopoverButton
         style={styles.box}
         activeStyle={[styles.box, styles.activeBox]}
-        popover={popover}
-      >
+        popover={popover}>
         <Text style={styles.label}>{valueLabel}</Text>
       </PopoverButton>
     </View>
@@ -138,8 +139,7 @@ const InspectorGlobalVariablePicker = ({ value, onChange, style, ...props }) => 
       <PopoverButton
         style={styles.box}
         activeStyle={[styles.box, styles.activeBox]}
-        popover={popover}
-      >
+        popover={popover}>
         <Text style={styles.label}>{valueLabel}</Text>
       </PopoverButton>
     </View>
@@ -167,6 +167,10 @@ const InspectorMultiVariablePicker = ({ style, value, onChange, ...props }) => {
     (scopeIndex) => onChange({ scope: SCOPE_ITEMS[scopeIndex].id, id: '' }),
     [value, onChange]
   );
+  const setActorRef = React.useCallback(
+    (actorRef) => onChange({ ...value, actorRef }),
+    [value, onChange]
+  );
 
   return (
     <View style={style}>
@@ -179,7 +183,7 @@ const InspectorMultiVariablePicker = ({ style, value, onChange, ...props }) => {
           style={styles.scopePicker}
         />
       </View>
-      <View style={[styles.row, { marginTop: 4 }]}>
+      <View style={styles.row}>
         <Text style={styles.label}>Name</Text>
         {selectedScope.id === 'global' ? (
           <InspectorGlobalVariablePicker {...props} value={value.id} onChange={setId} />
@@ -187,6 +191,12 @@ const InspectorMultiVariablePicker = ({ style, value, onChange, ...props }) => {
           <InspectorLocalVariablePicker {...props} value={value.id} onChange={setId} />
         )}
       </View>
+      {selectedScope.id === 'actor' && !props.trigger ? (
+        <View style={styles.row}>
+          <Text style={styles.label}>Actor</Text>
+          <InspectorActorRefInput value={value.actorRef} onChange={setActorRef} />
+        </View>
+      ) : null}
     </View>
   );
 };

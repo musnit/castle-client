@@ -630,10 +630,20 @@ export const getUIProps = (entryPath) => {
         const name = components[2];
         const paramName = components[3];
         if (data.triggers[name]) {
-          return data.triggers[name].props ? data.triggers[name].props[paramName] : null;
+          return data.triggers[name].props
+            ? {
+                trigger: true,
+                ...data.triggers[name].props[paramName],
+              }
+            : { trigger: true };
         }
         if (data.responses[name]) {
-          return data.responses[name].props ? data.responses[name].props[paramName] : null;
+          return data.responses[name].props
+            ? {
+                response: true,
+                ...data.responses[name].props[paramName],
+              }
+            : { response: true };
         }
         if (data.conditions[name]) {
           return data.conditions[name].props ? data.conditions[name].props[paramName] : null;
