@@ -417,7 +417,7 @@ const MainAppNavigator = () => (
 );
 
 export const RootNavigator = () => {
-  const { isSignedIn, isNuxCompleted } = useSession();
+  const { isSignedIn } = useSession();
 
   // fetch notifs when we first notice a signed in user (including every app InitialAuth)
   React.useEffect(() => {
@@ -437,11 +437,7 @@ export const RootNavigator = () => {
 
   let navigator;
   if (isSignedIn) {
-    if (!isNuxCompleted) {
-      navigator = <NuxNavigator />;
-    } else {
-      navigator = <MainAppNavigator />;
-    }
+    navigator = <MainAppNavigator />;
   } else {
     navigator = <InitialAuthNavigator />;
   }

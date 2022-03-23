@@ -1,6 +1,6 @@
 import React from 'react';
 import { Animated, Easing, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { useNavigation } from '../ReactNavigation';
+import { useNavigation, ANDROID_USE_NATIVE_NAVIGATION } from '../ReactNavigation';
 
 import FastImage from 'react-native-fast-image';
 
@@ -66,7 +66,7 @@ export const AuthPrompt = ({ title, message }) => {
   });
 
   const onPressSignIn = React.useCallback(() => {
-    if (Constants.iOS) {
+    if (Constants.iOS || !ANDROID_USE_NATIVE_NAVIGATION) {
       // use native modal on iOS
       navigate('AuthNavigator', { screen: 'LoginScreen' });
     } else {
