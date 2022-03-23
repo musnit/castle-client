@@ -50,6 +50,12 @@ const ICON_SIZE = 28;
 
 // App UI layout
 
+// specific options for all instances of the PlayDeck screen
+const engineNavigationOptions = {
+  gestureEnabled: false,
+  animation: Platform.OS === 'android' ? 'none' : 'default',
+};
+
 const BrowseNavigator = () => (
   <Stack.Navigator
     initialRouteName="HomeScreen"
@@ -57,12 +63,12 @@ const BrowseNavigator = () => (
       headerShown: false,
     }}>
     <Stack.Screen name="HomeScreen" component={HomeScreen} />
-    <Stack.Screen name="PlayDeck" component={PlayDeckScreen} options={{ gestureEnabled: false }} />
+    <Stack.Screen name="PlayDeck" component={PlayDeckScreen} options={engineNavigationOptions} />
     <Stack.Screen name="Profile" component={ProfileScreen} />
     <Stack.Screen
       name="ViewSource"
       component={ViewSourceNavigator}
-      options={{ gestureEnabled: false }}
+      options={engineNavigationOptions}
     />
     <Stack.Screen name="DeckRemixes" component={DeckRemixesScreen} />
   </Stack.Navigator>
@@ -76,13 +82,13 @@ const ExploreNavigator = () => (
     }}>
     <Stack.Screen name="Explore" component={ExploreScreen} />
     <Stack.Screen name="ExploreFeed" component={ExploreFeed} />
-    <Stack.Screen name="PlayDeck" component={PlayDeckScreen} options={{ gestureEnabled: false }} />
+    <Stack.Screen name="PlayDeck" component={PlayDeckScreen} options={engineNavigationOptions} />
     <Stack.Screen name="Profile" component={ProfileScreen} />
     <Stack.Screen name="Feedback" component={FeedbackScreen} />
     <Stack.Screen
       name="ViewSource"
       component={ViewSourceNavigator}
-      options={{ gestureEnabled: false }}
+      options={engineNavigationOptions}
     />
     <Stack.Screen name="DeckRemixes" component={DeckRemixesScreen} />
   </Stack.Navigator>
@@ -103,7 +109,7 @@ const CreateNavigator = () => (
     <Stack.Screen
       name="CreateDeck"
       component={CreateDeckNavigator}
-      options={{ gestureEnabled: false }}
+      options={engineNavigationOptions}
     />
     <Stack.Screen name="ShareDeck" component={ShareDeckScreen} />
   </Stack.Navigator>
@@ -118,11 +124,11 @@ const NotificationsNavigator = () => (
     />
     <Stack.Screen name="UserList" component={UserListScreen} />
     <Stack.Screen name="Profile" component={ProfileScreen} />
-    <Stack.Screen name="PlayDeck" component={PlayDeckScreen} options={{ gestureEnabled: false }} />
+    <Stack.Screen name="PlayDeck" component={PlayDeckScreen} options={engineNavigationOptions} />
     <Stack.Screen
       name="ViewSource"
       component={ViewSourceNavigator}
-      options={{ gestureEnabled: false }}
+      options={engineNavigationOptions}
     />
     <Stack.Screen name="DeckRemixes" component={DeckRemixesScreen} />
   </Stack.Navigator>
@@ -135,11 +141,11 @@ const ProfileNavigator = () => (
       headerShown: false,
     }}>
     <Stack.Screen name="Profile" component={ProfileScreen} />
-    <Stack.Screen name="PlayDeck" component={PlayDeckScreen} options={{ gestureEnabled: false }} />
+    <Stack.Screen name="PlayDeck" component={PlayDeckScreen} options={engineNavigationOptions} />
     <Stack.Screen
       name="ViewSource"
       component={ViewSourceNavigator}
-      options={{ gestureEnabled: false }}
+      options={engineNavigationOptions}
     />
     <Stack.Screen name="DeckRemixes" component={DeckRemixesScreen} />
   </Stack.Navigator>
