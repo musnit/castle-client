@@ -5,8 +5,16 @@ const { spawn } = require('child_process');
 let inCrash = false;
 let startedBacktrace = false;
 function printLine(line) {
+  if (line.includes('I castle-core:')) {
+    console.log('');
+    console.log('\x1b[4m%s\x1b[0m', line);
+    console.log('');
+    return;
+  }
+
   if (!inCrash) {
-    if (line.includes('Fatal signal')) {
+    if (line.includes('Build fingerprint')) {
+      console.log('\n\n\n');
       inCrash = true;
       startedBacktrace = false;
     }
