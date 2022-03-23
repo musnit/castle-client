@@ -7,10 +7,17 @@ import {
 } from '@react-navigation/native';
 import { Platform, DeviceEventEmitter } from 'react-native';
 import * as GhostChannels from './ghost/GhostChannels';
+import Viewport from './common/viewport';
 
 export const ANDROID_USE_NATIVE_NAVIGATION = false;
 
-export const AndroidNavigationContext = React.createContext({});
+export const AndroidNavigationContext = React.createContext(
+  ANDROID_USE_NATIVE_NAVIGATION
+    ? {}
+    : {
+        navigatorWindowHeight: Viewport.vh * 100,
+      }
+);
 
 export const useNavigation = (...args) => {
   if (Platform.OS === 'ios' || !ANDROID_USE_NATIVE_NAVIGATION) {

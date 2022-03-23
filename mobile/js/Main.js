@@ -63,9 +63,11 @@ const Main = () => {
     );
   }
 
-  if (!bootSplashHidden) {
-    setTimeout(() => BootSplash.hide({ fade: true }), 250);
-    bootSplashHidden = true;
+  if (Platform.OS == 'ios') {
+    if (!bootSplashHidden) {
+      setTimeout(() => BootSplash.hide({ fade: true }), 250);
+      bootSplashHidden = true;
+    }
   }
   return <RootNavigator />;
 };
