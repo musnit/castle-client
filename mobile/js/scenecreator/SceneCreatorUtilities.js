@@ -170,7 +170,16 @@ export const makeExpressionSummary = (expression, context, depth = 0) => {
     }
     case 'variable': {
       let variableLabel = getVariableName(expression.params.variableId, context.variables);
-      return formatVariableName(variableLabel);
+      if (
+        expression.params.variableId?.scope === 'actor' &&
+        expression.params.variableId?.actorRef?.kind &&
+        expression.params.variableId.actorRef.kind !== 'self'
+      ) {
+        const actorRef = makeActorRefSummary(expression.params.variableId.actorRef);
+        return `${actorRef}: ${formatVariableName(variableLabel)}`;
+      } else {
+        return formatVariableName(variableLabel);
+      }
     }
     case 'counter value': {
       const actorRef = makeActorRefSummary(expression.params.actorRef);
