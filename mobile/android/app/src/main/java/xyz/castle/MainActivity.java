@@ -6,6 +6,8 @@ import android.view.KeyEvent;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import com.zoontek.rnbootsplash.RNBootSplash;
+
 import org.love2d.android.GameActivity;
 
 import ghost.CoreGameActivity;
@@ -43,6 +45,8 @@ public class MainActivity extends NavigationActivity {
         gameActivity.resetNative();
         gameActivity.startNative();
         gameActivity.resume();
+
+        RNBootSplash.init(R.drawable.splash_screen, this);
     }
 
     @Override
