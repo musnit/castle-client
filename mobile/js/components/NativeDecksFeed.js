@@ -7,7 +7,7 @@ import { DropdownItemsList } from './Dropdown';
 import { usePopover } from './PopoverProvider';
 import { getDropdownItems, getOnSelectDropdownAction } from '../play/PlayDeckActions';
 import { useSession, blockUser, reportDeck } from '../Session';
-import { sendAsync } from '../core/CoreEvents';
+import { sendAsync, useListen } from '../core/CoreEvents';
 import { useAppState } from '../ghost/GhostAppState';
 import { useGameViewAndroidBackHandler } from '../common/GameViewAndroidBackHandler';
 import { ScreenHeader } from './ScreenHeader';
@@ -23,7 +23,16 @@ export const NativeDecksFeed = ({
   screenId,
   paginateFeedId,
 }) => {
-  const { userId: signedInUserId, isAnonymous, isMuted, setIsMuted } = useSession();
+  const {
+    userId: signedInUserId,
+    isAnonymous,
+    isMuted,
+    setIsMuted,
+    setIsNuxCompleted,
+    setIsNativeFeedNuxCompleted,
+    isNuxCompleted,
+    isNativeFeedNuxCompleted,
+  } = useSession();
   const { showPopover } = usePopover();
   const container = React.useRef(null);
 
@@ -39,6 +48,14 @@ export const NativeDecksFeed = ({
   const onSetIsMuted = React.useCallback((isMuted) => {
     setIsMuted(isMuted);
     sendAsync('SET_SOUND_ENABLED', { enabled: isMuted ? false : true });
+  });
+
+  useListen({
+    eventName: 'NUX_COMPLETED',
+    handler: () => {
+      setIsNuxCompleted(true);
+      setIsNativeFeedNuxCompleted(true);
+    },
   });
 
   let onSelectDropdownAction = getOnSelectDropdownAction({
@@ -128,6 +145,8 @@ export const NativeDecksFeed = ({
         initialDeckIndex,
         paginateFeedId,
         textOverlayStyle: Constants.CORE_OVERLAY_TEXT_STYLE,
+        isNuxCompleted,
+        isNativeFeedNuxCompleted,
       })}
       coreViews={CoreViews.getCoreViews()}
       paused={isCommentsOpen || appState !== 'active'}

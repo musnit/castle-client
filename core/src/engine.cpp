@@ -155,6 +155,8 @@ void Engine::setInitialParams(const char *initialParamsJson) {
   int initialDeckIndex = 0;
   auto useNativeFeed = false;
   auto isNewScene = false;
+  auto isNuxCompleted = true;
+  auto isNativeFeedNuxCompleted = true;
   auto archive = Archive::fromJson(initialParamsJson);
   std::vector<std::string> nativeFeedDeckIds;
   archive.read([&](Reader &reader) {
@@ -170,6 +172,8 @@ void Engine::setInitialParams(const char *initialParamsJson) {
       reader.read(TextBehavior::overlayStyle);
     });
     useNativeFeed = reader.boolean("useNativeFeed", false);
+    isNuxCompleted = reader.boolean("isNuxCompleted", true);
+    isNativeFeedNuxCompleted = reader.boolean("isNativeFeedNuxCompleted", true);
     initialDeckIndex = reader.num("initialDeckIndex", 0);
     paginateFeedId = reader.str("paginateFeedId", nullptr);
     if (reader.has("nativeFeedDeckIds")) {
@@ -244,7 +248,8 @@ void Engine::setInitialParams(const char *initialParamsJson) {
 
   if (feed) {
     feed->fetchInitialDecks(nativeFeedDeckIds, initialDeckIndex,
-        paginateFeedId ? (std::optional<std::string>)std::string(paginateFeedId) : std::nullopt);
+        paginateFeedId ? (std::optional<std::string>)std::string(paginateFeedId) : std::nullopt,
+        isNuxCompleted, isNativeFeedNuxCompleted);
   } else if (isEditing && isNewScene) {
     editor->loadEmptyScene();
 
