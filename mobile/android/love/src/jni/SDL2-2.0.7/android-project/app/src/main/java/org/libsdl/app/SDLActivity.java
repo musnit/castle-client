@@ -376,6 +376,11 @@ public class SDLActivity extends Activity {
     }
 
     public ViewGroup getView() {
+        mSurface = new SDLSurface(mApplicationContext);
+
+        mLayout = new RelativeLayout(mContext);
+        mLayout.addView(mSurface);
+
       return mLayout;
     }
 

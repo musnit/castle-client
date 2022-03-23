@@ -22,10 +22,6 @@ public class MainActivity extends NavigationActivity {
     public static boolean isPopoverOpen = false;
 
     public static ViewGroup recreateGameLayout(Context context) {
-        if (gameLayout != null) {
-            gameLayout.removeView(gameActivity.getView());
-        }
-
         gameLayout = new FrameLayout(context);
         gameLayout.addView(gameActivity.getView());
 
