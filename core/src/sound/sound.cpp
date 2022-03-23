@@ -75,6 +75,7 @@ Sound::Sound() {
   retainSoloud();
   instanceId = sInstanceId++;
   isInstanceAlive[instanceId] = true;
+  isInstanceRunning[instanceId] = true;
 }
 
 Sound::~Sound() {
@@ -85,6 +86,7 @@ Sound::~Sound() {
   clear();
   releaseSoloud();
   isInstanceAlive[instanceId] = false;
+  isInstanceRunning[instanceId] = false;
 }
 
 
@@ -106,6 +108,7 @@ void Sound::resume() {
   return;
 #endif
 
+  isInstanceRunning[instanceId] = true;
   if (!isRunning) {
     if (!clockThread) {
       clockThread = new ClockThread(*this);
@@ -128,6 +131,7 @@ void Sound::suspend() {
 #endif
 
   isRunning = false;
+  isInstanceRunning[instanceId] = false;
   // do not clear streams - just pause time
   stopCurrentlyPlayingSounds();
   if (clockThread) {
@@ -302,7 +306,8 @@ void Sound::playUrl(float playbackRate, float amplitude, const std::string &url)
     int myInstanceId = instanceId;
     API::getData(
         url, [url, playbackRate, amplitude, myInstanceId, this](APIDataResponse &response) {
-          if (isInstanceAlive[myInstanceId] && response.success) {
+          if (isInstanceAlive[myInstanceId] && isInstanceRunning[myInstanceId]
+              && response.success) {
             if (urlSounds.find(url) == urlSounds.end()) {
               std::unique_ptr<SoLoud::WavStream> sound = std::make_unique<SoLoud::WavStream>();
 
