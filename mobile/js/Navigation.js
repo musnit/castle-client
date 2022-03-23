@@ -73,7 +73,6 @@ const ExploreNavigator = () => (
     initialRouteName="Explore"
     screenOptions={{
       headerShown: false,
-      animation: Platform.OS === 'android' ? 'none' : 'default', // native-stack-navigator
     }}>
     <Stack.Screen name="Explore" component={ExploreScreen} />
     <Stack.Screen name="ExploreFeed" component={ExploreFeed} />
