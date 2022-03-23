@@ -48,6 +48,7 @@ enableAndroidFontFix();
 
 const Main = () => {
   const { initialized } = Session.useSession();
+  GameViewAndroidBackHandler.listen();
 
   // Session not yet initialized? Just show a loading screen...
   if (!initialized) {
