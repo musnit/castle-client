@@ -100,6 +100,9 @@ const CastleCoreView = ({
     React.useCallback(() => {
       updateKey();
 
+      // 50 instead of 100 here worked with native nav. maybe something about the animations?
+      // with 50 and js nav, sometimes opening decks from explore on short phones would cut
+      // off the top of the deck
       if (Platform.OS === 'android') {
         setShowOverlay(true);
         setIsFocused(true);
@@ -108,8 +111,8 @@ const CastleCoreView = ({
           setHeight('100%');
           setTimeout(() => {
             setShowOverlay(false);
-          }, 50);
-        }, 50);
+          }, 100);
+        }, 100);
       } else {
         setIsFocused(true);
       }
