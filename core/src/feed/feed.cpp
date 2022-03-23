@@ -428,7 +428,7 @@ void Feed::update(double dt) {
             });
           } else {
             API::loadCard(nextCardId->c_str(), true, [=](APIResponse &response) {
-              if (response.success && idx == getCurrentIndex()) {
+              if (response.success && idx == getCurrentIndex() && decks[idx].player) {
                 auto reader = response.reader;
                 decks[idx].player->readScene(reader, decks[idx].player->getScene().getDeckId());
                 decks[idx].player->getScene().getGesture().setBounds(
@@ -1433,11 +1433,13 @@ void Feed::loadDeckFromDeckJson(int i) {
         auto sceneDataUrl = reader.str("sceneDataUrl", "");
         API::loadSceneData(sceneDataUrl, [=](APIResponse &response) {
           if (response.success) {
-            const std::string readerJson = response.reader.toJson();
-            decks[i].player->readScene(readerJson, deckId);
-            decks[i].player->getScene().getGesture().setBounds(
-                cardLeft, TOP_PADDING, cardWidth, cardHeight);
-            decks[i].isLoaded = true;
+            if (decks[i].player) {
+              const std::string readerJson = response.reader.toJson();
+              decks[i].player->readScene(readerJson, deckId);
+              decks[i].player->getScene().getGesture().setBounds(
+                  cardLeft, TOP_PADDING, cardWidth, cardHeight);
+              decks[i].isLoaded = true;
+            }
           } else {
             networkErrorAtIndex(i);
           }
