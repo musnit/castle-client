@@ -1,5 +1,5 @@
 import React from 'react';
-import { LogBox } from 'react-native';
+import { LogBox, Platform } from 'react-native';
 import { enableScreens } from 'react-native-screens';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
@@ -73,7 +73,7 @@ const ExploreNavigator = () => (
     initialRouteName="Explore"
     screenOptions={{
       headerShown: false,
-      animationEnabled: false,
+      animation: Platform.OS === 'android' ? 'none' : 'default', // native-stack-navigator
     }}>
     <Stack.Screen name="Explore" component={ExploreScreen} />
     <Stack.Screen name="ExploreFeed" component={ExploreFeed} />
