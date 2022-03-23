@@ -390,6 +390,13 @@ void Feed::update(double dt) {
       if (animateToOffset < (-feedItemWidth * ((float)decks.size() - 1.0))) {
         animateToOffset = (-feedItemWidth * ((float)decks.size() - 1.0));
       }
+
+      if (isAnimating) {
+        int idx = getCurrentIndex();
+        if (idx >= 0 && idx < (int)decks.size()) {
+          decks[idx].player->suspend();
+        }
+      }
     }
   });
 
