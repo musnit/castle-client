@@ -84,12 +84,12 @@ export const GameView = React.forwardRef(({
   });
 
   const { engineDidMount, engineDidUnmount, engineDidSuspend, engineDidResume } = useCoreEvents();
+  const [ coreEventsId, setCoreEventsId ] = React.useState(Math.floor(Math.random() * Math.floor(1000)));
 
   useEffect(() => {
-    const id = Math.floor(Math.random() * Math.floor(1000));
-    engineDidMount(id);
-    return () => engineDidUnmount(id);
-  }, []);
+    engineDidMount(coreEventsId);
+    return () => engineDidUnmount(coreEventsId);
+  }, [coreEventsId]);
 
   useListen({
     eventName: 'SCENE_MESSAGE',
@@ -106,12 +106,12 @@ export const GameView = React.forwardRef(({
   });
 
   useFocusEffect(React.useCallback(() => {
-    engineDidResume();
+    engineDidResume(coreEventsId);
 
     return () => {
-      engineDidSuspend();
+      engineDidSuspend(coreEventsId);
     }
-  }, []));
+  }, [coreEventsId]));
 
   return (
     <View style={styles.container} ref={ref} collapsable={false}>

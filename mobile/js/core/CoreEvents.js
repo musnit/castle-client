@@ -95,6 +95,10 @@ export const Provider = (props) => {
 
   const engineDidResume = (eventsId) => {
     sendAsync('RESUME_SCENE');
+    setState({
+      eventsId,
+      eventsReady: true,
+    });
   };
 
   const value = {
