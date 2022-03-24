@@ -25,7 +25,7 @@ export const NativeDecksFeed = ({
   title = '',
   screenId,
   paginateFeedId,
-  amplitudeScreenName,
+  previousScreenName,
 }) => {
   const {
     userId: signedInUserId,
@@ -145,24 +145,27 @@ export const NativeDecksFeed = ({
     React.useCallback(() => {
       setIsFocused(true);
       Amplitude.getInstance().logEvent('VIEW_FEED', {
-        screen: amplitudeScreenName,
+        screen: previousScreenName,
       });
 
       return () => {
         setIsFocused(false);
-      }
-    }, [])
+      };
+    }, [previousScreenName, setIsFocused])
   );
 
-  const viewFeedItemCallback = React.useCallback((event) => {
-    if (isFocused) {
-      Amplitude.getInstance().logEvent('VIEW_FEED_ITEM', {
-        deckId: event.deckId,
-        visibility: event.visibility,
-        index: event.index,
-      });
-    }
-  }, [isFocused]);
+  const viewFeedItemCallback = React.useCallback(
+    (event) => {
+      if (isFocused) {
+        Amplitude.getInstance().logEvent('VIEW_FEED_ITEM', {
+          deckId: event.deckId,
+          visibility: event.visibility,
+          index: event.index,
+        });
+      }
+    },
+    [isFocused]
+  );
 
   useListen({
     eventName: 'VIEW_FEED_ITEM',
