@@ -207,6 +207,8 @@ public class CastleBottomSheet extends LinearLayout {
             } else {
                 position = screenSpaceSnapPoints.get(initialSnap);
             }
+
+            updateRNScrollViewPadding(0);
         } else {
             position = screenHeight + ViewUtils.dpToPx(1);
             hideKeyboard();
@@ -309,10 +311,14 @@ public class CastleBottomSheet extends LinearLayout {
     }
 
     private void animateToPosition() {
+        setVisibility(View.VISIBLE);
+
         animate().y(position).setDuration(200).withEndAction(() -> {
             // if it's closed we don't need to change the height
             if (position < screenHeight) {
                 updateRNHeight(screenHeight - position);
+            } else {
+                setVisibility(View.INVISIBLE);
             }
         }).start();
 
