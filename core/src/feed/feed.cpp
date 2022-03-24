@@ -569,9 +569,9 @@ void Feed::runUpdateAtIndex(int idx, double dt) {
     decks[idx].framesToSkip += 20.0;
   } else if (time > 0.5) {
     decks[idx].framesToSkip += 5.0;
-  } else if (time > 0.2) {
-    decks[idx].framesToSkip += 1.0;
-  }
+  } /* else if (time > 0.2) {
+     decks[idx].framesToSkip += 1.0;
+   }*/
 
   float avgTime = 0.0;
   for (int i = 0; i < NUM_FRAME_TIMES; i++) {
