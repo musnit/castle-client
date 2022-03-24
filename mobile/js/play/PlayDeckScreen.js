@@ -16,7 +16,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export const PlayDeckScreen = ({ decks, initialDeckIndex = 0, title, route, paginateFeedId, amplitudeScreenName }) => {
+export const PlayDeckScreen = ({ decks, initialDeckIndex = 0, title, route, paginateFeedId }) => {
   if (!decks && route?.params) {
     decks = route.params.decks;
     title = route.params.title;
@@ -57,7 +57,14 @@ export const PlayDeckScreen = ({ decks, initialDeckIndex = 0, title, route, pagi
     setCommentsDeck(deck);
   }, [deck]);
 
-  const { pop } = useNavigation();
+  const { pop, getState } = useNavigation();
+  let previousScreenName;
+  if (getState) {
+    const { index, routes } = getState() || {};
+    if (index > 0 && routes?.length >= index) {
+      previousScreenName = routes[index - 1].name;
+    }
+  }
   const onHardwareBackPress = React.useCallback(() => {
     if (isCommentsVisible) {
       closeComments();
@@ -83,7 +90,7 @@ export const PlayDeckScreen = ({ decks, initialDeckIndex = 0, title, route, pagi
             title={title}
             paginateFeedId={paginateFeedId}
             showBackButton={true}
-            amplitudeScreenName={amplitudeScreenName}
+            previousScreenName={previousScreenName}
           />
         ) : (
           <DecksFeed
