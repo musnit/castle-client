@@ -338,6 +338,7 @@ const ModalCreateDeckNavigator = () => (
           onPress={() => navigation.pop()}
         />
       ),
+      headerTitleAlign: 'center',
       headerStyle: {
         backgroundColor: '#000',
         justifyContent: 'center',
