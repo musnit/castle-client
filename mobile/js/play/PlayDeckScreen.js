@@ -16,10 +16,7 @@ const styles = StyleSheet.create({
   },
 });
 
-// TODO: support list of decks
-// and distinguish "go back out of this screen" from "collapse current deck but
-// stay on this screen"
-export const PlayDeckScreen = ({ decks, initialDeckIndex = 0, title, route, paginateFeedId }) => {
+export const PlayDeckScreen = ({ decks, initialDeckIndex = 0, title, route, paginateFeedId, amplitudeScreenName }) => {
   if (!decks && route?.params) {
     decks = route.params.decks;
     title = route.params.title;
@@ -86,6 +83,7 @@ export const PlayDeckScreen = ({ decks, initialDeckIndex = 0, title, route, pagi
             title={title}
             paginateFeedId={paginateFeedId}
             showBackButton={true}
+            amplitudeScreenName={amplitudeScreenName}
           />
         ) : (
           <DecksFeed

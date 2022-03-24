@@ -1,5 +1,7 @@
 import React from 'react';
 import { View } from 'react-native';
+import { Amplitude } from '@amplitude/react-native';
+
 import { GameView } from '../game/GameView';
 import * as Constants from '../Constants';
 import * as CoreViews from '../CoreViews';
@@ -11,6 +13,7 @@ import { sendAsync, useListen } from '../core/CoreEvents';
 import { useAppState } from '../ghost/GhostAppState';
 import { useGameViewAndroidBackHandler } from '../common/GameViewAndroidBackHandler';
 import { ScreenHeader } from './ScreenHeader';
+import { useFocusEffect } from '../ReactNavigation';
 
 export const NativeDecksFeed = ({
   onPressComments,
@@ -22,6 +25,7 @@ export const NativeDecksFeed = ({
   title = '',
   screenId,
   paginateFeedId,
+  amplitudeScreenName,
 }) => {
   const {
     userId: signedInUserId,
@@ -134,6 +138,36 @@ export const NativeDecksFeed = ({
     return false;
   }, [isCommentsOpen, onCloseComments]);
   useGameViewAndroidBackHandler({ onHardwareBackPress });
+
+  const [isFocused, setIsFocused] = React.useState(true);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      setIsFocused(true);
+      Amplitude.getInstance().logEvent('VIEW_FEED', {
+        screen: amplitudeScreenName,
+      });
+
+      return () => {
+        setIsFocused(false);
+      }
+    }, [])
+  );
+
+  const viewFeedItemCallback = React.useCallback((event) => {
+    if (isFocused) {
+      Amplitude.getInstance().logEvent('VIEW_FEED_ITEM', {
+        deckId: event.deckId,
+        visibility: event.visibility,
+        index: event.index,
+      });
+    }
+  }, [isFocused]);
+
+  useListen({
+    eventName: 'VIEW_FEED_ITEM',
+    handler: viewFeedItemCallback,
+  });
 
   let gameView = (
     <GameView

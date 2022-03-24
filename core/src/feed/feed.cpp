@@ -32,7 +32,7 @@
 
 // creator.photo.url and initialCard.backgroundImage.smallUrl needed for DeckRemixesScreen
 const std::string GRAPHQL_DECK_FIELDS
-    = "\ndeckId\ncaption\nlastModified\nvariables\nchildDecksCount\ncreator "
+    = "\ndeckId\ncaption\nlastModified\nvariables\nchildDecksCount\nvisibility\ncreator "
       "{\nuserId\nusername\nphoto "
       "{\nsmallAvatarUrl\nurl\n}\n}\ninitialCard {\n    "
       "    cardId\nsceneDataUrl\nbackgroundImage {\nsmallUrl}\n      }\n    commentsEnabled\n  "
@@ -430,6 +430,8 @@ void Feed::update(double dt) {
           bridge.sendEvent("NUX_COMPLETED", ev);
         }
       }
+
+      sendViewFeedItemEvent();
     }
   }
 
@@ -1396,6 +1398,7 @@ void Feed::loadDeckFromDeckJson(int i) {
   deckArchive.read([&](Reader &reader) {
     std::string deckId = reader.str("deckId", "");
     decks[i].deckId = deckId;
+    decks[i].visibility = reader.str("visibility");
     decks[i].lastModified = reader.str("lastModified");
     decks[i].coreView->updateJSGestureProp("deckId", deckId);
     decks[i].coreView->updateJSGestureProp("deck", *decks[i].deckJson);
@@ -1512,6 +1515,8 @@ void Feed::loadDeckFromDeckJson(int i) {
   });
 
   layoutCoreViews(i);
+
+  sendViewFeedItemEvent();
 }
 
 void Feed::networkErrorAtIndex(int i) {
@@ -1592,4 +1597,24 @@ void Feed::renderToCanvas(love::graphics::Canvas *canvas, const std::function<vo
 
   if (oldtargets.depthStencil.canvas != nullptr)
     oldtargets.depthStencil.canvas->release();
+}
+
+struct ViewFeedItemEvent {
+  PROP(std::string, deckId);
+  PROP(std::string, visibility);
+  PROP(int, index);
+};
+
+void Feed::sendViewFeedItemEvent() {
+  int idx = getCurrentIndex();
+
+  if (idx != lastViewFeedItemEventIndex && idx >= 0 && idx < (int)decks.size() && decks[idx].deckId
+      && decks[idx].visibility) {
+    ViewFeedItemEvent ev;
+    ev.deckId = *decks[idx].deckId;
+    ev.visibility = *decks[idx].visibility;
+    ev.index = idx;
+    bridge.sendEvent("VIEW_FEED_ITEM", ev);
+    lastViewFeedItemEventIndex = idx;
+  }
 }
