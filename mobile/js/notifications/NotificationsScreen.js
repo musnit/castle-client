@@ -10,7 +10,6 @@ import {
   View,
   Platform,
 } from 'react-native';
-import { AuthPrompt } from '../auth/AuthPrompt';
 import { Amplitude } from '@amplitude/react-native';
 import { FollowButton } from '../components/FollowButton';
 import { MessageBody } from '../components/MessageBody';
@@ -20,7 +19,12 @@ import { ScreenHeader } from '../components/ScreenHeader';
 import { toRecentDate } from '../common/date-utilities';
 import { useAppState } from '../ghost/GhostAppState';
 import { useNavigation, useFocusEffect, useIsFocused } from '../ReactNavigation';
-import { useSession, maybeFetchNotificationsAsync, setNotifBadge, fetchMoreNotifications } from '../Session';
+import {
+  useSession,
+  maybeFetchNotificationsAsync,
+  setNotifBadge,
+  fetchMoreNotifications,
+} from '../Session';
 import { UserAvatar } from '../components/UserAvatar';
 
 import * as Constants from '../Constants';
@@ -396,7 +400,9 @@ export const NotificationsScreen = () => {
           <View style={Constants.styles.empty}>
             <Text style={Constants.styles.emptyTitle}>No notifications yet</Text>
             <Text style={Constants.styles.emptyText}>
-              {isAnonymous ? "You'll get notified about new decks." : "You'll get notified about new followers or activity on your decks."}
+              {isAnonymous
+                ? "You'll get notified about new decks."
+                : "You'll get notified about new followers or activity on your decks."}
             </Text>
           </View>
         )}
