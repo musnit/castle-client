@@ -1,13 +1,13 @@
 import React from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { CardCell } from '../components/CardCell';
-import { useNavigation } from '../ReactNavigation';
+import { ScreenHeader } from '../components/ScreenHeader';
+import { useNavigation, ANDROID_USE_NATIVE_NAVIGATION } from '../ReactNavigation';
 import { useQuery, gql } from '@apollo/client';
 import FastImage from 'react-native-fast-image';
 
 import * as Constants from '../Constants';
 import * as LocalId from '../common/local-id';
-import { ScreenHeader } from '../components/ScreenHeader';
 
 const styles = StyleSheet.create({
   gridContainer: {
@@ -122,7 +122,9 @@ export const CreateChooseKitScreen = () => {
 
   return (
     <>
-      {Platform.OS === 'android' && <ScreenHeader title="New Deck" />}
+      {Platform.OS === 'android' && ANDROID_USE_NATIVE_NAVIGATION ? (
+        <ScreenHeader title="New Deck" />
+      ) : null}
       <View style={styles.textContainer}>
         <Text style={styles.text}>
           Start with a blank canvas{'\n'}
