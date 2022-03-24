@@ -1,5 +1,6 @@
 import React from 'react';
 import { Animated, Easing, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation, ANDROID_USE_NATIVE_NAVIGATION } from '../ReactNavigation';
 
 import FastImage from 'react-native-fast-image';
@@ -10,9 +11,10 @@ import { MiscLinks } from '../profile/MiscLinks';
 
 const styles = StyleSheet.create({
   container: {
-    height: '100%',
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    paddingVertical: 12,
   },
   topSection: {
     flex: 1,
@@ -86,7 +88,7 @@ export const AuthPrompt = ({ title, message }) => {
   }, []);
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.topSection}>
         <FastImage
           style={{
@@ -133,10 +135,10 @@ export const AuthPrompt = ({ title, message }) => {
             </Text>
           </TouchableOpacity>
         </View>
-        <View style={{ flexGrow: 0 }}>
+        <View style={{ flexShrink: 1 }}>
           <MiscLinks />
         </View>
       </View>
-    </View>
+    </SafeAreaView>
   );
 };

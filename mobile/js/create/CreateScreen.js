@@ -256,12 +256,10 @@ export const CreateScreen = () => {
 
   if (isAnonymous) {
     return (
-      <SafeAreaView>
-        <AuthPrompt
-          title="Create interactive cards"
-          message="Make digital toys, living doodles, or tiny games."
-        />
-      </SafeAreaView>
+      <AuthPrompt
+        title="Create interactive cards"
+        message="Make digital toys, living doodles, or tiny games."
+      />
     );
   } else {
     return <CreateScreenAuthenticated />;

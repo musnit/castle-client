@@ -148,12 +148,10 @@ export const ProfileScreen = ({ userId, route }) => {
 
   if (isMe && isAnonymous) {
     return (
-      <SafeAreaView>
-        <AuthPrompt
-          title="Build your profile"
-          message="Show off your decks and follow other creators."
-        />
-      </SafeAreaView>
+      <AuthPrompt
+        title="Build your profile"
+        message="Show off your decks and follow other creators."
+      />
     );
   } else {
     return (
