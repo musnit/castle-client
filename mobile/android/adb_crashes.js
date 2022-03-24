@@ -5,7 +5,7 @@ const { spawn } = require('child_process');
 let inCrash = false;
 let startedBacktrace = false;
 function printLine(line) {
-  if (line.includes('I castle-core:')) {
+  if (line.includes('I castle-core:') || line.includes('I ReactNativeJS:')) {
     console.log('');
     console.log('\x1b[4m%s\x1b[0m', line);
     console.log('');
