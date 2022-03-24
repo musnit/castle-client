@@ -11,7 +11,7 @@
 #include "archive.h"
 
 #define TOP_PADDING 0
-#define BOTTOM_UI_MIN_HEIGHT 140
+// #define CAPTIONS_ENABLED
 #define PREV_NEXT_TAP_MAX_DURATION 0.3
 #define MIN_TIME_BETWEEN_TAP_GESTURES 0.5
 #define CORE_VIEWS_GESTURE_INACTIVE_AFTER_SWIPE_TIME 0.4
@@ -20,6 +20,12 @@
 #define NUX_DECK_ID "4JQS0nAXr"
 //#define NUX_LAST_CARD_ID "kwruZ1zJJp"
 #define NUX_LAST_CARD_ID "hX8B1Z6zP"
+
+#ifdef CAPTIONS_ENABLED
+#define BOTTOM_UI_MIN_HEIGHT 140
+#else
+#define BOTTOM_UI_MIN_HEIGHT 90
+#endif
 
 // #define DEBUG_CLICK_TO_ADVANCE
 // #define DEBUG_AUTO_ADVANCE
@@ -1394,7 +1400,9 @@ void Feed::loadDeckFromDeckJson(int i) {
     decks[i].coreView->updateJSGestureProp("deckId", deckId);
     decks[i].coreView->updateJSGestureProp("deck", *decks[i].deckJson);
 
+#ifdef CAPTIONS_ENABLED
     decks[i].coreView->updateProp("caption", "text", reader.str("caption", ""));
+#endif
 
     reader.arr("variables", [&]() {
       decks[i].player->readVariables(reader);
