@@ -19,7 +19,7 @@ export const FeaturedDecks = ({
   isCommentsOpen,
 }) => {
   if (Constants.USE_NATIVE_FEED) {
-    return <NativeDecksFeed onPressComments={onPressComments} isCommentsOpen={isCommentsOpen} onCloseComments={onCloseComments} screenId='featuredFeed' />;
+    return <NativeDecksFeed onPressComments={onPressComments} isCommentsOpen={isCommentsOpen} onCloseComments={onCloseComments} screenId='featuredFeed' amplitudeScreenName='featured'/>;
   }
 
   const { navigate } = useNavigation();

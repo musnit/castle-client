@@ -17,6 +17,7 @@ struct FeedItem {
   };
 
   std::optional<std::string> deckId;
+  std::optional<std::string> visibility;
   std::optional<std::string> cardId;
   std::optional<std::string> creatorUserId;
   std::optional<std::string> deckJson;
@@ -95,6 +96,7 @@ private:
   bool hasGlobalNetworkError = false;
   float timeSinceLastTapGesture = 1.0;
   float timeSinceLastSwipeGesture = 1.0;
+  int lastViewFeedItemEventIndex = -1;
 
   int cardLeft = 0;
   int cardWidth = 800;
@@ -134,6 +136,7 @@ private:
   void layoutCoreViews(int i);
   void renderCardTexture(love::Texture *texture, float time, float brightness);
   void runUpdateAtIndex(int i, double dt);
+  void sendViewFeedItemEvent();
 
   Lv &lv { Lv::getInstance() };
   Bridge &bridge;
