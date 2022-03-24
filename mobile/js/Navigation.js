@@ -326,28 +326,24 @@ const NuxNavigator = () => (
   </Stack.Navigator>
 );
 
+const makeModalHeaderStyles = ({ navigation }) => ({
+  headerTintColor: '#fff',
+  headerLeft: () => (
+    <Constants.CastleIcon name="close" size={24} color="#fff" onPress={() => navigation.pop()} />
+  ),
+  headerTitleAlign: 'center',
+  headerStyle: {
+    backgroundColor: '#000',
+    justifyContent: 'center',
+  },
+  headerTitleStyle: {
+    fontFamily: 'Basteleur-Bold',
+    fontSize: 20,
+  },
+});
+
 const ModalCreateDeckNavigator = () => (
-  <Stack.Navigator
-    screenOptions={({ navigation }) => ({
-      headerTintColor: '#fff',
-      headerLeft: () => (
-        <Constants.CastleIcon
-          name="close"
-          size={24}
-          color="#fff"
-          onPress={() => navigation.pop()}
-        />
-      ),
-      headerTitleAlign: 'center',
-      headerStyle: {
-        backgroundColor: '#000',
-        justifyContent: 'center',
-      },
-      headerTitleStyle: {
-        fontFamily: 'Basteleur-Bold',
-        fontSize: 20,
-      },
-    })}>
+  <Stack.Navigator screenOptions={makeModalHeaderStyles}>
     <Stack.Screen
       name="CreateChooseKitScreen"
       component={CreateChooseKitScreen}
@@ -357,16 +353,7 @@ const ModalCreateDeckNavigator = () => (
 );
 
 const AuthNavigator = () => (
-  <Stack.Navigator
-    screenOptions={({ navigation }) => ({
-      headerTintColor: '#fff',
-      headerLeft: () => (
-        <Icon name="close" size={24} color="#fff" onPress={() => navigation.pop()} />
-      ),
-      headerStyle: {
-        backgroundColor: '#000',
-      },
-    })}>
+  <Stack.Navigator screenOptions={makeModalHeaderStyles}>
     <Stack.Screen
       name="LoginScreen"
       component={LoginScreen}

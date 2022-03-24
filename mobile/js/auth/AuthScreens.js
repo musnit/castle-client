@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
   },
   paddingView: {
     height: 16,
-  }
+  },
 });
 
 const parseErrors = (e) => {
@@ -119,6 +119,9 @@ const Button = (props) => {
         ...Constants.styles.primaryButton,
         ...Constants.styles.buttonLarge,
         marginVertical: 24,
+        // for some reason the button could render with zero height on Android, even though the
+        // inner Text has intrinsic height, so force a minimum height on the overall button
+        minHeight: 48,
       }}>
       <Text style={[Constants.styles.primaryButtonLabel, Constants.styles.buttonLargeLabel]}>
         {props.text}
