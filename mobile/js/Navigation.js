@@ -151,7 +151,7 @@ const ProfileNavigator = () => (
   </Stack.Navigator>
 );
 
-const getIsTabBarVisible = ({ route, navigation }) => {
+export const getIsTabBarVisible = ({ route, navigation }) => {
   const tabState = navigation.getState();
   let isVisible = true;
   if (tabState?.routes) {

@@ -13,7 +13,8 @@ import { PanGestureHandler, State } from 'react-native-gesture-handler';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useKeyboard } from '../common/utilities';
-import { AndroidNavigationContext } from '../ReactNavigation';
+import { AndroidNavigationContext, useNavigation, ANDROID_USE_NATIVE_NAVIGATION } from '../ReactNavigation';
+import { getIsTabBarVisible } from '../Navigation';
 
 import Viewport from '../common/viewport';
 
@@ -28,6 +29,7 @@ const SPRING_CONFIG = {
 
 const SWIPE_MIN_VELOCITY = 128;
 const SWIPE_MIN_DISTANCE = 64;
+const TAB_BAR_HEIGHT = 49;
 
 const styles = StyleSheet.create({
   container: {
@@ -222,12 +224,25 @@ const BottomSheetAndroid = ({
   style = {},
 }) => {
   let screenHeight;
-  const { navigatorWindowHeight } = React.useContext(AndroidNavigationContext);
 
-  if (isFullScreen) {
-    screenHeight = Viewport.vh * 100;
+  if (ANDROID_USE_NATIVE_NAVIGATION) {
+    const { navigatorWindowHeight } = React.useContext(AndroidNavigationContext);
+
+    if (isFullScreen) {
+      screenHeight = Viewport.vh * 100;
+    } else {
+      screenHeight = navigatorWindowHeight;
+    }
   } else {
-    screenHeight = navigatorWindowHeight;
+    const navigation = useNavigation();
+    let isTabBarVisible = getIsTabBarVisible({
+      navigation,
+    });
+    if (isTabBarVisible) {
+      screenHeight = Viewport.vh * 100 - TAB_BAR_HEIGHT;
+    } else {
+      screenHeight = Viewport.vh * 100;
+    }
   }
 
   const TEXT_INPUT_HEIGHT = 48; // approx height of one text input
