@@ -152,7 +152,11 @@ const ProfileNavigator = () => (
 );
 
 export const getIsTabBarVisible = ({ route, navigation }) => {
-  const tabState = navigation.getState();
+  let tabState = navigation.getState();
+  if (tabState.type === 'stack') {
+    // if we got a stack, try moving to parent tab navigator
+    tabState = navigation.getParent().getState();
+  }
   let isVisible = true;
   if (tabState?.routes) {
     const currentTabState = tabState.routes[tabState.index];
