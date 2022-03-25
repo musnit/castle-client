@@ -392,11 +392,10 @@ void DrawData::addLayer(std::string title, DrawDataLayerId id, int order) {
     newLayer->frames.push_back(std::move(newFrame));
   }
 
-  layers.push_back(std::move(newLayer));
   if (order > -1 && order < (int)layers.size() - 1) {
-    for (int ii = order; ii < (int)layers.size() - 1; ii++) {
-      std::iter_swap(layers.begin() + ii, layers.rbegin());
-    }
+    layers.insert(layers.begin() + order, std::move(newLayer));
+  } else {
+    layers.push_back(std::move(newLayer));
   }
 }
 
