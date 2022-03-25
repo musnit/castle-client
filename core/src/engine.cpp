@@ -13,8 +13,6 @@ namespace CastleAPI {
 void initJNI();
 jclass getGameActivityClass();
 }
-
-// #define USE_FLUSH_PENDING_RECEIVES_THREAD
 #endif
 
 //
@@ -93,11 +91,6 @@ Engine::Engine() {
   CastleAPI::initJNI();
 #endif
 
-#ifdef USE_FLUSH_PENDING_RECEIVES_THREAD
-  flushPendingReceivesThread = new FlushPendingReceivesThread(*this);
-  flushPendingReceivesThread->start();
-#endif
-
 #ifdef __EMSCRIPTEN__
   auto screen = std::make_unique<Player>(bridge);
   screen->resume();
@@ -119,13 +112,7 @@ Engine::Engine() {
 }
 
 Engine::~Engine() {
-  shuttingDown = true;
   TextBehavior::unloadFontResources();
-
-#ifdef USE_FLUSH_PENDING_RECEIVES_THREAD
-  flushPendingReceivesThread->wait();
-  delete flushPendingReceivesThread;
-#endif
 }
 
 
@@ -387,9 +374,6 @@ void Engine::androidHandleBackPressed() {
 //
 
 bool Engine::frame() {
-#ifdef USE_FLUSH_PENDING_RECEIVES_THREAD
-  flushPendingReceivesMutex.lock();
-#endif
 #ifdef ANDROID
   setPausedMutex.lock();
 #endif
@@ -456,18 +440,11 @@ bool Engine::frame() {
   // Process events. Quit if the window was closed.
   lv.event.pump();
 
-#ifdef USE_FLUSH_PENDING_RECEIVES_THREAD
-  // android freezes here when view is unmounted, so we need to release the lock
-  flushPendingReceivesMutex.unlock();
-#endif
 #ifdef ANDROID
   setPausedMutex.unlock();
 #endif
   lv.event.clear();
   if (ghostChildWindowCloseEventReceived) {
-#ifdef USE_FLUSH_PENDING_RECEIVES_THREAD
-    flushPendingReceivesMutex.unlock();
-#endif
 #ifdef ANDROID
     setPausedMutex.unlock();
 #endif
@@ -475,9 +452,6 @@ bool Engine::frame() {
     return false;
   }
 
-#ifdef USE_FLUSH_PENDING_RECEIVES_THREAD
-  flushPendingReceivesMutex.lock();
-#endif
 #ifdef ANDROID
   setPausedMutex.lock();
 #endif
@@ -497,29 +471,11 @@ bool Engine::frame() {
   draw();
   lv.graphics.present(nullptr);
 
-#ifdef USE_FLUSH_PENDING_RECEIVES_THREAD
-  flushPendingReceivesMutex.unlock();
-#endif
 #ifdef ANDROID
   setPausedMutex.unlock();
 #endif
 
   return !shouldQuit;
-}
-
-void Engine::FlushPendingReceivesThread::threadFunction() {
-  while (true) {
-    owner.flushPendingReceivesMutex.lock();
-    owner.bridge.flushPendingReceives();
-    owner.flushPendingReceivesMutex.unlock();
-
-    for (int i = 0; i < 10; i++) {
-      if (owner.shuttingDown) {
-        return;
-      }
-      love::sleep(10);
-    }
-  }
 }
 
 

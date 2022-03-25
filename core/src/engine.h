@@ -102,24 +102,8 @@ private:
 
   void androidHandleBackPressed();
 
-  class FlushPendingReceivesThread : public love::thread::Threadable {
-  public:
-    FlushPendingReceivesThread(Engine &owner_)
-        : owner(owner_) {
-      threadName = "FlushPendingReceivesThread";
-    };
-    void threadFunction();
-
-  protected:
-    Engine &owner;
-  };
-  friend class FlushPendingReceivesThread;
-
-  FlushPendingReceivesThread *flushPendingReceivesThread;
-  std::mutex flushPendingReceivesMutex;
   std::mutex setPausedMutex;
   std::vector<std::function<bool()>> androidBackButtonHandlers;
-  bool shuttingDown = false;
 };
 
 
