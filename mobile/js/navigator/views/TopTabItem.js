@@ -140,28 +140,23 @@ export default function TopTabBarItem({
 
 const styles = StyleSheet.create({
   tab: {
-    flex: 1,
     alignItems: 'center',
+    paddingHorizontal: 9,
   },
   tabPortrait: {
     justifyContent: 'flex-end',
     flexDirection: 'column',
   },
   tabLandscape: {
-    justifyContent: 'center',
     flexDirection: 'row',
-  },
-  label: {
-    textAlign: 'center',
-    backgroundColor: 'transparent',
   },
   labelBeneath: {
     fontSize: 10,
   },
   labelBeside: {
-    fontSize: 13,
-    marginLeft: 20,
+    fontSize: 17,
     marginTop: 3,
+    marginLeft: 8,
   },
   button: {
     display: 'flex',

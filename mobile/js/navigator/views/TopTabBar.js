@@ -64,6 +64,7 @@ export default function TopTabBar({ state, navigation, descriptors, insets, styl
     tabBarInactiveTintColor,
     tabBarActiveBackgroundColor,
     tabBarInactiveBackgroundColor,
+    tabBarLabelPosition,
     tabBarNuxHideIcons, // CASTLE: independent from visible, fade out icons if nux not completed
   } = focusedOptions;
 
@@ -284,7 +285,8 @@ export default function TopTabBar({ state, navigation, descriptors, insets, styl
                   badge={options.tabBarBadge}
                   badgeStyle={options.tabBarBadgeStyle}
                   label={label}
-                  showLabel={tabBarShowLabel}
+                  showLabel={options.tabBarShowLabel}
+                  horizontal={tabBarLabelPosition}
                   labelStyle={options.tabBarLabelStyle}
                   iconStyle={options.tabBarIconStyle}
                   style={options.tabBarItemStyle}

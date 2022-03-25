@@ -46,7 +46,7 @@ LogBox.ignoreLogs([
   "Accessing the 'state' property of the 'route' object is not supported. If you want to get the focused route name, use the 'getFocusedRouteNameFromRoute' helper instead: https://reactnavigation.org/docs/5.x/screen-options-resolution/#setting-parent-screen-options-based-on-child-navigators-state",
 ]);
 
-const ICON_SIZE = 28;
+const ICON_SIZE = 22;
 
 // App UI layout
 
@@ -217,7 +217,10 @@ const TabNavigator = () => {
             backgroundColor: '#000',
             display: isTabBarVisible ? undefined : 'none',
           },
-          tabBarShowLabel: false,
+          tabBarLabelPosition: 'beside-icon',
+          tabBarIconStyle: {
+            width: 18,
+          },
         };
       }}>
       <Tab.Screen
@@ -236,6 +239,8 @@ const TabNavigator = () => {
               />
             );
           },
+          tabBarLabel: 'Home',
+          tabBarItemStyle: { paddingLeft: 12 },
         }}
       />
       <Tab.Screen
@@ -254,6 +259,7 @@ const TabNavigator = () => {
               />
             );
           },
+          tabBarLabel: 'Explore',
         }}
       />
       <Tab.Screen
@@ -272,6 +278,8 @@ const TabNavigator = () => {
               />
             );
           },
+          tabBarLabel: 'Create',
+          tabBarItemStyle: { flex: 1 },
         }}
       />
       <Tab.Screen
@@ -291,6 +299,7 @@ const TabNavigator = () => {
               />
             );
           },
+          tabBarShowLabel: false,
         }}
       />
       <Tab.Screen
@@ -309,6 +318,8 @@ const TabNavigator = () => {
               />
             );
           },
+          tabBarShowLabel: false,
+          tabBarItemStyle: { paddingRight: 12 },
         }}
       />
     </Tab.Navigator>
