@@ -452,16 +452,12 @@ void Feed::update(double dt) {
             auto archive = Archive::fromJson(cardData.c_str());
             archive.read([&](Reader &reader) {
               decks[idx].player->readScene(reader, decks[idx].player->getScene().getDeckId());
-              decks[idx].player->getScene().getGesture().setBounds(
-                  cardLeft, TOP_PADDING, cardWidth, cardHeight);
             });
           } else {
             API::loadCard(nextCardId->c_str(), true, [=](APIResponse &response) {
               if (response.success && idx == getCurrentIndex() && decks[idx].player) {
                 auto reader = response.reader;
                 decks[idx].player->readScene(reader, decks[idx].player->getScene().getDeckId());
-                decks[idx].player->getScene().getGesture().setBounds(
-                    cardLeft, TOP_PADDING, cardWidth, cardHeight);
               }
 
               // TODO: show error?
@@ -547,6 +543,10 @@ void Feed::runUpdateAtIndex(int idx, double dt) {
   if (decks[idx].isFrozen) {
     // don't run any more updates at this point
     return;
+  }
+
+  if (decks[idx].player->hasScene()) {
+    decks[idx].player->getScene().getGesture().setBounds(cardLeft, TOP_PADDING, cardWidth, cardHeight);
   }
 
   if (decks[idx].framesToSkip > 1.0) {
@@ -1491,8 +1491,6 @@ void Feed::loadDeckFromDeckJson(int i) {
         auto archive = Archive::fromJson(cardData.c_str());
         archive.read([&](Reader &reader) {
           decks[i].player->readScene(reader, deckId);
-          decks[i].player->getScene().getGesture().setBounds(
-              cardLeft, TOP_PADDING, cardWidth, cardHeight);
           decks[i].isLoaded = true;
         });
       } else {
@@ -1502,8 +1500,6 @@ void Feed::loadDeckFromDeckJson(int i) {
             if (decks[i].player) {
               const std::string readerJson = response.reader.toJson();
               decks[i].player->readScene(readerJson, deckId);
-              decks[i].player->getScene().getGesture().setBounds(
-                  cardLeft, TOP_PADDING, cardWidth, cardHeight);
               decks[i].isLoaded = true;
             }
           } else {
