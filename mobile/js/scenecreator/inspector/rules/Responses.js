@@ -620,7 +620,7 @@ const FollowWithCamera = () => {
 
 const SetBehavior = ({ response, context }) => {
   let behaviorName, propertyName, valueLabel;
-  if (response.params?.behaviorId) {
+  if (response.params?.behaviorId && context.behaviors) {
     const entry = Object.entries(context.behaviors).find(
       ([_, b]) => b.behaviorId === response.params.behaviorId
     );
