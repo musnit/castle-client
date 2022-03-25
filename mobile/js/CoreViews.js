@@ -9,8 +9,8 @@ import { gql } from '@apollo/client';
 
 let FEED_ICON_SIZE = '5.5vw';
 let FEED_ICON_TOP = '2.7vw';
-let FEED_FONT_SIZE = '0.53vw';
-let FEED_TEXT_TOP = '3.45vw';
+let FEED_FONT_SIZE = '0.45vw';
+let FEED_TEXT_TOP = '3.4vw';
 
 let coreViews = {
   CONSTANTS: {
@@ -86,7 +86,7 @@ let coreViews = {
         text: '',
         color: '#fff',
         fontSize: '0.6vw',
-        fontFamily: 'Overlay',
+        fontFamily: 'BaltoBook',
         width: '50%',
         height: '50%',
         left: '25%',
@@ -128,7 +128,7 @@ let coreViews = {
         height: '24vw',
         filename: 'nux-gesture.png',
         resizeMode: 'contain',
-      }
+      },
     ],
   },
   FEED_AVATAR: {
@@ -146,7 +146,7 @@ let coreViews = {
         id: 'avatar',
         type: 'image',
         borderRadius: '3.2vw',
-        left: 0,//'3.5vw',
+        left: 0, //'3.5vw',
         top: '2.5vw',
         width: '6.4vw',
         height: '6.4vw',
@@ -183,7 +183,7 @@ let coreViews = {
         color: '#fff',
         textAlign: 'left',
         fontSize: FEED_FONT_SIZE,
-        fontFamily: 'Overlay',
+        fontFamily: 'BaltoMedium',
         textAlignVertical: 'top',
         // backgroundColor: '#f00',
         hitSlopLeft: '3vw',
@@ -253,7 +253,7 @@ let coreViews = {
         color: '#fff',
         textAlign: 'left',
         fontSize: FEED_FONT_SIZE,
-        fontFamily: 'Overlay',
+        fontFamily: 'BaltoBook',
         textAlignVertical: 'top',
         // backgroundColor: '#f00',
         touch: 'enabled',
@@ -301,7 +301,7 @@ let coreViews = {
         color: '#fff',
         textAlign: 'left',
         fontSize: FEED_FONT_SIZE,
-        fontFamily: 'Overlay',
+        fontFamily: 'BaltoBook',
         textAlignVertical: 'top',
         // backgroundColor: '#f00',
         touch: 'enabled',
@@ -343,7 +343,7 @@ let coreViews = {
         color: '#fff',
         textAlign: 'left',
         fontSize: FEED_FONT_SIZE,
-        fontFamily: 'Overlay',
+        fontFamily: 'BaltoBook',
         textAlignVertical: 'top',
         // backgroundColor: '#f00',
         touch: 'enabled',
@@ -383,7 +383,7 @@ let coreViews = {
         color: '#fff',
         textAlign: 'left',
         fontSize: FEED_FONT_SIZE,
-        fontFamily: 'Overlay',
+        fontFamily: 'BaltoBook',
         textAlignVertical: 'top',
         // backgroundColor: '#f00',
         // touch: 'enabled',
@@ -590,43 +590,48 @@ export function useCoreViews(opts) {
 
   const [isFocused, setIsFocused] = React.useState(true);
 
-  useFocusEffect(React.useCallback(() => {
-    setIsFocused(true);
+  useFocusEffect(
+    React.useCallback(() => {
+      setIsFocused(true);
 
-    return () => {
-      setIsFocused(false);
-    }
-  }, []));
+      return () => {
+        setIsFocused(false);
+      };
+    }, [])
+  );
 
   useListen({
     eventName: 'CORE_VIEWS_GESTURE',
-    handler: React.useCallback((params) => {
-      if (!isFocused) {
-        return;
-      }
+    handler: React.useCallback(
+      (params) => {
+        if (!isFocused) {
+          return;
+        }
 
-      let props = {};
-      try {
-        props = JSON.parse(params.props);
-      } catch (e) {}
+        let props = {};
+        try {
+          props = JSON.parse(params.props);
+        } catch (e) {}
 
-      props = {
-        ...props,
-        push,
-        navigate,
-        ...opts,
-      };
+        props = {
+          ...props,
+          push,
+          navigate,
+          ...opts,
+        };
 
-      let gestureHandlerId = params.gestureHandlerId;
-      if (coreViewGestureHandlers[gestureHandlerId]) {
-        coreViewGestureHandlers[gestureHandlerId](props);
-      }
-    }, [isFocused]),
+        let gestureHandlerId = params.gestureHandlerId;
+        if (coreViewGestureHandlers[gestureHandlerId]) {
+          coreViewGestureHandlers[gestureHandlerId](props);
+        }
+      },
+      [isFocused]
+    ),
   });
 }
 
 function printCXXString(str, includeSemicolon = true) {
-  let result = "\n";
+  let result = '\n';
   let charsPerLine = 80;
   for (let i = 0; i < str.length; i += charsPerLine) {
     result += '  ' + JSON.stringify(str.substring(i, Math.min(str.length, i + charsPerLine)));
@@ -645,7 +650,9 @@ function printCXXString(str, includeSemicolon = true) {
 
 function printCoreViewsJSON(json) {
   let str = JSON.stringify(json);
-  let result = '\n#pragma once\n\n#include "precomp.h"\n\nconst std::string CORE_VIEWS_JSON = ' + printCXXString(str);
+  let result =
+    '\n#pragma once\n\n#include "precomp.h"\n\nconst std::string CORE_VIEWS_JSON = ' +
+    printCXXString(str);
 
   console.log(result);
 }
@@ -694,7 +701,7 @@ function unsignedCharArrayFromString(str) {
   return {
     result,
     length,
-  }
+  };
 }
 
 let printedEmbeddedDecks = false;
@@ -712,27 +719,43 @@ async function printEmbeddedDecks() {
   let id = 0;
 
   let result = '';
-  result += 'const std::unordered_map<std::string, std::pair<unsigned char *, unsigned int>> DECK_ID_TO_DATA = {\n';
+  result +=
+    'const std::unordered_map<std::string, std::pair<unsigned char *, unsigned int>> DECK_ID_TO_DATA = {\n';
   let deckIds = Object.keys(decks);
   for (let i = 0; i < deckIds.length; i++) {
     let deckId = deckIds[i];
     let currentId = 'EMBEDDED_DECK_DATA_' + id++;
     let charArray = unsignedCharArrayFromString(decks[deckId]);
     arraySection += 'unsigned char ' + currentId + '[] = ' + charArray.result + ';\n\n';
-    result += '{"' + deckId + '", std::make_pair(' + currentId + ', (unsigned int)' + charArray.length + ')}';
+    result +=
+      '{"' +
+      deckId +
+      '", std::make_pair(' +
+      currentId +
+      ', (unsigned int)' +
+      charArray.length +
+      ')}';
 
     result += ',\n';
   }
   result += '};\n\n';
 
-  result += 'const std::unordered_map<std::string, std::pair<unsigned char *, unsigned int>> CARD_ID_TO_DATA = {\n';
+  result +=
+    'const std::unordered_map<std::string, std::pair<unsigned char *, unsigned int>> CARD_ID_TO_DATA = {\n';
   let cardIds = Object.keys(cards);
   for (let i = 0; i < cardIds.length; i++) {
     let cardId = cardIds[i];
     let currentId = 'EMBEDDED_DECK_DATA_' + id++;
     let charArray = unsignedCharArrayFromString(cards[cardId]);
     arraySection += 'unsigned char ' + currentId + '[] = ' + charArray.result + ';\n\n';
-    result += '{"' + cardId + '", std::make_pair(' + currentId + ', (unsigned int)' + charArray.length + ')}';
+    result +=
+      '{"' +
+      cardId +
+      '", std::make_pair(' +
+      currentId +
+      ', (unsigned int)' +
+      charArray.length +
+      ')}';
 
     result += ',\n';
   }
