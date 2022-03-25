@@ -14,6 +14,7 @@ Sentry.init({
     'Network request failed',
     'You need to be logged in to do that',
     `JSON Parse error: Unrecognized token '<'`,
+    'Message: Server Error',
   ],
   enableNdkScopeSync: true,
 });
