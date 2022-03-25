@@ -461,6 +461,11 @@ public:
     ReleaseMesh(toveMesh);
     ReleaseName(toveName);
     ReleaseGraphics(toveGraphics);
+
+    toveTess.ptr = nullptr;
+    toveMesh.ptr = nullptr;
+    toveName.ptr = nullptr;
+    toveGraphics.ptr = nullptr;
   }
 
   void addPath(TovePathRef path) {
