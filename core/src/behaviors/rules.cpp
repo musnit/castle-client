@@ -1125,11 +1125,19 @@ struct ResetVariableResponse : BaseResponse {
   static constexpr auto description = "Reset a variable to its initial value";
 
   struct Params {
-    PROP(Variable, variableId, .label("variable"));
+    PROP(VariableRef, variableId, .label("variable"));
   } params;
 
   void run(RuleContext &ctx) override {
-    ctx.getScene().getVariables().reset(params.variableId());
+    auto &variableRef = params.variableId();
+    if (!variableRef.isLocal()) {
+      ctx.getScene().getVariables().reset(variableRef.variableId);
+    } else {
+      auto &localVariablesBehavior = ctx.getScene().getBehaviors().byType<LocalVariablesBehavior>();
+      auto &localVariableId = variableRef.localVariableId;
+      auto actorId = variableRef.actorRef.eval(ctx);
+      localVariablesBehavior.reset(actorId, localVariableId);
+    }
   }
 };
 

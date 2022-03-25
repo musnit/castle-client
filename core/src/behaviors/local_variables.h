@@ -12,7 +12,8 @@
 //
 
 struct LocalVariableEntry {
-  ExpressionValue value;
+  ExpressionValue initialValue;
+  ExpressionValue value = initialValue;
 };
 
 struct LocalVariablesMapElem {
@@ -85,7 +86,8 @@ public:
   const ExpressionValue &get(ActorId actorId, const LocalVariableId &localVariableId) const;
   const ExpressionValue *getByName(ActorId actorId, const std::string &name) const;
   void set(ActorId actorId, const LocalVariableId &localVariableId, ExpressionValue value,
-      bool fireTriggers = true);
+      bool isInitialValue = false);
+  void reset(ActorId actorId, const LocalVariableId &localVariableId);
 
 
   void debugDisplay();

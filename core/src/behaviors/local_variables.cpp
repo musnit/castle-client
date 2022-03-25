@@ -108,7 +108,7 @@ void LocalVariablesBehavior::handleReadComponent(
       if (isEditing) {
         component.editData->localVariables.push_back({ name, value });
       } else {
-        set(actorId, LocalVariableId { map.getToken(name) }, value, false);
+        set(actorId, LocalVariableId { map.getToken(name) }, value, true);
       }
     });
   });
@@ -178,7 +178,7 @@ const ExpressionValue *LocalVariablesBehavior::getByName(
 }
 
 void LocalVariablesBehavior::set(ActorId actorId, const LocalVariableId &localVariableId,
-    ExpressionValue value, bool fireTriggers) {
+    ExpressionValue value, bool isInitialValue) {
   auto mapElem = map.lookup(localVariableId.token);
   if (!mapElem) {
     map.insert(localVariableId.token, {});
@@ -193,12 +193,30 @@ void LocalVariablesBehavior::set(ActorId actorId, const LocalVariableId &localVa
         changed = true;
       }
     } else {
-      mapElem->entries.emplace(actorId, LocalVariableEntry { value });
+      mapElem->entries.emplace(actorId,
+          LocalVariableEntry {
+              isInitialValue ? value : ExpressionValue {},
+              value,
+          });
       changed = true;
     }
-    if (fireTriggers && changed) {
+    if (!isInitialValue && changed) {
       auto &rulesBehavior = getScene().getBehaviors().byType<RulesBehavior>();
       rulesBehavior.fireLocalVariablesTriggers(actorId, localVariableId, value);
+    }
+  }
+}
+
+void LocalVariablesBehavior::reset(ActorId actorId, const LocalVariableId &localVariableId) {
+  auto mapElem = map.lookup(localVariableId.token);
+  if (mapElem) {
+    if (mapElem->entries.contains(actorId)) {
+      auto &entry = mapElem->entries.get(actorId);
+      if (entry.value != entry.initialValue) {
+        entry.value = entry.initialValue;
+        auto &rulesBehavior = getScene().getBehaviors().byType<RulesBehavior>();
+        rulesBehavior.fireLocalVariablesTriggers(actorId, localVariableId, entry.value);
+      }
     }
   }
 }
