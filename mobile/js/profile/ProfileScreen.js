@@ -125,12 +125,15 @@ export const ProfileScreen = ({ userId, route }) => {
     }, [userId, isMe, onRefresh])
   );
 
-  const settingsSheetOnClose = (isChanged) => {
-    setSettingsSheet(false);
-    if (isChanged) {
-      fetchProfile();
-    }
-  };
+  const settingsSheetOnClose = React.useCallback(
+    (isChanged) => {
+      setSettingsSheet(false);
+      if (isChanged && !isAnonymous) {
+        fetchProfile();
+      }
+    },
+    [setSettingsSheet, isAnonymous]
+  );
 
   const ListHeaderComponent = (
     <ProfileHeader

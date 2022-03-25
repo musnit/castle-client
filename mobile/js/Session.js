@@ -176,6 +176,7 @@ export class Provider extends React.Component {
 
   useNewAuthTokenAsync = async ({ userId, token, isAnonymous, isAdmin }) => {
     if (!TEST_AUTH_TOKEN) {
+      apolloClient.cache.reset(); // https://github.com/apollographql/apollo-client/issues/3766
       apolloClient.resetStore();
       gAuthToken = token;
       gUserId = userId;
@@ -387,7 +388,11 @@ export const apolloClient = new ApolloClient({
     onError(({ graphQLErrors, networkError }) => {
       if (graphQLErrors) {
         graphQLErrors.forEach(({ message, locations, path }) =>
-          console.log(`[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`)
+          console.log(
+            `[GraphQL error]: Message: ${message}, Location: ${JSON.stringify(
+              locations
+            )}, Path: ${path}`
+          )
         );
       }
       if (networkError) {
