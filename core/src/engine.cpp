@@ -208,26 +208,35 @@ void Engine::setInitialParams(const char *initialParamsJson) {
 
   activeScreenId = screenId;
 
-  if (screens.find(screenId) != screens.end()) {
+  bool foundExistingScreen = screens.find(screenId) != screens.end();
+
+  // Editor needs to read scene again once it's mounted for loading backups
+  if (!isEditing && foundExistingScreen) {
     screens[screenId]->resume();
     return;
   }
 
-  if (isEditing) {
-    newScreen = std::make_unique<Editor>(bridge);
-    editor = (Editor *)newScreen.get();
-    screenIdPrefix = "editor:";
-  } else if (useNativeFeed) {
-    newScreen = std::make_unique<Feed>(bridge);
-    feed = (Feed *)newScreen.get();
-    screenIdPrefix = "feed:";
+  if (foundExistingScreen) {
+    if (isEditing) {
+      editor = (Editor *)screens[screenId].get();
+    }
   } else {
-    newScreen = std::make_unique<Player>(bridge);
-    ((Player *)newScreen.get())->resume();
-    screenIdPrefix = "player:";
-  }
+    if (isEditing) {
+      newScreen = std::make_unique<Editor>(bridge);
+      editor = (Editor *)newScreen.get();
+      screenIdPrefix = "editor:";
+    } else if (useNativeFeed) {
+      newScreen = std::make_unique<Feed>(bridge);
+      feed = (Feed *)newScreen.get();
+      screenIdPrefix = "feed:";
+    } else {
+      newScreen = std::make_unique<Player>(bridge);
+      ((Player *)newScreen.get())->resume();
+      screenIdPrefix = "player:";
+    }
 
-  screens.insert(std::make_pair(screenId, std::move(newScreen)));
+    screens.insert(std::make_pair(screenId, std::move(newScreen)));
+  }
 
   if (feed) {
     feed->fetchInitialDecks(nativeFeedDeckIds, initialDeckIndex,
