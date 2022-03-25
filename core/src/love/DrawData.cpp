@@ -477,8 +477,11 @@ bool DrawData::deleteFrame(OneIndexFrame frameIndex) {
 void DrawData::updateFramePreview(DrawDataLayerId layerId, OneIndexFrame frameIndex) {
   auto layer = layerForId(layerId);
   if (layer) {
-    auto frame = layer->frames[frameIndex.toZeroIndex()];
-    frame->base64Png = frame->renderPreviewPng(-1);
+    auto idx = frameIndex.toZeroIndex();
+    if (idx < layer->frames.size()) {
+      auto frame = layer->frames[idx];
+      frame->base64Png = frame->renderPreviewPng(-1);
+    }
   }
 }
 

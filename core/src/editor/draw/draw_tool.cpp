@@ -745,6 +745,7 @@ void DrawTool::deleteLayerAndValidate(const love::DrawDataLayerId &layerId) {
     int indexRemoved = drawData->deleteLayer(layerId);
     if (drawData->getNumLayers() == 0) {
       makeNewLayer();
+      selectedFrameIndex = 1;
     } else if (indexRemoved >= 0 && selectedLayerId == layerId) {
       if (indexRemoved < drawData->getNumLayers()) {
         selectedLayerId = drawData->layers[indexRemoved]->id;
