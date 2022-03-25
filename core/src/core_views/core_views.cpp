@@ -92,13 +92,14 @@ void CoreViewRenderer::handleGesture(Gesture &gesture, int offsetX, int offsetY)
       touchView
           = getViewAtPoint(layout.get(), touch.screenPos.x - offsetX, touch.screenPos.y - offsetY);
       if (touchView) {
+        touchViewId = (*touchView)->viewId;
         isTouchOverView = true;
         (*touchView)->baseHandleTouch(CoreView::TouchEvent::Down);
         touch.use(TextBehavior::leaderboardTouchToken);
       }
     }
 
-    if (!touchView) {
+    if (!touchView || !CoreView::isViewAlive[touchViewId]) {
       return;
     }
 

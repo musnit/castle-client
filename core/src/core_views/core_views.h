@@ -137,6 +137,7 @@ private:
   int jsonVersion = 0;
   std::string layoutTemplateName;
   std::optional<CoreView *> touchView;
+  int touchViewId = -1;
   bool isTouchOverView = false;
   Lv &lv { Lv::getInstance() };
   mutable love::Transform viewTransform;
