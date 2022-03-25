@@ -76,16 +76,20 @@ export const SongPreview = ({ song }) => {
               </View>
               {sequenceKeys.map((seqTime, ei) => {
                 const seqElem = track.sequence[seqTime];
-                const patternColor = song.patterns[seqElem.patternId].color;
-                return (
-                  <View
-                    key={`sequence-elem-${ei}`}
-                    style={[
-                      styles.sequenceElem,
-                      { backgroundColor: patternColorToHex(patternColor) },
-                    ]}
-                  />
-                );
+                if (seqElem) {
+                  const patternColor = song.patterns[seqElem.patternId]?.color;
+                  return (
+                    <View
+                      key={`sequence-elem-${ei}`}
+                      style={[
+                        styles.sequenceElem,
+                        { backgroundColor: patternColorToHex(patternColor) },
+                      ]}
+                    />
+                  );
+                } else {
+                  return null;
+                }
               })}
             </View>
           );
