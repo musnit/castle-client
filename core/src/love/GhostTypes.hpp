@@ -557,7 +557,7 @@ public:
   }
 
   void update() {
-    if (toveMesh.ptr) {
+    if (toveMesh.ptr && toveTess.ptr) {
       TesselatorTessGraphics(toveTess, toveGraphics, toveMesh, 15);
 
       getToveMesh();
