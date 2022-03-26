@@ -174,6 +174,8 @@ export const NativeDecksFeed = ({
     handler: viewFeedItemCallback,
   });
 
+  React.useEffect(onCloseComments, [deepLinkDeckId]);
+
   let gameView = (
     <GameView
       ref={container}
