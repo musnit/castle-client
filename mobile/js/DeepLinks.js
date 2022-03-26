@@ -25,13 +25,18 @@ const _navigateToDeck = ({ deck, resolvedUrl }) => {
     url: resolvedUrl,
     cxshid,
   });
-  navigateToRoute({
-    name: 'PlayDeck',
-    params: {
-      decks: [deck],
-      title: 'Shared deck',
-    },
-  });
+
+  if (rootNavigatorRef) {
+    // avoid race condition where ref gets set before react-nav finishes initializing
+    requestAnimationFrame(() => {
+      rootNavigatorRef.navigate('BrowseTab', {
+        screen: 'HomeScreen',
+        params: {
+          deepLinkDeckId: deck.deckId,
+        },
+      })
+    });
+  }
 };
 
 // requires an expanded castle url like castle.xyz/d/abcd

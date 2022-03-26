@@ -139,6 +139,7 @@ void Engine::setInitialParams(const char *initialParamsJson) {
   const char *initialCardSceneDataUrl = nullptr;
   const char *jsScreenId = nullptr;
   const char *paginateFeedId = nullptr;
+  const char *deepLinkDeckId = nullptr;
   int initialDeckIndex = 0;
   auto useNativeFeed = false;
   auto isNewScene = false;
@@ -163,6 +164,7 @@ void Engine::setInitialParams(const char *initialParamsJson) {
     isNativeFeedNuxCompleted = reader.boolean("isNativeFeedNuxCompleted", true);
     initialDeckIndex = reader.num("initialDeckIndex", 0);
     paginateFeedId = reader.str("paginateFeedId", nullptr);
+    deepLinkDeckId = reader.str("deepLinkDeckId", nullptr);
     if (reader.has("nativeFeedDeckIds")) {
       reader.arr("nativeFeedDeckIds", [&]() {
         reader.each([&]() {
@@ -207,6 +209,10 @@ void Engine::setInitialParams(const char *initialParamsJson) {
 
   // Editor needs to read scene again once it's mounted for loading backups
   if (!isEditing && foundExistingScreen) {
+    if (deepLinkDeckId && screenId == "featuredFeed") {
+      ((Feed *)screens[screenId].get())->setDeepLinkDeckId(deepLinkDeckId);
+    }
+
     screens[screenId]->resume();
     return;
   }
@@ -237,6 +243,10 @@ void Engine::setInitialParams(const char *initialParamsJson) {
     feed->fetchInitialDecks(nativeFeedDeckIds, initialDeckIndex,
         paginateFeedId ? (std::optional<std::string>)std::string(paginateFeedId) : std::nullopt,
         isNuxCompleted, isNativeFeedNuxCompleted);
+
+    if (deepLinkDeckId) {
+      feed->setDeepLinkDeckId(deepLinkDeckId);
+    }
   } else if (isEditing && isNewScene) {
     editor->loadEmptyScene();
 

@@ -951,7 +951,7 @@ export const resolveDeepLink = async (url) => {
         resolveDeepLink(url: $url) {
           resolvedUrl
           deck {
-            ${Constants.FEED_ITEM_DECK_FRAGMENT}
+            deckId
           }
         }
       }

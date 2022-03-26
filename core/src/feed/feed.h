@@ -61,6 +61,7 @@ public:
   void setWindowSize(int w, int h);
   bool hasScene();
   Scene &getScene();
+  void setDeepLinkDeckId(std::string deckId);
 
 private:
   mutable love::Transform viewTransform;
@@ -106,6 +107,7 @@ private:
   std::set<std::string> seenDeckIds;
   std::vector<FeedItem> decks;
   std::string sessionId;
+  std::string deepLinkDeckId;
   std::shared_ptr<CoreViewRenderer> globalErrorCoreView;
 
   // Nux

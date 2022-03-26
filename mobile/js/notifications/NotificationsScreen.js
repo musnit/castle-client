@@ -18,7 +18,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { toRecentDate } from '../common/date-utilities';
 import { useAppState } from '../ghost/GhostAppState';
-import { useNavigation, useFocusEffect, useIsFocused } from '../ReactNavigation';
+import { useNavigation, useFocusEffect, useIsFocused, ANDROID_USE_NATIVE_NAVIGATION } from '../ReactNavigation';
 import {
   useSession,
   maybeFetchNotificationsAsync,
@@ -240,25 +240,6 @@ export const NotificationsScreen = () => {
     []
   );
 
-  const handlePushNotificationClicked = React.useCallback(
-    (notifications, data) => {
-      // NavigationActivity already handles this on android
-      if (Platform.OS === 'android' && ANDROID_USE_NATIVE_NAVIGATION) {
-        return;
-      }
-
-      if ((data.type === 'new_deck' || data.type === 'suggested_deck') && data.notificationId) {
-        const notificationTapped = notifications.find(
-          (n) => n.notificationId.toString() === data.notificationId.toString()
-        );
-        if (notificationTapped?.deck) {
-          requestAnimationFrame(() => navigateToDeck(notificationTapped.deck));
-        }
-      }
-    },
-    [navigateToDeck]
-  );
-
   // Clear the notif badge on tab focus, mark notifs as read on blur
   // Also clear notif badge on blur in case push notifs come in while the user is on the notifs tab
   useFocusEffect(
@@ -297,16 +278,13 @@ export const NotificationsScreen = () => {
         })
       );
 
-      // if we opened the app from a notification and it corresponds to a notification
-      // that we just loaded, maybe navigate automatically
+      // TODO: do we still need this?
       const pushNotificationInitialData = PushNotifications.getInitialData();
       if (pushNotificationInitialData) {
-        handlePushNotificationClicked(notifications, pushNotificationInitialData);
         PushNotifications.clearInitialData();
       }
       const pushNotificationClickedData = PushNotifications.getClickedData();
       if (pushNotificationClickedData) {
-        handlePushNotificationClicked(notifications, pushNotificationClickedData);
         PushNotifications.clearClickedData();
       }
     } else {

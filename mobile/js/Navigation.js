@@ -190,9 +190,28 @@ const TabNavigator = () => {
       // Update badge so we don't have to wait on maybeFetchNotificationsAsync() to do it
       setNotifBadge(data.numUnseenNotifications);
     }
-    if (clicked && rootNavRef.current) {
-      // pass the `screen` param to ensure we pop to the top of the stack
-      rootNavRef.current.navigate('Notifications', { screen: 'Notifications' });
+    if (clicked) {
+      let navigatingToDeck = false;
+      if ((data.type === 'new_deck' || data.type === 'suggested_deck') && data.deckId) {
+        navigatingToDeck = true;
+
+        // on initial load, we have to wait for rootNavRef
+        setTimeout(() => {
+          if (rootNavRef.current) {
+            rootNavRef.current.navigate('BrowseTab', {
+              screen: 'HomeScreen',
+              params: {
+                deepLinkDeckId: data.deckId,
+              },
+            });
+          }
+        }, 100);
+      }
+
+      if (!navigatingToDeck && rootNavRef.current) {
+        // pass the `screen` param to ensure we pop to the top of the stack
+        rootNavRef.current.navigate('NotificationsTab', { screen: 'Notifications' });
+      }
     }
     setTimeout(maybeFetchNotificationsAsync, 250);
   }, []);
@@ -202,9 +221,14 @@ const TabNavigator = () => {
   });
 
   const initialPushData = PushNotifications.getInitialData();
+  if (initialPushData) {
+    handlePushNotification({ data: initialPushData, clicked: true });
+    PushNotifications.clearInitialData();
+  }
+
   return (
     <Tab.Navigator
-      initialRouteName={initialPushData ? 'Notifications' : 'Browse'}
+      initialRouteName="BrowseTab"
       screenOptions={(props) => {
         const isTabBarVisible = getIsTabBarVisible(props);
         return {
@@ -388,7 +412,9 @@ const AuthNavigator = () => (
 );
 
 function onNavigationStateChange(state) {
-  GhostChannels.globalPause();
+  // This was causing decks to freeze after a deep link
+  // Probably don't need anymore?
+  // GhostChannels.globalPause();
 }
 
 // https://reactnavigation.org/docs/themes/

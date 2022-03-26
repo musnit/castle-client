@@ -546,7 +546,8 @@ void Feed::runUpdateAtIndex(int idx, double dt) {
   }
 
   if (decks[idx].player->hasScene()) {
-    decks[idx].player->getScene().getGesture().setBounds(cardLeft, TOP_PADDING, cardWidth, cardHeight);
+    decks[idx].player->getScene().getGesture().setBounds(
+        cardLeft, TOP_PADDING, cardWidth, cardHeight);
   }
 
   if (decks[idx].framesToSkip > 1.0) {
@@ -1035,6 +1036,40 @@ void Feed::resume() {
 void Feed::clearState() {
 }
 
+void Feed::setDeepLinkDeckId(std::string deckId) {
+  if (deckId == deepLinkDeckId) {
+    return;
+  }
+
+  deepLinkDeckId = deckId;
+
+  int idx = 0;
+  if (decks.size() > 0) {
+    idx = getCurrentIndex() + 1;
+    if (idx < 0) {
+      idx = 0;
+    }
+
+    if (idx > decks.size()) {
+      idx = decks.size();
+    }
+
+    offset -= cardWidth;
+  }
+
+  FeedItem feedItem;
+  feedItem.deckId = deckId;
+  decks.insert(decks.begin() + idx, std::move(feedItem));
+  seenDeckIds.insert(deckId);
+
+  // indexes moved, so cancel loading all decks
+  for (size_t i = 0; i < decks.size(); i++) {
+    if (i != idx) {
+      unloadDeckAtIndex(i, true);
+    }
+  }
+}
+
 void Feed::fetchInitialDecks(std::vector<std::string> deckIds, int initialDeckIndex_,
     std::optional<std::string> paginateFeedId_, bool isNuxCompleted,
     bool isNativeFeedNuxCompleted) {
@@ -1195,9 +1230,13 @@ void Feed::loadDeckAtIndex(int i) {
     loadDeckFromDeckJson(i);
     decks[i].isLoading = false;
   } else {
-    API::graphql(
-        "{\n  deck(deckId: \"" + *decks[i].deckId + "\") {\n" + GRAPHQL_DECK_FIELDS + "\n}\n}",
-        [=](APIResponse &response) {
+    auto deckId = *decks[i].deckId;
+    API::graphql("{\n  deck(deckId: \"" + deckId + "\") {\n" + GRAPHQL_DECK_FIELDS + "\n}\n}",
+        [i, deckId, this](APIResponse &response) {
+          if (decks[i].deckId != deckId) {
+            return;
+          }
+
           if (response.success) {
             auto &reader = response.reader;
 
@@ -1495,7 +1534,11 @@ void Feed::loadDeckFromDeckJson(int i) {
         });
       } else {
         auto sceneDataUrl = reader.str("sceneDataUrl", "");
-        API::loadSceneData(sceneDataUrl, [=](APIResponse &response) {
+        API::loadSceneData(sceneDataUrl, [i, deckId, this](APIResponse &response) {
+          if (decks[i].deckId != deckId) {
+            return;
+          }
+
           if (response.success) {
             if (decks[i].player) {
               const std::string readerJson = response.reader.toJson();
@@ -1549,6 +1592,7 @@ void Feed::unloadDeckAtIndex(int i, bool force) {
     }
   }
 
+  decks[i].isLoading = false;
   decks[i].isLoaded = false;
   decks[i].hasRunUpdate = false;
   decks[i].hasRunUpdateSinceLastRender = false;

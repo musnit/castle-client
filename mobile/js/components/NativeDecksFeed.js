@@ -26,6 +26,7 @@ export const NativeDecksFeed = ({
   screenId,
   paginateFeedId,
   previousScreenName,
+  deepLinkDeckId,
 }) => {
   const {
     userId: signedInUserId,
@@ -37,6 +38,7 @@ export const NativeDecksFeed = ({
     isNuxCompleted,
     isNativeFeedNuxCompleted,
   } = useSession();
+
   const { showPopover } = usePopover();
   const container = React.useRef(null);
 
@@ -184,6 +186,7 @@ export const NativeDecksFeed = ({
         textOverlayStyle: Constants.CORE_OVERLAY_TEXT_STYLE,
         isNuxCompleted,
         isNativeFeedNuxCompleted,
+        deepLinkDeckId,
       })}
       coreViews={CoreViews.getCoreViews()}
       paused={isCommentsOpen || appState !== 'active'}

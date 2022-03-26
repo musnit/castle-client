@@ -78,8 +78,10 @@ export const HomeScreen = ({ route }) => {
 
   // play a deck within the feed?
   let deckId;
+  let deepLinkDeckId;
   if (route?.params) {
     deckId = route.params.deckId;
+    deepLinkDeckId = route.params.deepLinkDeckId;
   }
 
   React.useEffect(
@@ -160,6 +162,7 @@ export const HomeScreen = ({ route }) => {
           onPressComments: openComments,
           onCloseComments: closeComments,
           isCommentsOpen: commentsState.isOpen,
+          deepLinkDeckId,
         })}
         <CommentsSheet
           isFullScreen={!!deckId}

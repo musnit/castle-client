@@ -308,42 +308,61 @@ public class NavigationActivity extends AppCompatActivity implements DefaultHard
     }
 
     private boolean handlePushNotification(Intent intent, boolean initialLoad) {
-        Bundle extras = intent.getExtras();
-        boolean isOpeningDeck = false;
-        if (extras != null && extras.containsKey(CastleFirebaseMessagingService.NOTIFICATION_DATA_KEY)) {
-            String dataString = extras.getString(CastleFirebaseMessagingService.NOTIFICATION_DATA_KEY);
+        if (USE_NATIVE_NAVIGATION) {
+            Bundle extras = intent.getExtras();
+            boolean isOpeningDeck = false;
+            if (extras != null && extras.containsKey(CastleFirebaseMessagingService.NOTIFICATION_DATA_KEY)) {
+                String dataString = extras.getString(CastleFirebaseMessagingService.NOTIFICATION_DATA_KEY);
 
-            try {
-                JSONObject data = new JSONObject(dataString);
-                if (data.has("type") && data.has("deckId")) {
-                    String type = data.getString("type");
-                    String deckId = data.getString("deckId");
-                    if (type.equals("new_deck") || type.equals("suggested_deck")) {
-                        openDeckId(deckId);
-                        isOpeningDeck = true;
+                try {
+                    JSONObject data = new JSONObject(dataString);
+                    if (data.has("type") && data.has("deckId")) {
+                        String type = data.getString("type");
+                        String deckId = data.getString("deckId");
+                        if (type.equals("new_deck") || type.equals("suggested_deck")) {
+                            openDeckId(deckId);
+                            isOpeningDeck = true;
+                        }
                     }
+                } catch (JSONException e) {
                 }
-            } catch (JSONException e) {}
 
-            if (initialLoad) {
-                CastleReactView.addGlobalReactOpt("initialPushNotificationDataString", dataString);
-            } else {
-                WritableMap payload = Arguments.createMap();
-                payload.putString("dataString", dataString);
-                onRNEvent(new RNEvent("CastlePushNotificationClicked", payload));
+                if (initialLoad) {
+                    CastleReactView.addGlobalReactOpt("initialPushNotificationDataString", dataString);
+                } else {
+                    WritableMap payload = Arguments.createMap();
+                    payload.putString("dataString", dataString);
+                    onRNEvent(new RNEvent("CastlePushNotificationClicked", payload));
+                }
+
+                if (mainTabNavigator != null && notificationsTab != null && !isOpeningDeck) {
+                    ViewUtils.runOnUiThread(() -> {
+                        CastleNavigator.castleNavigatorForId("LoggedInRootStack").popToTop();
+                        mainTabNavigator.switchToTab(notificationsTab.id);
+                    });
+                }
+
+                return true;
             }
 
-            if (mainTabNavigator != null && notificationsTab != null && !isOpeningDeck) {
-                ViewUtils.runOnUiThread(() -> {
-                    CastleNavigator.castleNavigatorForId("LoggedInRootStack").popToTop();
-                    mainTabNavigator.switchToTab(notificationsTab.id);
-                });
+            return false;
+        } else {
+            Bundle extras = intent.getExtras();
+            if (extras != null && extras.containsKey(CastleFirebaseMessagingService.NOTIFICATION_DATA_KEY)) {
+                String dataString = extras.getString(CastleFirebaseMessagingService.NOTIFICATION_DATA_KEY);
+                if (initialLoad) {
+                    CastleReactView.addGlobalReactOpt("initialPushNotificationDataString", dataString);
+                } else {
+                    WritableMap payload = Arguments.createMap();
+                    payload.putString("dataString", dataString);
+                    onRNEvent(new RNEvent("CastlePushNotificationClicked", payload));
+                }
+
+                return true;
             }
 
-            return true;
+            return false;
         }
-
-        return false;
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
