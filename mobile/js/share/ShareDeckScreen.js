@@ -170,7 +170,7 @@ export const ShareDeckScreen = ({ route }) => {
   }, []);
 
   return (
-    <SafeAreaView style={Constants.styles.container}>
+    <SafeAreaView style={Constants.styles.container} edges={['left', 'right', 'bottom']}>
       <ScreenHeader
         title="Share Deck"
         RightButtonComponent={

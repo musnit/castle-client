@@ -393,7 +393,7 @@ const CreateScreenAuthenticated = () => {
   }, [setDecks, fetchDecks]);
 
   return (
-    <SafeAreaView style={Constants.styles.container} edges={['top']}>
+    <SafeAreaView style={Constants.styles.container} edges={['left', 'right', 'bottom']}>
       <View style={styles.tabTitle}>
         <Text style={styles.tabTitleText}>Create</Text>
         <View style={styles.tabTitleAction}>

@@ -159,7 +159,7 @@ export const ProfileScreen = ({ userId, route }) => {
   } else {
     return (
       <>
-        <SafeAreaView edges={['top', 'left', 'right']}>
+        <SafeAreaView edges={['left', 'right', 'bottom']}>
           <ScreenHeader title={'Profile'} />
           {error ? (
             <EmptyFeed error={error} onRefresh={onRefresh} />

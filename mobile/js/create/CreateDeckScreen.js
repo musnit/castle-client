@@ -441,7 +441,7 @@ export const CreateDeckScreen = (props) => {
 
   return (
     <React.Fragment>
-      <SafeAreaView style={Constants.styles.container} edges={['top']}>
+      <SafeAreaView style={Constants.styles.container} edges={['left', 'right', 'bottom']}>
         <ScreenHeader
           title="Deck"
           onBackButtonPress={_goBack}

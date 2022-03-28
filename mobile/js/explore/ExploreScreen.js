@@ -16,6 +16,9 @@ import FastImage from 'react-native-fast-image';
 const REFETCH_FEED_INTERVAL_MS = 60 * 1000;
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
   tabTitle: {
     height: 64,
     padding: 16,
@@ -146,7 +149,7 @@ export const ExploreScreen = ({ route }) => {
   const onPressFeedback = React.useCallback(() => push('Feedback'), [push]);
 
   return (
-    <SafeAreaView style={{ flex: 1 }} edges={['top']}>
+    <SafeAreaView style={styles.container} edges={['left', 'right', 'bottom']}>
       <View style={styles.tabTitle}>
         {!isSearching ? <Text style={styles.tabTitleText}>Explore</Text> : null}
         <View style={[styles.tabTitleAction, isSearching ? { flex: 1 } : null]}>
