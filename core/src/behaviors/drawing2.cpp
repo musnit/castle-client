@@ -136,7 +136,8 @@ void Drawing2Behavior::handleReadComponent(
 
   component.hash = reader.str("hash", "");
   if (!component.hash.empty()) {
-    if (auto found = drawDataCache.find(component.hash); found != drawDataCache.end()) {
+    if (auto found = drawDataCache.find(component.hash);
+        found != drawDataCache.end() && found->second) {
       component.drawData = found->second;
     } else {
       reader.obj("drawData", [&]() {
