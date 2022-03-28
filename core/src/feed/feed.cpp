@@ -1311,15 +1311,11 @@ void Feed::layoutCoreViews(int i) {
       = CoreViews::getInstance().getNumConstant("FEED_BOTTOM_ACTIONS_REACTION_ICON_RIGHT_PADDING");
   float FEED_BOTTOM_ACTIONS_COMMENT_ICON_RIGHT_PADDING
       = CoreViews::getInstance().getNumConstant("FEED_BOTTOM_ACTIONS_COMMENT_ICON_RIGHT_PADDING");
-  float FEED_BOTTOM_ACTIONS_OVERFLOW_ICON_RIGHT_PADDING
-      = CoreViews::getInstance().getNumConstant("FEED_BOTTOM_ACTIONS_OVERFLOW_ICON_RIGHT_PADDING");
   float FEED_BOTTOM_ACTIONS_SPACE_REACTION_BUTTON_AND_TEXT
       = CoreViews::getInstance().getNumConstant(
           "FEED_BOTTOM_ACTIONS_SPACE_REACTION_BUTTON_AND_TEXT");
   float FEED_BOTTOM_ACTIONS_SPACE_COMMENT_BUTTON_AND_TEXT = CoreViews::getInstance().getNumConstant(
       "FEED_BOTTOM_ACTIONS_SPACE_COMMENT_BUTTON_AND_TEXT");
-  float FEED_BOTTOM_ACTIONS_SPACE_REMIX_BUTTON_AND_TEXT
-      = CoreViews::getInstance().getNumConstant("FEED_BOTTOM_ACTIONS_SPACE_REMIX_BUTTON_AND_TEXT");
   float FEED_BOTTOM_ACTIONS_MAX_DIFF_BEFORE_REACTION_RELAYOUT
       = CoreViews::getInstance().getNumConstant(
           "FEED_BOTTOM_ACTIONS_MAX_DIFF_BEFORE_REACTION_RELAYOUT");
@@ -1375,21 +1371,6 @@ void Feed::layoutCoreViews(int i) {
   }
 
   decks[i].coreView->updateProp("comment-icon", "right", std::to_string(currentRight));
-  currentRight += 5.5 * vw;
-
-  if (decks[i].coreView->getProp("remix-count", "visibility") == "visible") {
-    int remixCountWidth = decks[i].coreView->getView("remix-count").getContentWidth()
-        + FEED_BOTTOM_ACTIONS_TEXT_RIGHT_PADDING * vw;
-    decks[i].coreView->updateProp("remix-count", "width", std::to_string(remixCountWidth));
-    decks[i].coreView->updateProp("remix-count", "right", std::to_string(currentRight), true);
-    currentRight += remixCountWidth;
-    currentRight += FEED_BOTTOM_ACTIONS_SPACE_REMIX_BUTTON_AND_TEXT * vw;
-    decks[i].coreView->updateProp("remix-icon", "right", std::to_string(currentRight));
-    currentRight += 5.5 * vw;
-  }
-
-  currentRight += FEED_BOTTOM_ACTIONS_OVERFLOW_ICON_RIGHT_PADDING * vw;
-  decks[i].coreView->updateProp("overflow-icon", "right", std::to_string(currentRight));
 }
 
 void Feed::loadDeckFromDeckJson(int i) {
@@ -1460,12 +1441,12 @@ void Feed::loadDeckFromDeckJson(int i) {
       decks[i].coreView->updateJSGestureProp("userId", *decks[i].creatorUserId);
     });
 
-    int childDecksCount = reader.num("childDecksCount", 0);
+    /*int childDecksCount = reader.num("childDecksCount", 0);
     if (childDecksCount > 0) {
       decks[i].coreView->updateProp("remix-count", "text", FormatNumber::toString(childDecksCount));
       decks[i].coreView->updateProp("remix-icon", "visibility", "visible");
       decks[i].coreView->updateProp("remix-count", "visibility", "visible");
-    }
+    }*/
 
     bool commentsEnabled = reader.boolean("commentsEnabled", false);
     decks[i].coreView->updateJSGestureProp("commentsEnabled", commentsEnabled ? "true" : "false");

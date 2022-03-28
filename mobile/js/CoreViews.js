@@ -25,10 +25,6 @@ let coreViews = {
     FEED_BOTTOM_ACTIONS_COMMENT_ICON_RIGHT_PADDING: 3,
     FEED_BOTTOM_ACTIONS_SPACE_COMMENT_BUTTON_AND_TEXT: 1.0,
 
-    FEED_BOTTOM_ACTIONS_SPACE_REMIX_BUTTON_AND_TEXT: 0.8,
-
-    FEED_BOTTOM_ACTIONS_OVERFLOW_ICON_RIGHT_PADDING: 3.5,
-
     /*
      * 0 - cubicEaseIn
      * 1 - cubicEaseInOut
@@ -192,76 +188,6 @@ let coreViews = {
         touch: 'enabled',
         onTap: (params) => {
           params.push('Profile', { userId: params.userId });
-        },
-      },
-
-      // Menu
-      {
-        id: 'overflow-icon',
-        filename: 'overflow.png',
-        type: 'image',
-        right: '56vw',
-        top: '2.9vw',
-        width: FEED_ICON_SIZE,
-        height: FEED_ICON_SIZE,
-        hitSlopLeft: '2vw',
-        hitSlopRight: '2vw',
-        hitSlopBottom: '5vw',
-        hitSlopTop: '5vw',
-        resizeMode: 'contain',
-        touch: 'enabled',
-        // backgroundColor: '#f00',
-        onTap: (params) => {
-          params.onShowPopover(params);
-        },
-      },
-
-      // Remixes
-      {
-        visibility: 'hidden',
-        id: 'remix-icon',
-        filename: 'remix.png',
-        type: 'image',
-        right: '46vw',
-        top: FEED_ICON_TOP,
-        width: FEED_ICON_SIZE,
-        height: FEED_ICON_SIZE,
-        hitSlopLeft: '2vw',
-        hitSlopBottom: '5vw',
-        hitSlopTop: '5vw',
-        resizeMode: 'contain',
-        touch: 'enabled',
-        // backgroundColor: '#0f0',
-        onTap: (params) => {
-          params.push('DeckRemixes', {
-            deck: JSON.parse(params.deck),
-            isFullscreen: true,
-          });
-        },
-      },
-      {
-        visibility: 'hidden',
-        id: 'remix-count',
-        type: 'text',
-        right: '37vw',
-        top: FEED_TEXT_TOP,
-        width: '8vw',
-        height: '5vw',
-        hitSlopLeft: '2vw',
-        hitSlopBottom: '5vw',
-        hitSlopTop: '5vw',
-        color: '#fff',
-        textAlign: 'left',
-        fontSize: FEED_FONT_SIZE,
-        fontFamily: 'BaltoBook',
-        textAlignVertical: 'top',
-        // backgroundColor: '#f00',
-        touch: 'enabled',
-        onTap: (params) => {
-          params.push('DeckRemixes', {
-            deck: JSON.parse(params.deck),
-            isFullscreen: true,
-          });
         },
       },
 
