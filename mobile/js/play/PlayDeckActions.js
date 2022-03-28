@@ -48,60 +48,61 @@ export function getDropdownItems({
 
   dropdownItems.push({
     id: 'share',
-    castleIcon: Platform.OS === 'android' ? 'share-android' : 'share-ios',
-    name: 'Share',
+    icon: Platform.OS === 'android' ? 'share-variant' : 'share',
+    name: 'Share deck',
+  });
+
+  dropdownItems.push({
+    id: 'mute',
+    icon: isMuted ? 'volume-high' : 'volume-mute',
+    name: isMuted ? 'Unmute sound' : 'Mute sound',
   });
 
   if (!isAnonymous) {
     // TODO: enable anonymous view source
     dropdownItems.push({
       id: 'view-source',
-      icon: 'search',
+      icon: 'magnify',
       name: 'View deck source',
     });
   }
   if (!isMe && onReportDeck) {
     dropdownItems.push({
       id: 'report',
-      icon: 'flag',
-      name: 'Report and hide this deck',
+      icon: 'flag-outline',
+      name: 'Report and hide deck',
     });
   }
-
-  if (isAdmin()) {
-    dropdownItems.push({
-      id: 'blacklist',
-      icon: 'flag',
-      name: '(Admin) Blacklist',
-    });
-  }
-
-  if (isAdmin()) {
-    dropdownItems.push({
-      id: 'blacklistFeatured',
-      icon: 'flag',
-      name: '(Admin) Blacklist from featured',
-    });
-  }
-
   if (!isMe && onBlockUser) {
     dropdownItems.push({
       id: 'block',
-      icon: 'block',
+      icon: 'cancel',
       name: `Block @${creatorUsername}`,
     });
   }
-  dropdownItems.push({
-    id: 'mute',
-    icon: isMuted ? 'volume-up' : 'volume-off',
-    name: isMuted ? 'Turn on sound' : 'Mute',
-  });
 
   if (isAdmin()) {
     dropdownItems.push({
       id: 'staffPick',
-      icon: 'star',
-      name: '(Admin) Add to staff picks',
+      icon: 'castle',
+      name: 'Admin: Add to staff picks',
+      admin: true,
+    });
+  }
+  if (isAdmin()) {
+    dropdownItems.push({
+      id: 'blacklistFeatured',
+      icon: 'skull-outline',
+      name: 'Admin: Blacklist in Home',
+      admin: true,
+    });
+  }
+  if (isAdmin()) {
+    dropdownItems.push({
+      id: 'blacklist',
+      icon: 'skull',
+      name: 'Admin: Blacklist',
+      admin: true,
     });
   }
 
