@@ -65,6 +65,7 @@ public:
   void suspendScreen();
   void resumeScreen();
   LibraryClipboard &getLibraryClipboard();
+  Screenshot *getScreenshot();
 
 private:
   inline static Engine *instance = nullptr;
@@ -104,6 +105,8 @@ private:
 
   std::mutex setPausedMutex;
   std::vector<std::function<bool()>> androidBackButtonHandlers;
+
+  std::unique_ptr<Screenshot> screenshot;
 };
 
 
@@ -182,4 +185,12 @@ inline void Engine::setPaused(bool paused_) {
   }
 
   setPausedMutex.unlock();
+}
+
+inline Screenshot *Engine::getScreenshot() {
+  if (!screenshot) {
+    screenshot = std::make_unique<Screenshot>(1350);
+  }
+
+  return screenshot.get();
 }

@@ -254,7 +254,7 @@ public:
   void draw(std::optional<SceneDrawingOptions> options = std::nullopt) const;
   void applyViewTransform(float windowWidth) const;
 
-  void sendScreenshot(bool fixToOrigin);
+  void sendScreenshot(bool fixToOrigin, Screenshot *screenshot);
 
 
 private:
@@ -313,7 +313,6 @@ private:
   bool restartRequested = false;
   std::optional<std::string> nextCardId;
 
-  std::unique_ptr<Screenshot> screenshot;
   std::shared_ptr<CoreViewRenderer> leaderboardView;
   mutable love::Transform leaderboardViewTransform;
 

@@ -638,8 +638,9 @@ struct RequestScreenshotReceiver {
   } params;
   void receive(Engine &engine) {
     auto screen = engine.maybeGetScreen();
+
     if (screen && screen->hasScene()) {
-      screen->getScene().sendScreenshot(engine.getIsEditing());
+      screen->getScene().sendScreenshot(engine.getIsEditing(), engine.getScreenshot());
     }
   }
 };

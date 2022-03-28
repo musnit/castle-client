@@ -588,10 +588,7 @@ struct SceneMessageEvent {
   PROP(std::string, data);
 };
 
-void Scene::sendScreenshot(bool fixToOrigin) {
-  if (!screenshot) {
-    screenshot = std::make_unique<Screenshot>(1350);
-  }
+void Scene::sendScreenshot(bool fixToOrigin, Screenshot *screenshot) {
   SceneMessageEvent ev;
   ev.messageType = "SCREENSHOT_DATA";
 
