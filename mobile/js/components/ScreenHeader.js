@@ -1,6 +1,8 @@
 import React from 'react';
 import { StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useNavigation } from '../ReactNavigation';
+import { getIsTabBarVisible } from '../Navigation';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
@@ -15,7 +17,6 @@ const styles = StyleSheet.create({
     minHeight: 54,
     borderBottomWidth: 1,
     borderColor: Constants.colors.grayOnBlackBorder,
-    paddingTop: 16,
   },
   button: {
     flexShrink: 0,
@@ -44,7 +45,9 @@ const styles = StyleSheet.create({
 });
 
 export const ScreenHeader = ({ title, onBackButtonPress, RightButtonComponent }) => {
-  const { pop, getState } = useNavigation();
+  const navigation = useNavigation();
+  const { pop, getState } = navigation;
+  const { top } = useSafeAreaInsets();
 
   // don't useNavigationState() because we don't want to rerender if this changes.
   const navigationStackIndex = getState().index;
@@ -52,10 +55,13 @@ export const ScreenHeader = ({ title, onBackButtonPress, RightButtonComponent })
 
   const onPressBack = onBackButtonPress ?? (() => pop());
 
+  // if no tab bar visible on top, we need to avoid device's top inset here
+  const addTopInset = !getIsTabBarVisible({ navigation });
+
   return (
-    <React.Fragment>
+    <>
       <StatusBar barStyle="light-content" />
-      <View style={styles.header}>
+      <View style={[styles.header, addTopInset ? { paddingTop: top } : null]}>
         {showBackButton ? (
           <TouchableOpacity style={[styles.button, styles.buttonLeft]} onPress={onPressBack}>
             <Icon name="arrow-back" size={32} color="#fff" />
@@ -69,6 +75,6 @@ export const ScreenHeader = ({ title, onBackButtonPress, RightButtonComponent })
         <View style={[styles.button]} />
         {RightButtonComponent}
       </View>
-    </React.Fragment>
+    </>
   );
 };
