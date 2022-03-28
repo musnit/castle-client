@@ -953,6 +953,9 @@ void Feed::showNux() {
   isShowingNux = true;
   nuxIsHidingControls = true;
   nuxAnimationTime = 0.0;
+  // probably don't need this. just want to guard against the case where a deep link
+  // shifted the offset to the next deck
+  offset = 0.0;
 
   int idx = getCurrentIndex();
   if (idx >= 0 && idx < (int)decks.size()) {
@@ -979,6 +982,9 @@ void Feed::showNativeFeedNux() {
 
   isShowingNux = true;
   nuxAnimationTime = 0.0;
+  // probably don't need this. just want to guard against the case where a deep link
+  // shifted the offset to the next deck
+  offset = 0.0;
 
   int idx = getCurrentIndex();
   if (idx >= 0 && idx < (int)decks.size()) {
@@ -1050,7 +1056,9 @@ void Feed::setDeepLinkDeckId(std::string deckId) {
       idx = decks.size();
     }
 
-    offset -= cardWidth;
+    if (!isShowingNux) {
+      offset -= cardWidth;
+    }
   }
 
   FeedItem feedItem;
