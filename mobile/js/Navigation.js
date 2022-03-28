@@ -1,5 +1,5 @@
 import React from 'react';
-import { LogBox, Platform } from 'react-native';
+import { Platform } from 'react-native';
 import { enableScreens } from 'react-native-screens';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
@@ -16,7 +16,6 @@ import { ExploreScreen } from './explore/ExploreScreen';
 import { ExploreFeed } from './explore/ExploreFeed';
 import { FeedbackScreen } from './feedback/FeedbackScreen';
 import { NotificationsScreen } from './notifications/NotificationsScreen';
-import { NuxScreen } from './nux/NuxScreen';
 import { PlayDeckScreen } from './play/PlayDeckScreen';
 import { ProfileScreen } from './profile/ProfileScreen';
 import { ShareDeckScreen } from './share/ShareDeckScreen';
@@ -25,10 +24,8 @@ import { ViewSourceNavigator } from './create/ViewSourceNavigator';
 import { DeckRemixesScreen } from './play/DeckRemixesScreen';
 
 import createTopTabNavigator from './navigator/createTopTabNavigator';
-import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import * as DeepLinks from './DeepLinks';
-import * as GhostChannels from './ghost/GhostChannels';
 import * as PushNotifications from './PushNotifications';
 import * as Constants from './Constants';
 
@@ -37,14 +34,6 @@ import FastImage from 'react-native-fast-image';
 enableScreens();
 const Stack = createNativeStackNavigator();
 const Tab = createTopTabNavigator();
-
-// we access the navigation route's "secret" index in order to decide whether to show the tab bar.
-// the solution recommended by the react-nav authors isn't sufficient for our case,
-// so just suppress these warnings.
-// see further discussion: https://github.com/react-navigation/react-navigation/issues/9056
-LogBox.ignoreLogs([
-  "Accessing the 'state' property of the 'route' object is not supported. If you want to get the focused route name, use the 'getFocusedRouteNameFromRoute' helper instead: https://reactnavigation.org/docs/5.x/screen-options-resolution/#setting-parent-screen-options-based-on-child-navigators-state",
-]);
 
 const ICON_SIZE = 22;
 
@@ -356,12 +345,6 @@ const InitialAuthNavigator = () => (
       headerShown: false,
     }}>
     <Stack.Screen name="InitialAuthScreen" component={InitialAuthScreen} />
-  </Stack.Navigator>
-);
-
-const NuxNavigator = () => (
-  <Stack.Navigator screenOptions={{ headerShown: false }}>
-    <Stack.Screen name="NuxScreen" component={NuxScreen} />
   </Stack.Navigator>
 );
 
