@@ -5,7 +5,7 @@ import { PopoverButton } from './PopoverProvider';
 import * as Constants from '../Constants';
 const CastleIcon = Constants.CastleIcon;
 
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const styles = StyleSheet.create({
   container: {
@@ -18,14 +18,24 @@ const styles = StyleSheet.create({
   item: {
     borderBottomWidth: 1,
     borderColor: '#ccc',
-    padding: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 14,
     flexDirection: 'row',
     alignItems: 'center',
   },
   itemIcon: {
     width: 18,
     alignItems: 'center',
-    marginRight: 8,
+    marginTop: -1,
+    marginRight: 11,
+    marginLeft: -4,
+  },
+  itemText: {
+    fontSize: 15,
+    lineHeight: 20,
+  },
+  adminItemText: {
+    color: '#999',
   },
   selectedItemText: {
     fontWeight: 'bold',
@@ -45,12 +55,23 @@ export const DropdownItemsList = ({ items, selectedItem, onSelectItem, closePopo
               closePopover();
             }}>
             <View style={styles.itemIcon}>
-              {item.icon ? <Icon name={item.icon} size={18} color="#000" /> : null}
-              {item.castleIcon ? <CastleIcon name={item.castleIcon} size={18} color="#000" /> : null}
+              {item.icon ? (
+                <Icon name={item.icon} size={20} color={item.admin ? '#999' : '#000'} />
+              ) : null}
+              {item.castleIcon ? (
+                <CastleIcon name={item.castleIcon} size={20} color="#000" />
+              ) : null}
             </View>
-            <Text style={item === selectedItem ? styles.selectedItemText : null}>{item.name}</Text>
+            <Text
+              style={[
+                styles.itemText,
+                item === selectedItem ? styles.selectedItemText : null,
+                item.admin ? styles.adminItemText : null,
+              ]}>
+              {item.name}
+            </Text>
             <View style={styles.itemIcon}>
-              {item === selectedItem ? <Icon name="check" size={18} color="#000" /> : null}
+              {item === selectedItem ? <Icon name="check" size={20} color="#000" /> : null}
             </View>
           </TouchableOpacity>
         ))}
@@ -73,7 +94,7 @@ export const Dropdown = ({ value, onChange, style, children, ...props }) => {
     Component: DropdownItemsList,
     items,
     selectedItem,
-    height: 52 * items.length,
+    height: 45 * items.length,
     width: 256,
     onSelectItem: (item) => onChange(item.id),
   };

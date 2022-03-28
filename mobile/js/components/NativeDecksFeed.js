@@ -89,7 +89,7 @@ export const NativeDecksFeed = ({
         Component: DropdownItemsList,
         items: dropdownItems,
         selectedItem: null,
-        height: 52 * dropdownItems.length,
+        height: 45 * dropdownItems.length,
         width: 256,
         onSelectItem: (item) => onSelectDropdownAction(item.id),
       };
