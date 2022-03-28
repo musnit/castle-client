@@ -174,7 +174,7 @@ let coreViews = {
         type: 'text',
         left: '15vw',
         top: FEED_TEXT_TOP,
-        width: '35vw',
+        width: '45vw',
         height: '5vw',
         color: '#fff',
         textAlign: 'left',
