@@ -21,11 +21,7 @@
 //#define NUX_LAST_CARD_ID "kwruZ1zJJp"
 #define NUX_LAST_CARD_ID "hX8B1Z6zP"
 
-#ifdef CAPTIONS_ENABLED
 #define BOTTOM_UI_MIN_HEIGHT 140
-#else
-#define BOTTOM_UI_MIN_HEIGHT 90
-#endif
 
 // #define DEBUG_CLICK_TO_ADVANCE
 // #define DEBUG_AUTO_ADVANCE
