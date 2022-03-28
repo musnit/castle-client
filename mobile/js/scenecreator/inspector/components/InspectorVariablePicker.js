@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { AppText as Text } from '../../../components/AppText';
-import { PopoverButton } from '../../../components/PopoverProvider';
 import { StyleSheet, View } from 'react-native';
 import { DropdownItemsList } from './InspectorDropdown';
 import { formatVariableName } from '../../SceneCreatorUtilities';
