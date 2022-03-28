@@ -76,7 +76,7 @@ export const ExploreScreen = ({ route }) => {
   const [fetchFeeds, query] = useLazyQuery(
     gql`
       query exploreFeed {
-        exploreFeeds {
+        exploreFeeds(apiVersion: 2) {
           title
           feedId
           decks {
