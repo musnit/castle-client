@@ -33,7 +33,8 @@ static RCTBridge *sRctBridge;
       [request setValue:@"application/json; charset=utf-8" forHTTPHeaderField:@"Content-Type"];
       [request setValue:[CastleCoreView sceneCreatorApiVersion] forHTTPHeaderField:@"X-Scene-Creator-Version"];
       
-      if (authToken) {
+      // need to check that it's an NSString, because async storage could return [NSNull null]
+      if (authToken && [authToken isKindOfClass:[NSString class]]) {
         [request setValue:authToken forHTTPHeaderField:@"X-Auth-Token"];
       }
 
