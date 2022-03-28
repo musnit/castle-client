@@ -2,6 +2,8 @@ import * as React from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { AppText as Text } from './AppText';
 import { PopoverButton } from './PopoverProvider';
+import * as Constants from '../Constants';
+const CastleIcon = Constants.CastleIcon;
 
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
@@ -44,6 +46,7 @@ export const DropdownItemsList = ({ items, selectedItem, onSelectItem, closePopo
             }}>
             <View style={styles.itemIcon}>
               {item.icon ? <Icon name={item.icon} size={18} color="#000" /> : null}
+              {item.castleIcon ? <CastleIcon name={item.castleIcon} size={18} color="#000" /> : null}
             </View>
             <Text style={item === selectedItem ? styles.selectedItemText : null}>{item.name}</Text>
             <View style={styles.itemIcon}>

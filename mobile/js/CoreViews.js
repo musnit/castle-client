@@ -2,7 +2,6 @@ import React from 'react';
 import { Platform } from 'react-native';
 import { useListen } from './core/CoreEvents';
 import { useNavigation } from './ReactNavigation';
-import { shareDeck } from './common/utilities';
 import { useFocusEffect } from './ReactNavigation';
 import { apolloClient } from './Session';
 import { gql } from '@apollo/client';
@@ -292,9 +291,7 @@ let coreViews = {
         touch: 'enabled',
         // backgroundColor: '#f00',
         onTap: (params) => {
-          shareDeck({
-            deckId: params.deckId,
-          });
+          params.onShowPopover(params);
         },
       },
 

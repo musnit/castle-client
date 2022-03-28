@@ -1,5 +1,5 @@
 import React from 'react';
-import { Animated, Pressable, StyleSheet, View, Text } from 'react-native';
+import { Animated, Pressable, StyleSheet, View, Platform } from 'react-native';
 import { Dropdown } from '../components/Dropdown';
 import { shareDeck } from '../common/utilities';
 import { useActionSheet } from '@expo/react-native-action-sheet';
@@ -45,6 +45,13 @@ export function getDropdownItems({
   isMuted,
 }) {
   let dropdownItems = [];
+
+  dropdownItems.push({
+    id: 'share',
+    castleIcon: Platform.OS === 'android' ? 'share-android' : 'share-ios',
+    name: 'Share',
+  });
+
   if (!isAnonymous) {
     // TODO: enable anonymous view source
     dropdownItems.push({
@@ -151,9 +158,21 @@ export function getOnSelectDropdownAction({
     [addStaffPick, deck]
   );
 
+  const onShare = React.useCallback(
+    () =>
+      shareDeck({
+        deckId: deck.deckId,
+      }),
+    [deck]
+  );
+
   return React.useCallback(
     (id) => {
       switch (id) {
+        case 'share': {
+          onShare();
+          break;
+        }
         case 'mute': {
           onSetIsMuted(!isMuted);
           break;
