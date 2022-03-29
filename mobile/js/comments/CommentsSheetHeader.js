@@ -1,8 +1,9 @@
 import * as React from 'react';
 import { Pressable, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { AppText as Text } from '../components/AppText';
-import { formatCount } from '../common/utilities';
+import { formatCount, shareDeck } from '../common/utilities';
 import { gql } from '@apollo/client';
+import { ReactionButton } from '../components/ReactionButton';
 import { useNavigation } from '../ReactNavigation';
 import { UserAvatar } from '../components/UserAvatar';
 
@@ -33,6 +34,10 @@ const styles = StyleSheet.create({
     flexShrink: 1,
     paddingLeft: 16,
   },
+  headerRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   creator: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -46,6 +51,15 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     fontSize: 16,
     marginLeft: 10,
+  },
+  reactionCount: {
+    marginLeft: 4,
+  },
+  reactionCountText: {
+    color: '#000',
+    fontSize: 16,
+    textShadowColor: null,
+    fontWeight: '100',
   },
   parentAttrib: {
     flexDirection: 'row',
@@ -83,6 +97,14 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
     color: '#888',
     paddingRight: 4,
+  },
+  rightButton: {
+    minWidth: 28,
+    minHeight: 28,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+    marginLeft: 16,
   },
   back: {
     flexShrink: 0,
@@ -145,9 +167,27 @@ export const CommentsSheetHeader = ({ deck = {}, onClose }) => {
             <Text style={styles.username}>{creator.username}</Text>
           </Pressable>
         </View>
-        <TouchableOpacity style={styles.back} onPress={onClose}>
-          <CastleIcon name="close" size={22} color="#000" />
-        </TouchableOpacity>
+        <View style={styles.headerRight}>
+          <ReactionButton
+            deck={deck}
+            iconSize={22}
+            color="#000"
+            countStyle={styles.reactionCount}
+            countTextStyle={styles.reactionCountText}
+          />
+          <Pressable style={styles.rightButton} onPress={() => shareDeck(deck)}>
+            {({ pressed }) => (
+              <CastleIcon
+                name={Constants.iOS ? 'share-ios' : 'share-android'}
+                color={pressed ? '#ccc' : '#000'}
+                size={22}
+              />
+            )}
+          </Pressable>
+          <TouchableOpacity style={styles.back} onPress={onClose}>
+            <CastleIcon name="close" size={22} color="#000" />
+          </TouchableOpacity>
+        </View>
       </View>
       {deck.parentDeckId && deck.parentDeck ? (
         <View style={[styles.row, { paddingHorizontal: 16 }]}>

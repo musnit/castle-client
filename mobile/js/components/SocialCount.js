@@ -17,12 +17,12 @@ const styles = StyleSheet.create({
   },
 });
 
-export const SocialCount = ({ count, optimisticCount }) => {
+export const SocialCount = ({ count, optimisticCount, style, textStyle }) => {
   const totalCount = (count ?? 0) + (optimisticCount ?? 0);
   if (!totalCount) return null;
   return (
-    <View style={styles.container} pointerEvents="none">
-      <Text style={styles.label}>{formatCount(totalCount)}</Text>
+    <View style={[styles.container, style]} pointerEvents="none">
+      <Text style={[styles.label, textStyle]}>{formatCount(totalCount)}</Text>
     </View>
   );
 };

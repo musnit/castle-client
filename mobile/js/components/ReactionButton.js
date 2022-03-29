@@ -26,6 +26,7 @@ const SPRING_CONFIG = {
 
 const styles = StyleSheet.create({
   container: {
+    flexDirection: 'row',
     alignItems: 'center',
   },
   deckActionIcon: {
@@ -83,7 +84,13 @@ const toggleReaction = async ({ reactionId, deck, enabled }) => {
 
 const toggleReactionDebounce = debounce(toggleReaction, 100);
 
-export const ReactionButton = ({ deck, iconSize = 22 }) => {
+export const ReactionButton = ({
+  deck,
+  color = '#fff',
+  iconSize = 22,
+  countStyle,
+  countTextStyle,
+}) => {
   let deckId, reactions;
   if (deck) {
     deckId = deck.deckId;
@@ -119,13 +126,15 @@ export const ReactionButton = ({ deck, iconSize = 22 }) => {
       <AnimatedPressable onPress={onPress} style={{ transform: [{ scale: buttonScale }] }}>
         <Constants.CastleIcon
           name={isSelected ? 'fire-on' : 'fire-off'}
-          color="#fff"
+          color={color}
           size={iconSize}
           style={styles.deckActionIcon}
         />
       </AnimatedPressable>
       <SocialCount
         count={fire?.count}
+        style={countStyle}
+        textStyle={countTextStyle}
         optimisticCount={makeOptimisticCount(initialIsSelected, isSelected)}
       />
     </View>
