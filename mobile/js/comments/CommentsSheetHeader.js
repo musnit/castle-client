@@ -211,7 +211,9 @@ export const CommentsSheetHeader = ({ deck = {}, isOpen, onClose }) => {
         </View>
         {deck.childDecksCount > 0 ? (
           <Pressable style={styles.childAttrib} onPress={onPressRemix}>
-            <Text style={styles.childLabel}>View {formatCount(deck.childDecksCount)} remixes</Text>
+            <Text style={styles.childLabel}>
+              View {formatCount(deck.childDecksCount)} remix{deck.childDecksCount !== 1 ? 'es' : ''}
+            </Text>
             <Icon name="arrow-forward" color="#888" size={16} />
           </Pressable>
         ) : null}
