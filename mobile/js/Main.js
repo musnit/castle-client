@@ -6,6 +6,7 @@ import {
   DeviceEventEmitter,
   Dimensions,
   PixelRatio,
+  BackHandler,
 } from 'react-native';
 // https://github.com/software-mansion/react-native-gesture-handler/issues/320#issuecomment-443815828
 import 'react-native-gesture-handler';
@@ -39,6 +40,21 @@ import { UserListScreen } from './components/UserListScreen';
 import * as Session from './Session';
 import * as PushNotifications from './PushNotifications';
 import * as GameViewAndroidBackHandler from './common/GameViewAndroidBackHandler';
+
+if (Platform.OS == 'android') {
+  let oldAddEventListener = BackHandler.addEventListener;
+  let oldRemoveEventListener = BackHandler.removeEventListener;
+
+  BackHandler.addEventListener = (...args) => {
+    GameViewAndroidBackHandler.backHandlerAddEventListener(...args);
+    return oldAddEventListener(...args);
+  };
+
+  BackHandler.removeEventListener = (...args) => {
+    GameViewAndroidBackHandler.backHandlerRemoveEventListener(...args);
+    return oldRemoveEventListener(...args);
+  };
+}
 
 // Fixes the problem with font rendering on OnePlus phones, like Charlie's
 enableAndroidFontFix();

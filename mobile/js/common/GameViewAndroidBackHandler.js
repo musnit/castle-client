@@ -31,17 +31,24 @@ function runHardwareBackPressEvent() {
   return false;
 }
 
+export const backHandlerAddEventListener = (eventName, handler) => {
+  if (listenerList.indexOf(handler) === -1) {
+    listenerList.push(handler);
+  }
+};
+
+export const backHandlerRemoveEventListener = (eventName, handler) => {
+  if (listenerList.indexOf(handler) !== -1) {
+    listenerList.splice(
+      listenerList.indexOf(handler),
+      1,
+    );
+  }
+};
+
 export const listen = Platform.select({
   ios: () => null,
   android: () => {
-    React.useEffect(() => {
-      BackHandler.addEventListener('hardwareBackPress', runHardwareBackPressEvent);
-
-      return () => {
-        BackHandler.removeEventListener('hardwareBackPress', runHardwareBackPressEvent);
-      };
-    });
-
     useListen({
       eventName: 'CASTLE_SYSTEM_BACK_BUTTON',
       handler: runHardwareBackPressEvent,
@@ -60,10 +67,10 @@ export const useGameViewAndroidBackHandler = Platform.select({
         gGoBack = goBack;
         gCanGoBack = canGoBack;
 
-        listenerList.push(onHardwareBackPress);
+        BackHandler.addEventListener('hardwareBackPress', onHardwareBackPress);
 
         return () => {
-          listenerList = listenerList.filter((item) => item !== onHardwareBackPress);
+          BackHandler.removeEventListener('hardwareBackPress', onHardwareBackPress);
         };
       }, [onHardwareBackPress])
     );
