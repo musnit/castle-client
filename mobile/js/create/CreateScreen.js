@@ -20,6 +20,7 @@ import { useLazyQuery, gql } from '@apollo/client';
 import { useSession } from '../Session';
 import { SegmentedNavigation } from '../components/SegmentedNavigation';
 import { UnsavedCardsList } from './UnsavedCardsList';
+import { formatCount } from '../common/utilities';
 
 import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import AntIcon from 'react-native-vector-icons/AntDesign';
@@ -64,18 +65,16 @@ const styles = StyleSheet.create({
   deckStats: {
     paddingTop: 6,
     paddingBottom: 4,
-    backgroundColor: '#000',
     flexDirection: 'row',
   },
   deckStatsColumn: {
     flex: 1,
-    flexDirection: 'row',
     alignItems: 'center',
   },
-  playCountLabel: {
+  statCountLabel: {
     color: Constants.colors.grayText,
     fontSize: 12,
-    marginLeft: 2,
+    marginTop: 1,
   },
   help: {
     paddingRight: 8,
@@ -180,16 +179,28 @@ const EditDeckCell = (props) => {
         inGrid={true}
       />
       <View style={styles.deckStats}>
-        <View style={styles.deckStatsColumn}>
-          <MCIcon size={16} name="play" color={Constants.colors.grayText} />
-          <Text style={styles.playCountLabel}>{deck.playCount || '--'}</Text>
-        </View>
-        {deck.reactions?.length ? (
-          <View style={styles.deckStatsColumn}>
-            <MCIcon size={16} name="fire" color={Constants.colors.grayText} />
-            <Text style={styles.playCountLabel}>{deck.reactions[0].count}</Text>
+        {deck.playCount ? (
+          <>
+            <View style={styles.deckStatsColumn}>
+              <MCIcon size={14} name="eye-outline" color={Constants.colors.grayText} />
+              <Text style={styles.statCountLabel}>{formatCount(deck.playCount)}</Text>
+            </View>
+            <View style={styles.deckStatsColumn}>
+              <MCIcon size={14} name="timer-outline" color={Constants.colors.grayText} />
+              <Text style={styles.statCountLabel}>{formatCount(deck.playCount * 3)}</Text>
+            </View>
+            <View style={styles.deckStatsColumn}>
+              <MCIcon size={14} name="fire" color={Constants.colors.grayText} />
+              <Text style={styles.statCountLabel}>
+                {deck.reactions?.length ? formatCount(deck.reactions[0].count) : '-'}
+              </Text>
+            </View>
+          </>
+        ) : (
+          <View style={{ flex: 1, alignItems: 'center' }}>
+            <Text style={styles.statCountLabel}>---</Text>
           </View>
-        ) : null}
+        )}
       </View>
     </View>
   );
