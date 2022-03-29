@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export const CommentsSheetHeader = ({ deck = {}, onClose }) => {
+export const CommentsSheetHeader = ({ deck = {}, isOpen, onClose }) => {
   const { push, navigate } = useNavigation();
 
   const onPressRemix = React.useCallback(() => {
@@ -168,22 +168,26 @@ export const CommentsSheetHeader = ({ deck = {}, onClose }) => {
           </Pressable>
         </View>
         <View style={styles.headerRight}>
-          <ReactionButton
-            deck={deck}
-            iconSize={22}
-            color="#000"
-            countStyle={styles.reactionCount}
-            countTextStyle={styles.reactionCountText}
-          />
-          <Pressable style={styles.rightButton} onPress={() => shareDeck(deck)}>
-            {({ pressed }) => (
-              <CastleIcon
-                name={Constants.iOS ? 'share-ios' : 'share-android'}
-                color={pressed ? '#ccc' : '#000'}
-                size={22}
+          {isOpen ? (
+            <>
+              <ReactionButton
+                deck={deck}
+                iconSize={22}
+                color="#000"
+                countStyle={styles.reactionCount}
+                countTextStyle={styles.reactionCountText}
               />
-            )}
-          </Pressable>
+              <Pressable style={styles.rightButton} onPress={() => shareDeck(deck)}>
+                {({ pressed }) => (
+                  <CastleIcon
+                    name={Constants.iOS ? 'share-ios' : 'share-android'}
+                    color={pressed ? '#ccc' : '#000'}
+                    size={22}
+                  />
+                )}
+              </Pressable>
+            </>
+          ) : null}
           <TouchableOpacity style={styles.back} onPress={onClose}>
             <CastleIcon name="close" size={22} color="#000" />
           </TouchableOpacity>

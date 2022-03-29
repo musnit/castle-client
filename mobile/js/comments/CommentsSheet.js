@@ -40,7 +40,9 @@ export const CommentsSheet = ({ isOpen, onClose, deck, isFullScreen, ...props })
     Keyboard.dismiss();
     return onClose();
   }, [onClose]);
-  const renderHeader = () => <CommentsSheetHeader deck={deck} onClose={closeSheet} />;
+  const renderHeader = () => (
+    <CommentsSheetHeader deck={deck} onClose={closeSheet} isOpen={isOpen} />
+  );
 
   const [replyingToComment, setReplyingToComment] = React.useState();
 
