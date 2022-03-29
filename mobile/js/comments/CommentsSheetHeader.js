@@ -9,7 +9,6 @@ import { UserAvatar } from '../components/UserAvatar';
 
 import * as Constants from '../Constants';
 import * as Session from '../Session';
-import * as SceneCreatorConstants from '../scenecreator/SceneCreatorConstants';
 
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
@@ -123,7 +122,7 @@ export const CommentsSheetHeader = ({ deck = {}, isOpen, onClose }) => {
       deck,
       isFullscreen: true,
     });
-  }, [deck]);
+  }, [deck, push]);
 
   const navigateToParent = React.useCallback(async () => {
     const result = await Session.apolloClient.query({

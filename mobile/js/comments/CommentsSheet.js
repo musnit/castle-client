@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { KeyboardAvoidingView, StyleSheet, TextInput, View, Keyboard } from 'react-native';
+import { KeyboardAvoidingView, View, Keyboard } from 'react-native';
 import { Amplitude } from '@amplitude/react-native';
 import { BottomSheet } from '../components/BottomSheet';
 import { CommentInput } from './CommentInput';
@@ -8,8 +8,6 @@ import { CommentsSheetHeader } from './CommentsSheetHeader';
 import { formatMessage } from '../common/chat-utilities';
 import { gql, useMutation } from '@apollo/client';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useKeyboard } from '../common/utilities';
-import { useNavigation } from '../ReactNavigation';
 import { useSession } from '../Session';
 
 import * as Constants from '../Constants';
@@ -24,12 +22,10 @@ const needsTabBarHeight = ({ isFullScreen }) => {
 };
 
 export const CommentsSheet = ({ isOpen, onClose, deck, isFullScreen, ...props }) => {
-  const { getState } = useNavigation();
   const { isAnonymous } = useSession();
   const [newComment, setNewComment] = React.useState(null);
 
   const insets = useSafeAreaInsets();
-  const navigationIndex = getState().index;
   const maxSheetHeight =
     Viewport.vh * 100 -
     insets.top -

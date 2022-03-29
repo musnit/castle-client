@@ -1,12 +1,10 @@
 import React from 'react';
 import { Animated, Pressable as PressableRN, StyleSheet, View } from 'react-native';
-import { AppText as Text } from './AppText';
 import { gql } from '@apollo/client';
 import { SocialCount } from './SocialCount';
 
 import * as Constants from '../Constants';
 import * as Session from '../Session';
-import * as Utilities from '../common/utilities';
 
 import debounce from 'lodash.debounce';
 
@@ -91,9 +89,8 @@ export const ReactionButton = ({
   countStyle,
   countTextStyle,
 }) => {
-  let deckId, reactions;
+  let reactions;
   if (deck) {
-    deckId = deck.deckId;
     reactions = deck.reactions;
   }
   const buttonScale = React.useRef(new Animated.Value(1)).current;
