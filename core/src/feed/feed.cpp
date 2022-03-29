@@ -30,7 +30,13 @@
 
 // creator.photo.url and initialCard.backgroundImage.smallUrl needed for DeckRemixesScreen
 const std::string GRAPHQL_DECK_FIELDS
-    = "\ndeckId\ncaption\nlastModified\nvariables\nchildDecksCount\nvisibility\ncreator "
+    = "\ndeckId\ncaption\nlastModified\nvariables\nchildDecksCount\nvisibility\n"
+      "parentDeckId\n"
+      "parentDeck {\n"
+      "  deckId\n"
+      "  creator { username }\n"
+      "}\n"
+      "creator "
       "{\nuserId\nusername\nphoto "
       "{\nsmallAvatarUrl\nurl\n}\n}\ninitialCard {\n    "
       "    cardId\nsceneDataUrl\nbackgroundImage {\nsmallUrl}\n      }\n    commentsEnabled\n  "
