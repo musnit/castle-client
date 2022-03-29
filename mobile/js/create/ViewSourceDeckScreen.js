@@ -1,5 +1,5 @@
 import React from 'react';
-import { ActivityIndicator, Alert, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Alert, TouchableOpacity } from 'react-native';
 import { CardsSet } from '../components/CardsSet';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useQuery, gql } from '@apollo/client';
@@ -52,7 +52,7 @@ const DECK_FRAGMENT = `
 `;
 
 export const ViewSourceDeckScreen = (props) => {
-  let lastFocusedTime;
+  let lastFocusedTime = React.useRef(0);
   const navigation = useNavigation();
   const deckId = props.route.params.deckIdToEdit;
   const [deck, setDeck] = React.useState(null);
@@ -74,11 +74,11 @@ export const ViewSourceDeckScreen = (props) => {
 
   useFocusEffect(
     React.useCallback(() => {
-      if (lastFocusedTime) {
+      if (lastFocusedTime.current > 0) {
         loadDeck.refetch();
       }
-      lastFocusedTime = Date.now();
-    }, [deck])
+      lastFocusedTime.current = Date.now();
+    }, [loadDeck])
   );
 
   if (!loadDeck.loading && !loadDeck.error && loadDeck.data && deck === null) {
@@ -93,7 +93,7 @@ export const ViewSourceDeckScreen = (props) => {
   };
 
   return (
-    <SafeAreaView style={Constants.styles.container}>
+    <SafeAreaView style={Constants.styles.container} edges={['left', 'right', 'bottom']}>
       <ScreenHeader
         title={deck ? deck.creator.username + "'s deck" : ''}
         onBackButtonPress={() => navigation.goBack()}
