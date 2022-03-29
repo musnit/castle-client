@@ -24,7 +24,6 @@ struct FeedItem {
   std::optional<std::string> lastModified;
   std::optional<std::string> avatarUrl;
   std::shared_ptr<Player> player;
-  std::shared_ptr<love::graphics::Canvas> canvas;
   std::shared_ptr<CoreViewRenderer> coreView;
   std::shared_ptr<CoreViewRenderer> avatarCoreView;
   std::shared_ptr<CoreViewRenderer> errorCoreView;
@@ -109,6 +108,7 @@ private:
   std::string sessionId;
   std::string deepLinkDeckId;
   std::shared_ptr<CoreViewRenderer> globalErrorCoreView;
+  std::shared_ptr<love::graphics::Canvas> canvases[4];
 
   // Nux
   std::shared_ptr<CoreViewRenderer> nuxCoreView;
@@ -139,6 +139,7 @@ private:
   void renderCardTexture(love::Texture *texture, float time, float brightness);
   void runUpdateAtIndex(int i, double dt);
   void sendViewFeedItemEvent();
+  love::graphics::Canvas *canvasForIndex(int i);
 
   Lv &lv { Lv::getInstance() };
   Bridge &bridge;

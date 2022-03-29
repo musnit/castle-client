@@ -150,8 +150,10 @@ void Feed::setWindowSize(int w, int h) {
         decks[i].player->getScene().getGesture().setBounds(
             cardLeft, TOP_PADDING, cardWidth, cardHeight);
       }
+    }
 
-      decks[i].canvas.reset();
+    for (size_t i = 0; i < 4; i++) {
+      canvases[i].reset();
     }
 
     if (nuxCoreView) {
@@ -647,18 +649,13 @@ void Feed::renderCardAtPosition(
       shouldDraw = false;
     }
 
-    if (!decks[idx].canvas) {
-      decks[idx].canvas = std::shared_ptr<love::graphics::Canvas>(newCanvas(cardWidth, cardHeight));
-      if (((love::graphics::opengl::Canvas *)decks[idx].canvas.get())->getStatus()
-          != GL_FRAMEBUFFER_COMPLETE) {
-        decks[idx].canvas.reset();
-        return;
-      }
+    auto canvas = canvasForIndex(idx);
+    if (!canvas) {
+      return;
     }
-    std::shared_ptr<love::graphics::Canvas> canvas = decks[idx].canvas;
 
     if (shouldDraw) {
-      renderToCanvas(canvas.get(), [&]() {
+      renderToCanvas(canvas, [&]() {
         lv.graphics.push(love::Graphics::STACK_ALL);
         viewTransform.reset();
         viewTransform.scale(cardWidth / 800.0, cardHeight / 1120.0);
@@ -678,7 +675,7 @@ void Feed::renderCardAtPosition(
     lv.graphics.setColor({ 1, 1, 1, 1 });
 
     if (isDeckVisible) {
-      renderCardTexture(canvas.get(), elapsedTime, decks[idx].isFrozen ? 0.5 : 1.0);
+      renderCardTexture(canvas, elapsedTime, decks[idx].isFrozen ? 0.5 : 1.0);
     }
 
     lv.graphics.pop();
@@ -1586,7 +1583,6 @@ void Feed::unloadDeckAtIndex(int i, bool force) {
   decks[i].framesToSkip = 0.0;
   decks[i].isFrozen = false;
   decks[i].player.reset();
-  decks[i].canvas.reset();
   decks[i].coreView.reset();
 }
 
@@ -1642,4 +1638,17 @@ void Feed::sendViewFeedItemEvent() {
     bridge.sendEvent("VIEW_FEED_ITEM", ev);
     lastViewFeedItemEventIndex = idx;
   }
+}
+
+love::graphics::Canvas *Feed::canvasForIndex(int i) {
+  if (!canvases[i % 4]) {
+    canvases[i % 4] = std::shared_ptr<love::graphics::Canvas>(newCanvas(cardWidth, cardHeight));
+    if (((love::graphics::opengl::Canvas *)canvases[i % 4].get())->getStatus()
+        != GL_FRAMEBUFFER_COMPLETE) {
+      canvases[i % 4].reset();
+      return nullptr;
+    }
+  }
+
+  return canvases[i % 4].get();
 }
