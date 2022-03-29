@@ -12,6 +12,7 @@ import {
 import { PanGestureHandler, State } from 'react-native-gesture-handler';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useFocusEffect } from '../ReactNavigation';
 import { useKeyboard } from '../common/utilities';
 import { AndroidNavigationContext, useNavigation, ANDROID_USE_NATIVE_NAVIGATION } from '../ReactNavigation';
 import { getIsTabBarVisible } from '../Navigation';
@@ -298,14 +299,26 @@ const BottomSheetAndroid = ({
     }
   }, [isOpen, notifySnap, containerHeight]);
 
+  const [isFocused, setIsFocused] = React.useState(true);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      setIsFocused(true);
+
+      return () => {
+        setIsFocused(false);
+      };
+    }, [])
+  );
+
   let runHardwareBackPressEvent = React.useCallback(() => {
-    if (isOpen && onClose) {
+    if (isOpen && onClose && isFocused) {
       onClose();
       return true;
     }
 
     return false;
-  }, [isOpen]);
+  }, [isOpen, isFocused]);
 
   React.useEffect(() => {
     BackHandler.addEventListener('hardwareBackPress', runHardwareBackPressEvent);
