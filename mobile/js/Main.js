@@ -13,7 +13,6 @@ import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 import { ApolloProvider } from '@apollo/client';
 import { RootNavigator } from './Navigation';
 import { AndroidNavigationContext, ANDROID_USE_NATIVE_NAVIGATION } from './ReactNavigation';
-import BootSplash from 'react-native-bootsplash';
 import { DeckRemixesScreen } from './play/DeckRemixesScreen';
 import * as CoreEvents from './core/CoreEvents';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -41,8 +40,6 @@ import * as Session from './Session';
 import * as PushNotifications from './PushNotifications';
 import * as GameViewAndroidBackHandler from './common/GameViewAndroidBackHandler';
 
-let bootSplashHidden = false;
-
 // Fixes the problem with font rendering on OnePlus phones, like Charlie's
 enableAndroidFontFix();
 
@@ -62,11 +59,6 @@ const Main = () => {
         }}
       />
     );
-  }
-
-  if (!bootSplashHidden) {
-    setTimeout(() => BootSplash.hide({ fade: true }), 250);
-    bootSplashHidden = true;
   }
 
   return <RootNavigator />;

@@ -32,19 +32,23 @@ public class MainActivity extends NavigationActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+        // https://github.com/software-mansion/react-native-screens/issues/17#issuecomment-424704067
+        super.onCreate(null);
 
         //GameActivity.ghostRootUri = SCENE_CREATOR_USE_PROD_SCENE_CREATOR ? "" : SCENE_CREATOR_DEV_URI;
         //GameActivity.sceneCreatorApiVersion = SCENE_CREATOR_API_VERSION;
         GameActivity.setMetricsFromDisplay(getWindowManager().getDefaultDisplay());
 
-        gameActivity = new CoreGameActivity();
-        gameActivity.setContexts(this, this.getApplicationContext());
-        gameActivity.loadLibraries();
+        // Test with "don't keep activities" if you cahnge this
+        if (gameActivity == null) {
+            gameActivity = new CoreGameActivity();
+            gameActivity.setContexts(this, this.getApplicationContext());
+            gameActivity.loadLibraries();
 
-        gameActivity.resetNative();
-        gameActivity.startNative();
-        gameActivity.resume();
+            gameActivity.resetNative();
+            gameActivity.startNative();
+            gameActivity.resume();
+        }
 
         RNBootSplash.init(R.drawable.splash_screen, this);
     }

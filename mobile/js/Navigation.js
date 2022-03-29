@@ -2,6 +2,7 @@ import React from 'react';
 import { Platform } from 'react-native';
 import { enableScreens } from 'react-native-screens';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import BootSplash from 'react-native-bootsplash';
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { useSession, maybeFetchNotificationsAsync, setNotifBadge } from './Session';
 
@@ -456,6 +457,7 @@ export const RootNavigator = () => {
 
   return (
     <NavigationContainer
+      onReady={() => BootSplash.hide({ fade: true })}
       theme={NavigationTheme}
       ref={navRefCallback}
       onStateChange={onNavigationStateChange}>

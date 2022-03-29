@@ -117,7 +117,8 @@ public class NavigationActivity extends AppCompatActivity implements DefaultHard
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+        // https://github.com/software-mansion/react-native-screens/issues/17#issuecomment-424704067
+        super.onCreate(null);
         if (isFinishing()) {
             return;
         }
@@ -458,7 +459,8 @@ public class NavigationActivity extends AppCompatActivity implements DefaultHard
 
     @Override
     public void onPostCreate(@Nullable Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
+        // https://github.com/software-mansion/react-native-screens/issues/17#issuecomment-424704067
+        super.onPostCreate(null);
         //navigator.setContentLayout(findViewById(android.R.id.content));
     }
 
