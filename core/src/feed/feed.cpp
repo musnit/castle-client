@@ -399,7 +399,7 @@ void Feed::update(double dt) {
 
       if (isAnimating) {
         int idx = getCurrentIndex();
-        if (idx >= 0 && idx < (int)decks.size()) {
+        if (idx >= 0 && idx < (int)decks.size() && decks[idx].player) {
           decks[idx].player->suspend();
         }
       }
