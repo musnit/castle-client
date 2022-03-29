@@ -1671,7 +1671,7 @@ love::graphics::Canvas *Feed::newCanvas(int width, int height) {
   love::graphics::Canvas::Settings settings;
   settings.width = width;
   settings.height = height;
-  settings.dpiScale = 1;
+  settings.dpiScale = lv.graphics.getScreenDPIScale();
   // settings.msaa = 4;
 
   return lv.graphics.newCanvas(settings);
