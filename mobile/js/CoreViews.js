@@ -683,7 +683,7 @@ async function printEmbeddedDecks() {
 
   let decks = [];
   let cards = [];
-  await addEmbeddedDeck('4JQS0nAXr', decks, cards);
+  await addEmbeddedDeck('lSTWWH6Kw', decks, cards);
 
   let arraySection = '';
   let id = 0;

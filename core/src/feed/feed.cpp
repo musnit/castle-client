@@ -17,9 +17,8 @@
 #define CORE_VIEWS_GESTURE_INACTIVE_AFTER_SWIPE_TIME 0.4
 #define NUX_ANIMATION_TIME 3.0
 #define NUX_ANIMATION_ALPHA_TIME 0.5;
-#define NUX_DECK_ID "4JQS0nAXr"
-//#define NUX_LAST_CARD_ID "kwruZ1zJJp"
-#define NUX_LAST_CARD_ID "hX8B1Z6zP"
+#define NUX_DECK_ID "lSTWWH6Kw"
+#define NUX_LAST_CARD_ID "aXLpBac-w"
 
 #define BOTTOM_UI_MIN_HEIGHT 140
 
@@ -1019,7 +1018,7 @@ void Feed::renderNux() {
   }
 
   float perc = cubicEaseInOut(fmod(nuxAnimationTime, NUX_ANIMATION_TIME) / NUX_ANIMATION_TIME);
-  float x = (float)windowWidth - ((float)windowWidth * 1.5) * perc;
+  float x = (float)windowWidth - ((float)windowWidth * 1.6) * perc;
 
   lv.graphics.push(love::Graphics::STACK_ALL);
   viewTransform.reset();
