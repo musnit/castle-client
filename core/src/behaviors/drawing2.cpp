@@ -378,20 +378,21 @@ void Drawing2Behavior::writeBase64PngFrames(
   if (!editorDataCache) {
     editorDataCache = std::make_unique<DrawingEditorDataCache>();
   }
-  if (!editorDataCache->items.contains(component.hash)) {
-    DrawingEditorDataCache::Item item;
+
+  auto item = editorDataCache->items.get(component.hash);
+  if (!item) {
+    item = DrawingEditorDataCache::Item();
     for (int frameIdx = 0; frameIdx < component.drawData->getNumFrames(); frameIdx++) {
       auto maybeBase64Png = component.drawData->renderPreviewPng(frameIdx, -1);
       if (maybeBase64Png) {
-        item.base64PngFrames.push_back(maybeBase64Png.value());
+        item->base64PngFrames.push_back(maybeBase64Png.value());
       } else {
-        item.base64PngFrames.emplace_back();
+        item->base64PngFrames.emplace_back();
       }
     }
-    editorDataCache->items.insert(component.hash, item);
+    editorDataCache->items.insert(component.hash, *item);
   }
 
-  auto item = editorDataCache->items.get(component.hash);
   for (size_t i = 0; i < item->base64PngFrames.size(); i++) {
     ev->copiedFrames.push_back(item->base64PngFrames[i]);
   }

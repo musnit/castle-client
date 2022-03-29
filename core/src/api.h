@@ -258,8 +258,9 @@ public:
 
   static void get(const std::string &url, const std::function<void(APIResponse &)> &callback) {
     bool usingCache = false;
-    if (cachedResponses.contains(url)) {
-      cachedResponses.get(url)->loadAPIResponse(callback);
+    auto cacheResponse = cachedResponses.get(url);
+    if (cacheResponse) {
+      cacheResponse->loadAPIResponse(callback);
 
       usingCache = true;
     } else {
