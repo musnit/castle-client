@@ -20,20 +20,22 @@ export default function TabBarIcon({
   // We render the icon twice at the same position on top of each other:
   // active and inactive one, so we can fade between them.
   return (
-    <View style={[horizontal ? styles.iconHorizontal : styles.iconVertical, style]}>
-      <View style={[styles.icon, { opacity: activeOpacity }]}>
-        {renderIcon({
-          focused: true,
-          size,
-          color: activeTintColor,
-        })}
-      </View>
-      <View style={[styles.icon, { opacity: inactiveOpacity }]}>
-        {renderIcon({
-          focused: false,
-          size,
-          color: inactiveTintColor,
-        })}
+    <>
+      <View style={[horizontal ? styles.iconHorizontal : styles.iconVertical, style]}>
+        <View style={[styles.icon, { opacity: activeOpacity }]}>
+          {renderIcon({
+            focused: true,
+            size,
+            color: activeTintColor,
+          })}
+        </View>
+        <View style={[styles.icon, { opacity: inactiveOpacity }]}>
+          {renderIcon({
+            focused: false,
+            size,
+            color: inactiveTintColor,
+          })}
+        </View>
       </View>
       <Badge
         visible={badge != null}
@@ -45,7 +47,7 @@ export default function TabBarIcon({
         size={(size * 3) / 4}>
         {badge}
       </Badge>
-    </View>
+    </>
   );
 }
 
@@ -72,7 +74,7 @@ const styles = StyleSheet.create({
   },
   badge: {
     position: 'absolute',
-    left: 3,
+    right: 0,
   },
   badgeVertical: {
     top: 3,

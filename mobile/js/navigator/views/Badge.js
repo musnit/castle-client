@@ -41,7 +41,7 @@ export default function Badge({ children, style, visible = true, size = 18, ...r
   const textColor = color(backgroundColor).isLight() ? 'black' : 'white';
 
   const borderRadius = size / 2;
-  const fontSize = Math.floor((size * 3) / 4);
+  const fontSize = Math.floor((size * 3) / 4.5);
 
   return (
     <Animated.Text
@@ -80,5 +80,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     paddingHorizontal: 4,
     overflow: 'hidden',
+    letterSpacing: -0.5,
   },
 });
