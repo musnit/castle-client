@@ -201,6 +201,7 @@ let coreViews = {
         height: FEED_ICON_SIZE,
         hitSlopBottom: '5vw',
         hitSlopTop: '5vw',
+        hitSlopLeft: '5vw',
         resizeMode: 'contain',
         touch: 'enabled',
         // backgroundColor: '#0f0',
