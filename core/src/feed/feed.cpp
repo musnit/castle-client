@@ -23,6 +23,8 @@
 
 #define BOTTOM_UI_MIN_HEIGHT 140
 
+#define TIME_BEFORE_FORCE_LOADING_NEXT_DECK 1.0
+
 // #define DEBUG_CLICK_TO_ADVANCE
 // #define DEBUG_AUTO_ADVANCE
 
@@ -530,6 +532,12 @@ void Feed::update(double dt) {
     loadAvatarAtIndex(idx + 1);
     loadAvatarAtIndex(idx + 2);
     loadAvatarAtIndex(idx + 3);
+  }
+
+  for (int i = idx - 2; i <= idx + 2; i++) {
+    if (i >= 0 && i < (int)decks.size()) {
+      decks[i].loadingTime += dt;
+    }
   }
 }
 
@@ -1141,6 +1149,10 @@ void Feed::fetchMoreDecks() {
     return;
   }
 
+  if (!isCurrentDeckLoaded()) {
+    return;
+  }
+
   if (paginateFeedId) {
     auto lastModifiedBefore = decks[decks.size() - 1].lastModified;
     if (!lastModifiedBefore) {
@@ -1225,12 +1237,17 @@ void Feed::loadDeckAtIndex(int i) {
     return;
   }
 
+  if (i != getCurrentIndex() && !isCurrentDeckLoaded()) {
+    return;
+  }
+
   decks[i].isLoading = true;
 
   if (decks[i].deckJson) {
     loadDeckFromDeckJson(i);
     decks[i].isLoading = false;
   } else {
+    decks[i].loadingTime = 0.0;
     auto deckId = *decks[i].deckId;
     API::graphql("{\n  deck(deckId: \"" + deckId + "\") {\n" + GRAPHQL_DECK_FIELDS + "\n}\n}",
         [i, deckId, this](APIResponse &response) {
@@ -1651,4 +1668,14 @@ love::graphics::Canvas *Feed::canvasForIndex(int i) {
   }
 
   return canvases[i % 4].get();
+}
+
+bool Feed::isCurrentDeckLoaded() {
+  int idx = getCurrentIndex();
+  if (idx >= 0 && idx < (int)decks.size()) {
+    return decks[idx].loadingTime > TIME_BEFORE_FORCE_LOADING_NEXT_DECK || decks[idx].isLoaded
+        || decks[idx].hasNetworkError;
+  }
+
+  return true;
 }

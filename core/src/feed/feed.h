@@ -38,6 +38,7 @@ struct FeedItem {
   std::optional<int> reactionCount;
   float frameTimes[NUM_FRAME_TIMES];
   int frameIndex = 0;
+  float loadingTime = 0.0;
   float framesToSkip = 0.0;
   bool isFrozen = false;
 };
@@ -140,6 +141,7 @@ private:
   void runUpdateAtIndex(int i, double dt);
   void sendViewFeedItemEvent();
   love::graphics::Canvas *canvasForIndex(int i);
+  bool isCurrentDeckLoaded();
 
   Lv &lv { Lv::getInstance() };
   Bridge &bridge;
