@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { KeyboardAvoidingView, StyleSheet, TextInput, View, Keyboard } from 'react-native';
 import { Amplitude } from '@amplitude/react-native';
-import { BottomSheetHeader } from '../components/BottomSheetHeader';
 import { BottomSheet } from '../components/BottomSheet';
 import { CommentInput } from './CommentInput';
 import { CommentsList } from './CommentsList';
+import { CommentsSheetHeader } from './CommentsSheetHeader';
 import { formatMessage } from '../common/chat-utilities';
 import { gql, useMutation } from '@apollo/client';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -40,7 +40,7 @@ export const CommentsSheet = ({ isOpen, onClose, deck, isFullScreen, ...props })
     Keyboard.dismiss();
     return onClose();
   }, [onClose]);
-  const renderHeader = () => <BottomSheetHeader title="Comments" onClose={closeSheet} />;
+  const renderHeader = () => <CommentsSheetHeader deck={deck} onClose={closeSheet} />;
 
   const [replyingToComment, setReplyingToComment] = React.useState();
 
