@@ -146,7 +146,7 @@ let coreViews = {
         width: '6.4vw',
         height: '6.4vw',
         hitSlopLeft: '4vw',
-        hitSlopBottom: '5vw',
+        hitSlopBottom: '2vw',
         hitSlopTop: '5vw',
         resizeMode: 'contain',
         touch: 'enabled',
@@ -292,6 +292,53 @@ let coreViews = {
         // backgroundColor: '#f00',
         onTap: (params) => {
           params.onShowPopover(params);
+        },
+      },
+
+      // Remix
+      {
+        id: 'remix-icon',
+        filename: 'remix-attribution.png',
+        type: 'image',
+        left: '8.8vw',
+        top: '11vw',
+        width: '4vw',
+        height: '4vw',
+        hitSlopLeft: '1.5vw',
+        hitSlopRight: '3vw',
+        hitSlopBottom: '5vw',
+        hitSlopTop: '0vw',
+        resizeMode: 'contain',
+        touch: 'enabled',
+        visibility: 'hidden',
+        // backgroundColor: '#f00',
+        touch: 'enabled',
+        onTap: (params) => {
+          params.onNavigateToParent(params);
+        },
+      },
+      {
+        id: 'remix-text',
+        type: 'text',
+        left: '15vw',
+        top: '11.5vw',
+        width: '94vw',
+        height: '5vw',
+        hitSlopLeft: '1.5vw',
+        hitSlopRight: '3vw',
+        hitSlopBottom: '5vw',
+        hitSlopTop: '0vw',
+        color: '#999',
+        textAlign: 'left',
+        fontSize: '0.32vw',
+        fontFamily: 'BaltoBook',
+        textAlignVertical: 'top',
+        visibility: 'hidden',
+        // backgroundColor: '#f00',
+        // touch: 'enabled',
+        touch: 'enabled',
+        onTap: (params) => {
+          params.onNavigateToParent(params);
         },
       },
 

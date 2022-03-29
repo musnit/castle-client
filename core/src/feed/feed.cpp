@@ -1482,6 +1482,20 @@ void Feed::loadDeckFromDeckJson(int i) {
       decks[i].coreView->updateProp("remix-count", "visibility", "visible");
     }*/
 
+    if (reader.has("parentDeck")) {
+      reader.obj("parentDeck", [&]() {
+        reader.obj("creator", [&]() {
+          auto parentDeckCreatorUsername = reader.str("username");
+          if (parentDeckCreatorUsername) {
+            decks[i].coreView->updateProp("remix-icon", "visibility", "visible");
+            decks[i].coreView->updateProp("remix-text", "text",
+                "Remix of " + std::string(*parentDeckCreatorUsername) + "'s deck");
+            decks[i].coreView->updateProp("remix-text", "visibility", "visible");
+          }
+        });
+      });
+    }
+
     bool commentsEnabled = reader.boolean("commentsEnabled", false);
     decks[i].coreView->updateJSGestureProp("commentsEnabled", commentsEnabled ? "true" : "false");
     if (commentsEnabled) {

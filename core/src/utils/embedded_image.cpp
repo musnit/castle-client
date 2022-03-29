@@ -35,6 +35,9 @@ love::Data *EmbeddedImage::load(const std::string &filename) {
   } else if (filename == "leaderboard-x.png") {
     data = leaderboard_x_png;
     len = leaderboard_x_png_len;
+  } else if (filename == "remix-attribution.png") {
+    data = remix_attribution_png;
+    len = remix_attribution_png_len;
   } else if (filename == "sound/instrument-drum-white.png") {
     data = sound_instrument_drum_white_png;
     len = sound_instrument_drum_white_png_len;

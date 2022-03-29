@@ -1,6 +1,7 @@
 import React from 'react';
 import { View } from 'react-native';
 import { Amplitude } from '@amplitude/react-native';
+import { gql } from '@apollo/client';
 
 import { GameView } from '../game/GameView';
 import * as Constants from '../Constants';
@@ -13,7 +14,8 @@ import { sendAsync, useListen } from '../core/CoreEvents';
 import { useAppState } from '../ghost/GhostAppState';
 import { useGameViewAndroidBackHandler } from '../common/GameViewAndroidBackHandler';
 import { ScreenHeader } from './ScreenHeader';
-import { useFocusEffect } from '../ReactNavigation';
+import { useFocusEffect, useNavigation } from '../ReactNavigation';
+import * as Session from '../Session';
 
 export const NativeDecksFeed = ({
   onPressComments,
@@ -41,6 +43,8 @@ export const NativeDecksFeed = ({
 
   const { showPopover } = usePopover();
   const container = React.useRef(null);
+
+  const { navigate } = useNavigation();
 
   const [deck, setDeck] = React.useState(null);
   const [creatorUserId, setCreatorUserId] = React.useState(null);
@@ -129,7 +133,33 @@ export const NativeDecksFeed = ({
     setPopoverProps(props);
   };
 
-  CoreViews.useCoreViews({ onPressComments, onShowPopover });
+  const onNavigateToParent = async (props) => {
+    let deck = JSON.parse(props.deck);
+
+    const result = await Session.apolloClient.query({
+      query: gql`
+          query GetDeckById($deckId: ID!) {
+            deck(deckId: $deckId) {
+              ${Constants.FEED_ITEM_DECK_FRAGMENT}
+            }
+          }
+        `,
+      variables: { deckId: deck.parentDeckId },
+    });
+    if (result?.data?.deck && result.data.deck.visibility === 'public') {
+      return navigate(
+        'DeckRemixes',
+        {
+          deck: result.data.deck,
+        },
+        {
+          isFullscreen: true,
+        }
+      );
+    }
+  };
+
+  CoreViews.useCoreViews({ onPressComments, onShowPopover, onNavigateToParent });
 
   const onHardwareBackPress = React.useCallback(() => {
     if (isCommentsOpen) {
