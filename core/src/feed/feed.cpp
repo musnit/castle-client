@@ -273,7 +273,9 @@ void Feed::update(double dt) {
 
           int idx = getCurrentIndex();
           if (idx >= 0 && idx < (int)decks.size()) {
-            decks[idx].player->suspend();
+            if (decks[idx].player) {
+              decks[idx].player->suspend();
+            }
 
             if (decks[idx].coreView) {
               decks[idx].coreView->cancelGestures();
@@ -510,7 +512,7 @@ void Feed::update(double dt) {
         runUpdateAtIndex(idx, dt);
         decks[i].hasRunUpdate = true;
 
-        if (i != (size_t)idx) {
+        if (i != (size_t)idx && decks[i].player) {
           decks[i].player->suspend();
         }
       }
@@ -1154,9 +1156,21 @@ void Feed::fetchMoreDecks() {
   }
 
   if (paginateFeedId) {
+    if (decks.size() == 0) {
+      return;
+    }
+
     auto lastModifiedBefore = decks[decks.size() - 1].lastModified;
     if (!lastModifiedBefore) {
-      return;
+      // last deck might be an error screen
+      if (decks[decks.size() - 1].hasNetworkError && !decks[decks.size() - 1].deckId
+          && decks.size() > 1) {
+        lastModifiedBefore = decks[decks.size() - 2].lastModified;
+      }
+
+      if (!lastModifiedBefore) {
+        return;
+      }
     }
 
     fetchingDecks = true;
@@ -1164,6 +1178,7 @@ void Feed::fetchMoreDecks() {
             + *lastModifiedBefore + "\") {\n" + GRAPHQL_DECK_FIELDS + "}\n}",
         [=](APIResponse &response) {
           if (response.success) {
+            removeLoadMoreDecksError();
             auto &reader = response.reader;
 
             reader.obj("data", [&]() {
@@ -1189,8 +1204,7 @@ void Feed::fetchMoreDecks() {
 
             fetchingDecks = false;
           } else {
-            // TODO: show error?
-            fetchingDecks = false;
+            loadMoreDecksError();
           }
         });
   } else {
@@ -1200,6 +1214,7 @@ void Feed::fetchMoreDecks() {
             + GRAPHQL_DECK_FIELDS + "}\n  }\n}",
         [=](APIResponse &response) {
           if (response.success) {
+            removeLoadMoreDecksError();
             auto &reader = response.reader;
 
             reader.obj("data", [&]() {
@@ -1221,8 +1236,7 @@ void Feed::fetchMoreDecks() {
 
             fetchingDecks = false;
           } else {
-            // TODO: show error?
-            fetchingDecks = false;
+            loadMoreDecksError();
           }
         });
   }
@@ -1573,6 +1587,37 @@ void Feed::networkErrorAtIndex(int i) {
     }
   });
   decks[i].hasNetworkError = true;
+}
+
+void Feed::loadMoreDecksError() {
+  if (decks.size() > 0) {
+    int lastIdx = decks.size() - 1;
+    if (decks[lastIdx].hasNetworkError && !decks[lastIdx].deckId) {
+      return;
+    }
+  }
+
+  FeedItem feedItem;
+  feedItem.isLoading = true;
+  feedItem.errorCoreView
+      = CoreViews::getInstance().getRenderer("FEED_ERROR", cardWidth, cardHeight);
+  feedItem.errorCoreView->updateProp("error-text", "text", "Error loading more decks");
+  feedItem.errorCoreView->registerTapHandler([this](std::string id) {
+    if (id == "reload-icon") {
+      fetchingDecks = false;
+    }
+  });
+  feedItem.hasNetworkError = true;
+  decks.push_back(std::move(feedItem));
+}
+
+void Feed::removeLoadMoreDecksError() {
+  if (decks.size() > 0) {
+    int lastIdx = decks.size() - 1;
+    if (decks[lastIdx].hasNetworkError && !decks[lastIdx].deckId) {
+      decks.erase(decks.begin() + lastIdx);
+    }
+  }
 }
 
 void Feed::unloadDeckAtIndex(int i, bool force) {

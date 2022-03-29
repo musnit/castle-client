@@ -132,6 +132,8 @@ private:
   void loadAvatarAtIndex(int i);
   void unloadAvatarAtIndex(int i);
   void networkErrorAtIndex(int i);
+  void loadMoreDecksError();
+  void removeLoadMoreDecksError();
   void renderCardAtPosition(
       int idx, float position, bool isActive, int focusedIdx, float dragAmount);
   love::graphics::Canvas *newCanvas(int width, int height);
