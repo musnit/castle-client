@@ -10,3 +10,4 @@ export { default as Sliding } from './InspectorSliding';
 export { default as Tags } from './InspectorTags';
 export { default as Text } from './InspectorText';
 export { default as Sharing } from './InspectorSharing';
+export { default as Logic } from './InspectorLogic';

@@ -14,7 +14,7 @@ const styles = StyleSheet.create({
     ...SceneCreatorConstants.styles.behaviorContainer,
     padding: 16,
   },
-  actions: {
+  header: {
     alignItems: 'center',
     marginBottom: 16,
   },
@@ -26,42 +26,38 @@ const styles = StyleSheet.create({
   },
   labels: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingBottom: 4,
-    borderBottomWidth: 1,
-    borderColor: '#ccc',
   },
   label: {
     width: '33%',
-    fontSize: 12,
+    fontSize: 14,
     textTransform: 'uppercase',
-    marginBottom: 8,
     marginTop: 8,
     color: '#888',
   },
   variableInputContainer: {
-    borderBottomWidth: 1,
-    borderColor: '#ccc',
-    paddingVertical: Constants.iOS ? 12 : 0,
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    marginTop: 8,
+    marginBottom: 4,
+  },
+  variableInputColumn: {
+    width: '50%',
+    flexDirection: 'row',
     alignItems: 'center',
   },
   variablePrefix: {
     color: '#888',
     fontSize: 16,
     lineHeight: 20,
-    paddingRight: 4,
-    flexGrow: 0,
+    marginRight: 6,
   },
   variableName: {
     fontWeight: '700',
-    marginRight: 8,
   },
   input: {
     color: '#000',
     fontSize: 16,
     lineHeight: 20,
+    flexGrow: 1,
   },
 });
 
@@ -125,47 +121,54 @@ export default InspectorLocalVariables = ({}) => {
   );
 
   return (
-    <View style={styles.container}>
-      <View style={styles.actions}>
-        <TouchableOpacity style={styles.button} onPress={addVariable}>
-          <Text style={styles.buttonLabel}>Add new variable</Text>
-        </TouchableOpacity>
+    <View style={[SceneCreatorConstants.styles.inspectorSection, { borderTopWidth: 1 }]}>
+      <View style={SceneCreatorConstants.styles.inspectorSectionHeader}>
+        <Text style={SceneCreatorConstants.styles.inspectorSectionHeaderLabel}>Variables</Text>
+        <View style={SceneCreatorConstants.styles.inspectorSectionHeaderActions}>
+          <TouchableOpacity
+            style={SceneCreatorConstants.styles.inspectorSectionHeaderButton}
+            onPress={addVariable}>
+            <Constants.CastleIcon name="plus" size={16} color="#000" />
+          </TouchableOpacity>
+        </View>
       </View>
-      <View style={styles.labels}>
-        <Text style={[styles.label, { width: '50%' }]}>Name</Text>
-        <Text style={[styles.label, { width: '50%' }]}>Initial Value</Text>
-      </View>
+      {localVariables.length > 0 ? (
+        <View style={styles.labels}>
+          <Text style={[styles.label, { width: '50%' }]}>Name</Text>
+          <Text style={[styles.label, { width: '50%' }]}>Initial Value</Text>
+        </View>
+      ) : null}
       <View style={{ flexDirection: 'column' }}>
         {localVariables.map((localVariable, i) => (
           <View
             key={`${undoRedoCount}-${localVariables.length}-${i}`}
             style={styles.variableInputContainer}>
-            <View style={{ width: '47.5%', flexDirection: 'row', alignItems: 'center' }}>
+            <View style={[styles.variableInputColumn, { paddingRight: 8 }]}>
               <Text style={styles.variablePrefix}>$</Text>
               <InspectorTextInput
                 value={localVariable.name}
                 autoFocus={i == 0 && localVariable.name === ''}
                 optimistic
-                style={[styles.input, styles.variableName, { flexGrow: 1 }]}
-                placeholderTextColor="#666"
+                style={[styles.input, styles.variableName]}
+                placeholderTextColor="#888"
                 autoCapitalize="none"
                 autoCompleteType="off"
                 autoCorrect={false}
                 onChangeText={(text) => changeVariableName(i, text)}
               />
             </View>
-            <InspectorNumberInput
-              value={localVariable.value}
-              style={[styles.input, { width: '47.5%', paddingRight: 8 }]}
-              placeholderTextColor="#666"
-              autoCompleteType="off"
-              autoCorrect={false}
-              hideIncrements
-              onChange={(value) => changeVariableValue(i, value)}
-            />
-            <View style={{ width: 20 }}>
+            <View style={[styles.variableInputColumn, { paddingRight: 3 }]}>
+              <InspectorNumberInput
+                value={localVariable.value}
+                style={{ flex: 1, marginRight: 8 }}
+                placeholderTextColor="#888"
+                autoCompleteType="off"
+                autoCorrect={false}
+                hideIncrements
+                onChange={(value) => changeVariableValue(i, value)}
+              />
               <TouchableOpacity onPress={() => deleteVariable(i)}>
-                <Constants.CastleIcon name="trash" size={22} color="#000" />
+                <Constants.CastleIcon name="trash" size={20} color="#000" />
               </TouchableOpacity>
             </View>
           </View>

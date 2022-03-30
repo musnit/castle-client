@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, View, Text } from 'react-native';
 import { BottomSheetHeader } from '../../../components/BottomSheetHeader';
 import { CardCreatorBottomSheet } from '../../sheets/CardCreatorBottomSheet';
 import { Rule } from './Rule';
@@ -15,22 +15,34 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginLeft: -32,
   },
-  actionButton: {
+  actionIcon: {
     width: 40,
     height: 40,
     alignItems: 'center',
     justifyContent: 'center',
     marginHorizontal: 4,
   },
+  actionText: {
+    padding: 6,
+  },
+  actionTextLabel: {
+    fontSize: 14,
+  },
+  actionTextPressed: {
+    backgroundColor: '#ddd',
+    borderRadius: 4,
+  },
 });
 
 const RuleHeaderActions = ({ onRemoveRule, onCopyRule }) => {
   return (
     <View style={styles.actions}>
-      <TouchableOpacity style={styles.actionButton} onPress={onCopyRule}>
-        <CastleIcon name="clipboard" size={22} color="#000" />
+      <TouchableOpacity
+        style={({ pressed }) => [styles.actionText, pressed ? styles.actionTextPressed : null]}
+        onPress={onCopyRule}>
+        <Text style={styles.actionTextLabel}>Copy</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.actionButton} onPress={onRemoveRule}>
+      <TouchableOpacity style={styles.actionIcon} onPress={onRemoveRule}>
         <CastleIcon name="trash" size={22} color="#000" />
       </TouchableOpacity>
     </View>

@@ -88,12 +88,16 @@ export default InspectorMusic = ({ music }) => {
       <View style={styles.titleRow}>
         <Text style={styles.label}>Music</Text>
         {component ? (
-          <Pressable style={SceneCreatorConstants.styles.button} onPress={removeMusic}>
-            <Text style={SceneCreatorConstants.styles.buttonLabel}>Remove</Text>
+          <Pressable
+            style={SceneCreatorConstants.styles.inspectorSectionHeaderButton}
+            onPress={removeMusic}>
+            <Constants.CastleIcon name="minus" size={16} color="#000" />
           </Pressable>
         ) : (
-          <Pressable style={SceneCreatorConstants.styles.button} onPress={addMusic}>
-            <Text style={SceneCreatorConstants.styles.buttonLabel}>Add</Text>
+          <Pressable
+            style={SceneCreatorConstants.styles.inspectorSectionHeaderButton}
+            onPress={addMusic}>
+            <Constants.CastleIcon name="plus" size={16} color="#000" />
           </Pressable>
         )}
       </View>
