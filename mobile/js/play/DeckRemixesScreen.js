@@ -121,9 +121,8 @@ export const DeckRemixesScreen = ({ route }) => {
             push(
               'PlayDeck',
               {
-                // TODO: support list of decks
-                decks: [deck],
-                initialDeckIndex: 0,
+                decks,
+                initialDeckIndex: index,
               },
               {
                 isFullscreen: true,
