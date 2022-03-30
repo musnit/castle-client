@@ -330,10 +330,9 @@ let coreViews = {
         type: 'text',
         left: '15vw',
         top: '11.5vw',
-        width: '94vw',
+        width: '60vw',
         height: '5vw',
         hitSlopLeft: '1.5vw',
-        hitSlopRight: '3vw',
         hitSlopBottom: '5vw',
         hitSlopTop: '0vw',
         color: '#999',
@@ -343,7 +342,6 @@ let coreViews = {
         textAlignVertical: 'top',
         visibility: 'hidden',
         // backgroundColor: '#f00',
-        // touch: 'enabled',
         touch: 'enabled',
         onTap: (params) => {
           params.onNavigateToParent(params);
