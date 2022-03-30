@@ -69,11 +69,11 @@ export const toDate = (dateString) => {
   return `${date.getMonth() + 1}-${date.getDate()}-${date.getFullYear()}`;
 };
 
-export const toRecentDate = (date) => {
-  const publishTimeSeconds = new Date(date).getTime();
-  const currentTimeSeconds = new Date().getTime();
+export const pluralizeDateUnit = (text, count) => {
+  return text.length > 1 && count !== 1 ? `${text}s` : text;
+};
 
-  let seconds = (currentTimeSeconds - publishTimeSeconds) / 1000;
+export const formatTimeInterval = (seconds) => {
   seconds = seconds > 0 ? seconds : 1;
 
   let [value, unit] =
@@ -96,6 +96,10 @@ export const toRecentDate = (date) => {
   return `${value}${unit}`;
 };
 
-export const pluralizeDateUnit = (text, count) => {
-  return text.length > 1 && count !== 1 ? `${text}s` : text;
+export const toRecentDate = (date) => {
+  const publishTimeSeconds = new Date(date).getTime();
+  const currentTimeSeconds = new Date().getTime();
+
+  let seconds = (currentTimeSeconds - publishTimeSeconds) / 1000;
+  return formatTimeInterval(seconds);
 };

@@ -21,6 +21,7 @@ import { useSession } from '../Session';
 import { SegmentedNavigation } from '../components/SegmentedNavigation';
 import { UnsavedCardsList } from './UnsavedCardsList';
 import { formatCount } from '../common/utilities';
+import { formatTimeInterval } from '../common/date-utilities';
 
 import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import AntIcon from 'react-native-vector-icons/AntDesign';
@@ -187,7 +188,7 @@ const EditDeckCell = (props) => {
             </View>
             <View style={styles.deckStatsColumn}>
               <MCIcon size={14} name="timer-outline" color={Constants.colors.grayText} />
-              <Text style={styles.statCountLabel}>{formatCount(deck.playCount * 3)}</Text>
+              <Text style={styles.statCountLabel}>{formatTimeInterval(deck.playTime)}</Text>
             </View>
             <View style={styles.deckStatsColumn}>
               <MCIcon size={14} name="fire" color={Constants.colors.grayText} />
@@ -339,6 +340,7 @@ const CreateScreenAuthenticated = () => {
             visibility
             lastModified
             playCount
+            playTime
             variables
             initialCard {
               id
