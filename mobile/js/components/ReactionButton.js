@@ -5,6 +5,7 @@ import { SocialCount } from './SocialCount';
 
 import * as Constants from '../Constants';
 import * as Session from '../Session';
+import { sendAsync } from '../core/CoreEvents';
 
 import debounce from 'lodash.debounce';
 
@@ -102,6 +103,11 @@ export const ReactionButton = ({
 
   let initialIsSelected = fire?.isCurrentUserToggled;
   const [isSelected, toggleSelected] = React.useReducer((state, action) => {
+    sendAsync('UPDATE_FEED_REACTION', {
+      deckId: deck.deckId,
+      isSelected: !state,
+    });
+
     toggleReactionDebounce({
       reactionId: Constants.reactionIds.fire,
       enabled: !state,

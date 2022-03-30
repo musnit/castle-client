@@ -62,6 +62,7 @@ public:
   bool hasScene();
   Scene &getScene();
   void setDeepLinkDeckId(std::string deckId);
+  void updateJSReaction(std::string deckId, bool isSelected);
 
 private:
   mutable love::Transform viewTransform;

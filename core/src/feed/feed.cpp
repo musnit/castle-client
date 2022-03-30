@@ -1406,6 +1406,63 @@ void Feed::layoutCoreViews(int i) {
   decks[i].coreView->updateProp("comment-icon", "right", std::to_string(currentRight));
 }
 
+struct UpdateFeedReactionReceiver {
+  inline static const BridgeRegistration<UpdateFeedReactionReceiver> registration {
+    "UPDATE_FEED_REACTION"
+  };
+
+  struct Params {
+    PROP(std::string, deckId);
+    PROP(bool, isSelected);
+  } params;
+
+  void receive(Engine &engine) {
+    auto screen = engine.maybeGetScreen();
+
+    if (screen && screen->screenType() == FEED) {
+      ((Feed *)screen)->updateJSReaction(params.deckId(), params.isSelected());
+    }
+  }
+};
+
+void Feed::updateJSReaction(std::string deckId, bool isSelected) {
+  int idx = getCurrentIndex();
+
+  if (idx >= 0 && idx < (int)decks.size()) {
+    if (decks[idx].deckId != deckId) {
+      return;
+    }
+
+    if (decks[idx].isCurrentUserReactionToggled == FeedItem::True && isSelected) {
+      return;
+    }
+
+    if (decks[idx].isCurrentUserReactionToggled == FeedItem::False && !isSelected) {
+      return;
+    }
+
+    decks[idx].isCurrentUserReactionToggled = isSelected ? FeedItem::True : FeedItem::False;
+    if (decks[idx].isCurrentUserReactionToggled == FeedItem::True) {
+      (*decks[idx].reactionCount)++;
+    } else {
+      (*decks[idx].reactionCount)--;
+    }
+
+    decks[idx].coreView->updateProp(
+        "reaction-count", "text", FormatNumber::toString(*decks[idx].reactionCount));
+    if (decks[idx].isCurrentUserReactionToggled == FeedItem::True) {
+      decks[idx].coreView->updateProp("reaction-icon", "filename", "fire-selected.png");
+    } else {
+      decks[idx].coreView->updateProp("reaction-icon", "filename", "fire.png");
+    }
+
+    decks[idx].coreView->updateJSGestureProp(
+        "reactionCount", std::to_string(*decks[idx].reactionCount));
+    decks[idx].coreView->updateJSGestureProp("isCurrentUserReactionToggled",
+        decks[idx].isCurrentUserReactionToggled == FeedItem::True ? "true" : "false");
+  }
+}
+
 void Feed::loadDeckFromDeckJson(int i) {
   decks[i].player = std::make_shared<Player>(bridge);
   decks[i].coreView
@@ -1434,6 +1491,10 @@ void Feed::loadDeckFromDeckJson(int i) {
       }
       decks[i].coreView->updateProp(
           "reaction-count", "text", FormatNumber::toString(*decks[i].reactionCount));
+      decks[i].coreView->updateJSGestureProp(
+          "reactionCount", std::to_string(*decks[i].reactionCount));
+      decks[i].coreView->updateJSGestureProp("isCurrentUserReactionToggled",
+          decks[i].isCurrentUserReactionToggled == FeedItem::True ? "true" : "false");
       layoutCoreViews(i);
 
       decks[i].coreView->runAnimation("reaction-icon", "scale", 0.3, [i, this](float amount) {

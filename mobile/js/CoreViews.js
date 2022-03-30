@@ -11,6 +11,27 @@ let FEED_ICON_TOP = '2.7vw';
 let FEED_FONT_SIZE = '0.45vw';
 let FEED_TEXT_TOP = '3.4vw';
 
+function onPressComments(params) {
+  let deck = {
+    ...JSON.parse(params.deck),
+    commentsEnabled: params.commentsEnabled == 'true',
+  };
+
+  if (params.reactionCount) {
+    deck.reactions = [
+      {
+        count: parseInt(params.reactionCount),
+        isCurrentUserToggled: params.isCurrentUserReactionToggled == 'true',
+        reactionId: 'fire',
+      },
+    ];
+  }
+
+  params.onPressComments({
+    deck,
+  });
+}
+
 let coreViews = {
   CONSTANTS: {
     FEED_BOTTOM_ACTIONS_INITIAL_RIGHT: 12.5,
@@ -205,14 +226,7 @@ let coreViews = {
         resizeMode: 'contain',
         touch: 'enabled',
         // backgroundColor: '#0f0',
-        onTap: (params) => {
-          params.onPressComments({
-            deck: {
-              ...JSON.parse(params.deck),
-              commentsEnabled: params.commentsEnabled == 'true',
-            },
-          });
-        },
+        onTap: onPressComments,
       },
       {
         id: 'comment-count',
@@ -231,14 +245,7 @@ let coreViews = {
         textAlignVertical: 'top',
         // backgroundColor: '#f00',
         touch: 'enabled',
-        onTap: (params) => {
-          params.onPressComments({
-            deck: {
-              ...JSON.parse(params.deck),
-              commentsEnabled: params.commentsEnabled == 'true',
-            },
-          });
-        },
+        onTap: onPressComments,
       },
 
       // Reactions
