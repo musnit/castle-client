@@ -141,7 +141,7 @@ export const HomeScreen = ({ route }) => {
   }, []);
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top }]}>
+    <View style={styles.container}>
       <PopoverProvider>
         {!Constants.USE_NATIVE_FEED && (
           <Animated.View

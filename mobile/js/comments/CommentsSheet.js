@@ -6,31 +6,34 @@ import { CommentInput } from './CommentInput';
 import { CommentsList } from './CommentsList';
 import { CommentsSheetHeader } from './CommentsSheetHeader';
 import { formatMessage } from '../common/chat-utilities';
+import { getIsTabBarVisible } from '../Navigation';
 import { gql, useMutation } from '@apollo/client';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useSession } from '../Session';
+import { useNavigation } from '../ReactNavigation';
 
 import * as Constants from '../Constants';
 
 import Viewport from '../common/viewport';
 
 const TAB_BAR_HEIGHT = 49;
-const SHEET_HEADER_HEIGHT = 62;
+const SHEET_HEADER_HEIGHT = 100;
 
-const needsTabBarHeight = ({ isFullScreen }) => {
+const needsTabBarHeightAndroid = ({ isFullScreen }) => {
   return Constants.Android && !isFullScreen;
 };
 
 export const CommentsSheet = ({ isOpen, onClose, deck, isFullScreen, ...props }) => {
   const { isAnonymous } = useSession();
+  const navigation = useNavigation();
   const [newComment, setNewComment] = React.useState(null);
+  const tabBarVisible = getIsTabBarVisible({ navigation });
 
   const insets = useSafeAreaInsets();
   const maxSheetHeight =
     Viewport.vh * 100 -
-    insets.top -
-    Constants.FEED_HEADER_HEIGHT -
-    (needsTabBarHeight({ isFullScreen }) ? TAB_BAR_HEIGHT : 0);
+    (tabBarVisible ? 0 : insets.top) -
+    (needsTabBarHeightAndroid({ isFullScreen }) ? TAB_BAR_HEIGHT : 0);
 
   const closeSheet = React.useCallback(() => {
     Keyboard.dismiss();
@@ -103,9 +106,14 @@ export const CommentsSheet = ({ isOpen, onClose, deck, isFullScreen, ...props })
   const renderContent = Constants.Android
     ? () => <View style={{ flex: 1 }}>{renderContentInner()}</View>
     : () => (
-        <View style={{ flex: 1 }}>
+        <View style={{ flex: 1, paddingBottom: insets.bottom }}>
           <KeyboardAvoidingView
-            keyboardVerticalOffset={Viewport.vh * 100 - maxSheetHeight + SHEET_HEADER_HEIGHT}
+            keyboardVerticalOffset={
+              insets.bottom +
+              insets.top +
+              SHEET_HEADER_HEIGHT +
+              (tabBarVisible ? TAB_BAR_HEIGHT : 0)
+            }
             behavior="padding"
             style={{ flex: 1 }}>
             {renderContentInner()}
