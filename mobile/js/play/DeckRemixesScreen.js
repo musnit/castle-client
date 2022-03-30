@@ -52,7 +52,7 @@ export const DeckRemixesScreen = ({ route }) => {
   const parentDeckId = deck.deckId;
   const { push, pop } = useNavigation();
   const insets = useSafeAreaInsets();
-  const paddingBottom = Constants.iOS ? insets.bottom : insets.bottom + 50; // account for android native tab bar
+  const paddingBottom = insets.bottom;
   let decks;
 
   const queryDecks = useQuery(
