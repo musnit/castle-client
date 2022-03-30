@@ -5,6 +5,7 @@ import { shareDeck } from '../common/utilities';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import { useNavigation } from '../ReactNavigation';
 import { isAdmin } from '../Session';
+import { sendAsync } from '../core/CoreEvents';
 import { useMutation, gql } from '@apollo/client';
 
 import * as Constants from '../Constants';
@@ -50,6 +51,12 @@ export function getDropdownItems({
     id: 'share',
     icon: Platform.OS === 'android' ? 'share-variant' : 'share',
     name: 'Share deck',
+  });
+
+  dropdownItems.push({
+    id: 'restart',
+    icon: 'restart',
+    name: 'Restart Deck',
   });
 
   dropdownItems.push({
@@ -167,11 +174,17 @@ export function getOnSelectDropdownAction({
     [deck]
   );
 
+  const onRestartDeck = React.useCallback(() => sendAsync('RESTART_DECK'), []);
+
   return React.useCallback(
     (id) => {
       switch (id) {
         case 'share': {
           onShare();
+          break;
+        }
+        case 'restart': {
+          onRestartDeck();
           break;
         }
         case 'mute': {
