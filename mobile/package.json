@@ -49,7 +49,7 @@
     "react-native-video": "^5.1.1",
     "shortid": "^2.2.15",
     "tinycolor2": "^1.4.1",
-    "url-parse": "^1.5.9",
+    "url-parse": "1.5.6",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
