@@ -263,6 +263,7 @@ void Engine::setInitialParams(const char *initialParamsJson) {
     loadSceneFromDeckId(deckId, initialCardId, initialCardSceneDataUrl);
   }
   if (isEditing) {
+    editor->setCardAndDeckIds(initialCardId, deckId);
     getLibraryClipboard().sendClipboardData(editor->getBridge(), editor->getScene());
   }
 }

@@ -5,6 +5,8 @@
 #include "library.h"
 #include "sound/sound.h"
 
+#define SERVER_STATS_UPDATE_INTERVAL 10.0
+
 Editor::Editor(Bridge &bridge_)
     : bridge(bridge_) {
   isEditorStateDirty = true;
@@ -15,6 +17,7 @@ void Editor::setIsPlaying(bool playing_) {
   if (playing_ != playing) {
     isEditorStateDirty = true;
     if (playing_) {
+      playCount++;
       sound.suspend();
       if (hasScene()) {
         player = std::make_unique<Player>(getBridge());
@@ -345,12 +348,54 @@ void Editor::update(double dt) {
     updateAutoSave(dt);
 
     scene->getBehaviors().byType<LocalVariablesBehavior>().debugDisplay();
+
+    sendServerStats(dt);
   }
 
   // Make sure ghost actors exist before sending new data, because current tool's update()
   // may have modified actors
   scene->getLibrary().ensureGhostActorsExist();
   maybeSendData(dt);
+}
+
+void Editor::setCardAndDeckIds(const char *cardId_, const char *deckId_) {
+  if (cardId_) {
+    cardId = cardId_;
+  }
+
+  if (deckId_) {
+    deckId = deckId_;
+  }
+}
+
+void Editor::updateCommandCount() {
+  editCount++;
+}
+
+void Editor::sendServerStats(double dt) {
+  timeSinceLastServerStats += dt;
+  if (timeSinceLastServerStats > SERVER_STATS_UPDATE_INTERVAL) {
+    timeSinceLastServerStats = 0.0;
+    if (!deckId) {
+      return;
+    }
+
+    if (cardId) {
+      API::graphql("mutation {\n  recordEditorStats(deckId: \"" + *deckId + "\", cardId: \""
+              + *cardId + "\", editCount: " + std::to_string(editCount)
+              + ", playCount: " + std::to_string(playCount) + ")\n}",
+          [=](APIResponse &response) {
+          });
+    } else {
+      API::graphql("mutation {\n  recordEditorStats(deckId: \"" + *deckId + "\", editCount: "
+              + std::to_string(editCount) + ", playCount: " + std::to_string(playCount) + ")\n}",
+          [=](APIResponse &response) {
+          });
+    }
+
+    editCount = 0;
+    playCount = 0;
+  }
 }
 
 void Editor::draw() {

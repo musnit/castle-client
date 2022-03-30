@@ -76,6 +76,7 @@ void Commands::execute(
   if (!coalesced) {
     editor.setEditorStateDirty(); // `canUndo` or `canRedo` may have changed -- avoid over-sending
                                   // when coalescing though
+    editor.updateCommandCount();
   }
 }
 

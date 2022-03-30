@@ -96,6 +96,8 @@ public:
   void triggerAutoSave();
   bool isInspectorOpen = false;
   bool androidHandleBackPressed();
+  void setCardAndDeckIds(const char *cardId, const char *deckId);
+  void updateCommandCount();
 
 private:
   friend struct EditorGlobalActionReceiver;
@@ -173,6 +175,13 @@ private:
   void updateAutoSave(double dt);
 
   void save();
+
+  std::optional<std::string> cardId;
+  std::optional<std::string> deckId;
+  double timeSinceLastServerStats = 0.0;
+  int editCount = 0;
+  int playCount = 0;
+  void sendServerStats(double dt);
 };
 
 inline ScreenType Editor::screenType() {
