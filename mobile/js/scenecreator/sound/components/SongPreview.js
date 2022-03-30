@@ -51,6 +51,8 @@ const PREVIEW_MAX_SEQ_ELEMS = 6;
 const PREVIEW_MAX_TRACKS = 6;
 
 const patternColorToHex = (value) => {
+  if (!value) return value;
+
   const r255 = 255 * value.r;
   const g255 = 255 * value.g;
   const b255 = 255 * value.b;
