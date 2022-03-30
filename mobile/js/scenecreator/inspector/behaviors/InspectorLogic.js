@@ -157,27 +157,23 @@ export default InspectorRules = ({ behaviors, addChildSheet }) => {
         </View>
       </View>
       {SceneCreatorConstants.USE_LOCAL_VARIABLES ? <LocalVariables /> : null}
-      <View style={[SceneCreatorConstants.styles.inspectorSection, { borderTopWidth: 1 }]}>
-        <View style={SceneCreatorConstants.styles.inspectorSectionHeader}>
-          <Text style={SceneCreatorConstants.styles.inspectorSectionHeaderLabel}>Counter</Text>
-          <View style={SceneCreatorConstants.styles.inspectorSectionHeaderActions}>
-            {isCounterActive ? (
-              <TouchableOpacity
-                style={SceneCreatorConstants.styles.inspectorSectionHeaderButton}
-                onPress={() => sendCounterAction('remove')}>
-                <Constants.CastleIcon name="minus" size={16} color="#000" />
-              </TouchableOpacity>
-            ) : (
-              <TouchableOpacity
-                style={SceneCreatorConstants.styles.inspectorSectionHeaderButton}
-                onPress={() => sendCounterAction('add')}>
-                <Constants.CastleIcon name="plus" size={16} color="#000" />
-              </TouchableOpacity>
-            )}
+      {isCounterActive ? (
+        <>
+          <View style={[SceneCreatorConstants.styles.inspectorSection, { borderTopWidth: 1 }]}>
+            <View style={SceneCreatorConstants.styles.inspectorSectionHeader}>
+              <Text style={SceneCreatorConstants.styles.inspectorSectionHeaderLabel}>Counter</Text>
+              <View style={SceneCreatorConstants.styles.inspectorSectionHeaderActions}>
+                <TouchableOpacity
+                  style={SceneCreatorConstants.styles.inspectorSectionHeaderButton}
+                  onPress={() => sendCounterAction('remove')}>
+                  <Constants.CastleIcon name="minus" size={16} color="#000" />
+                </TouchableOpacity>
+              </View>
+            </View>
+            {isCounterActive ? <Counter counter={counter} /> : null}
           </View>
-        </View>
-        {isCounterActive ? <Counter counter={counter} /> : null}
-      </View>
+        </>
+      ) : null}
     </React.Fragment>
   );
 };
