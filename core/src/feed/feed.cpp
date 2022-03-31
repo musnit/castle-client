@@ -166,6 +166,13 @@ void Feed::setWindowSize(int w, int h) {
     if (nuxCoreView) {
       nuxCoreView->updateProp("container", "top", std::to_string(cardHeight));
     }
+
+    int idx = getCurrentIndex();
+    if (idx >= 0 && idx < (int)decks.size() && cardWidth > oldCardWidth) {
+      // this is needed after leaving a comment on android.
+      // the comment sheet makes the screen smaller.
+      layoutCoreViewAtIdx = idx;
+    }
   }
 
   hasSetWindowSize = true;
@@ -461,7 +468,12 @@ void Feed::update(double dt) {
               decks[idx].player->readScene(reader, decks[idx].player->getScene().getDeckId());
             });
           } else {
-            API::loadCard(nextCardId->c_str(), true, [=](APIResponse &response) {
+            auto deckId = *(decks[idx].deckId);
+            API::loadCard(nextCardId->c_str(), true, [idx, deckId, this](APIResponse &response) {
+              if (idx >= (int)decks.size() || decks[idx].deckId != deckId) {
+                return;
+              }
+
               if (response.success && idx == getCurrentIndex() && decks[idx].player) {
                 auto reader = response.reader;
                 decks[idx].player->readScene(reader, decks[idx].player->getScene().getDeckId());
@@ -921,6 +933,11 @@ void Feed::draw() {
     return;
   }
 
+  if (layoutCoreViewAtIdx >= 0 && layoutCoreViewAtIdx < (int)decks.size()) {
+    layoutCoreViews(layoutCoreViewAtIdx);
+    layoutCoreViewAtIdx = -1;
+  }
+
   int idx = getCurrentIndex();
   float dragAmount = getDragAmount();
 
@@ -1270,7 +1287,7 @@ void Feed::loadDeckAtIndex(int i) {
     auto deckId = *decks[i].deckId;
     API::graphql("{\n  deck(deckId: \"" + deckId + "\") {\n" + GRAPHQL_DECK_FIELDS + "\n}\n}",
         [i, deckId, this](APIResponse &response) {
-          if (decks[i].deckId != deckId) {
+          if (i >= (int)decks.size() || decks[i].deckId != deckId) {
             return;
           }
 
@@ -1507,7 +1524,7 @@ void Feed::updateJSReaction(std::string deckId, bool isSelected) {
     decks[idx].coreView->updateJSGestureProp("isCurrentUserReactionToggled",
         decks[idx].isCurrentUserReactionToggled == FeedItem::True ? "true" : "false");
 
-    layoutCoreViews(idx);
+    layoutCoreViewAtIdx = idx;
   }
 }
 
@@ -1523,7 +1540,7 @@ void Feed::addJSComment(std::string deckId) {
     decks[idx].coreView->updateProp(
         "comment-count", "text", FormatNumber::toString(*decks[idx].commentCount));
 
-    layoutCoreViews(idx);
+    layoutCoreViewAtIdx = idx;
   }
 }
 
@@ -1696,7 +1713,7 @@ void Feed::loadDeckFromDeckJson(int i) {
       } else {
         auto sceneDataUrl = reader.str("sceneDataUrl", "");
         API::loadSceneData(sceneDataUrl, [i, deckId, this](APIResponse &response) {
-          if (decks[i].deckId != deckId) {
+          if (i >= (int)decks.size() || decks[i].deckId != deckId) {
             return;
           }
 

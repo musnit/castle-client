@@ -102,6 +102,7 @@ private:
   float timeSinceLastTapGesture = 1.0;
   float timeSinceLastSwipeGesture = 1.0;
   int lastViewFeedItemEventIndex = -1;
+  int layoutCoreViewAtIdx = -1;
 
   int cardLeft = 0;
   int cardWidth = 800;
