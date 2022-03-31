@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { Pressable, StatusBar, View } from 'react-native';
+import { StatusBar, View } from 'react-native';
 import { Amplitude } from '@amplitude/react-native';
 import { AuthPrompt } from '../auth/AuthPrompt';
 import { DecksGrid } from '../components/DecksGrid';
 import { EmptyFeed } from '../home/EmptyFeed';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { useLazyQuery, gql } from '@apollo/client';
 import { useNavigation, useFocusEffect, useScrollToTop } from '../ReactNavigation';
@@ -12,7 +12,6 @@ import { useSession } from '../Session';
 import { PopoverProvider } from '../components/PopoverProvider';
 import { ProfileHeader } from './ProfileHeader';
 import { ProfileSettingsSheet } from './ProfileSettingsSheet';
-import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import * as Constants from '../Constants';
 
@@ -46,8 +45,6 @@ const useProfileQuery = (userId) => {
 const ProfileDecksGrid = ({ user, refreshing, onRefresh, error, isMe, ...props }) => {
   const decks = user?.decks.filter((deck) => deck.visibility === 'public');
   const { push } = useNavigation();
-  const insets = useSafeAreaInsets();
-  const paddingBottom = insets.bottom + (Constants.Android ? 50 : 66); // account for native tab bar
 
   const scrollViewRef = React.useRef(null);
   useScrollToTop(scrollViewRef);
@@ -72,7 +69,6 @@ const ProfileDecksGrid = ({ user, refreshing, onRefresh, error, isMe, ...props }
       onRefresh={onRefresh}
       enablePreviewVideo={false}
       scrollViewRef={scrollViewRef}
-      contentContainerStyle={{ paddingBottom }}
       {...props}
     />
   );
@@ -133,7 +129,7 @@ export const ProfileScreen = ({ userId, route }) => {
         fetchProfile();
       }
     },
-    [setSettingsSheet, isAnonymous]
+    [fetchProfile, setSettingsSheet, isAnonymous]
   );
 
   const ListHeaderComponent = (
@@ -164,7 +160,7 @@ export const ProfileScreen = ({ userId, route }) => {
 
     return (
       <>
-        <SafeAreaView edges={['left', 'right', 'bottom']}>
+        <SafeAreaView style={{ flex: 1 }} edges={['left', 'right', 'bottom']}>
           <ScreenHeader title={'Profile'} />
           {error ? (
             <EmptyFeed error={error} onRefresh={onRefresh} />
