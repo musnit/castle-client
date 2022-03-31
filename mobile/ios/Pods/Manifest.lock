@@ -7,8 +7,6 @@ PODS:
     - Amplitude (= 8.5.0)
     - React-Core
   - boost-for-react-native (1.63.0)
-  - BVLinearGradient (2.5.6):
-    - React
   - DoubleConversion (1.1.6)
   - DVAssetLoaderDelegate (0.3.3)
   - FBLazyVector (0.64.2)
@@ -349,7 +347,6 @@ PODS:
 DEPENDENCIES:
   - Adjust (~> 4.29.2)
   - "amplitude-react-native (from `../node_modules/@amplitude/react-native`)"
-  - BVLinearGradient (from `../node_modules/react-native-linear-gradient`)
   - DoubleConversion (from `../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec`)
   - FBLazyVector (from `../node_modules/react-native/Libraries/FBLazyVector`)
   - FBReactNativeSpec (from `../node_modules/react-native/React/FBReactNativeSpec`)
@@ -416,8 +413,6 @@ SPEC REPOS:
 EXTERNAL SOURCES:
   amplitude-react-native:
     :path: "../node_modules/@amplitude/react-native"
-  BVLinearGradient:
-    :path: "../node_modules/react-native-linear-gradient"
   DoubleConversion:
     :podspec: "../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec"
   FBLazyVector:
@@ -516,7 +511,6 @@ SPEC CHECKSUMS:
   Amplitude: ef9ed339ddd33c9183edf63fa4bbaa86cf873321
   amplitude-react-native: fa5e830e59fd8ed440a74d58fd72ad4b37e7c946
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
-  BVLinearGradient: e3aad03778a456d77928f594a649e96995f1c872
   DoubleConversion: cf9b38bf0b2d048436d9a82ad2abe1404f11e7de
   DVAssetLoaderDelegate: 0caec20e4e08b8560b691131539e9180024d4bce
   FBLazyVector: e686045572151edef46010a6f819ade377dfeb4b
