@@ -34,11 +34,11 @@ function onPressComments(params) {
 
 let coreViews = {
   CONSTANTS: {
-    FEED_BOTTOM_ACTIONS_INITIAL_RIGHT: 12.5,
+    FEED_BOTTOM_ACTIONS_INITIAL_RIGHT: 13,
 
-    FEED_BOTTOM_ACTIONS_TEXT_RIGHT_PADDING: 3,
+    FEED_BOTTOM_ACTIONS_TEXT_RIGHT_PADDING: 2.5,
 
-    FEED_BOTTOM_ACTIONS_REACTION_ICON_RIGHT_PADDING: 2.4,
+    FEED_BOTTOM_ACTIONS_REACTION_ICON_RIGHT_PADDING: Platform.OS == 'android' ? 1.8 : 2.4,
     FEED_BOTTOM_ACTIONS_SPACE_REACTION_BUTTON_AND_TEXT: 0.5,
     FEED_BOTTOM_ACTIONS_MAX_DIFF_BEFORE_REACTION_RELAYOUT: 1.5,
 
@@ -287,7 +287,7 @@ let coreViews = {
         id: 'share-icon',
         filename: Platform.OS === 'android' ? 'share-android.png' : 'share-ios.png',
         type: 'image',
-        right: '6vw',
+        right: '6.7vw',
         top: '2.5vw',
         width: FEED_ICON_SIZE,
         height: FEED_ICON_SIZE,
