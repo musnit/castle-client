@@ -88,8 +88,12 @@ export async function loadAuthTokenAsync() {
     gUserId = await CastleAsyncStorage.getItem('USER_ID');
     const isNuxCompletedStorageValue = await CastleAsyncStorage.getItem('IS_NUX_COMPLETED');
     gIsNuxCompleted = isNuxCompletedStorageValue === 'true' || isNuxCompletedStorageValue === true;
-    const isNativeFeedNuxCompletedStorageValue = await CastleAsyncStorage.getItem('IS_NATIVE_FEED_NUX_COMPLETED');
-    gIsNativeFeedNuxCompleted = isNativeFeedNuxCompletedStorageValue === 'true' || isNativeFeedNuxCompletedStorageValue === true;
+    const isNativeFeedNuxCompletedStorageValue = await CastleAsyncStorage.getItem(
+      'IS_NATIVE_FEED_NUX_COMPLETED'
+    );
+    gIsNativeFeedNuxCompleted =
+      isNativeFeedNuxCompletedStorageValue === 'true' ||
+      isNativeFeedNuxCompletedStorageValue === true;
     const isAnonStorageValue = await CastleAsyncStorage.getItem('USER_IS_ANONYMOUS');
     gIsAnonymous = isAnonStorageValue === 'true' || isAnonStorageValue === true;
     const isMutedStorageValue = await CastleAsyncStorage.getItem('IS_MUTED');
@@ -176,7 +180,10 @@ export class Provider extends React.Component {
     if (Platform.OS === 'android') {
       GhostChannels.markNuxComplete();
     }
-    await CastleAsyncStorage.setItem('IS_NATIVE_FEED_NUX_COMPLETED', gIsNativeFeedNuxCompleted.toString());
+    await CastleAsyncStorage.setItem(
+      'IS_NATIVE_FEED_NUX_COMPLETED',
+      gIsNativeFeedNuxCompleted.toString()
+    );
     return this.setState({ isNativeFeedNuxCompleted: gIsNativeFeedNuxCompleted });
   };
 
@@ -559,27 +566,6 @@ const DECK_FRAGMENT = `
   commentsEnabled
 `;
 
-export const prefetchCardsAsync = async ({ cardId }) => {
-  const {
-    data: { prefetchCards },
-  } = await apolloClient.query({
-    query: gql`
-      query PrefetchCards($cardId: ID!) {
-        prefetchCards(cardId: $cardId) {
-          ${CARD_FRAGMENT}
-        }
-      }
-    `,
-    variables: { cardId },
-  });
-
-  prefetchCards.forEach((card) => {
-    if (card.backgroundImage && card.backgroundImage.url) {
-      FastImage.preload([{ uri: card.backgroundImage.url }]);
-    }
-  });
-};
-
 async function createNewDestinationCards(deckId, sceneData) {
   // if any 'send player to card' rule has a LocalId destination, save a blank card there
   let actors, data;
@@ -736,40 +722,6 @@ export const getDeckById = async (deckId) => {
     fetchPolicy: 'no-cache',
   });
   return result.data.deck;
-};
-
-export const getDecksByIds = async (deckIds, fields) => {
-  if (!deckIds || !deckIds.length) return [];
-
-  fields =
-    fields ??
-    `
-    ${DECK_FRAGMENT}
-    cards {
-      ${CARD_FRAGMENT}
-    }`;
-  if (!deckIds || !deckIds.length) return [];
-  let queries = [];
-  deckIds.forEach((deckId, ii) => {
-    queries.push(`
-        deck${ii}: deck(deckId: "${deckId}") {
-          ${fields}
-        }
-    `);
-  });
-  const result = await apolloClient.query({
-    query: gql`
-      query {
-        ${queries.join('\n')}
-      }`,
-  });
-
-  if (result && result.data) {
-    return Object.entries(result.data).map(([alias, deck]) => deck);
-  } else if (result?.errors) {
-    throw new Error(`getDecksByIds: ${result.errors[0]}`);
-  }
-  return [];
 };
 
 export const uploadFile = async ({ uri }) => {
@@ -947,7 +899,7 @@ export const createShortLink = async (url) => {
 export const resolveDeepLink = async (url) => {
   const result = await apolloClient.mutate({
     mutation: gql`
-      query($url: String!) {
+      query ($url: String!) {
         resolveDeepLink(url: $url) {
           resolvedUrl
           deck {

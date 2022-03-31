@@ -3,7 +3,6 @@ import { Animated, StatusBar, StyleSheet, View, Platform } from 'react-native';
 import { Amplitude } from '@amplitude/react-native';
 import { CommentsSheet } from '../comments/CommentsSheet';
 import { FeaturedDecks } from './FeaturedDecks';
-import { FollowingDecks } from './FollowingDecks';
 import { PopoverProvider } from '../components/PopoverProvider';
 import { RecentDecks } from './RecentDecks';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -57,14 +56,14 @@ const makeItems = ({ newFollowingDecks, isAnonymous } = {}) => {
     },
   ];
 
-  if (!isAnonymous) {
+  /* if (!isAnonymous) {
     items.splice(1, 0, {
       name: 'Following',
       value: 'following',
       indicator: newFollowingDecks,
       item: (props) => <FollowingDecks {...props} />,
     });
-  }
+  } */
 
   return items;
 };
@@ -143,20 +142,6 @@ export const HomeScreen = ({ route }) => {
   return (
     <View style={styles.container}>
       <PopoverProvider>
-        {!Constants.USE_NATIVE_FEED && (
-          <Animated.View
-            style={[
-              styles.header,
-              styles.elevatedHeader,
-              { top: insets.top, transform: [{ translateY: headerY }] },
-            ]}>
-            <SegmentedNavigation
-              items={items}
-              selectedItem={selectedItem}
-              onSelectItem={(item) => setMode(item.value)}
-            />
-          </Animated.View>
-        )}
         {selectedItem.item({
           deckId,
           onPressComments: openComments,

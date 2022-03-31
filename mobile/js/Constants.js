@@ -1,7 +1,5 @@
 import { Platform } from 'react-native';
 
-export const USE_NATIVE_FEED = true;
-
 export const iOS = Platform.OS === 'ios';
 export const Android = Platform.OS === 'android';
 

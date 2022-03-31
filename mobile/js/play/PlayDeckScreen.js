@@ -3,7 +3,6 @@ import { StatusBar, StyleSheet } from 'react-native';
 import { useFocusEffect } from '../ReactNavigation';
 import { useGameViewAndroidBackHandler } from '../common/GameViewAndroidBackHandler';
 import { CommentsSheet } from '../comments/CommentsSheet';
-import { DecksFeed } from '../components/DecksFeed';
 import { PopoverProvider } from '../components/PopoverProvider';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ScreenHeader } from '../components/ScreenHeader';
@@ -81,35 +80,16 @@ export const PlayDeckScreen = ({ decks, initialDeckIndex = 0, title, route, pagi
     <SafeAreaView style={styles.container} edges={['left', 'right', 'bottom']}>
       <PopoverProvider>
         <ScreenHeader title={title} />
-        {Constants.USE_NATIVE_FEED ? (
-          <NativeDecksFeed
-            onPressComments={openComments}
-            isCommentsOpen={isCommentsVisible}
-            onCloseComments={closeComments}
-            deckIds={decks.map((deck) => deck.deckId)}
-            initialDeckIndex={initialDeckIndex}
-            screenId={title}
-            paginateFeedId={paginateFeedId}
-            previousScreenName={previousScreenName}
-          />
-        ) : (
-          <DecksFeed
-            decks={[deck]}
-            isPlaying={true}
-            onPressDeck={({ deckId }) => {
-              if (deckId) {
-                // don't throw: this can happen if we render a singleton DecksFeed
-                // via PlayDeckScreen, and the user manages to tap before the `ready` flag is set,
-                // which should just be a no-op while we wait for the deck to mount
-                console.warn(`Changing deckId from PlayDeckScreen is not yet supported`);
-              }
-              pop();
-            }}
-            onPressComments={openComments}
-            onCloseComments={closeComments}
-            isCommentsOpen={isCommentsVisible}
-          />
-        )}
+        <NativeDecksFeed
+          onPressComments={openComments}
+          isCommentsOpen={isCommentsVisible}
+          onCloseComments={closeComments}
+          deckIds={decks.map((deck) => deck.deckId)}
+          initialDeckIndex={initialDeckIndex}
+          screenId={title}
+          paginateFeedId={paginateFeedId}
+          previousScreenName={previousScreenName}
+        />
         <CommentsSheet
           isFullScreen
           isOpen={isCommentsVisible}
