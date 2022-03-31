@@ -13,7 +13,6 @@ import { useSession, blockUser, reportDeck } from '../Session';
 import { sendAsync, useListen } from '../core/CoreEvents';
 import { useAppState } from '../ghost/GhostAppState';
 import { useGameViewAndroidBackHandler } from '../common/GameViewAndroidBackHandler';
-import { ScreenHeader } from './ScreenHeader';
 import { useFocusEffect, useNavigation } from '../ReactNavigation';
 import * as Session from '../Session';
 
@@ -23,8 +22,6 @@ export const NativeDecksFeed = ({
   onCloseComments,
   deckIds,
   initialDeckIndex,
-  showBackButton,
-  title = '',
   screenId,
   paginateFeedId,
   previousScreenName,
@@ -206,7 +203,7 @@ export const NativeDecksFeed = ({
 
   React.useEffect(onCloseComments, [deepLinkDeckId]);
 
-  let gameView = (
+  return (
     <GameView
       ref={container}
       initialParams={JSON.stringify({
@@ -223,16 +220,5 @@ export const NativeDecksFeed = ({
       coreViews={CoreViews.getCoreViews()}
       paused={isCommentsOpen || appState !== 'active'}
     />
-  );
-
-  if (!showBackButton) {
-    return gameView;
-  }
-
-  return (
-    <View style={{ flex: 1 }}>
-      <ScreenHeader title={title} />
-      {gameView}
-    </View>
   );
 };

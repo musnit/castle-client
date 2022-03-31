@@ -6,6 +6,7 @@ import { CommentsSheet } from '../comments/CommentsSheet';
 import { DecksFeed } from '../components/DecksFeed';
 import { PopoverProvider } from '../components/PopoverProvider';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { ScreenHeader } from '../components/ScreenHeader';
 import { useNavigation } from '../ReactNavigation';
 import * as Constants from '../Constants';
 import { NativeDecksFeed } from '../components/NativeDecksFeed';
@@ -77,8 +78,9 @@ export const PlayDeckScreen = ({ decks, initialDeckIndex = 0, title, route, pagi
   useGameViewAndroidBackHandler({ onHardwareBackPress });
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView style={styles.container} edges={['left', 'right', 'bottom']}>
       <PopoverProvider>
+        <ScreenHeader title={title} />
         {Constants.USE_NATIVE_FEED ? (
           <NativeDecksFeed
             onPressComments={openComments}
@@ -87,9 +89,7 @@ export const PlayDeckScreen = ({ decks, initialDeckIndex = 0, title, route, pagi
             deckIds={decks.map((deck) => deck.deckId)}
             initialDeckIndex={initialDeckIndex}
             screenId={title}
-            title={title}
             paginateFeedId={paginateFeedId}
-            showBackButton={true}
             previousScreenName={previousScreenName}
           />
         ) : (
