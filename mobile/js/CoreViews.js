@@ -34,7 +34,7 @@ function onPressComments(params) {
 
 let coreViews = {
   CONSTANTS: {
-    FEED_BOTTOM_ACTIONS_INITIAL_RIGHT: 13,
+    FEED_BOTTOM_ACTIONS_INITIAL_RIGHT: 13.3,
 
     FEED_BOTTOM_ACTIONS_TEXT_RIGHT_PADDING: 2.5,
 
@@ -287,7 +287,7 @@ let coreViews = {
         id: 'share-icon',
         filename: Platform.OS === 'android' ? 'share-android.png' : 'share-ios.png',
         type: 'image',
-        right: '6.7vw',
+        right: '7vw',
         top: Platform.OS == 'android' ? '2.7vw' : '2.5vw',
         width: FEED_ICON_SIZE,
         height: FEED_ICON_SIZE,
