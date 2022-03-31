@@ -54,6 +54,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   input: {
+    maxWidth: '96%',
     color: '#000',
     fontSize: 16,
     lineHeight: 20,
