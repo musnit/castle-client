@@ -4,7 +4,6 @@ import {
   StyleSheet,
   View,
   Platform,
-  requireNativeComponent,
   ScrollView,
   DeviceEventEmitter,
   BackHandler,
@@ -16,6 +15,7 @@ import { useFocusEffect } from '../ReactNavigation';
 import { useKeyboard } from '../common/utilities';
 import { AndroidNavigationContext, useNavigation, ANDROID_USE_NATIVE_NAVIGATION } from '../ReactNavigation';
 import { getIsTabBarVisible } from '../Navigation';
+import AndroidBottomSheetComponent from './AndroidBottomSheetComponent';
 
 import Viewport from '../common/viewport';
 
@@ -42,12 +42,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 });
-
-let NativeBottomSheet = null;
-
-if (Platform.OS === 'android') {
-  NativeBottomSheet = requireNativeComponent('CastleBottomSheet', null);
-}
 
 const TEXT_INPUT_HEIGHT = 48; // approx height of one text input
 
@@ -332,7 +326,7 @@ const BottomSheetAndroid = ({
   // closing the keyboard which the native component already handles
   // add 20 to padding to fix issue on Remy's phone
   return (
-    <NativeBottomSheet
+    <AndroidBottomSheetComponent
       style={styles.container}
       viewId={viewId}
       isOpen={isOpen}
@@ -356,7 +350,7 @@ const BottomSheetAndroid = ({
           </ScrollView>
         )}
       </View>
-    </NativeBottomSheet>
+    </AndroidBottomSheetComponent>
   );
 };
 
