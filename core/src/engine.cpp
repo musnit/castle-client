@@ -199,8 +199,8 @@ void Engine::setInitialParams(const char *initialParamsJson) {
     screenId = screenIdPrefix;
   }
 
-  if (activeScreenId == "featuredFeed" && screenId != "featuredFeed") {
-    screens["featuredFeed"]->suspend();
+  if (activeScreenId != screenId && screens.find(activeScreenId) != screens.end()) {
+    screens[activeScreenId]->suspend();
   }
 
   activeScreenId = screenId;
