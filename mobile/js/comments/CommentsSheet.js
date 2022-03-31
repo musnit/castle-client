@@ -11,6 +11,7 @@ import { gql, useMutation } from '@apollo/client';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useSession } from '../Session';
 import { useNavigation } from '../ReactNavigation';
+import { sendAsync } from '../core/CoreEvents';
 
 import * as Constants from '../Constants';
 
@@ -71,6 +72,9 @@ export const CommentsSheet = ({ isOpen, onClose, deck, isFullScreen, ...props })
       Amplitude.getInstance().logEvent('ADD_COMMENT', {
         deckId: deck.deckId,
         hasScreenshot: !!imageFileId,
+      });
+      sendAsync('ADD_COMMENT', {
+        deckId: deck.deckId,
       });
       return addComment({
         variables: {

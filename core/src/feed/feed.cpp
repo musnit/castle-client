@@ -1390,7 +1390,8 @@ void Feed::layoutCoreViews(int i) {
   decks[i].coreView->updateProp("reaction-icon", "right", std::to_string(currentRight));
   currentRight += 5.5 * vw;
 
-  if (decks[i].coreView->getProp("comment-count", "text") == "0") {
+  auto commentCount = decks[i].coreView->getProp("comment-count", "text");
+  if (commentCount.empty() || commentCount == "0") {
     decks[i].coreView->updateProp("comment-count", "visibility", "hidden");
     currentRight += FEED_BOTTOM_ACTIONS_COMMENT_ICON_RIGHT_PADDING * vw;
   } else {
@@ -1421,6 +1422,22 @@ struct UpdateFeedReactionReceiver {
 
     if (screen && screen->screenType() == FEED) {
       ((Feed *)screen)->updateJSReaction(params.deckId(), params.isSelected());
+    }
+  }
+};
+
+struct AddCommentReceiver {
+  inline static const BridgeRegistration<AddCommentReceiver> registration { "ADD_COMMENT" };
+
+  struct Params {
+    PROP(std::string, deckId);
+  } params;
+
+  void receive(Engine &engine) {
+    auto screen = engine.maybeGetScreen();
+
+    if (screen && screen->screenType() == FEED) {
+      ((Feed *)screen)->addJSComment(params.deckId());
     }
   }
 };
@@ -1460,6 +1477,24 @@ void Feed::updateJSReaction(std::string deckId, bool isSelected) {
         "reactionCount", std::to_string(*decks[idx].reactionCount));
     decks[idx].coreView->updateJSGestureProp("isCurrentUserReactionToggled",
         decks[idx].isCurrentUserReactionToggled == FeedItem::True ? "true" : "false");
+
+    layoutCoreViews(idx);
+  }
+}
+
+void Feed::addJSComment(std::string deckId) {
+  int idx = getCurrentIndex();
+
+  if (idx >= 0 && idx < (int)decks.size()) {
+    if (decks[idx].deckId != deckId) {
+      return;
+    }
+
+    (*decks[idx].commentCount)++;
+    decks[idx].coreView->updateProp(
+        "comment-count", "text", FormatNumber::toString(*decks[idx].commentCount));
+
+    layoutCoreViews(idx);
   }
 }
 
@@ -1560,7 +1595,11 @@ void Feed::loadDeckFromDeckJson(int i) {
     decks[i].coreView->updateJSGestureProp("commentsEnabled", commentsEnabled ? "true" : "false");
     if (commentsEnabled) {
       reader.obj("comments", [&]() {
-        int count = reader.num("count", 0);
+        if (!decks[i].commentCount) {
+          decks[i].commentCount = reader.num("count", 0);
+        }
+
+        int count = *decks[i].commentCount;
         if (count > 0) {
           decks[i].coreView->updateProp("comment-count", "text", FormatNumber::toString(count));
         }

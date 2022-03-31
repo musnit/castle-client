@@ -36,6 +36,7 @@ struct FeedItem {
   bool hasNetworkError = false;
   OptionalBool isCurrentUserReactionToggled = Unset;
   std::optional<int> reactionCount;
+  std::optional<int> commentCount;
   float frameTimes[NUM_FRAME_TIMES];
   int frameIndex = 0;
   float loadingTime = 0.0;
@@ -63,6 +64,7 @@ public:
   Scene &getScene();
   void setDeepLinkDeckId(std::string deckId);
   void updateJSReaction(std::string deckId, bool isSelected);
+  void addJSComment(std::string deckId);
 
 private:
   mutable love::Transform viewTransform;
