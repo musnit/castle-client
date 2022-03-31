@@ -94,13 +94,14 @@ protected:
 
   friend struct SoundEnabledReceiver;
   bool isRunning = false;
-  std::vector<int> pausedSoloudHandles; // used if sounds are initiated before we have `resume`d
 
   void playUrl(float playbackRate, float amplitude, const std::string &url);
   void playEffect(float playbackRate, float amplitude, const std::string &category, int seed,
       int mutationSeed, int mutationAmount);
   void playTone(float playbackRate, float amplitude, int midiNote, const std::string &waveform,
       float attack, float release);
+
+  void setAllSoloudSourcesPaused(bool paused);
 
   inline int playSoloudSource(SoLoud::AudioSource &source, float playbackRate, float amplitude) {
     int handle = Sound::soloud.play(source);
@@ -109,7 +110,6 @@ protected:
     if (!isRunning) {
       // pause by default if not running
       Sound::soloud.setPause(handle, 1);
-      pausedSoloudHandles.emplace_back(handle);
     }
     return handle;
   }

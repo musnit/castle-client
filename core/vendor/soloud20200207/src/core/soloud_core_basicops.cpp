@@ -175,6 +175,24 @@ namespace SoLoud
 		}
 	}
 
+	void Soloud::castleSetAudioSourcePause(AudioSource &aSound, bool aPause)
+	{
+		if (aSound.mAudioSourceID)
+		{
+			lockAudioMutex_internal();
+			
+			int i;
+			for (i = 0; i < (signed)mHighestVoice; i++)
+			{
+				if (mVoice[i] && mVoice[i]->mAudioSourceID == aSound.mAudioSourceID)
+				{
+                                	setVoicePause_internal(i, aPause);
+				}
+			}
+			unlockAudioMutex_internal();
+		}
+	}
+
 	void Soloud::stopAll()
 	{
 		int i;

@@ -248,6 +248,8 @@ namespace SoLoud
 		void stopAll();
 		// Stop all voices that play this sound source
 		void stopAudioSource(AudioSource &aSound);
+		// Set pause state of all voices that play this sound source
+		void castleSetAudioSourcePause(AudioSource &aSound, bool aPause);
 		// Count voices that play this audio source
 		int countAudioSource(AudioSource &aSound);
 

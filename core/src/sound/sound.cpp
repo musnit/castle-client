@@ -115,11 +115,8 @@ void Sound::resume() {
       clockThread->start();
     }
     if (Sound::hasInitializedSoloud) {
-      // if we tried to play any sounds before resuming, unleash them now
-      for (auto handle : pausedSoloudHandles) {
-        Sound::soloud.setPause(handle, 0);
-      }
-      pausedSoloudHandles.clear();
+      // unpause all audio sources belonging to this instance
+      setAllSoloudSourcesPaused(false);
     }
     isRunning = true;
   }
@@ -133,7 +130,7 @@ void Sound::suspend() {
   isRunning = false;
   isInstanceRunning[instanceId] = false;
   // do not clear streams - just pause time
-  stopCurrentlyPlayingSounds();
+  setAllSoloudSourcesPaused(true);
   if (clockThread) {
     clockThread->finish();
     clockThread->wait();
@@ -153,9 +150,20 @@ void Sound::clear() {
   // forget all state
   sfxrSounds.clear();
   urlSounds.clear();
-  pausedSoloudHandles.clear();
   clearStreams();
   clocks.clear();
+}
+
+void Sound::setAllSoloudSourcesPaused(bool paused) {
+  // this is not the same as soloud.setPauseAll() because it sandboxes to this one Sound instance
+  if (Sound::hasInitializedSoloud) {
+    for (auto &[key, source] : sfxrSounds) {
+      Sound::soloud.castleSetAudioSourcePause(*source, paused);
+    }
+    for (auto &[key, source] : urlSounds) {
+      Sound::soloud.castleSetAudioSourcePause(*source, paused);
+    }
+  }
 }
 
 void Sound::stopCurrentlyPlayingSounds() {
