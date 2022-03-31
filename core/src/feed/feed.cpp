@@ -1407,6 +1407,22 @@ void Feed::layoutCoreViews(int i) {
   decks[i].coreView->updateProp("comment-icon", "right", std::to_string(currentRight));
 }
 
+struct RestartDeckReceiver {
+  inline static const BridgeRegistration<RestartDeckReceiver> registration { "RESTART_DECK" };
+
+  struct Params {
+    PROP(std::string, deckId);
+  } params;
+
+  void receive(Engine &engine) {
+    auto screen = engine.maybeGetScreen();
+
+    if (screen && screen->screenType() == FEED) {
+      ((Feed *)screen)->restartDeckJS(params.deckId());
+    }
+  }
+};
+
 struct UpdateFeedReactionReceiver {
   inline static const BridgeRegistration<UpdateFeedReactionReceiver> registration {
     "UPDATE_FEED_REACTION"
@@ -1441,6 +1457,19 @@ struct AddCommentReceiver {
     }
   }
 };
+
+void Feed::restartDeckJS(std::string deckId) {
+  int idx = getCurrentIndex();
+
+  if (idx >= 0 && idx < (int)decks.size()) {
+    if (decks[idx].deckId != deckId) {
+      return;
+    }
+
+    // TODO: this is doing more work than it needs to. don't need to reload coreviews
+    unloadDeckAtIndex(idx);
+  }
+}
 
 void Feed::updateJSReaction(std::string deckId, bool isSelected) {
   int idx = getCurrentIndex();

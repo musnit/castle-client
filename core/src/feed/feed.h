@@ -65,6 +65,7 @@ public:
   void setDeepLinkDeckId(std::string deckId);
   void updateJSReaction(std::string deckId, bool isSelected);
   void addJSComment(std::string deckId);
+  void restartDeckJS(std::string deckId);
 
 private:
   mutable love::Transform viewTransform;

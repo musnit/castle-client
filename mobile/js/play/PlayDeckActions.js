@@ -174,7 +174,13 @@ export function getOnSelectDropdownAction({
     [deck]
   );
 
-  const onRestartDeck = React.useCallback(() => sendAsync('RESTART_DECK'), []);
+  const onRestartDeck = React.useCallback(
+    () =>
+      sendAsync('RESTART_DECK', {
+        deckId: deck.deckId,
+      }),
+    [deck]
+  );
 
   return React.useCallback(
     (id) => {
