@@ -288,7 +288,7 @@ let coreViews = {
         filename: Platform.OS === 'android' ? 'share-android.png' : 'share-ios.png',
         type: 'image',
         right: '6.7vw',
-        top: '2.5vw',
+        top: Platform.OS == 'android' ? '2.7vw' : '2.5vw',
         width: FEED_ICON_SIZE,
         height: FEED_ICON_SIZE,
         hitSlopLeft: '1.5vw',
