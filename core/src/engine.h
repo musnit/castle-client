@@ -103,7 +103,7 @@ private:
 
   void androidHandleBackPressed();
 
-  std::mutex setPausedMutex;
+  std::timed_mutex setPausedMutex;
   std::vector<std::function<bool()>> androidBackButtonHandlers;
 
   std::unique_ptr<Screenshot> screenshot;
@@ -171,7 +171,10 @@ inline void Engine::setPaused(bool paused_) {
     return;
   }
 
-  setPausedMutex.lock();
+  if (!setPausedMutex.try_lock_until(
+          std::chrono::steady_clock::now() + std::chrono::milliseconds(200))) {
+    return;
+  }
 
   paused = paused_;
 
