@@ -602,9 +602,9 @@ void Feed::runUpdateAtIndex(int idx, double dt) {
   avgTime /= (float)NUM_FRAME_TIMES;
   if (avgTime > 0.5) {
     decks[idx].isFrozen = true;
-  } else if (avgTime > 1.0 / 30.0) {
+  } else if (avgTime > 1.0 / 20.0) {
     decks[idx].framesToSkip += 20.0;
-  } else if (avgTime > 1.0 / 60.0) {
+  } else if (avgTime > 1.0 / 40.0) {
     decks[idx].framesToSkip += 5.0;
   }
 }
