@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Pressable, StatusBar } from 'react-native';
+import { Pressable, StatusBar, View } from 'react-native';
 import { Amplitude } from '@amplitude/react-native';
 import { AuthPrompt } from '../auth/AuthPrompt';
 import { DecksGrid } from '../components/DecksGrid';
@@ -23,6 +23,7 @@ const useProfileQuery = (userId) => {
       gql`
       query Me {
         me {
+          isAnonymous
           ${Constants.USER_PROFILE_FRAGMENT}
         }
       }`
@@ -157,6 +158,10 @@ export const ProfileScreen = ({ userId, route }) => {
       />
     );
   } else {
+    if (isMe && user && user.isAnonymous) {
+      return <View />;
+    }
+
     return (
       <>
         <SafeAreaView edges={['left', 'right', 'bottom']}>
