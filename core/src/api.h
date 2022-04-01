@@ -118,9 +118,18 @@ private:
           if (result == nullptr || length == 0) {
             success = false;
           }
+
+          // would be nice to just not free it in the platform specific code, but not confident
+          // about getting that to work consistenly on ios
+          unsigned char *copy = nullptr;
+          if (result && length > 0) {
+            copy = (unsigned char *)malloc(length);
+            memcpy(copy, result, length);
+          }
+
           completedRequestsLock.lock();
           completedDataRequests.insert(
-              std::make_pair(url, APIDataResponse(success, error, result, length)));
+              std::make_pair(url, APIDataResponse(success, error, copy, length)));
           completedRequestsLock.unlock();
         });
   }
@@ -326,10 +335,7 @@ public:
 
   static void runCallbacks() {
     completedRequestsLock.lock();
-    for (auto it : completedRequests) {
-      auto url = it.first;
-      auto result = it.second;
-
+    for (auto &[url, result] : completedRequests) {
       cacheLock.lock();
 
       cachedResponses.insert(url, result);
@@ -343,10 +349,7 @@ public:
     }
     completedRequests.clear();
 
-    for (auto it : completedGraphQLRequests) {
-      auto url = it.first;
-      auto result = it.second;
-
+    for (auto &[url, result] : completedGraphQLRequests) {
       cacheLock.lock();
 
       // don't cache graphql requests
@@ -360,10 +363,7 @@ public:
     }
     completedGraphQLRequests.clear();
 
-    for (auto it : completedDataRequests) {
-      auto url = it.first;
-      auto result = it.second;
-
+    for (auto &[url, result] : completedDataRequests) {
       cacheLock.lock();
 
       auto callbacks = urlToPendingDataCallbacks[url];
@@ -372,6 +372,10 @@ public:
 
       for (auto const &callback : callbacks) {
         callback(result);
+      }
+
+      if (result.data && result.length > 0) {
+        free(result.data);
       }
     }
     completedDataRequests.clear();
