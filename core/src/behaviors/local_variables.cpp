@@ -227,7 +227,7 @@ void LocalVariablesBehavior::reset(ActorId actorId, const LocalVariableId &local
 //
 
 void LocalVariablesBehavior::debugDisplay() {
-#if 1
+#if 0
   Debug::display("local variables:");
   forEachEnabledComponent([&](ActorId actorId, LocalVariablesComponent &component) {
     Debug::display("  actor {}:", actorId);
