@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   input: {
-    maxWidth: '96%',
+    maxWidth: '92%',
     color: '#000',
     fontSize: 16,
     lineHeight: 20,
@@ -144,7 +144,7 @@ export default InspectorLocalVariables = ({}) => {
           <View
             key={`${undoRedoCount}-${localVariables.length}-${i}`}
             style={styles.variableInputContainer}>
-            <View style={[styles.variableInputColumn, { paddingRight: 8 }]}>
+            <View style={[styles.variableInputColumn, { marginRight: 8 }]}>
               <Text style={styles.variablePrefix}>$</Text>
               <InspectorTextInput
                 value={localVariable.name}
