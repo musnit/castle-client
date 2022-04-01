@@ -129,14 +129,18 @@ void Sound::suspend() {
 
   isRunning = false;
   isInstanceRunning[instanceId] = false;
+
   // do not clear streams - just pause time
-  setAllSoloudSourcesPaused(true);
   if (clockThread) {
     clockThread->finish();
     clockThread->wait();
     delete clockThread;
     clockThread = nullptr;
   }
+
+  // pause audio sources _after_ deleting sound thread,
+  // because sound thread could spawn new soloud voices
+  setAllSoloudSourcesPaused(true);
 }
 
 void Sound::clear() {
