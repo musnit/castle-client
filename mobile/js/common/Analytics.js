@@ -20,6 +20,21 @@ export const logEvent = (event, properties) => {
   }
 };
 
+export const logEventSkipAmplitude = (event, properties) => {
+  try {
+    apolloClient.mutate({
+      mutation: gql`
+      mutation LogEvent($event: String!, $properties: String) {
+        analyticsLogEvent(event: $event, properties: $properties)
+      }
+    `,
+      variables: { event, properties: properties ? JSON.stringify(properties) : null },
+    });
+  } catch (e) {
+    console.error(`error logging event: ${e}`);
+  }
+};
+
 export const setUserProperties = (properties) => {
   Amplitude.getInstance().setUserProperties(properties);
 

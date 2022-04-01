@@ -186,7 +186,7 @@ export const NativeDecksFeed = ({
   const viewFeedItemCallback = React.useCallback(
     (event) => {
       if (isFocused) {
-        Analytics.logEvent('VIEW_FEED_ITEM', {
+        Analytics.logEventSkipAmplitude('VIEW_FEED_ITEM', {
           deckId: event.deckId,
           visibility: event.visibility,
           index: event.index,
