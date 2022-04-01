@@ -20,8 +20,21 @@ export const logEvent = (event, properties) => {
   }
 };
 
-export const setUserProperties = (...args) => {
-  Amplitude.getInstance().setUserProperties(...args);
+export const setUserProperties = (properties) => {
+  Amplitude.getInstance().setUserProperties(properties);
+
+  try {
+    apolloClient.mutate({
+      mutation: gql`
+      mutation SetUserProperties($properties: String!) {
+        analyticsSetUserProperties(properties: $properties)
+      }
+    `,
+      variables: { properties: JSON.stringify(properties) },
+    });
+  } catch (e) {
+    console.error(`error setting user properties: ${e}`);
+  }
 };
 
 export const setUserId = (...args) => {
