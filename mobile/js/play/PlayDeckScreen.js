@@ -7,7 +7,6 @@ import { PopoverProvider } from '../components/PopoverProvider';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { useNavigation } from '../ReactNavigation';
-import * as Constants from '../Constants';
 import { NativeDecksFeed } from '../components/NativeDecksFeed';
 
 const styles = StyleSheet.create({
@@ -32,8 +31,6 @@ export const PlayDeckScreen = ({ decks, initialDeckIndex = 0, title, route, pagi
       deck = decks[0];
     }
   }
-
-  const deckId = deck?.deckId;
 
   useFocusEffect(
     React.useCallback(() => {

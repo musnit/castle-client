@@ -576,6 +576,10 @@ export const CommentsList = ({ deck, isOpen, setReplyingToComment, newComment })
     );
   }
 
+  if (!isOpen) {
+    return null;
+  }
+
   if (comments === null) {
     return (
       <View style={{ flex: 1 }}>

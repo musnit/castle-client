@@ -38,7 +38,7 @@ export const CommentsSheet = ({ isOpen, onClose, deck, isFullScreen, ...props })
 
   const closeSheet = React.useCallback(() => {
     Keyboard.dismiss();
-    return onClose();
+    onClose();
   }, [onClose]);
   const renderHeader = () => (
     <CommentsSheetHeader deck={deck} onClose={closeSheet} isOpen={isOpen} />

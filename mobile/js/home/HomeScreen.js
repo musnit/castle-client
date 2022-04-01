@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Animated, StatusBar, StyleSheet, View, Platform } from 'react-native';
+import { Animated, StatusBar, StyleSheet, View } from 'react-native';
 import { CommentsSheet } from '../comments/CommentsSheet';
 import { FeaturedDecks } from './FeaturedDecks';
 import { PopoverProvider } from '../components/PopoverProvider';
