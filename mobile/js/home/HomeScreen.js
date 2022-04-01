@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { Animated, StatusBar, StyleSheet, View, Platform } from 'react-native';
-import { Amplitude } from '@amplitude/react-native';
 import { CommentsSheet } from '../comments/CommentsSheet';
 import { FeaturedDecks } from './FeaturedDecks';
 import { PopoverProvider } from '../components/PopoverProvider';
@@ -10,6 +9,7 @@ import { SegmentedNavigation } from '../components/SegmentedNavigation';
 import { useSession } from '../Session';
 import { useFocusEffect, useNavigation } from '../ReactNavigation';
 import * as PushNotifications from '../PushNotifications';
+import * as Analytics from '../common/Analytics';
 
 import * as Constants from '../Constants';
 
@@ -91,7 +91,7 @@ export const HomeScreen = ({ route }) => {
   useFocusEffect(
     React.useCallback(() => {
       StatusBar.setBarStyle('light-content'); // needed for tab navigator
-      Amplitude.getInstance().logEvent('VIEW_HOME', { mode });
+      Analytics.logEvent('VIEW_HOME', { mode });
     }, [mode])
   );
 

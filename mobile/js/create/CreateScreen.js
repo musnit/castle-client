@@ -9,7 +9,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { Amplitude } from '@amplitude/react-native';
 import { AppText as Text } from '../components/AppText';
 import { AuthPrompt } from '../auth/AuthPrompt';
 import { CardCell } from '../components/CardCell';
@@ -22,6 +21,7 @@ import { SegmentedNavigation } from '../components/SegmentedNavigation';
 import { UnsavedCardsList } from './UnsavedCardsList';
 import { formatCount } from '../common/utilities';
 import { formatTimeInterval } from '../common/date-utilities';
+import * as Analytics from '../common/Analytics';
 
 import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import AntIcon from 'react-native-vector-icons/AntDesign';
@@ -209,7 +209,7 @@ const EditDeckCell = (props) => {
 
 const CreateHelpLinks = () => {
   const onPressHelpLink = React.useCallback((url) => {
-    Amplitude.getInstance().logEvent('OPEN_CREATE_HELP_LINK', {
+    Analytics.logEvent('OPEN_CREATE_HELP_LINK', {
       url,
     });
     Linking.openURL(url);
@@ -365,7 +365,7 @@ const CreateScreenAuthenticated = () => {
   useFocusEffect(
     React.useCallback(() => {
       StatusBar.setBarStyle('light-content'); // needed for tab navigator
-      Amplitude.getInstance().logEvent('VIEW_CREATE');
+      Analytics.logEvent('VIEW_CREATE');
       fetchDecks();
     }, [])
   );

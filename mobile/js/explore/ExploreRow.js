@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { Pressable, StyleSheet, FlatList, View } from 'react-native';
 import { AppText as Text } from '../components/AppText';
-import { Amplitude } from '@amplitude/react-native';
 import { CardCell } from '../components/CardCell';
 import { useNavigation } from '../ReactNavigation';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import * as Analytics from '../common/Analytics';
 
 import * as Constants from '../Constants';
 
@@ -66,7 +66,7 @@ export const ExploreRow = ({ feed, last }) => {
 
   const onPressDeck = React.useCallback(
     (deck, index) => {
-      Amplitude.getInstance().logEvent('PLAY_EXPLORE_ROW_ITEM', {
+      Analytics.logEvent('PLAY_EXPLORE_ROW_ITEM', {
         feedId: feed.feedId,
         deckId: deck.deckId,
         index,

@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { Amplitude } from '@amplitude/react-native';
 import { NativeModules, Platform, DeviceEventEmitter, NativeEventEmitter } from 'react-native';
 import { CastleAsyncStorage } from './common/CastleAsyncStorage';
 import { markPushNotificationClicked } from './Session';
+import * as Analytics from './common/Analytics';
 
 let gListenerId = 0;
 let gInitialData = null;
@@ -35,7 +35,7 @@ eventEmitter.addListener('CastlePushNotificationClicked', (event) => {
     markPushNotificationClicked(data?.pushNotificationId);
   }
 
-  Amplitude.getInstance().logEvent('OPEN_PUSH_NOTIFICATION', {
+  Analytics.logEvent('OPEN_PUSH_NOTIFICATION', {
     type: data?.type, // category of notif, e.g. 'play_deck'
   });
   for (const [_, listener] of Object.entries(gClickedListeners)) {
@@ -55,7 +55,7 @@ export const setInitialData = (dataString) => {
     }, 2000);
   }
 
-  Amplitude.getInstance().logEvent('OPEN_PUSH_NOTIFICATION', {
+  Analytics.logEvent('OPEN_PUSH_NOTIFICATION', {
     type: gInitialData?.type, // category of notif, e.g. 'play_deck'
   });
 };
@@ -108,7 +108,7 @@ export const requestTokenAsync = async () => {
 
     // don't send an event because this will get silently called by the OS on every app launch
     // and we only care about the most recent status
-    Amplitude.getInstance().setUserProperties({
+    Analytics.setUserProperties({
       pushNotificationPermissions: Platform.OS === 'android' ? 'granted' : status, // 'granted' or 'denied'
     });
   } catch (e) {

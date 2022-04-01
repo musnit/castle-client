@@ -1,7 +1,6 @@
 import React from 'react';
 import { StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 import { AppText as Text } from '../components/AppText';
-import { Amplitude } from '@amplitude/react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { useMutation, gql } from '@apollo/client';
@@ -10,6 +9,7 @@ import { useSession } from '../Session';
 
 import * as Constants from '../Constants';
 import * as Utilities from '../common/utilities';
+import * as Analytics from '../common/Analytics';
 
 import FastImage from 'react-native-fast-image';
 
@@ -68,7 +68,7 @@ export const FeedbackScreen = () => {
   const [feedbackSent, setFeedbackSent] = React.useState(false);
   useFocusEffect(
     React.useCallback(() => {
-      Amplitude.getInstance().logEvent('VIEW_FEEDBACK');
+      Analytics.logEvent('VIEW_FEEDBACK');
       setFeedbackSent(false);
     }, [setFeedbackSent])
   );

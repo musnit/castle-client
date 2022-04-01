@@ -9,7 +9,6 @@ import {
   View,
   Platform,
 } from 'react-native';
-import { Amplitude } from '@amplitude/react-native';
 import { AppText as Text } from '../components/AppText';
 import { FollowButton } from '../components/FollowButton';
 import { MessageBody } from '../components/MessageBody';
@@ -35,6 +34,7 @@ import { UserAvatar } from '../components/UserAvatar';
 import * as Constants from '../Constants';
 import * as PushNotifications from '../PushNotifications';
 import * as Utilities from '../common/utilities';
+import * as Analytics from '../common/Analytics';
 
 import FastImage from 'react-native-fast-image';
 
@@ -204,7 +204,7 @@ export const NotificationsScreen = () => {
 
   useFocusEffect(
     React.useCallback(() => {
-      Amplitude.getInstance().logEvent('VIEW_NOTIFICATIONS');
+      Analytics.logEvent('VIEW_NOTIFICATIONS');
     }, [])
   );
 

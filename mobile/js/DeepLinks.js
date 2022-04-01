@@ -1,9 +1,9 @@
 import { Linking } from 'react-native';
-import { Amplitude } from '@amplitude/react-native';
 import { CommonActions } from '@react-navigation/native';
 import Url from 'url-parse';
 
 import * as Session from './Session';
+import * as Analytics from './common/Analytics';
 
 let rootNavigatorRef = null;
 
@@ -20,7 +20,7 @@ const _navigateToDeck = ({ deck, resolvedUrl }) => {
   const url = new Url(resolvedUrl, true);
   const cxshid = url?.query?.cxshid;
 
-  Amplitude.getInstance().logEvent('OPEN_DECK_LINK', {
+  Analytics.logEvent('OPEN_DECK_LINK', {
     deckId: deck.deckId,
     url: resolvedUrl,
     cxshid,

@@ -1,7 +1,7 @@
 import React from 'react';
-import { Amplitude } from '@amplitude/react-native';
 import { CreateDeckScreen } from './CreateDeckScreen';
 import { useNavigation } from '../ReactNavigation';
+import * as Analytics from '../common/Analytics';
 
 import CreateCardScreen from '../scenecreator/CreateCardScreenDataProvider';
 
@@ -26,7 +26,7 @@ export const CreateDeckNavigator = (props) => {
 
   React.useEffect(() => {
     if (deckId) {
-      Amplitude.getInstance().logEvent('VIEW_CREATE_DECK', { deckId });
+      Analytics.logEvent('VIEW_CREATE_DECK', { deckId });
     }
   }, [deckId]);
 

@@ -1,5 +1,4 @@
 import React from 'react';
-import { Amplitude } from '@amplitude/react-native';
 import { gql } from '@apollo/client';
 import { withNavigation } from '../ReactNavigation';
 import { CreateCardScreen } from './CreateCardScreen';
@@ -11,6 +10,7 @@ import * as LocalId from '../common/local-id';
 import * as RulesClipboard from './inspector/rules/RulesClipboard';
 import * as Sentry from '@sentry/react-native';
 import * as Session from '../Session';
+import * as Analytics from '../common/Analytics';
 
 const AUTOBACKUP_INTERVAL_MS = 2 * 60 * 1000;
 
@@ -120,7 +120,7 @@ class CreateCardScreenDataProvider extends React.Component {
           throw new Error(`Unable to fetch logged in creator: ${e}`);
         }
         deck.deckId = params.deckIdToEdit;
-        Amplitude.getInstance().logEvent('START_CREATING_NEW_DECK', {
+        Analytics.logEvent('START_CREATING_NEW_DECK', {
           deckId: deck.deckId,
           kitDeckId,
         });
@@ -236,7 +236,7 @@ class CreateCardScreenDataProvider extends React.Component {
     }
     const cardFragment = this._makeCardSaveFragment();
     const { card, deck } = await Session.saveDeck(cardFragment, this.state.deck, this._variables);
-    Amplitude.getInstance().logEvent('SAVE_DECK', {
+    Analytics.logEvent('SAVE_DECK', {
       deckId: deck.deckId,
       cardId: card.cardId,
     });

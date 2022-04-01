@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { KeyboardAvoidingView, View, Keyboard } from 'react-native';
-import { Amplitude } from '@amplitude/react-native';
 import { BottomSheet } from '../components/BottomSheet';
 import { CommentInput } from './CommentInput';
 import { CommentsList } from './CommentsList';
@@ -14,6 +13,7 @@ import { useNavigation } from '../ReactNavigation';
 import { sendAsync } from '../core/CoreEvents';
 
 import * as Constants from '../Constants';
+import * as Analytics from '../common/Analytics';
 
 import Viewport from '../common/viewport';
 
@@ -69,7 +69,7 @@ export const CommentsSheet = ({ isOpen, onClose, deck, isFullScreen, ...props })
   const onAddComment = React.useCallback(
     (message, parentCommentId = null, commentBodyCache = {}, imageFileId = null) => {
       const formattedMessage = formatMessage(message, commentBodyCache);
-      Amplitude.getInstance().logEvent('ADD_COMMENT', {
+      Analytics.logEvent('ADD_COMMENT', {
         deckId: deck.deckId,
         hasScreenshot: !!imageFileId,
       });

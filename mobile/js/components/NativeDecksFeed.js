@@ -1,6 +1,5 @@
 import React from 'react';
 import { View } from 'react-native';
-import { Amplitude } from '@amplitude/react-native';
 import { gql } from '@apollo/client';
 
 import { GameView } from '../game/GameView';
@@ -15,6 +14,7 @@ import { useAppState } from '../ghost/GhostAppState';
 import { useGameViewAndroidBackHandler } from '../common/GameViewAndroidBackHandler';
 import { useFocusEffect, useNavigation } from '../ReactNavigation';
 import * as Session from '../Session';
+import * as Analytics from '../common/Analytics';
 
 export const NativeDecksFeed = ({
   onPressComments,
@@ -173,7 +173,7 @@ export const NativeDecksFeed = ({
   useFocusEffect(
     React.useCallback(() => {
       setIsFocused(true);
-      Amplitude.getInstance().logEvent('VIEW_FEED', {
+      Analytics.logEvent('VIEW_FEED', {
         screen: previousScreenName,
       });
 
@@ -186,7 +186,7 @@ export const NativeDecksFeed = ({
   const viewFeedItemCallback = React.useCallback(
     (event) => {
       if (isFocused) {
-        Amplitude.getInstance().logEvent('VIEW_FEED_ITEM', {
+        Analytics.logEvent('VIEW_FEED_ITEM', {
           deckId: event.deckId,
           visibility: event.visibility,
           index: event.index,

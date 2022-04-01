@@ -9,7 +9,6 @@ import {
   Platform,
   DeviceEventEmitter,
 } from 'react-native';
-import { Amplitude } from '@amplitude/react-native';
 import { AppText as Text } from '../components/AppText';
 import { useNavigation } from '../ReactNavigation';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
@@ -21,6 +20,7 @@ import { ScreenHeader } from '../components/ScreenHeader';
 
 import * as Constants from '../Constants';
 import * as GhostChannels from '../ghost/GhostChannels';
+import * as Analytics from '../common/Analytics';
 
 const styles = StyleSheet.create({
   announcement: {
@@ -269,7 +269,7 @@ const CreateAccountForm = ({ route }) => {
   const pwInput = React.useRef();
 
   useEffect(() => {
-    Amplitude.getInstance().logEvent('VIEW_SIGN_UP');
+    Analytics.logEvent('VIEW_SIGN_UP');
   }, []);
 
   const onPressLogin = () => {

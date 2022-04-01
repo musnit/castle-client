@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { Alert, Linking, Pressable, TouchableOpacity, StyleSheet, View } from 'react-native';
 import { AppText as Text } from '../components/AppText';
-import { Amplitude } from '@amplitude/react-native';
 import { CardCell } from '../components/CardCell';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ScreenHeader } from '../components/ScreenHeader';
@@ -9,6 +8,7 @@ import { UserAvatar } from '../components/UserAvatar';
 import { shareDeck, getCardBackgroundColor } from '../common/utilities';
 import { useMutation, gql } from '@apollo/client';
 import { useNavigation } from '../ReactNavigation';
+import * as Analytics from '../common/Analytics';
 
 import * as Constants from '../Constants';
 
@@ -154,7 +154,7 @@ export const ShareDeckScreen = ({ route }) => {
         deckId: deck.deckId,
         visibility,
       };
-      Amplitude.getInstance().logEvent('CHANGE_DECK_VISIBILITY', deckUpdateFragment);
+      Analytics.logEvent('CHANGE_DECK_VISIBILITY', deckUpdateFragment);
       saveDeck({ variables: { deck: deckUpdateFragment } });
       setVisibility(visibility);
     },

@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { Amplitude } from '@amplitude/react-native';
 import debounce from 'lodash.debounce';
 import FastImage from 'react-native-fast-image';
 import { CastleAsyncStorage } from './common/CastleAsyncStorage';
@@ -16,6 +15,7 @@ import * as LocalId from './common/local-id';
 import * as PushNotifications from './PushNotifications';
 import * as EventEmitter from './EventEmitter';
 import * as Sentry from '@sentry/react-native';
+import * as Analytics from './common/Analytics';
 
 const SKIP_NUX = false;
 
@@ -98,7 +98,7 @@ export async function loadAuthTokenAsync() {
     gIsAnonymous = isAnonStorageValue === 'true' || isAnonStorageValue === true;
     const isMutedStorageValue = await CastleAsyncStorage.getItem('IS_MUTED');
     gIsMuted = isMutedStorageValue === 'true' || isMutedStorageValue === true;
-    Amplitude.getInstance().setUserId(gUserId);
+    Analytics.setUserId(gUserId);
     AdjustEvents.setUserId(gUserId);
     Sentry.setUser({
       id: gUserId,
@@ -213,12 +213,12 @@ export class Provider extends React.Component {
         await CastleAsyncStorage.setItem('USER_ID', userId);
         await CastleAsyncStorage.setItem('USER_IS_ANONYMOUS', gIsAnonymous.toString());
 
-        Amplitude.getInstance().setUserId(gUserId);
+        Analytics.setUserId(gUserId);
         AdjustEvents.setUserId(gUserId);
         Sentry.setUser({
           id: gUserId,
         });
-        Amplitude.getInstance().setUserProperties({
+        Analytics.setUserProperties({
           isAnonymous: gIsAnonymous,
           isAdmin: isAdmin === true ? isAdmin : undefined,
         });
@@ -227,10 +227,10 @@ export class Provider extends React.Component {
         await CastleAsyncStorage.removeItem('USER_ID');
         await CastleAsyncStorage.removeItem('USER_IS_ANONYMOUS');
         await PushNotifications.clearTokenAsync();
-        Amplitude.getInstance().setUserId(null);
+        Analytics.setUserId(null);
         AdjustEvents.clearUserId();
         Sentry.configureScope((scope) => scope.setUser(null));
-        Amplitude.getInstance().clearUserProperties();
+        Analytics.clearUserProperties();
         setNotifBadge(0);
       }
     }
@@ -269,7 +269,7 @@ export class Provider extends React.Component {
       }
 
       await this.useNewAuthTokenAsync(result.data.login);
-      Amplitude.getInstance().logEvent('SIGN_IN'); // user id already set for amplitude
+      Analytics.logEvent('SIGN_IN'); // user id already set for amplitude
 
       // Send our push token to the new user id
       await PushNotifications.clearTokenAsync();
@@ -285,7 +285,7 @@ export class Provider extends React.Component {
         }
       `,
     });
-    Amplitude.getInstance().logEvent('SIGN_OUT'); // user id is still set in amplitude
+    Analytics.logEvent('SIGN_OUT'); // user id is still set in amplitude
     await this.useNewAuthTokenAsync({}); // clear user id
   };
 
@@ -313,7 +313,7 @@ export class Provider extends React.Component {
       }
 
       await this.useNewAuthTokenAsync(result.data.signup);
-      Amplitude.getInstance().logEvent('SIGN_UP'); // user id already set for amplitude
+      Analytics.logEvent('SIGN_UP'); // user id already set for amplitude
       AdjustEvents.trackEvent(AdjustEvents.tokens.SIGN_UP);
     }
   };

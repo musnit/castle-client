@@ -1,6 +1,5 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Amplitude } from '@amplitude/react-native';
 import { CardScene } from '../game/CardScene';
 import { gql } from '@apollo/client';
 import { sendAsync, useListen } from '../core/CoreEvents';
@@ -9,6 +8,7 @@ import * as AdjustEvents from '../common/AdjustEvents';
 import * as Constants from '../Constants';
 import * as Sentry from '@sentry/react-native';
 import * as Session from '../Session';
+import * as Analytics from '../common/Analytics';
 
 const styles = StyleSheet.create({
   container: {
@@ -55,7 +55,7 @@ export const PlayDeck = ({ deck, visibility, route, paused }) => {
   });
 
   React.useEffect(() => {
-    Amplitude.getInstance().logEvent('VIEW_PLAY_DECK', { deckId: deck.deckId, visibility });
+    Analytics.logEvent('VIEW_PLAY_DECK', { deckId: deck.deckId, visibility });
     AdjustEvents.trackEvent(AdjustEvents.tokens.PLAY_DECK);
     Sentry.addBreadcrumb({
       category: 'play_deck',
