@@ -1,10 +1,11 @@
 import * as React from 'react';
-import { StyleSheet, View, TouchableOpacity } from 'react-native';
+import { Alert, StyleSheet, View, TouchableOpacity } from 'react-native';
 import { AppText as Text } from '../../../components/AppText';
 import { useCoreState, sendBehaviorAction, sendAsync } from '../../../core/CoreEvents';
 import { InspectorNumberInput } from '../components/InspectorNumberInput';
 import { InspectorTextInput } from '../components/InspectorTextInput';
 import { InspectorDropdown } from '../components/InspectorDropdown';
+import { useKeyboard } from '../../../common/utilities';
 
 import * as SceneCreatorConstants from '../../SceneCreatorConstants';
 import * as Constants from '../../../Constants';
@@ -94,6 +95,45 @@ export default InspectorLocalVariables = ({}) => {
     [localVariables]
   );
 
+  const validateVariableNameUniqueness = React.useCallback(
+    (i) => {
+      const localVariable = localVariables[i];
+      if (!localVariable) {
+        return;
+      }
+      const clashes = (name) => {
+        let result = false;
+        localVariables.forEach((otherLocalVariable, otherI) => {
+          if (otherI !== i && otherLocalVariable.name === name) {
+            result = true;
+          }
+        });
+        return result;
+      };
+      if (clashes(localVariable.name)) {
+        const oldName = localVariable.name;
+        let newName = localVariable.name + '#';
+        while (clashes(newName)) {
+          newName = newName + '#';
+        }
+        const newLocalVariables = [...localVariables];
+        newLocalVariables[i] = {
+          ...newLocalVariables[i],
+          name: validateVariableName(newName),
+        };
+        sendAsync('EDITOR_CHANGE_LOCAL_VARIABLES', {
+          commandDescription: 'change local variable name',
+          localVariables: newLocalVariables,
+        });
+        Alert.alert(
+          'Variable name already used',
+          `Variable name '${oldName}' is already used, the variable has been renamed to '${newName}'.`
+        );
+      }
+    },
+    [localVariables]
+  );
+
   const changeVariableValue = React.useCallback(
     (i, newValue) => {
       const newLocalVariables = [...localVariables];
@@ -121,6 +161,8 @@ export default InspectorLocalVariables = ({}) => {
     [localVariables]
   );
 
+  const [keyboardState] = useKeyboard();
+
   return (
     <View style={[SceneCreatorConstants.styles.inspectorSection, { borderTopWidth: 1 }]}>
       <View style={SceneCreatorConstants.styles.inspectorSectionHeader}>
@@ -128,7 +170,8 @@ export default InspectorLocalVariables = ({}) => {
         <View style={SceneCreatorConstants.styles.inspectorSectionHeaderActions}>
           <TouchableOpacity
             style={SceneCreatorConstants.styles.inspectorSectionHeaderButton}
-            onPress={addVariable}>
+            onPress={addVariable}
+          >
             <Constants.CastleIcon name="plus" size={16} color="#000" />
           </TouchableOpacity>
         </View>
@@ -143,11 +186,13 @@ export default InspectorLocalVariables = ({}) => {
         {localVariables.map((localVariable, i) => (
           <View
             key={`${undoRedoCount}-${localVariables.length}-${i}`}
-            style={styles.variableInputContainer}>
+            style={styles.variableInputContainer}
+          >
             <View style={[styles.variableInputColumn, { marginRight: 8 }]}>
               <Text style={styles.variablePrefix}>$</Text>
               <InspectorTextInput
                 value={localVariable.name}
+                lastNativeValue={keyboardState.visible ? null : { value: localVariable.name }}
                 autoFocus={i == 0 && localVariable.name === ''}
                 optimistic
                 style={[styles.input, styles.variableName]}
@@ -156,6 +201,7 @@ export default InspectorLocalVariables = ({}) => {
                 autoCompleteType="off"
                 autoCorrect={false}
                 onChangeText={(text) => changeVariableName(i, text)}
+                onEndEditing={() => validateVariableNameUniqueness(i)}
               />
             </View>
             <View style={[styles.variableInputColumn, { paddingRight: 3 }]}>
