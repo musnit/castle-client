@@ -311,6 +311,8 @@ public class CastleBottomSheet extends LinearLayout {
     }
 
     private void animateToPosition() {
+        clearAnimation();
+
         setVisibility(View.VISIBLE);
 
         animate().y(position).setDuration(200).withEndAction(() -> {
@@ -327,6 +329,13 @@ public class CastleBottomSheet extends LinearLayout {
 
     private void animateToClosest() {
         if (!isReady()) {
+            return;
+        }
+
+        if (!isOpen) {
+            position = screenHeight + ViewUtils.dpToPx(1);
+            hideKeyboard();
+            animateToPosition();
             return;
         }
 

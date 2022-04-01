@@ -389,6 +389,18 @@ bool Engine::frame() {
   setPausedMutex.lock();
 #endif
 
+  if (paused != newPausedState) {
+    paused = newPausedState;
+    auto screen = maybeGetScreen();
+    if (screen) {
+      if (paused) {
+        screen->suspend();
+      } else {
+        screen->resume();
+      }
+    }
+  }
+
   // Based on the main loop from 'boot.lua' in the Love codebase
 
   // In web, if the window is unfocused reduce loop frequency and pause to keep CPU usage low.

@@ -78,6 +78,7 @@ private:
   bool shouldQuit = false;
   bool pendingSceneLoadedEvent = false;
   bool paused = false;
+  bool newPausedState = false;
 
   struct PreInit {
     // Allows us to run some early initialization steps before the rest of the
@@ -170,6 +171,8 @@ inline void Engine::setPaused(bool paused_) {
   if (paused == paused_) {
     return;
   }
+
+  newPausedState = paused_;
 
   if (!setPausedMutex.try_lock_until(
           std::chrono::steady_clock::now() + std::chrono::milliseconds(200))) {
