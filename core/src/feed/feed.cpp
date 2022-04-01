@@ -1126,8 +1126,9 @@ void Feed::fetchInitialDecks(std::vector<std::string> deckIds, int initialDeckIn
 
     usingFixedDecksList = false;
     fetchingDecks = true;
-    API::graphql("{\n  infiniteFeedV2(limit: 1) {\n    sessionId\n    decks {" + GRAPHQL_DECK_FIELDS
-            + "}\n  }\n}",
+    std::string limit = isShowingNux ? "5" : "1";
+    API::graphql("{\n  infiniteFeedV2(limit: " + limit + ") {\n    sessionId\n    decks {"
+            + GRAPHQL_DECK_FIELDS + "}\n  }\n}",
         [=](APIResponse &response) {
           if (response.success) {
             auto &reader = response.reader;
