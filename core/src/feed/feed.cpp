@@ -676,6 +676,10 @@ void Feed::renderCardAtPosition(
       shouldDraw = false;
     }
 
+    if (dragStarted || isAnimating) {
+      shouldDraw = false;
+    }
+
     auto canvas = canvasForIndex(idx);
     if (!canvas) {
       return;
