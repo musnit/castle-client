@@ -76,13 +76,18 @@ private:
 
   inline static std::mutex cacheLock;
   inline static std::mutex completedRequestsLock;
+  // This is shared by graphql and get requests
   inline static std::unordered_map<std::string, std::list<std::function<void(APIResponse &)>>>
       urlToPendingCallbacks;
+  inline static std::unordered_map<std::string, std::list<std::function<void(APIDataResponse &)>>>
+      urlToPendingDataCallbacks;
   // This is only used for scenedata
   inline static LruCache<std::string, APICacheResponse> cachedResponses { 8 };
   // These are requests that just finished and have pending callbacks. Once the callbacks
   // are handled they'll be moved to cachedResponses
   inline static std::unordered_map<std::string, APICacheResponse> completedRequests;
+  inline static std::unordered_map<std::string, APICacheResponse> completedGraphQLRequests;
+  inline static std::unordered_map<std::string, APIDataResponse> completedDataRequests;
   inline static std::unordered_map<std::string, std::string> cardIdToSceneDataUrl;
 
   static void graphqlThread(
@@ -99,7 +104,10 @@ private:
     // TODO: error handling
     CastleAPI::graphqlPostRequest(
         requestBody, [=](bool success, std::string error, std::string result) {
-          APICacheResponse(success, error, result).loadAPIResponse(callback);
+          completedRequestsLock.lock();
+          completedGraphQLRequests.insert(
+              std::make_pair(query, APICacheResponse(success, error, result)));
+          completedRequestsLock.unlock();
         });
   }
 
@@ -110,8 +118,10 @@ private:
           if (result == nullptr || length == 0) {
             success = false;
           }
-          APIDataResponse response(success, error, result, length);
-          callback(response);
+          completedRequestsLock.lock();
+          completedDataRequests.insert(
+              std::make_pair(url, APIDataResponse(success, error, result, length)));
+          completedRequestsLock.unlock();
         });
   }
 
@@ -119,7 +129,7 @@ private:
     // TODO: error handling
     CastleAPI::getRequest(url, [=](bool success, std::string error, std::string result) {
       completedRequestsLock.lock();
-      completedRequests[url] = APICacheResponse(success, error, result);
+      completedRequests.insert(std::make_pair(url, APICacheResponse(success, error, result)));
       completedRequestsLock.unlock();
     });
   }
@@ -238,22 +248,50 @@ public:
 
   static void graphql(
       const std::string &query, const std::function<void(APIResponse &)> &callback) {
+    bool usingCache = false;
+    cacheLock.lock();
+    if (urlToPendingCallbacks.find(query) != urlToPendingCallbacks.end()) {
+      urlToPendingCallbacks[query].push_back(callback);
+      usingCache = true;
+    }
+    cacheLock.unlock();
+
+    if (!usingCache) {
+      cacheLock.lock();
+      urlToPendingCallbacks.insert({ query, { callback } });
+
 #ifdef __EMSCRIPTEN__
-    graphqlThread(query, callback);
+      cacheLock.unlock();
+      graphqlThread(query, callback);
 #else
-    std::thread { &API::graphqlThread, query, callback }.detach();
+      std::thread { &API::graphqlThread, query, callback }.detach();
+      cacheLock.unlock();
 #endif
+    }
   }
 
   static void getData(
       const std::string &url, const std::function<void(APIDataResponse &)> &callback) {
+    bool usingCache = false;
+    cacheLock.lock();
+    if (urlToPendingDataCallbacks.find(url) != urlToPendingDataCallbacks.end()) {
+      urlToPendingDataCallbacks[url].push_back(callback);
+      usingCache = true;
+    }
+    cacheLock.unlock();
+
+    if (!usingCache) {
+      cacheLock.lock();
+      urlToPendingDataCallbacks.insert({ url, { callback } });
+
 #ifdef __EMSCRIPTEN__
-    cacheLock.unlock();
-    getDataThread(url, callback);
+      cacheLock.unlock();
+      getDataThread(url, callback);
 #else
-    std::thread { &API::getDataThread, url, callback }.detach();
-    cacheLock.unlock();
+      std::thread { &API::getDataThread, url, callback }.detach();
+      cacheLock.unlock();
 #endif
+    }
   }
 
   static void get(const std::string &url, const std::function<void(APIResponse &)> &callback) {
@@ -304,6 +342,40 @@ public:
       }
     }
     completedRequests.clear();
+
+    for (auto it : completedGraphQLRequests) {
+      auto url = it.first;
+      auto result = it.second;
+
+      cacheLock.lock();
+
+      // don't cache graphql requests
+      auto callbacks = urlToPendingCallbacks[url];
+      urlToPendingCallbacks.erase(url);
+      cacheLock.unlock();
+
+      for (auto const &callback : callbacks) {
+        result.loadAPIResponse(callback);
+      }
+    }
+    completedGraphQLRequests.clear();
+
+    for (auto it : completedDataRequests) {
+      auto url = it.first;
+      auto result = it.second;
+
+      cacheLock.lock();
+
+      auto callbacks = urlToPendingDataCallbacks[url];
+      urlToPendingDataCallbacks.erase(url);
+      cacheLock.unlock();
+
+      for (auto const &callback : callbacks) {
+        callback(result);
+      }
+    }
+    completedDataRequests.clear();
+
     completedRequestsLock.unlock();
   }
 };
