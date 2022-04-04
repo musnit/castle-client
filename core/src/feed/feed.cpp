@@ -497,21 +497,25 @@ void Feed::update(double dt) {
         DeckPlays::getInstance().update(dt);
       }
 
-      decks[idx].coreView->update(dt);
-      if (!isShowingNux
-          && timeSinceLastSwipeGesture
-              > CORE_VIEWS_GESTURE_INACTIVE_AFTER_SWIPE_TIME + SCROLL_ANIMATION_TIME
-          && !wasLongFrame) {
-        decks[idx].coreView->handleGesture(gesture, cardLeft, TOP_PADDING);
+      if (decks[idx].coreView) {
+        decks[idx].coreView->update(dt);
+        if (!isShowingNux
+            && timeSinceLastSwipeGesture
+                > CORE_VIEWS_GESTURE_INACTIVE_AFTER_SWIPE_TIME + SCROLL_ANIMATION_TIME
+            && !wasLongFrame) {
+          decks[idx].coreView->handleGesture(gesture, cardLeft, TOP_PADDING);
+        }
       }
 
-      decks[idx].avatarCoreView->update(dt);
-      if (!isShowingNux
-          && timeSinceLastSwipeGesture
-              > CORE_VIEWS_GESTURE_INACTIVE_AFTER_SWIPE_TIME + SCROLL_ANIMATION_TIME
-          && !wasLongFrame) {
-        decks[idx].avatarCoreView->handleGesture(
-            gesture, cardLeft + decks[idx].avatarCoreViewLeft, TOP_PADDING);
+      if (decks[idx].avatarCoreView) {
+        decks[idx].avatarCoreView->update(dt);
+        if (!isShowingNux
+            && timeSinceLastSwipeGesture
+                > CORE_VIEWS_GESTURE_INACTIVE_AFTER_SWIPE_TIME + SCROLL_ANIMATION_TIME
+            && !wasLongFrame) {
+          decks[idx].avatarCoreView->handleGesture(
+              gesture, cardLeft + decks[idx].avatarCoreViewLeft, TOP_PADDING);
+        }
       }
     }
 
