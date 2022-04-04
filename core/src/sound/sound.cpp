@@ -152,13 +152,17 @@ void Sound::clear() {
   suspend();
 
   // forget all state
-  sfxrSounds.clear();
-  urlSounds.clear();
+  {
+    love::thread::Lock lock(mutex);
+    sfxrSounds.clear();
+    urlSounds.clear();
+  }
   clearStreams();
   clocks.clear();
 }
 
 void Sound::setAllSoloudSourcesPaused(bool paused) {
+  love::thread::Lock lock(mutex);
   // this is not the same as soloud.setPauseAll() because it sandboxes to this one Sound instance
   if (Sound::hasInitializedSoloud) {
     for (auto &[key, source] : sfxrSounds) {
@@ -171,6 +175,7 @@ void Sound::setAllSoloudSourcesPaused(bool paused) {
 }
 
 void Sound::stopCurrentlyPlayingSounds() {
+  love::thread::Lock lock(mutex);
   if (Sound::hasInitializedSoloud) {
     for (auto &[key, source] : sfxrSounds) {
       Sound::soloud.stopAudioSource(*source);
