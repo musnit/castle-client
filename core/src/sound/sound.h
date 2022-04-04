@@ -104,12 +104,16 @@ protected:
   void setAllSoloudSourcesPaused(bool paused);
 
   inline int playSoloudSource(SoLoud::AudioSource &source, float playbackRate, float amplitude) {
-    int handle = Sound::soloud.play(source);
-    Sound::soloud.setVolume(handle, amplitude);
-    Sound::soloud.setRelativePlaySpeed(handle, playbackRate);
-    if (!isRunning) {
-      // pause by default if not running
-      Sound::soloud.setPause(handle, 1);
+    int handle;
+    {
+      love::thread::Lock lock(mutex);
+      handle = Sound::soloud.play(source);
+      Sound::soloud.setVolume(handle, amplitude);
+      Sound::soloud.setRelativePlaySpeed(handle, playbackRate);
+      if (!isRunning) {
+        // pause by default if not running
+        Sound::soloud.setPause(handle, 1);
+      }
     }
     return handle;
   }
