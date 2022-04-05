@@ -31,13 +31,21 @@ const styles = StyleSheet.create({
     marginRight: 4,
   },
   hintLabel: {
-    color: '#f00',
     fontSize: 16,
     paddingTop: 2,
   },
 });
 
-export const AuthTextInput = ({ style, editable, inputRef, hint, ...props }) => {
+export const AuthTextInput = ({
+  style,
+  editable,
+  inputRef,
+  hint,
+  hintType = 'error',
+  ...props
+}) => {
+  const hintColor = hintType === 'error' ? '#f00' : hintType === 'ok' ? '#0f0' : '#fff';
+  const hintIcon = hintType === 'error' ? 'error' : hintType === 'ok' ? 'check-circle' : 'info';
   return (
     <>
       <TextInput
@@ -52,8 +60,8 @@ export const AuthTextInput = ({ style, editable, inputRef, hint, ...props }) => 
       />
       {hint ? (
         <View style={styles.hint}>
-          <Icon color="#f00" name="error" size={16} style={styles.hintIcon} />
-          <Text style={styles.hintLabel}>{hint}</Text>
+          <Icon color={hintColor} name={hintIcon} size={16} style={styles.hintIcon} />
+          <Text style={[styles.hintLabel, { color: hintColor }]}>{hint}</Text>
         </View>
       ) : null}
     </>

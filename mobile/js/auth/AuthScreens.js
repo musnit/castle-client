@@ -291,6 +291,15 @@ const CreateAccountForm = ({ route }) => {
     }
   };
 
+  let usernameHint, usernameHintType;
+  if (errors?.isUsernameAvailable) {
+    usernameHint = 'Available';
+    usernameHintType = 'ok';
+  } else if (errors?.username) {
+    usernameHint = errors.username;
+    usernameHintType = 'error';
+  }
+
   return (
     <Fragment>
       {errors?.global ? <Announcement body={errors.global} /> : null}
@@ -304,9 +313,9 @@ const CreateAccountForm = ({ route }) => {
         blurOnSubmit={false}
         autoFocus={true}
         onSubmitEditing={() => nameInput.current.focus()}
-        hint={errors?.username}
+        hint={usernameHint}
+        hintType={usernameHintType}
       />
-      {errors?.isUsernameAvailable ? <Announcement body="Username available" /> : null}
       <View style={styles.paddingView} />
       <AuthTextInput
         inputRef={nameInput}
