@@ -76,7 +76,7 @@ export const AuthPrompt = ({ title, message }) => {
       // use separate root navigator on Android
       navigate('LoginScreen', {}, { isFullscreen: true });
     }
-  }, []);
+  }, [navigate]);
 
   const onPressCreateAccount = React.useCallback(() => {
     if (Constants.iOS || !ANDROID_USE_NATIVE_NAVIGATION) {
@@ -86,7 +86,7 @@ export const AuthPrompt = ({ title, message }) => {
       // use separate root navigator on Android
       navigate('CreateAccountScreen', {}, { isFullscreen: true });
     }
-  }, []);
+  }, [navigate]);
 
   return (
     <SafeAreaView style={styles.container}>

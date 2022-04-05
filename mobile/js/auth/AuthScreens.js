@@ -125,7 +125,7 @@ const LoginForm = ({ route }) => {
 
   const pwInput = React.useRef();
 
-  if (Platform.OS == 'android') {
+  if (Platform.OS === 'android') {
     useEffect(() => {
       GhostChannels.getSmartLockCredentials();
 
@@ -155,10 +155,6 @@ const LoginForm = ({ route }) => {
       setSigningIn(false);
       setErrors(parseErrors(e));
     }
-  };
-
-  const onPressSignUp = () => {
-    navigate('CreateAccountScreen', { uriAfter });
   };
 
   const onPressForgotPassword = () => {
@@ -218,7 +214,6 @@ const LoginForm = ({ route }) => {
 };
 
 const CreateAccountForm = ({ route }) => {
-  const { navigate } = useNavigation();
   const { signUpAsync, validateSignupAsync } = useSession();
 
   const [username, setUsername] = useState('');
@@ -238,7 +233,7 @@ const CreateAccountForm = ({ route }) => {
         setErrors(results);
       }
     }, 500);
-  }, [setErrors]);
+  }, [setErrors, validateSignupAsync]);
 
   useEffect(() => {
     if (
@@ -264,10 +259,6 @@ const CreateAccountForm = ({ route }) => {
   useEffect(() => {
     Analytics.logEvent('VIEW_SIGN_UP');
   }, []);
-
-  const onPressLogin = () => {
-    navigate('LoginScreen');
-  };
 
   const onPressCreateAccount = async () => {
     try {
@@ -440,7 +431,7 @@ const WithHeader = ({ children }) => {
       // this will close the auth modal if we finish signing in/up
       navigate('TabNavigator');
     }
-  }, [isSignedIn, isAnonymous]);
+  }, [isSignedIn, isAnonymous, navigate]);
 
   return (
     <>
