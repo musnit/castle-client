@@ -10,6 +10,7 @@ import {
   DeviceEventEmitter,
 } from 'react-native';
 import { AppText as Text } from '../components/AppText';
+import { ANDROID_USE_NATIVE_NAVIGATION } from '../ReactNavigation';
 import { useNavigation } from '../ReactNavigation';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
@@ -504,7 +505,9 @@ const WithHeader = ({ children }) => {
 
   return (
     <>
-      {Platform.OS === 'android' && <ScreenHeader title="Castle" />}
+      {Platform.OS === 'android' && ANDROID_USE_NATIVE_NAVIGATION ? (
+        <ScreenHeader title="Castle" />
+      ) : null}
       <KeyboardAwareScrollView
         enableOnAndroid={true}
         keyboardShouldPersistTaps="handled"
