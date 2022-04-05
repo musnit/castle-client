@@ -22,6 +22,8 @@ import * as Constants from '../Constants';
 import * as GhostChannels from '../ghost/GhostChannels';
 import * as Analytics from '../common/Analytics';
 
+import debounce from 'lodash.debounce';
+
 const styles = StyleSheet.create({
   announcement: {
     padding: 16,
@@ -80,6 +82,18 @@ const parseErrors = (e) => {
         extensions: { code: 'NETWORK_ERROR' },
       },
     ];
+  }
+};
+
+const parseSignupErrors = (e) => {
+  if (e.graphQLErrors?.length) {
+    return {
+      global: e.graphQLErrors[0].message,
+    }
+  } else {
+    return {
+      global: 'We could not process your request because the app appears to be offline. Please check your network connection and try again.',
+    }
   }
 };
 
@@ -249,7 +263,7 @@ const LoginForm = ({ route }) => {
 
 const CreateAccountForm = ({ route }) => {
   const { navigate } = useNavigation();
-  const { signUpAsync } = useSession();
+  const { signUpAsync, validateSignupAsync } = useSession();
 
   const [username, setUsername] = useState('');
   const [name, setName] = useState('');
@@ -257,7 +271,29 @@ const CreateAccountForm = ({ route }) => {
   const [password, setPassword] = useState('');
 
   const [creatingAccount, setCreatingAccount] = useState(false);
-  const [errors, setErrors] = useState([]);
+  const [errors, setErrors] = useState({});
+
+  const validateSignupDebounceFn = React.useRef();
+  const lastValidateQuery = React.useRef('');
+  React.useEffect(() => {
+    validateSignupDebounceFn.current = debounce(async (username, email, password, query) => {
+      const results = await validateSignupAsync({ username, email, password });
+      // double check the query hasn't changed async during our debounce/request
+      if (lastValidateQuery.current === query) {
+        setErrors(results);
+      }
+    }, 500);
+  }, [setErrors]);
+
+  useEffect(() => {
+    if (validateSignupDebounceFn.current && (username.length > 0 || password.length > 0 || email.length > 0)) {
+      let query = `${username}-${email}-${password}`;
+      lastValidateQuery.current = query;
+      validateSignupDebounceFn.current(username, email, password, query);
+    } else {
+      setErrors({});
+    }
+  }, [setErrors, username, email, password]);
 
   let uriAfter;
   if (route && route.params) {
@@ -279,29 +315,30 @@ const CreateAccountForm = ({ route }) => {
   const onPressCreateAccount = async () => {
     try {
       setCreatingAccount(true);
-      setErrors([]);
-      await signUpAsync({ username, name, email, password });
+      setErrors({});
+      let signupResult = await signUpAsync({ username, name, email, password });
       setCreatingAccount(false);
-      if (uriAfter) {
-        navigateToUri(uriAfter);
+
+      if (signupResult.user) {
+        if (uriAfter) {
+          navigateToUri(uriAfter);
+        }
+      } else if (signupResult.errors) {
+        setErrors(signupResult.errors);
       }
     } catch (e) {
       setCreatingAccount(false);
-      setErrors(parseErrors(e));
+      setErrors(parseSignupErrors(e));
     }
   };
 
   return (
     <Fragment>
-      {errors?.length ? (
-        <>
-          {errors.map((error, ii) => (
-            <Announcement key={`announcement-${ii}`} body={errorMessages[error.extensions.code]} />
-          ))}
-        </>
+      {errors?.global ? (
+        <Announcement body={errors.global} />
       ) : null}
       <TextInput
-        style={creatingAccount ? [styles.textInput, styles.disabledTextInput] : styles.textInput}
+        style={creatingAccount && Platform.OS !== 'android' ? [styles.textInput, styles.disabledTextInput] : styles.textInput}
         autoCapitalize="none"
         placeholder="Username"
         placeholderTextColor={Constants.colors.white}
@@ -313,11 +350,17 @@ const CreateAccountForm = ({ route }) => {
         autoFocus={true}
         onSubmitEditing={() => nameInput.current.focus()}
       />
+      {errors?.username ? (
+        <Announcement body={errors.username} />
+      ) : null}
+      {errors?.isUsernameAvailable ? (
+        <Announcement body="Username available" />
+      ) : null}
       <View style={styles.paddingView} />
       <TextInput
         ref={nameInput}
-        style={creatingAccount ? [styles.textInput, styles.disabledTextInput] : styles.textInput}
-        placeholder="Your name"
+        style={creatingAccount && Platform.OS !== 'android' ? [styles.textInput, styles.disabledTextInput] : styles.textInput}
+        placeholder="Your name (optional)"
         placeholderTextColor={Constants.colors.white}
         onChangeText={(newName) => setName(newName)}
         editable={!creatingAccount}
@@ -329,7 +372,7 @@ const CreateAccountForm = ({ route }) => {
       <View style={styles.paddingView} />
       <TextInput
         ref={emailInput}
-        style={creatingAccount ? [styles.textInput, styles.disabledTextInput] : styles.textInput}
+        style={creatingAccount && Platform.OS !== 'android' ? [styles.textInput, styles.disabledTextInput] : styles.textInput}
         autoCapitalize="none"
         placeholder="Email address"
         placeholderTextColor={Constants.colors.white}
@@ -341,10 +384,13 @@ const CreateAccountForm = ({ route }) => {
         keyboardType="email-address"
         onSubmitEditing={() => pwInput.current.focus()}
       />
+      {errors?.email ? (
+        <Announcement body={errors.email} />
+      ) : null}
       <View style={styles.paddingView} />
       <TextInput
         ref={pwInput}
-        style={creatingAccount ? [styles.textInput, styles.disabledTextInput] : styles.textInput}
+        style={creatingAccount && Platform.OS !== 'android' ? [styles.textInput, styles.disabledTextInput] : styles.textInput}
         secureTextEntry
         textContentType="password"
         placeholder="New password"
@@ -354,6 +400,9 @@ const CreateAccountForm = ({ route }) => {
         returnKeyType="go"
         onSubmitEditing={onPressCreateAccount}
       />
+      {errors?.password ? (
+        <Announcement body={errors.password} />
+      ) : null}
       <View style={styles.paddingView} />
       <TouchableOpacity onPress={onPressCreateAccount}>
         <Button text="Create Account" spinner={creatingAccount} />

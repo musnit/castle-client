@@ -120,6 +120,7 @@ export class Provider extends React.Component {
       signInAsync: this.signInAsync,
       signOutAsync: this.signOutAsync,
       signUpAsync: this.signUpAsync,
+      validateSignupAsync: this.validateSignupAsync,
       signInAsAnonymousUserAsync: this.signInAsAnonymousUserAsync,
       markNotificationsReadAsync: this.markNotificationsReadAsync,
       markFollowingFeedRead: this.markFollowingFeedRead,
@@ -293,29 +294,63 @@ export class Provider extends React.Component {
     const result = await apolloClient.mutate({
       mutation: gql`
         mutation SignUp($name: String!, $username: String!, $email: String!, $password: String!) {
-          signup(user: { name: $name, username: $username }, email: $email, password: $password) {
-            userId
-            token
-            isAnonymous
-            photo {
-              url
+          signupV2(user: { name: $name, username: $username }, email: $email, password: $password) {
+            user {
+              userId
+              token
+              isAnonymous
+              photo {
+                url
+              }
+            }
+            errors {
+              username
+              email
+              password
+              global
             }
           }
         }
       `,
       variables: { username, name, email, password },
     });
-    if (result && result.data && result.data.signup && result.data.signup.userId) {
+
+    if (result && result.data && result.data.signupV2 && result.data.signupV2.user && result.data.signupV2.user.userId) {
       if (Platform.OS == 'android') {
         try {
-          GhostChannels.saveSmartLockCredentials(username, password, result.data.signup.photo.url);
+          GhostChannels.saveSmartLockCredentials(username, password, result.data.signupV2.user.photo.url);
         } catch (e) {}
       }
 
-      await this.useNewAuthTokenAsync(result.data.signup);
+      await this.useNewAuthTokenAsync(result.data.signupV2.user);
       Analytics.logEvent('SIGN_UP'); // user id already set for amplitude
       AdjustEvents.trackEvent(AdjustEvents.tokens.SIGN_UP);
     }
+
+    return result.data.signupV2;
+  };
+
+  validateSignupAsync = async ({ username, email, password }) => {
+    const result = await apolloClient.query({
+      query: gql`
+        query ValidateSignup($username: String!, $email: String!, $password: String!) {
+          validateSignup(user: { username: $username }, email: $email, password: $password) {
+            username
+            email
+            password
+            global
+            isUsernameAvailable
+          }
+        }
+      `,
+      variables: { username, email, password },
+    });
+
+    if (result && result.data && result.data.validateSignup) {
+      return result.data.validateSignup;
+    }
+
+    return {};
   };
 
   signInAsAnonymousUserAsync = async () => {
