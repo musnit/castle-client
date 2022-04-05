@@ -53,10 +53,10 @@ const styles = StyleSheet.create({
   commentAction: {
     color: '#888',
     fontSize: 13,
-    marginLeft: 12,
+    marginHorizontal: 6,
   },
   commentMenu: {
-    marginLeft: 12,
+    marginHorizontal: 6,
   },
   repliesContainer: {
     flexDirection: 'column-reverse',
@@ -77,6 +77,7 @@ const styles = StyleSheet.create({
   reactionContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
+    paddingRight: 6,
   },
   reactionText: {
     color: '#888',
@@ -158,22 +159,23 @@ const Comment = ({
     }
   }
 
+  const commentActionHitSlop = { top: 6, bottom: 6, right: 0, left: 0 };
+  const onToggleFire = () => {
+    onToggleCommentReaction(
+      Constants.reactionIds.fire,
+      comment.commentId,
+      !fireIsCurrentUserToggled
+    );
+    setOptimisticReaction(!fireIsCurrentUserToggled);
+  };
+
   return (
     <View style={[styles.commentContainer]}>
       <View style={{ flexDirection: 'column' }}>
         <Pressable onPress={() => navigateToUser(comment.fromUser)}>
           <UserAvatar url={comment.fromUser.photo?.url} style={styles.authorAvatar} />
         </Pressable>
-        <Pressable
-          onPress={() => {
-            onToggleCommentReaction(
-              Constants.reactionIds.fire,
-              comment.commentId,
-              !fireIsCurrentUserToggled
-            );
-            setOptimisticReaction(!fireIsCurrentUserToggled);
-          }}
-          style={{ flex: 1 }}>
+        <Pressable onPress={onToggleFire} style={{ flex: 1 }}>
           <View style={{ flex: 1 }} />
         </Pressable>
       </View>
@@ -184,16 +186,7 @@ const Comment = ({
           </Pressable>
           <Text style={styles.commentDate}>{toRecentDate(comment.createdTime)}</Text>
         </View>
-        <Pressable
-          onPress={() => {
-            onToggleCommentReaction(
-              Constants.reactionIds.fire,
-              comment.commentId,
-              !fireIsCurrentUserToggled
-            );
-            setOptimisticReaction(!fireIsCurrentUserToggled);
-          }}
-          style={{ flex: 1 }}>
+        <Pressable onPress={onToggleFire} style={{ flex: 1 }}>
           <View style={styles.commentBody}>
             {comment.isDeleted ? (
               <Text style={styles.commentUnavailableLabel}>This comment was deleted</Text>
@@ -213,14 +206,8 @@ const Comment = ({
         </Pressable>
         <View style={styles.commentActions}>
           <Pressable
-            onPress={() => {
-              onToggleCommentReaction(
-                Constants.reactionIds.fire,
-                comment.commentId,
-                !fireIsCurrentUserToggled
-              );
-              setOptimisticReaction(!fireIsCurrentUserToggled);
-            }}
+            onPress={onToggleFire}
+            hitSlop={commentActionHitSlop}
             style={styles.reactionContainer}>
             <CastleIcon
               name={fireIsCurrentUserToggled ? 'fire-on' : 'fire-off'}
@@ -237,10 +224,14 @@ const Comment = ({
               </Text>
             )}
           </Pressable>
-          <Pressable onPress={() => onReply({ isReply, setReplyingToComment })}>
+          <Pressable
+            hitSlop={commentActionHitSlop}
+            onPress={() => onReply({ isReply, setReplyingToComment })}>
             <Text style={styles.commentAction}>Reply</Text>
           </Pressable>
-          <Pressable onPress={() => showCommentActions({ comment, isReply, parentCommentId })}>
+          <Pressable
+            hitSlop={commentActionHitSlop}
+            onPress={() => showCommentActions({ comment, isReply, parentCommentId })}>
             <Constants.CastleIcon
               name="overflow"
               size={18}
