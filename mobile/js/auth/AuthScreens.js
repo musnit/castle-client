@@ -304,8 +304,8 @@ const CreateAccountForm = ({ route }) => {
         blurOnSubmit={false}
         autoFocus={true}
         onSubmitEditing={() => nameInput.current.focus()}
+        hint={errors?.username}
       />
-      {errors?.username ? <Announcement body={errors.username} /> : null}
       {errors?.isUsernameAvailable ? <Announcement body="Username available" /> : null}
       <View style={styles.paddingView} />
       <AuthTextInput
@@ -331,8 +331,8 @@ const CreateAccountForm = ({ route }) => {
         blurOnSubmit={false}
         keyboardType="email-address"
         onSubmitEditing={() => pwInput.current.focus()}
+        hint={errors?.email}
       />
-      {errors?.email ? <Announcement body={errors.email} /> : null}
       <View style={styles.paddingView} />
       <AuthTextInput
         inputRef={pwInput}
@@ -345,8 +345,8 @@ const CreateAccountForm = ({ route }) => {
         editable={!creatingAccount}
         returnKeyType="go"
         onSubmitEditing={onPressCreateAccount}
+        hint={errors?.password}
       />
-      {errors?.password ? <Announcement body={errors.password} /> : null}
       <View style={styles.paddingView} />
       <TouchableOpacity onPress={onPressCreateAccount}>
         <Button text="Create Account" spinner={creatingAccount} />
