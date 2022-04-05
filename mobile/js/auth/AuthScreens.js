@@ -89,11 +89,12 @@ const parseSignupErrors = (e) => {
   if (e.graphQLErrors?.length) {
     return {
       global: e.graphQLErrors[0].message,
-    }
+    };
   } else {
     return {
-      global: 'We could not process your request because the app appears to be offline. Please check your network connection and try again.',
-    }
+      global:
+        'We could not process your request because the app appears to be offline. Please check your network connection and try again.',
+    };
   }
 };
 
@@ -286,7 +287,10 @@ const CreateAccountForm = ({ route }) => {
   }, [setErrors]);
 
   useEffect(() => {
-    if (validateSignupDebounceFn.current && (username.length > 0 || password.length > 0 || email.length > 0)) {
+    if (
+      validateSignupDebounceFn.current &&
+      (username.length > 0 || password.length > 0 || email.length > 0)
+    ) {
       let query = `${username}-${email}-${password}`;
       lastValidateQuery.current = query;
       validateSignupDebounceFn.current(username, email, password, query);
@@ -334,14 +338,13 @@ const CreateAccountForm = ({ route }) => {
 
   return (
     <Fragment>
-      {errors?.global ? (
-        <Announcement body={errors.global} />
-      ) : null}
+      {errors?.global ? <Announcement body={errors.global} /> : null}
       <TextInput
-        style={creatingAccount && Platform.OS !== 'android' ? [styles.textInput, styles.disabledTextInput] : styles.textInput}
+        style={creatingAccount ? [styles.textInput, styles.disabledTextInput] : styles.textInput}
         autoCapitalize="none"
         placeholder="Username"
         placeholderTextColor={Constants.colors.white}
+        value={username}
         onChangeText={(newUsername) => setUsername(newUsername)}
         editable={!creatingAccount}
         returnKeyType="next"
@@ -350,18 +353,15 @@ const CreateAccountForm = ({ route }) => {
         autoFocus={true}
         onSubmitEditing={() => nameInput.current.focus()}
       />
-      {errors?.username ? (
-        <Announcement body={errors.username} />
-      ) : null}
-      {errors?.isUsernameAvailable ? (
-        <Announcement body="Username available" />
-      ) : null}
+      {errors?.username ? <Announcement body={errors.username} /> : null}
+      {errors?.isUsernameAvailable ? <Announcement body="Username available" /> : null}
       <View style={styles.paddingView} />
       <TextInput
         ref={nameInput}
-        style={creatingAccount && Platform.OS !== 'android' ? [styles.textInput, styles.disabledTextInput] : styles.textInput}
+        style={creatingAccount ? [styles.textInput, styles.disabledTextInput] : styles.textInput}
         placeholder="Your name (optional)"
         placeholderTextColor={Constants.colors.white}
+        value={name}
         onChangeText={(newName) => setName(newName)}
         editable={!creatingAccount}
         returnKeyType="next"
@@ -372,10 +372,11 @@ const CreateAccountForm = ({ route }) => {
       <View style={styles.paddingView} />
       <TextInput
         ref={emailInput}
-        style={creatingAccount && Platform.OS !== 'android' ? [styles.textInput, styles.disabledTextInput] : styles.textInput}
+        style={creatingAccount ? [styles.textInput, styles.disabledTextInput] : styles.textInput}
         autoCapitalize="none"
         placeholder="Email address"
         placeholderTextColor={Constants.colors.white}
+        value={email}
         onChangeText={(newEmail) => setEmail(newEmail)}
         editable={!creatingAccount}
         returnKeyType="next"
@@ -384,25 +385,22 @@ const CreateAccountForm = ({ route }) => {
         keyboardType="email-address"
         onSubmitEditing={() => pwInput.current.focus()}
       />
-      {errors?.email ? (
-        <Announcement body={errors.email} />
-      ) : null}
+      {errors?.email ? <Announcement body={errors.email} /> : null}
       <View style={styles.paddingView} />
       <TextInput
         ref={pwInput}
-        style={creatingAccount && Platform.OS !== 'android' ? [styles.textInput, styles.disabledTextInput] : styles.textInput}
+        style={creatingAccount ? [styles.textInput, styles.disabledTextInput] : styles.textInput}
         secureTextEntry
         textContentType="password"
         placeholder="New password"
         placeholderTextColor={Constants.colors.white}
+        value={password}
         onChangeText={(newPassword) => setPassword(newPassword)}
         editable={!creatingAccount}
         returnKeyType="go"
         onSubmitEditing={onPressCreateAccount}
       />
-      {errors?.password ? (
-        <Announcement body={errors.password} />
-      ) : null}
+      {errors?.password ? <Announcement body={errors.password} /> : null}
       <View style={styles.paddingView} />
       <TouchableOpacity onPress={onPressCreateAccount}>
         <Button text="Create Account" spinner={creatingAccount} />
