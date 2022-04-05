@@ -222,7 +222,6 @@ const CreateAccountForm = ({ route }) => {
   const { signUpAsync, validateSignupAsync } = useSession();
 
   const [username, setUsername] = useState('');
-  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -259,7 +258,6 @@ const CreateAccountForm = ({ route }) => {
     uriAfter = route.params.uriAfter;
   }
 
-  const nameInput = React.useRef();
   const emailInput = React.useRef();
   const pwInput = React.useRef();
 
@@ -275,7 +273,7 @@ const CreateAccountForm = ({ route }) => {
     try {
       setCreatingAccount(true);
       setErrors({});
-      let signupResult = await signUpAsync({ username, name, email, password });
+      let signupResult = await signUpAsync({ username, name: '', email, password });
       setCreatingAccount(false);
 
       if (signupResult.user) {
@@ -312,21 +310,9 @@ const CreateAccountForm = ({ route }) => {
         returnKeyType="next"
         blurOnSubmit={false}
         autoFocus={true}
-        onSubmitEditing={() => nameInput.current.focus()}
+        onSubmitEditing={() => emailInput.current.focus()}
         hint={usernameHint}
         hintType={usernameHintType}
-      />
-      <View style={styles.paddingView} />
-      <AuthTextInput
-        inputRef={nameInput}
-        placeholder="Your name (optional)"
-        placeholderTextColor={Constants.colors.white}
-        value={name}
-        onChangeText={(newName) => setName(newName)}
-        editable={!creatingAccount}
-        returnKeyType="next"
-        blurOnSubmit={false}
-        onSubmitEditing={() => emailInput.current.focus()}
       />
       <View style={styles.paddingView} />
       <AuthTextInput
