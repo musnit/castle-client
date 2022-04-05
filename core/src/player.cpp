@@ -80,6 +80,7 @@ void Player::tryLoadVariables() {
         variables.read(reader);
       });
     });
+    free(variablesJson);
   }
 #endif
 }
@@ -90,7 +91,8 @@ void Player::tryLoadNextCard() {
 
   if (auto sceneDataJson = JS_getNextCardSceneData()) {
     sceneArchive = sceneDataJson;
-    sceneArchive.read([&](Reader &reader) {
+    auto archive = Archive::fromJson(sceneArchive.c_str());
+    archive.read([&](Reader &reader) {
       reader.obj("snapshot", [&]() {
         setScene(std::make_unique<Scene>(bridge, variables, sound, clock, deckId, false, &reader));
       });
