@@ -3,14 +3,15 @@ import {
   View,
   TouchableOpacity,
   StyleSheet,
-  TextInput,
   Linking,
   ActivityIndicator,
   Platform,
   DeviceEventEmitter,
 } from 'react-native';
 import { AppText as Text } from '../components/AppText';
+import { Announcement } from './Announcement';
 import { ANDROID_USE_NATIVE_NAVIGATION } from '../ReactNavigation';
+import { AuthTextInput } from './AuthTextInput';
 import { useNavigation } from '../ReactNavigation';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
@@ -26,24 +27,6 @@ import * as Analytics from '../common/Analytics';
 import debounce from 'lodash.debounce';
 
 const styles = StyleSheet.create({
-  announcement: {
-    padding: 16,
-    paddingTop: 12,
-    backgroundColor: Constants.colors.white,
-    borderRadius: 4,
-    marginBottom: 16,
-    flexDirection: 'column',
-  },
-  announcementHeadline: {
-    fontWeight: 'bold',
-    color: Constants.colors.black,
-    fontSize: 16,
-    marginBottom: 4,
-  },
-  announcementBody: {
-    color: Constants.colors.black,
-    lineHeight: 20,
-  },
   spinner: {
     backgroundColor: '#fff',
     position: 'absolute',
@@ -52,21 +35,6 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     justifyContent: 'center',
-  },
-  textInput: {
-    color: Constants.colors.white,
-    backgroundColor: Constants.colors.black,
-    width: '100%',
-    height: 40,
-    borderWidth: 1,
-    borderColor: Constants.colors.white,
-    borderRadius: 4,
-    paddingHorizontal: 12,
-    fontSize: 16,
-  },
-  disabledTextInput: {
-    color: Constants.colors.grayText,
-    borderColor: Constants.colors.grayText,
   },
   paddingView: {
     height: 16,
@@ -117,15 +85,6 @@ const errorMessages = {
   SIGNUP_USERNAME_ALREADY_TAKEN: 'The username you entered is already taken.',
   SIGNUP_PASSWORD_TOO_SHORT:
     'The password you entered is too short. Passwords must be at least five characters long.',
-};
-
-const Announcement = (props) => {
-  return (
-    <View style={styles.announcement}>
-      {props.headline ? <Text style={styles.announcementHeadline}>{props.headline}</Text> : null}
-      <Text style={styles.announcementBody}>{props.body}</Text>
-    </View>
-  );
 };
 
 const Button = (props) => {
@@ -221,9 +180,7 @@ const LoginForm = ({ route }) => {
           body="We've sent you an email with a link to reset your password."
         />
       ) : null}
-      <TextInput
-        style={signingIn ? [styles.textInput, styles.disabledTextInput] : styles.textInput}
-        autoCapitalize="none"
+      <AuthTextInput
         value={username}
         onChangeText={(newUsername) => setUsername(newUsername)}
         placeholder="Email or username"
@@ -231,16 +188,13 @@ const LoginForm = ({ route }) => {
         editable={!signingIn}
         returnKeyType="next"
         blurOnSubmit={false}
-        autoCorrect={false}
         autoFocus={true}
         keyboardType="email-address"
         onSubmitEditing={() => pwInput.current.focus()}
       />
       <View style={styles.paddingView} />
-      <TextInput
-        ref={pwInput}
-        style={signingIn ? [styles.textInput, styles.disabledTextInput] : styles.textInput}
-        autoCapitalize="none"
+      <AuthTextInput
+        inputRef={pwInput}
         secureTextEntry
         textContentType="password"
         value={password}
@@ -340,9 +294,7 @@ const CreateAccountForm = ({ route }) => {
   return (
     <Fragment>
       {errors?.global ? <Announcement body={errors.global} /> : null}
-      <TextInput
-        style={creatingAccount ? [styles.textInput, styles.disabledTextInput] : styles.textInput}
-        autoCapitalize="none"
+      <AuthTextInput
         placeholder="Username"
         placeholderTextColor={Constants.colors.white}
         value={username}
@@ -350,16 +302,14 @@ const CreateAccountForm = ({ route }) => {
         editable={!creatingAccount}
         returnKeyType="next"
         blurOnSubmit={false}
-        autoCorrect={false}
         autoFocus={true}
         onSubmitEditing={() => nameInput.current.focus()}
       />
       {errors?.username ? <Announcement body={errors.username} /> : null}
       {errors?.isUsernameAvailable ? <Announcement body="Username available" /> : null}
       <View style={styles.paddingView} />
-      <TextInput
-        ref={nameInput}
-        style={creatingAccount ? [styles.textInput, styles.disabledTextInput] : styles.textInput}
+      <AuthTextInput
+        inputRef={nameInput}
         placeholder="Your name (optional)"
         placeholderTextColor={Constants.colors.white}
         value={name}
@@ -367,14 +317,11 @@ const CreateAccountForm = ({ route }) => {
         editable={!creatingAccount}
         returnKeyType="next"
         blurOnSubmit={false}
-        autoCorrect={false}
         onSubmitEditing={() => emailInput.current.focus()}
       />
       <View style={styles.paddingView} />
-      <TextInput
-        ref={emailInput}
-        style={creatingAccount ? [styles.textInput, styles.disabledTextInput] : styles.textInput}
-        autoCapitalize="none"
+      <AuthTextInput
+        inputRef={emailInput}
         placeholder="Email address"
         placeholderTextColor={Constants.colors.white}
         value={email}
@@ -382,15 +329,13 @@ const CreateAccountForm = ({ route }) => {
         editable={!creatingAccount}
         returnKeyType="next"
         blurOnSubmit={false}
-        autoCorrect={false}
         keyboardType="email-address"
         onSubmitEditing={() => pwInput.current.focus()}
       />
       {errors?.email ? <Announcement body={errors.email} /> : null}
       <View style={styles.paddingView} />
-      <TextInput
-        ref={pwInput}
-        style={creatingAccount ? [styles.textInput, styles.disabledTextInput] : styles.textInput}
+      <AuthTextInput
+        inputRef={pwInput}
         secureTextEntry
         textContentType="password"
         placeholder="New password"
@@ -469,9 +414,8 @@ const ForgotPasswordForm = () => {
       <View style={{ paddingBottom: 16 }}>
         <Text style={{ fontSize: 20, color: Constants.colors.white }}>Forgot your password?</Text>
       </View>
-      <TextInput
-        style={resettingPassword ? [styles.textInput, styles.disabledTextInput] : styles.textInput}
-        autoCapitalize="none"
+      <AuthTextInput
+        value={username}
         onChangeText={(newUsername) => setUsername(newUsername)}
         placeholder="Email or username"
         placeholderTextColor={Constants.colors.white}
