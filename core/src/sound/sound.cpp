@@ -429,11 +429,13 @@ void Sound::playSfxr(const std::string &sfxrKey, float amplitude, float soloudCl
   if (!Sound::isEnabled) {
     return;
   }
-  if (soloudClock > 0.0f && isRunning) {
-    int handle = Sound::soloud.playClocked(soloudClock, *sfxrSounds[sfxrKey]);
-    Sound::soloud.setVolume(handle, amplitude);
-  } else {
-    playSoloudSource(*sfxrSounds[sfxrKey], 1.0f, amplitude);
+  if (sfxrSounds.find(sfxrKey) != sfxrSounds.end()) {
+    if (soloudClock > 0.0f && isRunning) {
+      int handle = Sound::soloud.playClocked(soloudClock, *sfxrSounds[sfxrKey]);
+      Sound::soloud.setVolume(handle, amplitude);
+    } else {
+      playSoloudSource(*sfxrSounds[sfxrKey], 1.0f, amplitude);
+    }
   }
 }
 
