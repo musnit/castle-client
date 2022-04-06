@@ -91,4 +91,5 @@ Troubleshooting:
 - `open tools/build`
 - Upload to play store https://play.google.com/console/u/1/developers/6774483098390213048/app/4973889594505423194/tracks/open-testing. Make sure to update the release notes.
 - Run `./tools/android-set-app-version.sh` to trigger the in-app update banner
+- Update X-Scene-Creator-Version for web in actions.js
 - Release web?
