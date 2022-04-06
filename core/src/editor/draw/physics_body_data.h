@@ -244,7 +244,7 @@ public:
   float tempTranslateX;
   float tempTranslateY;
   std::optional<std::string> base64Png;
-  std::unique_ptr<love::Shader> shader;
+  inline static std::unique_ptr<love::Shader> shader = nullptr;
 
   PhysicsBodyData() {
     scale = 10;
