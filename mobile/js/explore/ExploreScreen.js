@@ -5,7 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { SearchInput } from './SearchInput';
 import { SearchResults } from './SearchResults';
 import { ExploreRow, SkeletonExploreRow } from './ExploreRow';
-import { useFocusEffect, useNavigation } from '../ReactNavigation';
+import { useFocusEffect, useNavigation, useScrollToTop } from '../ReactNavigation';
 import * as Analytics from '../common/Analytics';
 
 import { useLazyQuery, gql } from '@apollo/client';
@@ -148,6 +148,9 @@ export const ExploreScreen = ({ route }) => {
 
   const onPressFeedback = React.useCallback(() => push('Feedback'), [push]);
 
+  const scrollViewRef = React.useRef();
+  useScrollToTop(scrollViewRef);
+
   return (
     <SafeAreaView style={styles.container} edges={['left', 'right', 'bottom']}>
       <View style={styles.tabTitle}>
@@ -165,7 +168,7 @@ export const ExploreScreen = ({ route }) => {
       {isSearching ? (
         <SearchResults query={searchQuery} initialResults={preloadSearchResults} />
       ) : (
-        <ScrollView>
+        <ScrollView ref={scrollViewRef}>
           {!feeds && (
             <>
               <SkeletonExploreRow />

@@ -12,7 +12,12 @@ import {
 import { AppText as Text } from '../components/AppText';
 import { AuthPrompt } from '../auth/AuthPrompt';
 import { CardCell } from '../components/CardCell';
-import { useNavigation, useFocusEffect, ANDROID_USE_NATIVE_NAVIGATION } from '../ReactNavigation';
+import {
+  useNavigation,
+  useFocusEffect,
+  useScrollToTop,
+  ANDROID_USE_NATIVE_NAVIGATION,
+} from '../ReactNavigation';
 import { EmptyFeed } from '../home/EmptyFeed';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLazyQuery, gql } from '@apollo/client';
@@ -119,6 +124,9 @@ const EditDecksList = ({ fetchDecks, refreshing, filteredDecks, error }) => {
     />
   );
 
+  const scrollViewRef = React.useRef();
+  useScrollToTop(scrollViewRef);
+
   if (error) {
     return <EmptyFeed error={error} onRefresh={fetchDecks} />;
   }
@@ -141,7 +149,10 @@ const EditDecksList = ({ fetchDecks, refreshing, filteredDecks, error }) => {
 
   if (!filteredDecks || filteredDecks.length > 0) {
     return (
-      <ScrollView contentContainerStyle={styles.gridContainer} refreshControl={refreshControl}>
+      <ScrollView
+        ref={scrollViewRef}
+        contentContainerStyle={styles.gridContainer}
+        refreshControl={refreshControl}>
         {filteredDecks
           ? filteredDecks.map((deck) => (
               <EditDeckCell

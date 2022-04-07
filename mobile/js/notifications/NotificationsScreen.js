@@ -21,6 +21,7 @@ import {
   useNavigation,
   useFocusEffect,
   useIsFocused,
+  useScrollToTop,
   ANDROID_USE_NATIVE_NAVIGATION,
 } from '../ReactNavigation';
 import {
@@ -348,6 +349,9 @@ export const NotificationsScreen = () => {
     />
   );
 
+  const scrollViewRef = React.useRef();
+  useScrollToTop(scrollViewRef);
+
   return (
     <>
       <SafeAreaView style={styles.container} edges={['left', 'right', 'bottom']}>
@@ -364,6 +368,7 @@ export const NotificationsScreen = () => {
         </View>
         {orderedNotifs.length > 0 && (
           <FlatList
+            ref={scrollViewRef}
             data={orderedNotifs}
             contentContainerStyle={styles.scrollView}
             renderItem={renderItem}
