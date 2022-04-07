@@ -1005,7 +1005,7 @@ export const maybeFetchNotificationsAsync = async (force = true) => {
   const result = await apolloClient.query({
     query: gql`
     query {
-      notificationsV2(limit: 64) {
+      notificationsV3(limit: 64) {
         isAdmin
         newFollowingDecks
         notifications {
@@ -1026,6 +1026,10 @@ export const maybeFetchNotificationsAsync = async (force = true) => {
           deck {
             ${Constants.FEED_ITEM_DECK_FRAGMENT}
           }
+          deckIds
+          decks {
+            ${Constants.FEED_ITEM_DECK_FRAGMENT}
+          }
           updatedTime
         }
       }
@@ -1033,7 +1037,7 @@ export const maybeFetchNotificationsAsync = async (force = true) => {
   `,
     fetchPolicy: 'no-cache',
   });
-  const data = result?.data?.notificationsV2 ?? {};
+  const data = result?.data?.notificationsV3 ?? {};
   const { notifications, newFollowingDecks, isAdmin } = data;
   gIsAdmin = isAdmin;
   const notificationsBadgeCount = notifications
@@ -1056,7 +1060,7 @@ export const fetchMoreNotifications = async (oldNotifications) => {
   const result = await apolloClient.query({
     query: gql`
     query($beforeId: ID) {
-      notificationsV2(limit: 64, beforeId: $beforeId) {
+      notificationsV3(limit: 64, beforeId: $beforeId) {
         isAdmin
         newFollowingDecks
         notifications {
@@ -1085,7 +1089,7 @@ export const fetchMoreNotifications = async (oldNotifications) => {
     fetchPolicy: 'no-cache',
     variables: { beforeId: oldNotifications[oldNotifications.length - 1].notificationId },
   });
-  const data = result?.data?.notificationsV2 ?? {};
+  const data = result?.data?.notificationsV3 ?? {};
   const { notifications } = data;
 
   EventEmitter.sendEvent('notifications', {

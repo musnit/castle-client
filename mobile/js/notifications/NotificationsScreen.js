@@ -136,25 +136,27 @@ const NotificationHeader = ({ status }) => {
   );
 };
 
-const NotificationItem = ({ notification, navigateToUser, navigateToDeck, navigateToUserList }) => {
+const NotificationItem = ({ notification, navigateToUser, navigateToDecks, navigateToUserList }) => {
   const user = notification.users?.length ? notification.users[0] : null;
   const type = Utilities.getNotificationType(notification);
 
   const onPress = React.useCallback(() => {
-    if (type === 'play_deck') {
-      navigateToDeck(notification.deck);
+    if (notification.decks && notification.decks.length > 0) {
+      navigateToDecks(notification.decks);
+    } else if (type === 'play_deck') {
+      navigateToDecks([notification.deck]);
     } else if (type === 'follow') {
       navigateToUser(user);
     } else if (type === 'new_deck') {
-      navigateToDeck(notification.deck);
+      navigateToDecks([notification.deck]);
     } else if (type === 'react_deck') {
-      navigateToDeck(notification.deck);
+      navigateToDecks([notification.deck]);
     } else if (notification.deck) {
-      navigateToDeck(notification.deck);
+      navigateToDecks([notification.deck]);
     } else if (user) {
       navigateToUser(user);
     }
-  }, [type, notification, user, navigateToUser, navigateToDeck]);
+  }, [type, notification, user, navigateToUser, navigateToDecks]);
   const navigateToAllUsers = React.useCallback(
     () => navigateToUserList(notification.users),
     [notification?.users, navigateToUserList]
@@ -231,13 +233,13 @@ export const NotificationsScreen = () => {
       ),
     []
   );
-  const navigateToDeck = React.useCallback(
-    (deck) =>
+  const navigateToDecks = React.useCallback(
+    (decks) =>
       navigate(
         'PlayDeck',
         {
-          decks: [deck],
-          title: 'Notifications',
+          decks,
+          title: 'Notification',
         },
         {
           isFullscreen: true,
@@ -332,7 +334,7 @@ export const NotificationsScreen = () => {
             notification={notif}
             navigateToUser={navigateToUser}
             navigateToUserList={navigateToUserList}
-            navigateToDeck={navigateToDeck}
+            navigateToDecks={navigateToDecks}
           />
         </React.Fragment>
       );
