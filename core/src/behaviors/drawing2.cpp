@@ -174,6 +174,16 @@ void Drawing2Behavior::handleWriteComponent(
   });
 }
 
+void Drawing2Behavior::cleanupDrawDataCache() {
+  for (auto it = drawDataCache.begin(); it != drawDataCache.end();) {
+    if (it->second.use_count() == 1) {
+      it = drawDataCache.erase(it);
+    } else {
+      ++it;
+    }
+  }
+}
+
 //
 // Perform
 //

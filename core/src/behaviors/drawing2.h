@@ -110,6 +110,8 @@ public:
   void clearEditorDataCache();
   std::unique_ptr<DrawingEditorDataCache> editorDataCache;
 
+  void cleanupDrawDataCache();
+
 private:
   friend struct AnimationFrameMeetsConditionResponse;
 

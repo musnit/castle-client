@@ -350,6 +350,8 @@ void Editor::update(double dt) {
     scene->getBehaviors().byType<LocalVariablesBehavior>().debugDisplay();
 
     sendServerStats(dt);
+
+    scene->getBehaviors().byType<Drawing2Behavior>().cleanupDrawDataCache();
   }
 
   // Make sure ghost actors exist before sending new data, because current tool's update()
