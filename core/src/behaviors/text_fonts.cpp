@@ -52,10 +52,9 @@ void TextBehavior::loadFontResources(Lv &lv) {
     fontResources[name] = std::move(resource);
   };
 
-  loadFontResource("Overlay", Overlay_ttf);
+  loadFontResource("Overlay", DMSans_Medium_ttf);
 
-  loadFontResource("BreiteGrotesk", BreiteGrotesk_ttf);
-  loadFontResource("Compagnon", Compagnon_ttf);
+  loadFontResource("DMSans", DMSans_Medium_ttf);
   loadFontResource("Glacier", Glacier_ttf);
   loadFontResource("HelicoCentrica", HelicoCentrica_ttf);
   loadFontResource("Piazzolla", Piazzolla_ttf);
@@ -65,6 +64,7 @@ void TextBehavior::loadFontResources(Lv &lv) {
   loadFontResource("Tektur", Tektur_ttf);
   loadFontResource("BaltoMedium", baltomobile_medium_ttf);
   loadFontResource("BaltoBook", baltomobile_book_ttf);
+  loadFontResource("CourierPrime", CourierPrime_Regular_ttf);
 }
 
 void TextBehavior::unloadFontResources() {

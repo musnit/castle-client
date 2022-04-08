@@ -35,8 +35,8 @@ struct TextComponent : BaseComponent {
          .rulesGet(false)
          .rulesSet(false)
          .allowedValues(
-            "BreiteGrotesk",
-            "Compagnon",
+            "DMSans",
+            "CourierPrime",
             "Glacier",
             "HelicoCentrica",
             "Piazzolla",
