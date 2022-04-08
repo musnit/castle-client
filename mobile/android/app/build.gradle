@@ -145,8 +145,8 @@ android {
         applicationId "xyz.castle"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 59
-        versionName "59.0"
+        versionCode 60
+        versionName "60.0"
     }
     splits {
         abi {
