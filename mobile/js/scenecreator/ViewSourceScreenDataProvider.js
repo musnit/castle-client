@@ -147,6 +147,8 @@ class ViewSourceScreenDataProvider extends React.Component {
     } else {
       this.props.navigation.popToTop();
     }
+
+    Session.markClosedEditor();
   };
 
   // saving from the view source screen creates a clone of the deck.
