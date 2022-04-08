@@ -1,7 +1,9 @@
 import React from 'react';
 import { Pressable, RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
 import { AppText as Text } from '../components/AppText';
+import { markEditorCrashStatusRead } from '../Session';
 import { useQuery, useMutation, gql } from '@apollo/client';
+
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import * as Constants from '../Constants';
@@ -45,6 +47,10 @@ if (Constants.iOS && typeof Intl !== 'undefined') {
 
 export const UnsavedCardsList = ({ onCardChosen }) => {
   const [cards, setCards] = React.useState();
+
+  // load unsaved cards list -> stop showing unsaved work banner
+  React.useEffect(markEditorCrashStatusRead, []);
+
   const query = useQuery(
     gql`
       query {

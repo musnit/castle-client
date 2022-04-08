@@ -1,5 +1,6 @@
 import React from 'react';
 import { Keyboard, View, StyleSheet } from 'react-native';
+import { markEditorCrashStatusRead } from '../Session';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import { isTablet } from 'react-native-device-info';
@@ -77,6 +78,9 @@ export const CreateCardScreen = ({
   const { showActionSheetWithOptions } = useActionSheet();
   const [appState, setAppState] = React.useState('active');
   useAppState(setAppState);
+
+  // load editor -> stop showing unsaved work banner
+  React.useEffect(markEditorCrashStatusRead, []);
 
   // activeSheet maps from `editMode` to sheet key
   const [activeSheet, setActiveSheet] = React.useReducer(
