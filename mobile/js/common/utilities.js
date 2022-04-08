@@ -221,7 +221,7 @@ export const shareDeck = async (deck) => {
   const url = `https://castle.xyz/d/${deck.deckId}?cxshid=${cxshid}`;
   let shortUrl;
   try {
-    shortUrl = await Session.createShortLink(url);
+    shortUrl = await Session.createShortLink(url, deck.deckId);
   } catch (e) {
     console.warn(`Failed to generate short url: ${e}`);
     shortUrl = url;

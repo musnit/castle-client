@@ -917,16 +917,16 @@ export const markPushNotificationClicked = async (pushNotificationId) => {
   });
 };
 
-export const createShortLink = async (url) => {
+export const createShortLink = async (url, deckId) => {
   const result = await apolloClient.mutate({
     mutation: gql`
-      mutation ($url: String!) {
-        createShortLink(url: $url) {
+      mutation ($url: String!, $deckId: ID) {
+        createShortLink(url: $url, deckId: $deckId) {
           url
         }
       }
     `,
-    variables: { url },
+    variables: { url, deckId },
   });
   return result?.data?.createShortLink.url;
 };
