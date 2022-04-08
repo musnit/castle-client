@@ -1002,6 +1002,11 @@ export const maybeFetchNotificationsAsync = async (force = true) => {
     query {
       notificationsV3(limit: 64) {
         isAdmin
+        editorCrashState {
+          status
+          deckId
+          cardId
+        }
         notifications {
           notificationId
           type
@@ -1032,13 +1037,14 @@ export const maybeFetchNotificationsAsync = async (force = true) => {
     fetchPolicy: 'no-cache',
   });
   const data = result?.data?.notificationsV3 ?? {};
-  const { notifications, isAdmin } = data;
+  const { notifications, editorCrashState, isAdmin } = data;
   gIsAdmin = isAdmin;
   const notificationsBadgeCount = notifications
     ? notifications.reduce((accum, n) => accum + (n.status === 'unseen'), 0)
     : 0;
   EventEmitter.sendEvent('notifications', {
     notifications,
+    editorCrashState,
   });
 
   setNotifBadge(notificationsBadgeCount);

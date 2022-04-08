@@ -19,19 +19,20 @@ import {
   ANDROID_USE_NATIVE_NAVIGATION,
 } from '../ReactNavigation';
 import { EmptyFeed } from '../home/EmptyFeed';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { useLazyQuery, gql } from '@apollo/client';
-import { useSession } from '../Session';
-import { SegmentedNavigation } from '../components/SegmentedNavigation';
-import { UnsavedCardsList } from './UnsavedCardsList';
 import { formatCount } from '../common/utilities';
 import { formatTimeInterval } from '../common/date-utilities';
-import * as Analytics from '../common/Analytics';
+import { RecoverUnsavedWorkAlert } from './RecoverUnsavedWorkAlert';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { SegmentedNavigation } from '../components/SegmentedNavigation';
+import { UnsavedCardsList } from './UnsavedCardsList';
+import { useLazyQuery, gql } from '@apollo/client';
+import { useSession } from '../Session';
 
 import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import AntIcon from 'react-native-vector-icons/AntDesign';
 import FastImage from 'react-native-fast-image';
 
+import * as Analytics from '../common/Analytics';
 import * as Constants from '../Constants';
 
 const styles = StyleSheet.create({
@@ -44,8 +45,6 @@ const styles = StyleSheet.create({
   tabTitle: {
     padding: 16,
     paddingBottom: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: Constants.colors.grayOnBlackBorder,
     flexDirection: 'row',
   },
   tabTitleText: {
@@ -57,7 +56,6 @@ const styles = StyleSheet.create({
   },
   navWrapper: {
     backgroundColor: '#000',
-    marginTop: -1, // hide the border built into ScreenHeader
     paddingHorizontal: 8,
     borderBottomWidth: 1,
     borderBottomColor: Constants.colors.grayOnBlackBorder,
@@ -440,6 +438,7 @@ const CreateScreenAuthenticated = () => {
           />
         </ScrollView>
       </View>
+      <RecoverUnsavedWorkAlert context="recovered" />
       {decks.filter === 'recovered' ? (
         <UnsavedCardsList onCardChosen={onUnsavedCardRestored} />
       ) : (

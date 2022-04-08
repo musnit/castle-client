@@ -10,6 +10,7 @@ import {
 import { AppText as Text } from '../components/AppText';
 import { CardsSet } from '../components/CardsSet';
 import { DeckSettingsSheet } from './DeckSettingsSheet';
+import { RecoverUnsavedWorkAlert } from './RecoverUnsavedWorkAlert';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { SheetBackgroundOverlay } from '../components/SheetBackgroundOverlay';
@@ -502,6 +503,7 @@ export const CreateDeckScreen = (props) => {
                 </Pressable>
               </View>
             </View>
+            <RecoverUnsavedWorkAlert context="backup" />
             <CardsSet
               deck={deck}
               onShowCardOptions={_showCardOptions}
