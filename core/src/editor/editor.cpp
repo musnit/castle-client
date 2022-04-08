@@ -383,14 +383,15 @@ void Editor::sendServerStats(double dt) {
     }
 
     if (cardId) {
-      API::graphql("mutation {\n  recordEditorStats(deckId: \"" + *deckId + "\", cardId: \""
-              + *cardId + "\", editCount: " + std::to_string(editCount)
+      API::graphql("mutation {\n  recordEditorStats(version: 2, deckId: \"" + *deckId
+              + "\", cardId: \"" + *cardId + "\", editCount: " + std::to_string(editCount)
               + ", playCount: " + std::to_string(playCount) + ")\n}",
           [=](APIResponse &response) {
           });
     } else {
-      API::graphql("mutation {\n  recordEditorStats(deckId: \"" + *deckId + "\", editCount: "
-              + std::to_string(editCount) + ", playCount: " + std::to_string(playCount) + ")\n}",
+      API::graphql("mutation {\n  recordEditorStats(version: 2, deckId: \"" + *deckId
+              + "\", editCount: " + std::to_string(editCount)
+              + ", playCount: " + std::to_string(playCount) + ")\n}",
           [=](APIResponse &response) {
           });
     }
