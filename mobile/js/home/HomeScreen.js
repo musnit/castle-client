@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const makeItems = ({ newFollowingDecks, isAnonymous } = {}) => {
+const makeItems = ({ isAnonymous } = {}) => {
   let items = [
     {
       name: 'Featured',
@@ -56,15 +56,6 @@ const makeItems = ({ newFollowingDecks, isAnonymous } = {}) => {
     },
   ];
 
-  /* if (!isAnonymous) {
-    items.splice(1, 0, {
-      name: 'Following',
-      value: 'following',
-      indicator: newFollowingDecks,
-      item: (props) => <FollowingDecks {...props} />,
-    });
-  } */
-
   return items;
 };
 
@@ -72,7 +63,7 @@ export const HomeScreen = ({ route }) => {
   useNavigation();
   const insets = useSafeAreaInsets();
   const [mode, setMode] = React.useState('featured');
-  const { newFollowingDecks, isAnonymous } = useSession();
+  const { isAnonymous } = useSession();
   const [items, setItems] = React.useState(makeItems());
 
   // play a deck within the feed?
@@ -83,10 +74,7 @@ export const HomeScreen = ({ route }) => {
     deepLinkDeckId = route.params.deepLinkDeckId;
   }
 
-  React.useEffect(
-    () => setItems(makeItems({ newFollowingDecks, isAnonymous })),
-    [newFollowingDecks, isAnonymous]
-  );
+  React.useEffect(() => setItems(makeItems({ isAnonymous })), [isAnonymous]);
 
   useFocusEffect(
     React.useCallback(() => {

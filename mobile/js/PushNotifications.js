@@ -158,12 +158,6 @@ export const setBadgeCount = async (count) => {
   }
 };
 
-export const setNewFollowingDecks = async (newFollowingDecks) => {
-  if (Platform.OS === 'android') {
-    NativeModules.GhostPushNotifications.setNewFollowingDecks(newFollowingDecks);
-  }
-};
-
 export const usePushNotifications = ({ onClicked, onReceived }) =>
   React.useEffect(() => {
     const clicked = addClickedListener(onClicked);

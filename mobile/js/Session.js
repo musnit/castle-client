@@ -33,7 +33,6 @@ const EMPTY_SESSION = {
   authToken: null,
   notifications: null,
   notificationsBadgeCount: 0,
-  newFollowingDecks: false,
 };
 
 const SessionContext = React.createContext(EMPTY_SESSION);
@@ -123,7 +122,6 @@ export class Provider extends React.Component {
       validateSignupAsync: this.validateSignupAsync,
       signInAsAnonymousUserAsync: this.signInAsAnonymousUserAsync,
       markNotificationsReadAsync: this.markNotificationsReadAsync,
-      markFollowingFeedRead: this.markFollowingFeedRead,
       setIsNuxCompleted: this.setIsNuxCompleted,
       setIsNativeFeedNuxCompleted: this.setIsNativeFeedNuxCompleted,
       setIsMuted: this.setIsMuted,
@@ -315,10 +313,20 @@ export class Provider extends React.Component {
       variables: { username, name, email, password },
     });
 
-    if (result && result.data && result.data.signupV2 && result.data.signupV2.user && result.data.signupV2.user.userId) {
+    if (
+      result &&
+      result.data &&
+      result.data.signupV2 &&
+      result.data.signupV2.user &&
+      result.data.signupV2.user.userId
+    ) {
       if (Platform.OS == 'android') {
         try {
-          GhostChannels.saveSmartLockCredentials(username, password, result.data.signupV2.user.photo.url);
+          GhostChannels.saveSmartLockCredentials(
+            username,
+            password,
+            result.data.signupV2.user.photo.url
+          );
         } catch (e) {}
       }
 
@@ -414,18 +422,6 @@ export class Provider extends React.Component {
         notifications,
       };
     });
-  };
-
-  markFollowingFeedRead = () => {
-    try {
-      // don't await
-      _sendMarkFollowingFeedRead();
-    } catch (_) {
-      console.warn(
-        `Network request to mark following feed read failed, marking locally read anyway`
-      );
-    }
-    return this.setState({ newFollowingDecks: false });
   };
 
   render() {
@@ -948,6 +944,7 @@ export const resolveDeepLink = async (url) => {
   return result?.data?.resolveDeepLink;
 };
 
+
 export const markClosedEditor = async () => {
   await apolloClient.mutate({
     mutation: gql`
@@ -957,18 +954,6 @@ export const markClosedEditor = async () => {
     `,
   });
 };
-
-const _sendMarkFollowingFeedRead = debounce(
-  async () =>
-    apolloClient.mutate({
-      mutation: gql`
-        mutation {
-          markFollowingFeedRead
-        }
-      `,
-    }),
-  100
-);
 
 const _sendMarkNotificationsRead = debounce(
   async ({ notificationIds }) =>
@@ -1017,7 +1002,6 @@ export const maybeFetchNotificationsAsync = async (force = true) => {
     query {
       notificationsV3(limit: 64) {
         isAdmin
-        newFollowingDecks
         notifications {
           notificationId
           type
@@ -1048,14 +1032,12 @@ export const maybeFetchNotificationsAsync = async (force = true) => {
     fetchPolicy: 'no-cache',
   });
   const data = result?.data?.notificationsV3 ?? {};
-  const { notifications, newFollowingDecks, isAdmin } = data;
+  const { notifications, isAdmin } = data;
   gIsAdmin = isAdmin;
   const notificationsBadgeCount = notifications
     ? notifications.reduce((accum, n) => accum + (n.status === 'unseen'), 0)
     : 0;
-  PushNotifications.setNewFollowingDecks(newFollowingDecks);
   EventEmitter.sendEvent('notifications', {
-    newFollowingDecks,
     notifications,
   });
 
@@ -1072,7 +1054,6 @@ export const fetchMoreNotifications = async (oldNotifications) => {
     query($beforeId: ID) {
       notificationsV3(limit: 64, beforeId: $beforeId) {
         isAdmin
-        newFollowingDecks
         notifications {
           notificationId
           type
