@@ -20,7 +20,7 @@ Sound::ClockThread::ClockThread(Sound &owner_)
 void Sound::ClockThread::threadFunction() {
   while (true) {
     {
-      love::thread::Lock lock(owner.mutex);
+      love::thread::Lock lock(owner.clockMutex);
       if (shouldFinish) {
         return;
       }
@@ -28,7 +28,7 @@ void Sound::ClockThread::threadFunction() {
 
     double dt = timer.step();
     {
-      love::thread::Lock lock(owner.mutex);
+      love::thread::Lock lock(owner.clockMutex);
       for (auto &[clockId, clock] : owner.clocks) {
         clock->update(dt);
         auto &streamsForClock = owner.streams[clockId];
@@ -58,7 +58,7 @@ void Sound::ClockThread::threadFunction() {
 }
 
 void Sound::ClockThread::finish() {
-  love::thread::Lock lock(owner.mutex);
+  love::thread::Lock lock(owner.clockMutex);
   shouldFinish = true;
 }
 
@@ -96,7 +96,7 @@ Sound::~Sound() {
 
 void Sound::addClock(Clock *clock) {
   // add clock to sound thread, noop if already added
-  love::thread::Lock lock(mutex);
+  love::thread::Lock lock(clockMutex);
   if (clocks.find(clock->clockId) == clocks.end()) {
     clocks.emplace(clock->clockId, clock);
     streams.emplace(clock->clockId, std::vector<std::unique_ptr<Stream>>());
@@ -152,8 +152,10 @@ void Sound::clear() {
   suspend();
 
   // forget all state
+  // don't need to lock clockMutex here because clock thread was just stopped
   {
-    love::thread::Lock lock(mutex);
+    // need to lock soloud because AudioSource destructor calls soloud stop
+    love::thread::Lock lock(Sound::soloudMutex);
     sfxrSounds.clear();
     urlSounds.clear();
   }
@@ -162,7 +164,7 @@ void Sound::clear() {
 }
 
 void Sound::setAllSoloudSourcesPaused(bool paused) {
-  love::thread::Lock lock(mutex);
+  love::thread::Lock lock(Sound::soloudMutex);
   // this is not the same as soloud.setPauseAll() because it sandboxes to this one Sound instance
   if (Sound::hasInitializedSoloud) {
     for (auto &[key, source] : sfxrSounds) {
@@ -175,7 +177,7 @@ void Sound::setAllSoloudSourcesPaused(bool paused) {
 }
 
 void Sound::stopCurrentlyPlayingSounds() {
-  love::thread::Lock lock(mutex);
+  love::thread::Lock lock(Sound::soloudMutex);
   if (Sound::hasInitializedSoloud) {
     for (auto &[key, source] : sfxrSounds) {
       Sound::soloud.stopAudioSource(*source);
@@ -192,13 +194,13 @@ void Sound::stopCurrentlyPlayingSounds() {
 //
 
 void Sound::clearStreams() {
-  love::thread::Lock lock(mutex);
+  love::thread::Lock lock(clockMutex);
   streams.clear();
 }
 
 int Sound::play(int clockId, std::unique_ptr<Pattern> pattern,
     std::unique_ptr<Instrument> instrument, StreamOptions opts) {
-  love::thread::Lock lock(mutex);
+  love::thread::Lock lock(clockMutex);
   int result = -1;
   if (auto found = clocks.find(clockId); found != clocks.end()) {
     auto clock = found->second;
@@ -231,7 +233,7 @@ void Sound::markStreamPlayedNotesOnClock(Clock &clock, Stream &stream) {
 }
 
 Stream *Sound::maybeGetStream(int clockId, int streamId) {
-  love::thread::Lock lock(mutex);
+  love::thread::Lock lock(clockMutex);
   auto &streamsForClock = streams[clockId];
   for (auto &stream : streamsForClock) {
     if (stream->streamId == streamId) {
@@ -242,7 +244,7 @@ Stream *Sound::maybeGetStream(int clockId, int streamId) {
 }
 
 void Sound::stopStream(int clockId, int streamId, StreamOptions opts) {
-  love::thread::Lock lock(mutex);
+  love::thread::Lock lock(clockMutex);
   auto &streamsForClock = streams[clockId];
   if (auto found = clocks.find(clockId); found != clocks.end()) {
     auto clock = found->second;
@@ -409,10 +411,13 @@ void Sound::playTone(float playbackRate, float amplitude, int midiNote, const st
   }
 
   int handle = playSoloudSource(*sfxrSounds[key], playbackRate, amplitude);
-  Sound::soloud.setLooping(handle, true);
-  Sound::soloud.setLoopPoint(handle, attack);
-  Sound::soloud.fadeVolume(handle, 0, attack + release);
-  Sound::soloud.scheduleStop(handle, attack + release);
+  {
+    love::thread::Lock lock(Sound::soloudMutex);
+    Sound::soloud.setLooping(handle, true);
+    Sound::soloud.setLoopPoint(handle, attack);
+    Sound::soloud.fadeVolume(handle, 0, attack + release);
+    Sound::soloud.scheduleStop(handle, attack + release);
+  }
 }
 
 SoLoud::Sfxr *Sound::getOrMakeSfxrSourceForKey(
@@ -454,7 +459,10 @@ struct SoundEnabledReceiver {
     Debug::log("Core: Sound enabled: {}", params.enabled());
     Sound::isEnabled = params.enabled();
     if (!Sound::isEnabled && Sound::hasInitializedSoloud) {
-      Sound::soloud.stopAll();
+      {
+        love::thread::Lock lock(Sound::soloudMutex);
+        Sound::soloud.stopAll();
+      }
       // don't Sound::stopAll() or clear streams - time continues to pass in streams
     }
   }

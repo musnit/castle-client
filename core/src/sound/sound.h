@@ -13,6 +13,7 @@ class Stream;
 struct Sample;
 
 class Sound {
+  inline static love::thread::MutexRef soloudMutex;
   inline static bool hasInitializedSoloud = false;
   inline static int soloudRefs = 0;
   inline static SoLoud::Soloud soloud;
@@ -75,6 +76,7 @@ public:
 
 protected:
   inline static void retainSoloud() {
+    love::thread::Lock lock(soloudMutex);
     if (!hasInitializedSoloud) {
       hasInitializedSoloud = true;
       soloud.init();
@@ -82,6 +84,7 @@ protected:
     soloudRefs++;
   }
   inline static void releaseSoloud() {
+    love::thread::Lock lock(soloudMutex);
     soloudRefs--;
     if (soloudRefs == 0) {
       if (hasInitializedSoloud) {
@@ -106,7 +109,7 @@ protected:
   inline int playSoloudSource(SoLoud::AudioSource &source, float playbackRate, float amplitude) {
     int handle;
     {
-      love::thread::Lock lock(mutex);
+      love::thread::Lock lock(Sound::soloudMutex);
       handle = Sound::soloud.play(source);
       Sound::soloud.setVolume(handle, amplitude);
       Sound::soloud.setRelativePlaySpeed(handle, playbackRate);
@@ -144,6 +147,6 @@ protected:
     volatile bool shouldFinish = false;
   };
 
-  love::thread::MutexRef mutex;
+  love::thread::MutexRef clockMutex;
   ClockThread *clockThread = nullptr;
 };
