@@ -180,15 +180,15 @@ void Belt::update(double dtDouble) {
   auto &selection = editor.getSelection();
   auto numElems = library.numEntries();
 
-  // Basic layout
+  // Layout
   auto windowWidth = float(lv.graphics.getWidth());
-  auto windowHeight = float(lv.graphics.getHeight());
-  height = heightFraction * windowHeight;
-  bottom = windowHeight;
-  top = bottom - height;
-  elemSize = height - 30;
-
-  // Initial cursor position
+  if (firstFrame) {
+    auto windowHeight = float(lv.graphics.getHeight());
+    height = heightFraction * windowHeight;
+    bottom = windowHeight;
+    top = bottom - height;
+    elemSize = height - 30;
+  }
   auto initialCursorX = -(elemSize + elemGap);
   if (firstFrame) {
     cursorX = initialCursorX;
