@@ -962,6 +962,13 @@ export const markEditorCrashStatusRead = async () => {
       }
     `,
   });
+
+  // mark as read in local session
+  EventEmitter.sendEvent('notifications', {
+    editorCrashState: {
+      status: 'ok',
+    },
+  });
 };
 
 const _sendMarkNotificationsRead = debounce(
