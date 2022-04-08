@@ -91,6 +91,8 @@
 		<string>BaltoTrial-Book.otf</string>
 		<string>BaltoTrial-BookItalic.otf</string>
 		<string>BaltoTrial-Medium.otf</string>
+		<string>DMSans-Medium.ttf</string>
+		<string>CourierPrime-Regular.ttf</string>
 	</array>
 	<key>UIBackgroundModes</key>
 	<array>

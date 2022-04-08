@@ -23,8 +23,8 @@ const styles = StyleSheet.create({
 });
 
 const postScriptNames = {
-  BreiteGrotesk: 'BreiteGrotesk-Regular',
-  Compagnon: 'Compagnon-Roman',
+  DMSans: 'DMSans-Medium',
+  CourierPrime: 'CourierPrime',
   Glacier: 'Glacier-Bold',
   HelicoCentrica: 'HelicoCentrica-Roman',
   Piazzolla: 'Piazzolla-Medium',

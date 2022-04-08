@@ -98,6 +98,8 @@
 		D6DCCD34B7CB4C00ADD9AA65 /* Piazzolla.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C88B61BFAF13485C90AFB824 /* Piazzolla.ttf */; };
 		E312261820854542B25A07CC /* BreiteGrotesk.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A539EC0211804772B08372F4 /* BreiteGrotesk.ttf */; };
 		FD974DF143C544B1A8CBD6AB /* Basteleur-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = DF503A7241834DF1A0DA901E /* Basteleur-Bold.otf */; };
+		C9E47065054F472C8A2E91E5 /* DMSans-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = E34B400A946A4347887CA5EA /* DMSans-Medium.ttf */; };
+		3D298A21FBA14F68BFD11BDF /* CourierPrime-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 282D0FF841D54D31B904E691 /* CourierPrime-Regular.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -334,6 +336,8 @@
 		F98BBBB599F046D4B53CD795 /* Entypo.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Entypo.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Entypo.ttf"; sourceTree = "<group>"; };
 		FD1729541A0540BA8257D02C /* BaltoTrial-Medium.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "BaltoTrial-Medium.otf"; path = "../assets/fonts/BaltoTrial-Medium.otf"; sourceTree = "<group>"; };
 		FDE84D3722CE4562AC058B77 /* Bore.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Bore.ttf; path = ../assets/fonts/Bore.ttf; sourceTree = "<group>"; };
+		E34B400A946A4347887CA5EA /* DMSans-Medium.ttf */ = {isa = PBXFileReference; name = "DMSans-Medium.ttf"; path = "../assets/fonts/DMSans-Medium.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		282D0FF841D54D31B904E691 /* CourierPrime-Regular.ttf */ = {isa = PBXFileReference; name = "CourierPrime-Regular.ttf"; path = "../assets/fonts/CourierPrime-Regular.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -700,6 +704,8 @@
 				D04C2F68119E42ADB8EE7D4F /* BaltoTrial-Book.otf */,
 				8C9A47CCEF344BD7957EDFEF /* BaltoTrial-BookItalic.otf */,
 				FD1729541A0540BA8257D02C /* BaltoTrial-Medium.otf */,
+				E34B400A946A4347887CA5EA /* DMSans-Medium.ttf */,
+				282D0FF841D54D31B904E691 /* CourierPrime-Regular.ttf */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -885,6 +891,8 @@
 				7CDFE28BFA8C45329E4EF700 /* BaltoTrial-Book.otf in Resources */,
 				91E9DF0985F44FC4AEC1B454 /* BaltoTrial-BookItalic.otf in Resources */,
 				D5F35BE99CA94566AF496639 /* BaltoTrial-Medium.otf in Resources */,
+				C9E47065054F472C8A2E91E5 /* DMSans-Medium.ttf in Resources */,
+				3D298A21FBA14F68BFD11BDF /* CourierPrime-Regular.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
