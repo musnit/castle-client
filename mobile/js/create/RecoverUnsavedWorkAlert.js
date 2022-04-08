@@ -9,16 +9,17 @@ import FeatherIcon from 'react-native-vector-icons/Feather';
 
 const styles = StyleSheet.create({
   container: {
-    marginHorizontal: 16,
     marginTop: 16,
-    padding: 16,
+    marginHorizontal: 16,
+    padding: 12,
     borderWidth: 1,
     borderColor: Constants.colors.grayOnBlackBorder,
-    borderRadius: 4,
+    borderRadius: 8,
     flexDirection: 'row',
   },
   content: {
-    marginLeft: 16,
+    marginLeft: 12,
+    flex: 1,
   },
   heading: {
     fontSize: 16,
@@ -48,7 +49,7 @@ export const RecoverUnsavedWorkAlert = ({ context, deckId }) => {
       <>
         <Text>Visit the Backups tab in the </Text>
         <FeatherIcon name="settings" size={16} />
-        <Text> menu in the editor to pick up where you left off.</Text>
+        <Text> menu in the editor to recover your changes.</Text>
       </>
     );
   } else {
@@ -58,11 +59,11 @@ export const RecoverUnsavedWorkAlert = ({ context, deckId }) => {
   return (
     <View style={styles.container}>
       <FastImage
-        style={{ width: 26, height: 30 }}
-        source={require('../../assets/images/emoji/chair-white.png')}
+        style={{ width: 26, height: 26, marginTop: 4 }}
+        source={require('../../assets/images/emoji/tp-white.png')}
       />
       <View style={styles.content}>
-        <Text style={styles.heading}>Did Castle exit with unsaved work?</Text>
+        <Text style={styles.heading}>Did you have unsaved work?</Text>
         <Text style={styles.message}>{message}</Text>
       </View>
     </View>
