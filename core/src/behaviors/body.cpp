@@ -563,11 +563,15 @@ void BodyBehavior::handleSetProperty(
     props.angle() = float(value.as<double>() * M_PI / 180);
     body->SetTransform(body->GetPosition(), props.angle());
   } else if (propId == props.widthScale.id) {
-    props.widthScale() = value.as<float>() / 10;
-    recreateFixtures(actorId, component, true); // PERF: Mark dirty and do this at end of frame?
+    if (auto newWidthScale = value.as<float>() / 10; props.widthScale() != newWidthScale) {
+      props.widthScale() = newWidthScale;
+      recreateFixtures(actorId, component, true); // PERF: Mark dirty and do this at end of frame?
+    }
   } else if (propId == props.heightScale.id) {
-    props.heightScale() = value.as<float>() / 10;
-    recreateFixtures(actorId, component, true); // PERF: Mark dirty and do this at end of frame?
+    if (auto newHeightScale = value.as<float>() / 10; props.heightScale() != newHeightScale) {
+      props.heightScale() = newHeightScale;
+      recreateFixtures(actorId, component, true); // PERF: Mark dirty and do this at end of frame?
+    }
   } else if (propId == props.relativeToCamera.id) {
     if (value.as<bool>()) {
       props.relativeToCamera() = true;
