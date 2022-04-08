@@ -503,7 +503,7 @@ export const CreateDeckScreen = (props) => {
                 </Pressable>
               </View>
             </View>
-            <RecoverUnsavedWorkAlert context="backup" />
+            <RecoverUnsavedWorkAlert context="backup" deckId={deck?.deckId} />
             <CardsSet
               deck={deck}
               onShowCardOptions={_showCardOptions}

@@ -32,14 +32,18 @@ const styles = StyleSheet.create({
   },
 });
 
-export const RecoverUnsavedWorkAlert = ({ context }) => {
+export const RecoverUnsavedWorkAlert = ({ context, deckId }) => {
   const { editorCrashState } = useSession();
-  const { status } = editorCrashState || {};
+  const { deckId: deckIdCrashed, status } = editorCrashState || {};
 
   let message;
   if (status === 'hasRecovered' && context === 'recovered') {
     message = 'Visit the Recovered tab to pick up where you left off.';
-  } else if (status === 'hasBackup' && context === 'backup') {
+  } else if (
+    status === 'hasBackup' &&
+    context === 'backup' &&
+    (!deckIdCrashed || deckId === deckIdCrashed)
+  ) {
     message = (
       <>
         <Text>Visit the Backups tab in the </Text>
