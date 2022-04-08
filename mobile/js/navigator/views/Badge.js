@@ -68,6 +68,7 @@ export default function Badge({ children, style, visible = true, size = 18, ...r
         styles.container,
         restStyle,
       ]}
+      allowFontScaling={false}
       {...rest}>
       {children}
     </Animated.Text>

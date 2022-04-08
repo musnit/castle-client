@@ -71,7 +71,7 @@ export default function TopTabBarItem({
             horizontal ? styles.labelBeside : styles.labelBeneath,
             labelStyle,
           ]}
-          allowFontScaling={allowFontScaling}>
+          allowFontScaling={false}>
           {label}
         </Text>
       );
