@@ -48,6 +48,13 @@ class Feed : public Screen {
 public:
   explicit Feed(Bridge &bridge_)
       : bridge(bridge_) {
+    currentFeedId++;
+    feedId = currentFeedId;
+    isFeedAlive[feedId] = true;
+  }
+
+  ~Feed() {
+    isFeedAlive[feedId] = false;
   }
 
   ScreenType screenType();
@@ -152,6 +159,10 @@ private:
 
   Lv &lv { Lv::getInstance() };
   Bridge &bridge;
+
+  int feedId;
+  inline static std::map<int, bool> isFeedAlive;
+  inline static int currentFeedId = 0;
 };
 
 inline ScreenType Feed::screenType() {

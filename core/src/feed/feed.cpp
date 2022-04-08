@@ -469,18 +469,24 @@ void Feed::update(double dt) {
             });
           } else {
             auto deckId = *(decks[idx].deckId);
-            API::loadCard(nextCardId->c_str(), true, [idx, deckId, this](APIResponse &response) {
-              if (idx >= (int)decks.size() || decks[idx].deckId != deckId) {
-                return;
-              }
+            int myFeedId = feedId;
+            API::loadCard(
+                nextCardId->c_str(), true, [myFeedId, idx, deckId, this](APIResponse &response) {
+                  if (!isFeedAlive[myFeedId]) {
+                    return;
+                  }
 
-              if (response.success && idx == getCurrentIndex() && decks[idx].player) {
-                auto reader = response.reader;
-                decks[idx].player->readScene(reader, decks[idx].player->getScene().getDeckId());
-              }
+                  if (idx >= (int)decks.size() || decks[idx].deckId != deckId) {
+                    return;
+                  }
 
-              // TODO: show error?
-            });
+                  if (response.success && idx == getCurrentIndex() && decks[idx].player) {
+                    auto reader = response.reader;
+                    decks[idx].player->readScene(reader, decks[idx].player->getScene().getDeckId());
+                  }
+
+                  // TODO: show error?
+                });
           }
           decks[idx].player->getScene().setNextCardId(std::nullopt);
           decks[idx].cardId = nextCardId;
@@ -1135,9 +1141,14 @@ void Feed::fetchInitialDecks(std::vector<std::string> deckIds, int initialDeckIn
     usingFixedDecksList = false;
     fetchingDecks = true;
     std::string limit = isShowingNux ? "5" : "1";
+    int myFeedId = feedId;
     API::graphql("{\n  infiniteFeedV2(limit: " + limit + ") {\n    sessionId\n    decks {"
             + GRAPHQL_DECK_FIELDS + "}\n  }\n}",
-        [=](APIResponse &response) {
+        [myFeedId, this](APIResponse &response) {
+          if (!isFeedAlive[myFeedId]) {
+            return;
+          }
+
           if (response.success) {
             auto &reader = response.reader;
 
@@ -1205,9 +1216,14 @@ void Feed::fetchMoreDecks() {
     }
 
     fetchingDecks = true;
+    int myFeedId = feedId;
     API::graphql("{\n  paginateFeed(feedId: \"" + *paginateFeedId + "\", lastModifiedBefore: \""
             + *lastModifiedBefore + "\") {\n" + GRAPHQL_DECK_FIELDS + "}\n}",
-        [=](APIResponse &response) {
+        [myFeedId, this](APIResponse &response) {
+          if (!isFeedAlive[myFeedId]) {
+            return;
+          }
+
           if (response.success) {
             removeLoadMoreDecksError();
             auto &reader = response.reader;
@@ -1241,9 +1257,14 @@ void Feed::fetchMoreDecks() {
   } else {
     fetchingDecks = true;
 
+    int myFeedId = feedId;
     API::graphql("{\n  infiniteFeedV2(sessionId: \"" + sessionId + "\") {\n    decks {"
             + GRAPHQL_DECK_FIELDS + "}\n  }\n}",
-        [=](APIResponse &response) {
+        [myFeedId, this](APIResponse &response) {
+          if (!isFeedAlive[myFeedId]) {
+            return;
+          }
+
           if (response.success) {
             removeLoadMoreDecksError();
             auto &reader = response.reader;
@@ -1294,8 +1315,13 @@ void Feed::loadDeckAtIndex(int i) {
   } else {
     decks[i].loadingTime = 0.0;
     auto deckId = *decks[i].deckId;
+    int myFeedId = feedId;
     API::graphql("{\n  deck(deckId: \"" + deckId + "\") {\n" + GRAPHQL_DECK_FIELDS + "\n}\n}",
-        [i, deckId, this](APIResponse &response) {
+        [myFeedId, i, deckId, this](APIResponse &response) {
+          if (!isFeedAlive[myFeedId]) {
+            return;
+          }
+
           if (i >= (int)decks.size() || decks[i].deckId != deckId) {
             return;
           }
@@ -1721,7 +1747,12 @@ void Feed::loadDeckFromDeckJson(int i) {
         });
       } else {
         auto sceneDataUrl = reader.str("sceneDataUrl", "");
-        API::loadSceneData(sceneDataUrl, [i, deckId, this](APIResponse &response) {
+        int myFeedId = feedId;
+        API::loadSceneData(sceneDataUrl, [myFeedId, i, deckId, this](APIResponse &response) {
+          if (!isFeedAlive[myFeedId]) {
+            return;
+          }
+
           if (i >= (int)decks.size() || decks[i].deckId != deckId) {
             return;
           }
