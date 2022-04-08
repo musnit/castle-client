@@ -267,6 +267,8 @@ class CreateCardScreenDataProvider extends React.Component {
       // there is no deck, go back to create index
       this.props.navigation.popToTop();
     }
+
+    Session.markClosedEditor();
   };
 
   _saveAndGoToDeck = async () => {

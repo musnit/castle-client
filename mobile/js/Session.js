@@ -948,6 +948,16 @@ export const resolveDeepLink = async (url) => {
   return result?.data?.resolveDeepLink;
 };
 
+export const markClosedEditor = async () => {
+  await apolloClient.mutate({
+    mutation: gql`
+      mutation {
+        markClosedEditor
+      }
+    `,
+  });
+};
+
 const _sendMarkFollowingFeedRead = debounce(
   async () =>
     apolloClient.mutate({
