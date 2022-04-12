@@ -491,7 +491,7 @@ export const apolloClient = new ApolloClient({
         })
     ),
     createUploadLink({
-      uri: 'https://api.castle.xyz/graphql',
+      uri: 'https://castle-app-server-staging.herokuapp.com/graphql',
     }),
   ]),
   cache: new InMemoryCache({

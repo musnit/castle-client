@@ -144,7 +144,7 @@ public class API {
             .add("lastModified")
             .add("variables");
 
-    private static final String API_HOST = "https://api.castle.xyz/graphql";
+    private static final String API_HOST = "https://castle-app-server-staging.herokuapp.com/graphql";
 
     private static API sInstance;
 

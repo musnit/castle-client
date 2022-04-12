@@ -27,7 +27,7 @@ static RCTBridge *sRctBridge;
       }
       
       NSMutableURLRequest *request =
-          [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"https://api.castle.xyz/graphql"]];
+          [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"https://castle-app-server-staging.herokuapp.com/graphql"]];
       request.HTTPMethod = @"POST";
 
       [request setValue:@"application/json; charset=utf-8" forHTTPHeaderField:@"Content-Type"];

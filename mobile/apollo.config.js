@@ -3,7 +3,7 @@ module.exports = {
     includes: ['js/**/*.js'],
     service: {
       name: 'Castle',
-      url: 'https://api.castle.xyz/graphql',
+      url: 'https://castle-app-server-staging.herokuapp.com/graphql',
     },
   },
 };
