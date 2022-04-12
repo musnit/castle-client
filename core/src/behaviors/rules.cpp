@@ -1258,13 +1258,6 @@ struct ShowLeaderboardResponse : BaseResponse {
              "low"
            )
          ) = "high";
-    PROP(
-         std::string, filter,
-         .allowedValues(
-             "each user once",
-             "each user multiple times"
-           )
-         ) = "each user once";
     PROP(std::string, label, .label("label")) = "Score";
   } params;
 
@@ -1284,12 +1277,6 @@ struct ShowLeaderboardResponse : BaseResponse {
     auto &variables = ctx.getScene().getVariables();
     auto name = variables.getName(params.variableId());
     auto type = params.type();
-    auto filter = params.filter();
-    if (filter == "each user once") {
-      filter = "dedupUsers";
-    } else {
-      filter = "none";
-    }
 
     auto deckId = ctx.getScene().getDeckId();
     auto label = params.label();
@@ -1300,7 +1287,7 @@ struct ShowLeaderboardResponse : BaseResponse {
       }
 
       ctx.getScene().getLeaderboards().getLeaderboard(
-          *deckId, *name, type, filter, [label](Reader &reader) {
+          *deckId, *name, type, "dedupUsers", [label](Reader &reader) {
             auto screen = Engine::getEngine().maybeGetScreen();
             if (screen && screen->hasScene()) {
               auto &leaderboardView = screen->getScene().getLeaderboardView();

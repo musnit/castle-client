@@ -854,17 +854,7 @@ const ShowLeaderboard = ({ response, context }) => {
     },
     {
       type: 'text',
-      label: 'values on top,',
-    },
-    {
-      type: 'selectParamSheet',
-      paramName: 'filter',
-      paramValue: response.params?.filter ?? 0,
-      label: response.params?.filter,
-    },
-    {
-      type: 'text',
-      label: ', with label',
+      label: 'values on top, with label',
     },
     {
       type: 'selectParamSheet',
