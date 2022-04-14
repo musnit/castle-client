@@ -37,30 +37,28 @@ const styles = StyleSheet.create({
 
 export const EditDeckCaptionScreen = ({ route }) => {
   const { navigate } = useNavigation();
-  let deck, onChangeCaption;
+  let initialCaption, onChangeCaption;
   if (route?.params) {
-    deck = route.params.deck;
+    initialCaption = route.params.caption;
     onChangeCaption = route.params.onChangeCaption;
   }
 
   const [loading, setLoading] = React.useState(false);
-  const [caption, setCaption] = React.useState(deck?.caption);
+  const [caption, setCaption] = React.useState(initialCaption);
 
   useFocusEffect(
     React.useCallback(() => {
       Analytics.logEvent('VIEW_EDIT_CAPTION');
       setLoading(false);
-      setCaption(deck?.caption);
-    }, [setLoading, setCaption, deck])
+      setCaption(initialCaption);
+    }, [setLoading, setCaption, initialCaption])
   );
 
   const maybeSaveCaption = React.useCallback(async () => {
-    if (caption?.length) {
-      await setLoading(true);
-      await onChangeCaption(caption);
-      setLoading(false);
-      navigate('TabNavigator');
-    }
+    await setLoading(true);
+    await onChangeCaption(caption);
+    setLoading(false);
+    navigate('TabNavigator');
   }, [caption, setLoading, onChangeCaption, navigate]);
 
   return (

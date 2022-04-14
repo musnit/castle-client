@@ -171,12 +171,10 @@ export const ShareDeckScreen = ({ route }) => {
         visibility: deck.visibility,
         caption,
       };
-      /* TODO: BEN
-        Analytics.logEvent('CHANGE_DECK_CAPTION', {
-          deckId: deck.deckId,
-        });
-        await saveDeck({ variables: { deck: deckUpdateFragment } });
-      */
+      Analytics.logEvent('CHANGE_DECK_CAPTION', {
+        deckId: deck.deckId,
+      });
+      await saveDeck({ variables: { deck: deckUpdateFragment } });
       setCaption(caption);
     },
     [setCaption, saveDeck, deck]
@@ -194,9 +192,9 @@ export const ShareDeckScreen = ({ route }) => {
     () =>
       navigate('ModalEditDeckCaptionNavigator', {
         screen: 'EditDeckCaption',
-        params: { deck, onChangeCaption },
+        params: { caption, onChangeCaption },
       }),
-    [navigate, deck, onChangeCaption]
+    [navigate, caption, onChangeCaption]
   );
 
   return (
@@ -243,7 +241,7 @@ export const ShareDeckScreen = ({ route }) => {
           <Pressable style={styles.caption} onPress={onPressCaption}>
             <Feather name="edit" color={Constants.colors.white} size={16} />
             <Text style={styles.captionLabel} numberOfLines={1} ellipsizeMode="tail">
-              {caption ?? 'Add a caption'}
+              {caption?.length ? caption : 'Add a caption'}
             </Text>
           </Pressable>
         </View>

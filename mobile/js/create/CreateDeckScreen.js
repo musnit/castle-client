@@ -104,6 +104,7 @@ const DECK_FRAGMENT = `
     }
   }
   visibility
+  caption
   playCount
   reactions {
     count
