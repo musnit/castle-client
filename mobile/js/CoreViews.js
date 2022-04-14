@@ -410,7 +410,7 @@ let coreViews = {
         visibility: 'hidden',
         backgroundColor: '#000',
         borderColor: '#fff',
-        borderWidth: '1',
+        borderWidth: '0.2vw',
         borderRadius: '1vw',
       },
       {
