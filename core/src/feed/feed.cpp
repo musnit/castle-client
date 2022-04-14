@@ -761,7 +761,7 @@ void Feed::renderCardAtPosition(
   if (isDeckVisible) {
     if (decks[idx].coreView) {
       float padding = (windowWidth - cardWidth) / 2.0;
-      lv.graphics.setScissor({ (int)(position - padding), 0, 800, 1120 });
+      lv.graphics.setScissor({ (int)(position - padding), 0, 800, 3000 });
       decks[idx].coreView->updateProp("caption", "left",
           std::to_string(decks[idx].captionInitialLeft + decks[idx].captionAnimationLeft));
       decks[idx].coreView->render();
