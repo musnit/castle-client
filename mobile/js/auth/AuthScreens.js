@@ -15,7 +15,7 @@ import { AuthTextInput } from './AuthTextInput';
 import { useNavigation } from '../ReactNavigation';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
-import { resetPasswordAsync, useSession } from '../Session';
+import { resetPasswordFromEmailAsync, useSession } from '../Session';
 import { navigateToUri } from '../DeepLinks';
 
 import { ScreenHeader } from '../components/ScreenHeader';
@@ -368,7 +368,7 @@ const CreateAccountForm = ({ route }) => {
 const ForgotPasswordForm = () => {
   const { navigate } = useNavigation();
 
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
 
   const [resettingPassword, setResettingPassword] = useState(false);
   const [errors, setErrors] = useState([]);
@@ -377,7 +377,7 @@ const ForgotPasswordForm = () => {
     try {
       await setResettingPassword(true);
       setErrors([]);
-      await resetPasswordAsync({ username });
+      await resetPasswordFromEmailAsync({ email });
       await setResettingPassword(false);
       navigate('LoginScreen', {
         resetPassword: true,
@@ -401,9 +401,9 @@ const ForgotPasswordForm = () => {
         <Text style={{ fontSize: 20, color: Constants.colors.white }}>Forgot your password?</Text>
       </View>
       <AuthTextInput
-        value={username}
-        onChangeText={(newUsername) => setUsername(newUsername)}
-        placeholder="Email or username"
+        value={email}
+        onChangeText={(newEmail) => setEmail(newEmail)}
+        placeholder="Email"
         placeholderTextColor={Constants.colors.white}
         editable={!resettingPassword}
         autoFocus={true}

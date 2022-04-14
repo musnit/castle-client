@@ -559,6 +559,18 @@ export const resetPasswordAsync = async ({ username }) => {
   return result;
 };
 
+export const resetPasswordFromEmailAsync = async ({ email }) => {
+  const result = await apolloClient.mutate({
+    mutation: gql`
+      mutation ResetPassword($email: String!) {
+        sendResetPasswordEmailV2(email: $email)
+      }
+    `,
+    variables: { email },
+  });
+  return result;
+};
+
 export const CARD_FRAGMENT = `
   id
   cardId
