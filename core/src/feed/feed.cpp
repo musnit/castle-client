@@ -11,7 +11,6 @@
 #include "archive.h"
 
 #define TOP_PADDING 0
-// #define CAPTIONS_ENABLED
 #define PREV_NEXT_TAP_MAX_DURATION 0.3
 #define MIN_TIME_BETWEEN_TAP_GESTURES 0.5
 #define CORE_VIEWS_GESTURE_INACTIVE_AFTER_SWIPE_TIME 0.4
@@ -19,6 +18,7 @@
 #define NUX_ANIMATION_ALPHA_TIME 0.5;
 #define NUX_DECK_ID "lSTWWH6Kw"
 #define NUX_LAST_CARD_ID "aXLpBac-w"
+#define CAPTION_ANIMATION_SPEED 20.0
 
 #define BOTTOM_UI_MIN_HEIGHT 140
 
@@ -571,6 +571,27 @@ void Feed::update(double dt) {
 }
 
 void Feed::runUpdateAtIndex(int idx, double dt) {
+  if (decks[idx].captionTextWidth > 0
+      && decks[idx].captionTextWidth > decks[idx].captionDisplayWidth) {
+    if (decks[idx].captionAnimationDelay > 0) {
+      decks[idx].captionAnimationDelay -= dt;
+    } else {
+      int minLeft
+          = decks[idx].captionDisplayWidth - decks[idx].captionTextWidth - windowWidth * 0.05;
+
+      if (decks[idx].captionAnimationLeft < minLeft) {
+        decks[idx].captionAnimationLeft = 0.0;
+        decks[idx].captionAnimationDelay = CAPTION_ANIMATION_DELAY;
+      } else {
+        decks[idx].captionAnimationLeft -= dt * CAPTION_ANIMATION_SPEED;
+
+        if (decks[idx].captionAnimationLeft < minLeft) {
+          decks[idx].captionAnimationDelay = CAPTION_ANIMATION_DELAY;
+        }
+      }
+    }
+  }
+
   if (!decks[idx].player) {
     return;
   }
@@ -739,7 +760,12 @@ void Feed::renderCardAtPosition(
 
   if (isDeckVisible) {
     if (decks[idx].coreView) {
+      float padding = (windowWidth - cardWidth) / 2.0;
+      lv.graphics.setScissor({ (int)(position - padding), 0, 800, 1120 });
+      decks[idx].coreView->updateProp("caption", "left",
+          std::to_string(decks[idx].captionInitialLeft + decks[idx].captionAnimationLeft));
       decks[idx].coreView->render();
+      lv.graphics.setScissor();
     }
   }
 
@@ -1404,6 +1430,18 @@ void Feed::layoutCoreViews(int i) {
   float FEED_BOTTOM_ACTIONS_MAX_DIFF_BEFORE_REACTION_RELAYOUT
       = CoreViews::getInstance().getNumConstant(
           "FEED_BOTTOM_ACTIONS_MAX_DIFF_BEFORE_REACTION_RELAYOUT");
+  float FEED_BOTTOM_ACTIONS_REMIX_CAPTION_PADDING
+      = CoreViews::getInstance().getNumConstant("FEED_BOTTOM_ACTIONS_REMIX_CAPTION_PADDING");
+  float FEED_BOTTOM_ACTIONS_REMIX_BORDER_EXTRA_WIDTH
+      = CoreViews::getInstance().getNumConstant("FEED_BOTTOM_ACTIONS_REMIX_BORDER_EXTRA_WIDTH");
+  float FEED_BOTTOM_ACTIONS_CAPTION_OVERLAY_LEFT_EXTRA_WIDTH
+      = CoreViews::getInstance().getNumConstant(
+          "FEED_BOTTOM_ACTIONS_CAPTION_OVERLAY_LEFT_EXTRA_WIDTH");
+  float FEED_BOTTOM_ACTIONS_CAPTION_OVERLAY_GRADIENT_LEFT_PADDING
+      = CoreViews::getInstance().getNumConstant(
+          "FEED_BOTTOM_ACTIONS_CAPTION_OVERLAY_GRADIENT_LEFT_PADDING");
+  float FEED_BOTTOM_ACTIONS_CAPTION_DEFAULT_LEFT
+      = CoreViews::getInstance().getNumConstant("FEED_BOTTOM_ACTIONS_CAPTION_DEFAULT_LEFT");
 
   float vw = cardWidth / 100.0;
   int currentRight = FEED_BOTTOM_ACTIONS_INITIAL_RIGHT * vw;
@@ -1457,6 +1495,41 @@ void Feed::layoutCoreViews(int i) {
   }
 
   decks[i].coreView->updateProp("comment-icon", "right", std::to_string(currentRight));
+
+  // Remix and captions
+  auto remixVisibility = decks[i].coreView->getProp("remix-icon", "visibility");
+  decks[i].captionTextWidth = decks[i].coreView->getView("caption").getContentWidth();
+  if (remixVisibility == "visible") {
+    int remixTextWidth = decks[i].coreView->getView("remix-text").getContentWidth();
+
+    // need to set this for touch target
+    decks[i].coreView->updateProp("remix-text", "width", std::to_string(remixTextWidth + 10));
+
+    int remixBorderWidth = remixTextWidth + FEED_BOTTOM_ACTIONS_REMIX_BORDER_EXTRA_WIDTH * vw;
+    decks[i].coreView->updateProp("remix-border", "width", std::to_string(remixBorderWidth));
+    decks[i].coreView->updateProp(
+        "caption-overlay-left-remix", "width", std::to_string(remixBorderWidth));
+
+    int captionLeft = remixTextWidth + FEED_BOTTOM_ACTIONS_REMIX_CAPTION_PADDING * vw;
+    decks[i].coreView->updateProp("caption", "left", std::to_string(captionLeft));
+
+    int captionOverlayWidth
+        = remixTextWidth + FEED_BOTTOM_ACTIONS_CAPTION_OVERLAY_LEFT_EXTRA_WIDTH * vw;
+    decks[i].coreView->updateProp(
+        "caption-overlay-left", "width", std::to_string(captionOverlayWidth));
+
+    int captionOverlayGradientPadding
+        = remixTextWidth + FEED_BOTTOM_ACTIONS_CAPTION_OVERLAY_GRADIENT_LEFT_PADDING * vw;
+    decks[i].coreView->updateProp("caption-overlay-left-remix-gradient", "left",
+        std::to_string(captionOverlayGradientPadding));
+  }
+
+  auto captionLeftStr = decks[i].coreView->getProp("caption", "left");
+  int captionLeft = FormatNumber::isInt(captionLeftStr)
+      ? std::stoi(captionLeftStr)
+      : FEED_BOTTOM_ACTIONS_CAPTION_DEFAULT_LEFT * vw;
+  decks[i].captionInitialLeft = captionLeft;
+  decks[i].captionDisplayWidth = cardWidth - captionLeft;
 }
 
 struct RestartDeckReceiver {
@@ -1636,10 +1709,10 @@ void Feed::loadDeckFromDeckJson(int i) {
     decks[i].lastModified = reader.str("lastModified");
     decks[i].coreView->updateJSGestureProp("deckId", deckId);
     decks[i].coreView->updateJSGestureProp("deck", *decks[i].deckJson);
-
-#ifdef CAPTIONS_ENABLED
-    decks[i].coreView->updateProp("caption", "text", reader.str("caption", ""));
-#endif
+    // decks[i].coreView->updateProp("caption", "text", reader.str("caption", ""));
+    decks[i].coreView->updateProp("caption", "text",
+        "#Lorem #ipsum #dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor "
+        "incididunt");
 
     reader.arr("variables", [&]() {
       decks[i].player->readVariables(reader);
@@ -1663,9 +1736,14 @@ void Feed::loadDeckFromDeckJson(int i) {
         reader.obj("creator", [&]() {
           auto parentDeckCreatorUsername = reader.str("username");
           if (parentDeckCreatorUsername) {
+            decks[i].coreView->updateProp("remix-border", "visibility", "visible");
+            decks[i].coreView->updateProp(
+                "caption-overlay-left-remix-gradient", "visibility", "visible");
+            decks[i].coreView->updateProp("caption-overlay-left-remix", "visibility", "visible");
+            decks[i].coreView->updateProp("caption-overlay-left-remix-2", "visibility", "visible");
             decks[i].coreView->updateProp("remix-icon", "visibility", "visible");
-            decks[i].coreView->updateProp("remix-text", "text",
-                "Remix of " + std::string(*parentDeckCreatorUsername) + "'s deck");
+            decks[i].coreView->updateProp(
+                "remix-text", "text", std::string(*parentDeckCreatorUsername));
             decks[i].coreView->updateProp("remix-text", "visibility", "visible");
           }
         });

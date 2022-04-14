@@ -38,6 +38,15 @@ love::Data *EmbeddedImage::load(const std::string &filename) {
   } else if (filename == "remix-attribution.png") {
     data = remix_attribution_png;
     len = remix_attribution_png_len;
+  } else if (filename == "remix-attribution-white.png") {
+    data = remix_attribution_white_png;
+    len = remix_attribution_white_png_len;
+  } else if (filename == "gradient.png") {
+    data = gradient_png;
+    len = gradient_png_len;
+  } else if (filename == "gradient-2.png") {
+    data = gradient_2_png;
+    len = gradient_2_png_len;
   } else if (filename == "sound/instrument-drum-white.png") {
     data = sound_instrument_drum_white_png;
     len = sound_instrument_drum_white_png_len;

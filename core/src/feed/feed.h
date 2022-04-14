@@ -8,6 +8,7 @@
 #include "screen.h"
 
 #define NUM_FRAME_TIMES 5
+#define CAPTION_ANIMATION_DELAY 1.0
 
 struct FeedItem {
   enum OptionalBool {
@@ -42,6 +43,11 @@ struct FeedItem {
   float loadingTime = 0.0;
   float framesToSkip = 0.0;
   bool isFrozen = false;
+  int captionTextWidth = 0;
+  int captionDisplayWidth = 0;
+  float captionAnimationLeft = 0;
+  int captionInitialLeft = 0;
+  float captionAnimationDelay = CAPTION_ANIMATION_DELAY;
 };
 
 class Feed : public Screen {

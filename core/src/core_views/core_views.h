@@ -67,8 +67,11 @@ public:
   Lv &lv { Lv::getInstance() };
   bool hasBackgroundColor = false;
   float backgroundColor[3];
+  bool hasBorderColor = false;
+  float borderColor[3];
   bool isTouchDown = false;
   float borderRadius = -1;
+  float borderWidth = -1;
   inline static std::unique_ptr<love::Shader> borderRadiusImageShader = nullptr;
   inline static std::unique_ptr<love::Shader> borderRadiusColorShader = nullptr;
   int viewId;

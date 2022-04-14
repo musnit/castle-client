@@ -360,9 +360,9 @@ void CoreViews::hexToRGBFloat(std::string hex, float *out) {
     sscanf(hex.c_str(), "%02x%02x%02x", &rgb[0], &rgb[1], &rgb[2]);
   } else if (hex.length() == 3) {
     sscanf(hex.c_str(), "%01x%01x%01x", &rgb[0], &rgb[1], &rgb[2]);
-    rgb[0] = (rgb[0] + 1) * 16 - 1;
-    rgb[1] = (rgb[1] + 1) * 16 - 1;
-    rgb[2] = (rgb[2] + 1) * 16 - 1;
+    rgb[0] = rgb[0] * 16;
+    rgb[1] = rgb[1] * 16;
+    rgb[2] = rgb[2] * 16;
   }
 
   out[0] = rgb[0] / 255.0;
@@ -477,12 +477,12 @@ void CoreView::baseRead(Reader &reader, CoreView *parent,
   }
 
   if (reader.has("left")) {
-    left = CoreViews::getInstance().readInt(
+    left = CoreViews::getInstance().readFloat(
         reader, "left", parentWidth, viewportWidth, viewportHeight);
     savedLeft = left;
   } else if (reader.has("right")) {
     left = parentWidth
-        - CoreViews::getInstance().readInt(
+        - CoreViews::getInstance().readFloat(
             reader, "right", parentWidth, viewportWidth, viewportHeight)
         - width;
     savedLeft = left;
@@ -546,10 +546,21 @@ void CoreView::baseRead(Reader &reader, CoreView *parent,
         reader, "borderRadius", 1.0, viewportWidth, viewportHeight);
   }
 
+  if (reader.has("borderWidth")) {
+    borderWidth = CoreViews::getInstance().readFloat(
+        reader, "borderWidth", 1.0, viewportWidth, viewportHeight);
+  }
+
   auto backgroundColorStr = reader.str("backgroundColor");
   if (backgroundColorStr) {
     hasBackgroundColor = true;
     CoreViews::hexToRGBFloat(*backgroundColorStr, backgroundColor);
+  }
+
+  auto borderColorStr = reader.str("borderColor");
+  if (borderColorStr) {
+    hasBorderColor = true;
+    CoreViews::hexToRGBFloat(*borderColorStr, borderColor);
   }
 
   if (reader.has("children")) {
@@ -620,7 +631,7 @@ void CoreView::baseRender() {
 
       {
         auto info = borderRadiusColorShader->getUniformInfo("radius");
-        info->floats[0] = borderRadius;
+        info->floats[0] = borderRadius > 0 ? borderRadius : 0;
         borderRadiusColorShader->updateUniform(info, 1);
       }
 
@@ -649,10 +660,25 @@ void CoreView::baseRender() {
     }();
 
     auto graphicsColor = lv.graphics.getColor();
-    lv.graphics.setColor({ graphicsColor.r * backgroundColor[0],
-        graphicsColor.g * backgroundColor[1], graphicsColor.b * backgroundColor[2],
-        (isTouchDown ? TOUCH_DOWN_ALPHA : 1.0f) * graphicsColor.a });
-    quad->draw(&lv.graphics, love::Matrix4(0, 0, 0, width, height, 0, 0, 0, 0));
+    if (borderWidth > 0) {
+      lv.graphics.setColor({ graphicsColor.r * borderColor[0], graphicsColor.g * borderColor[1],
+          graphicsColor.b * borderColor[2],
+          (isTouchDown ? TOUCH_DOWN_ALPHA : 1.0f) * graphicsColor.a });
+      quad->draw(&lv.graphics, love::Matrix4(0, 0, 0, width, height, 0, 0, 0, 0));
+
+      lv.graphics.setColor({ graphicsColor.r * backgroundColor[0],
+          graphicsColor.g * backgroundColor[1], graphicsColor.b * backgroundColor[2],
+          (isTouchDown ? TOUCH_DOWN_ALPHA : 1.0f) * graphicsColor.a });
+      quad->draw(&lv.graphics,
+          love::Matrix4(borderWidth, borderWidth, 0, width - (borderWidth * 2.0),
+              height - (borderWidth * 2.0), 0, 0, 0, 0));
+    } else {
+      lv.graphics.setColor({ graphicsColor.r * backgroundColor[0],
+          graphicsColor.g * backgroundColor[1], graphicsColor.b * backgroundColor[2],
+          (isTouchDown ? TOUCH_DOWN_ALPHA : 1.0f) * graphicsColor.a });
+      quad->draw(&lv.graphics, love::Matrix4(0, 0, 0, width, height, 0, 0, 0, 0));
+    }
+
     lv.graphics.setColor({ 1, 1, 1, 1 });
   } else if (borderRadius > 0) {
     if (!borderRadiusImageShader) {
@@ -945,6 +971,7 @@ class TextView : public CoreView {
   }
 
   void render() {
+    lv.graphics.setShader();
     createFont();
 
     auto wrap = width / downscale;

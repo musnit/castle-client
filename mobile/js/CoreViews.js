@@ -45,6 +45,12 @@ let coreViews = {
     FEED_BOTTOM_ACTIONS_COMMENT_ICON_RIGHT_PADDING: 3,
     FEED_BOTTOM_ACTIONS_SPACE_COMMENT_BUTTON_AND_TEXT: 1.0,
 
+    FEED_BOTTOM_ACTIONS_CAPTION_DEFAULT_LEFT: 3.5,
+    FEED_BOTTOM_ACTIONS_REMIX_BORDER_EXTRA_WIDTH: 8,
+    FEED_BOTTOM_ACTIONS_REMIX_CAPTION_PADDING: 13.5,
+    FEED_BOTTOM_ACTIONS_CAPTION_OVERLAY_LEFT_EXTRA_WIDTH: 8,
+    FEED_BOTTOM_ACTIONS_CAPTION_OVERLAY_GRADIENT_LEFT_PADDING: 11,
+
     /*
      * 0 - cubicEaseIn
      * 1 - cubicEaseInOut
@@ -303,15 +309,118 @@ let coreViews = {
         },
       },
 
+      // Caption
+      {
+        id: 'caption',
+        type: 'text',
+        left: '3.5vw',
+        top: '12vw',
+        width: '10000vw',
+        height: '5vw',
+        color: '#fff',
+        textAlign: 'left',
+        fontSize: '0.35vw',
+        fontFamily: 'BaltoBook',
+        textAlignVertical: 'top',
+        // backgroundColor: '#f00',
+        // touch: 'enabled',
+      },
+
+      {
+        id: 'caption-overlay-left-remix-2',
+        type: 'view',
+        backgroundColor: '#000',
+        left: '-100vw',
+        top: '12vw',
+        width: '110vw',
+        height: '5vw',
+        visibility: 'hidden',
+      },
+
+      {
+        id: 'caption-overlay-left-remix',
+        type: 'view',
+        backgroundColor: '#000',
+        left: '3.2vw',
+        top: '12vw',
+        width: '30vw',
+        height: '5vw',
+        visibility: 'hidden',
+      },
+
+      {
+        id: 'caption-overlay-left-remix-gradient',
+        type: 'image',
+        filename: 'gradient-2.png',
+        left: '25vw',
+        top: '12vw',
+        width: '2.5vw',
+        height: '5vw',
+        visibility: 'hidden',
+      },
+
+      {
+        id: 'caption-overlay-left',
+        type: 'image',
+        filename: 'gradient-2.png',
+        left: '-8vw',
+        top: '12vw',
+        width: '10vw',
+        height: '5vw',
+      },
+
+      {
+        id: 'caption-overlay-left-2',
+        type: 'view',
+        backgroundColor: '#000',
+        left: '-30vw',
+        top: '12vw',
+        width: '23vw',
+        height: '5vw',
+      },
+
+      {
+        id: 'caption-overlay-right',
+        type: 'image',
+        filename: 'gradient.png',
+        right: '-8vw',
+        top: '12vw',
+        width: '10vw',
+        height: '5vw',
+      },
+
+      {
+        id: 'caption-overlay-rigth-2',
+        type: 'view',
+        backgroundColor: '#000',
+        left: '108vw',
+        top: '12vw',
+        width: '30vw',
+        height: '5vw',
+      },
+
       // Remix
       {
-        id: 'remix-icon',
-        filename: 'remix-attribution.png',
-        type: 'image',
-        left: '8.8vw',
+        id: 'remix-border',
+        type: 'view',
+        left: '3.2vw',
         top: '11vw',
-        width: '4vw',
-        height: '4vw',
+        width: '40vw',
+        height: '5.6vw',
+        visibility: 'hidden',
+        backgroundColor: '#000',
+        borderColor: '#fff',
+        borderWidth: '1',
+        borderRadius: '1vw',
+      },
+      {
+        id: 'remix-icon',
+        filename: 'remix-attribution-white.png',
+        type: 'image',
+        left: '5vw',
+        top: '12.3vw',
+        width: '3vw',
+        height: '3vw',
         hitSlopLeft: '1.5vw',
         hitSlopRight: '3vw',
         hitSlopBottom: '5vw',
@@ -319,7 +428,6 @@ let coreViews = {
         resizeMode: 'contain',
         touch: 'enabled',
         visibility: 'hidden',
-        // backgroundColor: '#f00',
         touch: 'enabled',
         onTap: (params) => {
           params.onNavigateToParent(params);
@@ -328,14 +436,14 @@ let coreViews = {
       {
         id: 'remix-text',
         type: 'text',
-        left: '15vw',
-        top: '11.5vw',
+        left: '9.3vw',
+        top: '12.3vw',
         width: '60vw',
         height: '5vw',
         hitSlopLeft: '1.5vw',
         hitSlopBottom: '5vw',
         hitSlopTop: '0vw',
-        color: '#999',
+        color: '#fff',
         textAlign: 'left',
         fontSize: '0.32vw',
         fontFamily: 'BaltoBook',
@@ -346,23 +454,6 @@ let coreViews = {
         onTap: (params) => {
           params.onNavigateToParent(params);
         },
-      },
-
-      // Caption
-      {
-        id: 'caption',
-        type: 'text',
-        left: '3.5vw',
-        top: '11.5vw',
-        width: '94vw',
-        height: '5vw',
-        color: '#fff',
-        textAlign: 'left',
-        fontSize: FEED_FONT_SIZE,
-        fontFamily: 'BaltoBook',
-        textAlignVertical: 'top',
-        // backgroundColor: '#f00',
-        // touch: 'enabled',
       },
     ],
   },
