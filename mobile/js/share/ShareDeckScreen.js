@@ -83,6 +83,17 @@ const styles = StyleSheet.create({
   remixIcon: {
     marginLeft: 8,
   },
+  caption: {
+    paddingHorizontal: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    maxWidth: 300,
+  },
+  captionLabel: {
+    color: Constants.colors.white,
+    fontSize: 16,
+    marginLeft: 8,
+  },
 });
 
 const VisibilityButton = ({
@@ -117,9 +128,10 @@ const VisibilityButton = ({
 };
 
 export const ShareDeckScreen = ({ route }) => {
-  const navigation = useNavigation();
+  const { navigate, setOptions } = useNavigation();
   const deck = route.params.deck;
   const [visibility, setVisibility] = React.useState(deck.visibility);
+  const [caption, setCaption] = React.useState(deck.caption);
   const initialCard = deck.cards.find((c) => c.cardId === deck.initialCard.cardId);
   const backgroundColor = getCardBackgroundColor(initialCard);
 
@@ -129,6 +141,7 @@ export const ShareDeckScreen = ({ route }) => {
         updateDeckV2(deck: $deck) {
           deckId
           visibility
+          caption
         }
       }
     `
@@ -139,12 +152,34 @@ export const ShareDeckScreen = ({ route }) => {
       const deckUpdateFragment = {
         deckId: deck.deckId,
         visibility,
+        caption: deck.caption,
       };
-      Analytics.logEvent('CHANGE_DECK_VISIBILITY', deckUpdateFragment);
+      Analytics.logEvent('CHANGE_DECK_VISIBILITY', {
+        deckId: deck.deckId,
+        visibility,
+      });
       saveDeck({ variables: { deck: deckUpdateFragment } });
       setVisibility(visibility);
     },
     [setVisibility, saveDeck, deck]
+  );
+
+  const onChangeCaption = React.useCallback(
+    async (caption) => {
+      const deckUpdateFragment = {
+        deckId: deck.deckId,
+        visibility: deck.visibility,
+        caption,
+      };
+      /* TODO: BEN
+        Analytics.logEvent('CHANGE_DECK_CAPTION', {
+          deckId: deck.deckId,
+        });
+        await saveDeck({ variables: { deck: deckUpdateFragment } });
+      */
+      setCaption(caption);
+    },
+    [setCaption, saveDeck, deck]
   );
 
   const onTapShare = React.useCallback((deck, visibility) => {
@@ -154,6 +189,15 @@ export const ShareDeckScreen = ({ route }) => {
       shareDeck(deck);
     }
   }, []);
+
+  const onPressCaption = React.useCallback(
+    () =>
+      navigate('ModalEditDeckCaptionNavigator', {
+        screen: 'EditDeckCaption',
+        params: { deck, onChangeCaption },
+      }),
+    [navigate, deck, onChangeCaption]
+  );
 
   return (
     <SafeAreaView style={Constants.styles.container} edges={['left', 'right', 'bottom']}>
@@ -196,6 +240,12 @@ export const ShareDeckScreen = ({ route }) => {
               </>
             )}
           </View>
+          <Pressable style={styles.caption} onPress={onPressCaption}>
+            <Feather name="edit" color={Constants.colors.white} size={16} />
+            <Text style={styles.captionLabel} numberOfLines={1} ellipsizeMode="tail">
+              {caption ?? 'Add a caption'}
+            </Text>
+          </Pressable>
         </View>
       </View>
       <VisibilityButton
