@@ -671,7 +671,8 @@ export const saveDeck = async (
   deck,
   variables,
   isAutosave = false,
-  parentCardId = undefined
+  parentCardId = undefined,
+  kitDeckId = undefined
 ) => {
   const deckUpdateFragment = {
     deckId: parentCardId ? LocalId.makeId() : deck.deckId,
@@ -688,16 +689,23 @@ export const saveDeck = async (
   if (variables) {
     deckUpdateFragment.variables = variables;
   }
+  if (kitDeckId) {
+    if (!LocalId.isLocalId(deckUpdateFragment.deckId)) {
+      // don't send kit deck id if this deck was already saved
+      kitDeckId = undefined;
+    }
+  }
 
   const result = await apolloClient.mutate({
     mutation: gql`
         mutation UpdateDeckAndCard(
-          $deck: DeckInput!, $card: CardInput!, $isAutosave: Boolean, $parentCardId: ID) {
+          $deck: DeckInput!, $card: CardInput!, $isAutosave: Boolean, $parentCardId: ID, $kitDeckId: ID) {
           updateCardAndDeckV2(
             deck: $deck,
             card: $card,
             isAutosave: $isAutosave,
             parentCardId: $parentCardId,
+            kitDeckId: $kitDeckId
           ) {
             deck {
               ${DECK_FRAGMENT}
@@ -708,7 +716,13 @@ export const saveDeck = async (
           }
         }
       `,
-    variables: { deck: deckUpdateFragment, card: cardUpdateFragment, isAutosave, parentCardId },
+    variables: {
+      deck: deckUpdateFragment,
+      card: cardUpdateFragment,
+      isAutosave,
+      parentCardId,
+      kitDeckId,
+    },
   });
 
   let updatedCard = result.data.updateCardAndDeckV2.card;

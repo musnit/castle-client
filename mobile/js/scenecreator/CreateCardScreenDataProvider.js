@@ -189,7 +189,8 @@ class CreateCardScreenDataProvider extends React.Component {
   _saveBackup = () => {
     if (this.state.isCardChanged) {
       const cardFragment = this._makeCardSaveFragment();
-      Session.saveDeck(cardFragment, this.state.deck, this._variables, true);
+      const kitDeckId = this.props?.route.params?.kitDeckId ?? undefined;
+      Session.saveDeck(cardFragment, this.state.deck, this._variables, true, undefined, kitDeckId);
     }
   };
 
@@ -235,7 +236,15 @@ class CreateCardScreenDataProvider extends React.Component {
       await this._updateScreenshot();
     }
     const cardFragment = this._makeCardSaveFragment();
-    const { card, deck } = await Session.saveDeck(cardFragment, this.state.deck, this._variables);
+    const kitDeckId = this.props?.route.params?.kitDeckId ?? undefined;
+    const { card, deck } = await Session.saveDeck(
+      cardFragment,
+      this.state.deck,
+      this._variables,
+      false,
+      undefined,
+      kitDeckId
+    );
     Analytics.logEvent('SAVE_DECK', {
       deckId: deck.deckId,
       cardId: card.cardId,
