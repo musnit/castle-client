@@ -327,6 +327,36 @@ let coreViews = {
       },
 
       {
+        id: 'caption2',
+        type: 'text',
+        left: '3.5vw',
+        top: '18vw',
+        width: '10000vw',
+        height: '5vw',
+        color: '#fff',
+        textAlign: 'left',
+        fontSize: '0.35vw',
+        fontFamily: 'BaltoBook',
+        textAlignVertical: 'top',
+        text: "blah blah blahlaj  alskjfla alsjdflasjdlf alsdjflajlsd alldsfla sfllajsljdfljsad",
+      },
+
+      {
+        id: 'caption3',
+        type: 'text',
+        left: '3.5vw',
+        top: '24vw',
+        width: '10000vw',
+        height: '5vw',
+        color: '#fff',
+        textAlign: 'left',
+        fontSize: '0.35vw',
+        fontFamily: 'BaltoBook',
+        textAlignVertical: 'top',
+        text: "blah blah blahlaj  alskjfla alsjdflasjdlf alsdjflajlsd alldsfla sfllajsljdfljsad",
+      },
+
+      {
         id: 'caption-overlay-left-remix-2',
         type: 'view',
         backgroundColor: '#000',
