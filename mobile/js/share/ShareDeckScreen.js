@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Alert, Linking, Pressable, TouchableOpacity, StyleSheet, View } from 'react-native';
+import { Alert, Pressable, TouchableOpacity, StyleSheet, View } from 'react-native';
 import { AppText as Text } from '../components/AppText';
 import { CardCell } from '../components/CardCell';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: Constants.CARD_BORDER_RADIUS,
     borderBottomRightRadius: Constants.CARD_BORDER_RADIUS,
   },
-  topCardHeader: {
+  topCardFooter: {
     flexDirection: 'row',
     alignItems: 'center',
     padding: 12,
@@ -82,20 +82,6 @@ const styles = StyleSheet.create({
   },
   remixIcon: {
     marginLeft: 8,
-  },
-  previewVideoInfo: {
-    flexShrink: 0,
-    paddingTop: 16,
-    paddingBottom: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexDirection: 'row',
-  },
-  previewVideoInfoText: {
-    color: '#ccc',
-  },
-  previewVideoInfoLink: {
-    color: '#fff',
   },
 });
 
@@ -193,11 +179,10 @@ export const ShareDeckScreen = ({ route }) => {
       />
       <View style={styles.deckPreview}>
         <View style={styles.topCard}>
-          <View
-            style={{
-              ...styles.topCardHeader,
-              backgroundColor: backgroundColor,
-            }}>
+          <View style={[styles.cardArt, { backgroundColor: backgroundColor }]}>
+            <CardCell card={initialCard} previewVideo={deck.previewVideo} />
+          </View>
+          <View style={[styles.topCardFooter, { backgroundColor: backgroundColor }]}>
             <View style={styles.avatar}>
               <UserAvatar url={deck.creator.photo?.url} />
             </View>
@@ -211,30 +196,7 @@ export const ShareDeckScreen = ({ route }) => {
               </>
             )}
           </View>
-          <View style={[styles.cardArt, { backgroundColor: backgroundColor }]}>
-            <CardCell card={initialCard} previewVideo={deck.previewVideo} />
-          </View>
         </View>
-        {!deck.previewVideo ? (
-          <View style={styles.previewVideoInfo}>
-            <Text style={styles.previewVideoInfoText}>No video preview • </Text>
-            <TouchableOpacity
-              onPress={() => {
-                Alert.alert(
-                  'Add a video preview',
-                  'To add a video preview: Open any card in the editor, play the card, and then tap "Record Preview" while playing.'
-                );
-              }}>
-              <Text style={styles.previewVideoInfoLink}>Learn more</Text>
-            </TouchableOpacity>
-          </View>
-        ) : (
-          <View style={styles.previewVideoInfo}>
-            <TouchableOpacity onPress={() => Linking.openURL(deck.previewVideo.url)}>
-              <Text style={styles.previewVideoInfoLink}>Download preview video</Text>
-            </TouchableOpacity>
-          </View>
-        )}
       </View>
       <VisibilityButton
         icon="public"
