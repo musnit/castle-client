@@ -156,8 +156,10 @@ public class CastleBottomSheet extends LinearLayout {
 
         if (lastOpenSnap != null) {
             position = screenSpaceSnapPoints.get(lastOpenSnap);
-        } else {
+        } else if (initialSnap != null) {
             position = screenSpaceSnapPoints.get(initialSnap);
+        } else {
+          return;
         }
 
         ScrollView scrollView = findScrollView(this);
