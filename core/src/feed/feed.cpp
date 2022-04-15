@@ -581,7 +581,7 @@ void Feed::runUpdateAtIndex(int idx, double dt) {
       decks[idx].captionAnimationDelay -= dt;
     } else {
       int minLeft
-          = decks[idx].captionDisplayWidth - decks[idx].captionTextWidth - windowWidth * 0.05;
+          = decks[idx].captionDisplayWidth - decks[idx].captionTextWidth - windowWidth * 0.06;
 
       if (decks[idx].captionAnimationLeft < minLeft) {
         decks[idx].captionAnimationLeft = 0.0;
