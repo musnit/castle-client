@@ -2021,6 +2021,7 @@ struct ViewFeedItemEvent {
   PROP(std::string, deckId);
   PROP(std::string, visibility);
   PROP(int, index);
+  PROP(std::string, impressionId);
 };
 
 void Feed::sendViewFeedItemEvent() {
@@ -2032,6 +2033,7 @@ void Feed::sendViewFeedItemEvent() {
     ev.deckId = *decks[idx].deckId;
     ev.visibility = *decks[idx].visibility;
     ev.index = idx;
+    ev.impressionId = decks[idx].impressionId;
     bridge.sendEvent("VIEW_FEED_ITEM", ev);
     lastViewFeedItemEventIndex = idx;
   }

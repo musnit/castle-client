@@ -190,6 +190,7 @@ export const NativeDecksFeed = ({
           deckId: event.deckId,
           visibility: event.visibility,
           index: event.index,
+          impressionId: event.impressionId,
         });
       }
     },
