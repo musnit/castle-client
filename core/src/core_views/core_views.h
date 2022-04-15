@@ -38,6 +38,12 @@ public:
   virtual float getContentWidth() {
     return savedWidth;
   }
+  virtual float testTextWidth(std::string) {
+    return savedWidth;
+  }
+  float getWidth() {
+    return savedWidth;
+  }
 
   void baseRead(Reader &reader, CoreView *parent,
       std::unordered_map<std::string, std::unordered_map<std::string, std::string>> *props,

@@ -51,6 +51,8 @@ let coreViews = {
     FEED_BOTTOM_ACTIONS_CAPTION_OVERLAY_LEFT_EXTRA_WIDTH: 8,
     FEED_BOTTOM_ACTIONS_CAPTION_OVERLAY_GRADIENT_LEFT_PADDING: 11,
 
+    FEED_BOTTOM_ACTIONS_CAPTION_HORIZONTAL_PADDING: 3.5,
+
     /*
      * 0 - cubicEaseIn
      * 1 - cubicEaseInOut
@@ -311,7 +313,7 @@ let coreViews = {
 
       // Caption
       {
-        id: 'caption',
+        id: 'caption-0',
         type: 'text',
         left: '3.5vw',
         top: '12vw',
@@ -327,7 +329,7 @@ let coreViews = {
       },
 
       {
-        id: 'caption2',
+        id: 'caption-1',
         type: 'text',
         left: '3.5vw',
         top: '18vw',
@@ -338,11 +340,10 @@ let coreViews = {
         fontSize: '0.35vw',
         fontFamily: 'BaltoBook',
         textAlignVertical: 'top',
-        text: "blah blah blahlaj  alskjfla alsjdflasjdlf alsdjflajlsd alldsfla sfllajsljdfljsad",
       },
 
       {
-        id: 'caption3',
+        id: 'caption-2',
         type: 'text',
         left: '3.5vw',
         top: '24vw',
@@ -353,7 +354,34 @@ let coreViews = {
         fontSize: '0.35vw',
         fontFamily: 'BaltoBook',
         textAlignVertical: 'top',
-        text: "blah blah blahlaj  alskjfla alsjdflasjdlf alsdjflajlsd alldsfla sfllajsljdfljsad",
+      },
+
+      {
+        id: 'caption-3',
+        type: 'text',
+        left: '3.5vw',
+        top: '30vw',
+        width: '10000vw',
+        height: '5vw',
+        color: '#fff',
+        textAlign: 'left',
+        fontSize: '0.35vw',
+        fontFamily: 'BaltoBook',
+        textAlignVertical: 'top',
+      },
+
+      {
+        id: 'caption-4',
+        type: 'text',
+        left: '3.5vw',
+        top: '36vw',
+        width: '10000vw',
+        height: '5vw',
+        color: '#fff',
+        textAlign: 'left',
+        fontSize: '0.35vw',
+        fontFamily: 'BaltoBook',
+        textAlignVertical: 'top',
       },
 
       {
@@ -413,17 +441,17 @@ let coreViews = {
         id: 'caption-overlay-right',
         type: 'image',
         filename: 'gradient.png',
-        right: '-8vw',
+        right: '0vw',
         top: '12vw',
         width: '10vw',
         height: '5vw',
       },
 
       {
-        id: 'caption-overlay-rigth-2',
+        id: 'caption-overlay-right-2',
         type: 'view',
         backgroundColor: '#000',
-        left: '108vw',
+        left: '100vw',
         top: '12vw',
         width: '30vw',
         height: '5vw',

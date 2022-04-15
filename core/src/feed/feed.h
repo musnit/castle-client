@@ -48,6 +48,7 @@ struct FeedItem {
   float captionAnimationLeft = 0;
   int captionInitialLeft = 0;
   float captionAnimationDelay = CAPTION_ANIMATION_DELAY;
+  std::string caption;
 };
 
 class Feed : public Screen {
@@ -116,6 +117,7 @@ private:
   float timeSinceLastSwipeGesture = 1.0;
   int lastViewFeedItemEventIndex = -1;
   int layoutCoreViewAtIdx = -1;
+  bool multilineCaptions = false;
 
   int cardLeft = 0;
   int cardWidth = 800;

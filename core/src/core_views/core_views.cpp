@@ -930,6 +930,13 @@ class TextView : public CoreView {
     return (float)width * downscale;
   }
 
+  float testTextWidth(std::string testText) {
+    createFont();
+
+    int width = font->getWidth(testText);
+    return (float)width * downscale;
+  }
+
   void read(Reader &reader, int viewportWidth, int viewportHeight) {
     if (reader.has("text")) {
       text = reader.str("text", "");
