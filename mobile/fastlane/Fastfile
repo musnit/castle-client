@@ -53,7 +53,7 @@ platform :ios do
       workspace: "ios/Castle.xcworkspace",
       export_options: {
      	provisioningProfiles: { 
-          "xyz.castle.castle" => "xyz.castle.castle AppStore 1636587602",
+          "xyz.castle.castle" => "xyz.castle.castle AppStore",
           "xyz.castle.castle.CastleNotificationService" => "xyz.castle.castle.CastleNotificationService AppSto",
         },
         # https://developer.apple.com/forums/thread/690647
