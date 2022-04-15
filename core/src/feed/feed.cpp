@@ -30,7 +30,7 @@
 
 // creator.photo.url and initialCard.backgroundImage.smallUrl needed for DeckRemixesScreen
 const std::string GRAPHQL_DECK_FIELDS
-    = "\ndeckId\ncaption\nlastModified\nvariables\nchildDecksCount\nvisibility\n"
+    = "\ndeckId\nimpressionId\ncaption\nlastModified\nvariables\nchildDecksCount\nvisibility\n"
       "parentDeckId\n"
       "parentDeck {\n"
       "  deckId\n"
@@ -502,7 +502,8 @@ void Feed::update(double dt) {
         runUpdateAtIndex(idx, dt);
 
         if (decks[idx].deckId && decks[idx].cardId) {
-          DeckPlays::getInstance().setDeckAndCardIds(*decks[idx].deckId, *decks[idx].cardId);
+          DeckPlays::getInstance().setDeckAndCardIds(
+              *decks[idx].deckId, *decks[idx].cardId, decks[idx].impressionId);
         }
         DeckPlays::getInstance().update(dt);
       }
@@ -1757,6 +1758,7 @@ void Feed::loadDeckFromDeckJson(int i) {
   deckArchive.read([&](Reader &reader) {
     std::string deckId = reader.str("deckId", "");
     decks[i].deckId = deckId;
+    decks[i].impressionId = reader.str("impressionId", "");
     decks[i].visibility = reader.str("visibility");
     decks[i].lastModified = reader.str("lastModified");
     decks[i].coreView->updateJSGestureProp("deckId", deckId);

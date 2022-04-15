@@ -8,13 +8,14 @@ public:
 
   static DeckPlays &getInstance();
 
-  void setDeckAndCardIds(std::string deckId, std::string cardId);
+  void setDeckAndCardIds(std::string deckId, std::string cardId, std::string impressionId);
   void update(double dt);
 
 private:
   inline static DeckPlays *instance = nullptr;
   std::string deckId;
   std::string cardId;
+  std::string impressionId;
   double timeSinceLastUpdate = 0.0;
 
   void sendUpdate();

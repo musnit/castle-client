@@ -20,6 +20,7 @@ struct FeedItem {
   std::optional<std::string> deckId;
   std::optional<std::string> visibility;
   std::optional<std::string> cardId;
+  std::string impressionId;
   std::optional<std::string> creatorUserId;
   std::optional<std::string> deckJson;
   std::optional<std::string> lastModified;

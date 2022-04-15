@@ -7,11 +7,13 @@ DeckPlays::DeckPlays() {
   instance = this;
 }
 
-void DeckPlays::setDeckAndCardIds(std::string deckId_, std::string cardId_) {
+void DeckPlays::setDeckAndCardIds(
+    std::string deckId_, std::string cardId_, std::string impressionId_) {
   if (deckId != deckId_ || cardId != cardId_) {
     timeSinceLastUpdate = 0.0;
     deckId = deckId_;
     cardId = cardId_;
+    impressionId = impressionId_;
     sendUpdate();
   }
 }
@@ -29,8 +31,8 @@ void DeckPlays::sendUpdate() {
     return;
   }
 
-  API::graphql(
-      "mutation {\n  recordDeckPlay(deckId: \"" + deckId + "\", cardId: \"" + cardId + "\")\n}",
+  API::graphql("mutation {\n  recordDeckPlay(deckId: \"" + deckId + "\", cardId: \"" + cardId
+          + "\", impressionId: \"" + impressionId + "\")\n}",
       [=](APIResponse &response) {
       });
 }
