@@ -286,7 +286,10 @@ void Sound::preload(const Sample &sample) {
 
             sound->loadMem(response.data, response.length, true, true);
 
-            urlSounds.insert(std::make_pair(url, std::move(sound)));
+            {
+              love::thread::Lock lock(Sound::soloudMutex);
+              urlSounds.insert(std::make_pair(url, std::move(sound)));
+            }
           }
         }
       });
@@ -332,7 +335,10 @@ void Sound::playUrl(float playbackRate, float amplitude, const std::string &url)
 
               sound->loadMem(response.data, response.length, true, true);
 
-              urlSounds.insert(std::make_pair(url, std::move(sound)));
+              {
+                love::thread::Lock lock(Sound::soloudMutex);
+                urlSounds.insert(std::make_pair(url, std::move(sound)));
+              }
             }
 
             playSoloudSource(*urlSounds[url], playbackRate, amplitude);
@@ -375,7 +381,10 @@ void Sound::playEffect(float playbackRate, float amplitude, const std::string &c
 
     sound->clampLength();
 
-    sfxrSounds.insert(std::make_pair(key, std::move(sound)));
+    {
+      love::thread::Lock lock(Sound::soloudMutex);
+      sfxrSounds.insert(std::make_pair(key, std::move(sound)));
+    }
   }
 
   playSoloudSource(*sfxrSounds[key], playbackRate, amplitude);
@@ -407,7 +416,10 @@ void Sound::playTone(float playbackRate, float amplitude, int midiNote, const st
     sound->mParams.p_env_decay = 0;
     sound->clampLength();
 
-    sfxrSounds.insert(std::make_pair(key, std::move(sound)));
+    {
+      love::thread::Lock lock(Sound::soloudMutex);
+      sfxrSounds.insert(std::make_pair(key, std::move(sound)));
+    }
   }
 
   int handle = playSoloudSource(*sfxrSounds[key], playbackRate, amplitude);
@@ -425,7 +437,10 @@ SoLoud::Sfxr *Sound::getOrMakeSfxrSourceForKey(
   if (sfxrSounds.find(key) == sfxrSounds.end()) {
     std::unique_ptr<SoLoud::Sfxr> source = std::make_unique<SoLoud::Sfxr>();
     f(source.get());
-    sfxrSounds.insert(std::make_pair(key, std::move(source)));
+    {
+      love::thread::Lock lock(Sound::soloudMutex);
+      sfxrSounds.insert(std::make_pair(key, std::move(source)));
+    }
   }
   return sfxrSounds[key].get();
 }
