@@ -125,6 +125,9 @@ private:
   int cardHeight = 1120;
   int feedItemWidth = 1000;
 
+  int testWidth = -1;
+  int testHeight = -1;
+
   std::set<std::string> seenDeckIds;
   std::vector<FeedItem> decks;
   std::string sessionId;
@@ -149,6 +152,7 @@ private:
   float getDragAmount();
   void loadDeckAtIndex(int i);
   void loadDeckFromDeckJson(int i);
+  void loadDeckCoreViews(int i);
   void unloadDeckAtIndex(int i, bool force = false);
   void loadAvatarAtIndex(int i);
   void unloadAvatarAtIndex(int i);

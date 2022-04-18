@@ -20,13 +20,12 @@
 #define NUX_LAST_CARD_ID "aXLpBac-w"
 #define CAPTION_ANIMATION_SPEED 20.0
 
-#define BOTTOM_UI_MIN_HEIGHT 140
-#define BOTTOM_UI_MIN_HEIGHT_FOR_MULTILINE_CAPTIONS 200
-
 #define TIME_BEFORE_FORCE_LOADING_NEXT_DECK 1.0
 
 // #define DEBUG_CLICK_TO_ADVANCE
 // #define DEBUG_AUTO_ADVANCE
+
+extern "C" double ghostScreenScaling;
 
 // creator.photo.url and initialCard.backgroundImage.smallUrl needed for DeckRemixesScreen
 const std::string GRAPHQL_DECK_FIELDS
@@ -117,18 +116,23 @@ float smoothstep(float a, float b, float t, int easingFunction) {
 struct NuxCompletedEvent {};
 
 void Feed::setWindowSize(int w, int h) {
+  int oldWindowWidth = windowWidth;
+  int oldWindowHeight = windowHeight;
+
   windowWidth = w;
   windowHeight = h;
 
-  float aspectRatio = (float)w / (float)(h - BOTTOM_UI_MIN_HEIGHT);
+  float FEED_UI_HEIGHT = CoreViews::getInstance().getNumConstant("FEED_UI_HEIGHT");
+  float FEED_MULTILINE_CAPTION_HEIGHT
+      = CoreViews::getInstance().getNumConstant("FEED_MULTILINE_CAPTION_HEIGHT");
+
+  float aspectRatio = (float)w / (float)h;
   float cardAspectRatio = 800.0 / 1120.0;
+  float feedAspectRatio = 800.0 / (1120.0 + FEED_UI_HEIGHT);
 
-  int oldCardWidth = cardWidth;
-  int oldCardHeight = cardHeight;
-
-  if (aspectRatio > cardAspectRatio) {
+  if (aspectRatio > feedAspectRatio) {
     // screen is wide
-    cardHeight = h - BOTTOM_UI_MIN_HEIGHT;
+    cardHeight = h * 1120.0 / (1120.0 + FEED_UI_HEIGHT);
     cardWidth = ((float)cardHeight) * cardAspectRatio;
     cardLeft = (w - cardWidth) * 0.5;
   } else {
@@ -138,8 +142,8 @@ void Feed::setWindowSize(int w, int h) {
     cardLeft = 0;
   }
 
-  int totalUiHeight = windowHeight - cardHeight;
-  multilineCaptions = totalUiHeight > BOTTOM_UI_MIN_HEIGHT_FOR_MULTILINE_CAPTIONS;
+  float multilineCaptionAspectRatio = 800.0 / (1120.0 + FEED_MULTILINE_CAPTION_HEIGHT);
+  multilineCaptions = aspectRatio < multilineCaptionAspectRatio;
 
   feedItemWidth = w;
 
@@ -147,15 +151,14 @@ void Feed::setWindowSize(int w, int h) {
     offset = -initialDeckIndex * feedItemWidth;
   }
 
-  if (cardWidth != oldCardWidth || cardHeight != oldCardHeight) {
+  if (windowWidth != oldWindowWidth || windowHeight != oldWindowHeight) {
     for (size_t i = 0; i < decks.size(); i++) {
       if (decks[i].coreView) {
-        decks[i].coreView->updateProp("container", "top", std::to_string(cardHeight));
+        loadDeckCoreViews(i);
       }
 
-      if (decks[i].avatarCoreView) {
-        decks[i].avatarCoreView->updateProp("container", "top", std::to_string(cardHeight));
-      }
+      // loadAvatarAtIndex will recreate this
+      decks[i].avatarCoreView.reset();
 
       if (decks[i].player && decks[i].player->hasScene()) {
         decks[i].player->getScene().getGesture().setBounds(
@@ -167,16 +170,7 @@ void Feed::setWindowSize(int w, int h) {
       canvases[i].reset();
     }
 
-    if (nuxCoreView) {
-      nuxCoreView->updateProp("container", "top", std::to_string(cardHeight));
-    }
-
-    int idx = getCurrentIndex();
-    if (idx >= 0 && idx < (int)decks.size() && cardWidth > oldCardWidth) {
-      // this is needed after leaving a comment on android.
-      // the comment sheet makes the screen smaller.
-      layoutCoreViewAtIdx = idx;
-    }
+    nuxCoreView.reset();
   }
 
   hasSetWindowSize = true;
@@ -214,6 +208,20 @@ void Feed::update(double dt) {
 
   if (dt > 0.5) {
     dt = 1.0 / 60.0;
+  }
+
+  int FEED_TEST_WIDTH = CoreViews::getInstance().getNumConstant("FEED_TEST_WIDTH");
+  int FEED_TEST_HEIGHT = CoreViews::getInstance().getNumConstant("FEED_TEST_HEIGHT");
+
+  if (FEED_TEST_WIDTH > 0 && FEED_TEST_HEIGHT > 0) {
+    if (FEED_TEST_WIDTH != testWidth || FEED_TEST_HEIGHT != testHeight) {
+      testWidth = FEED_TEST_WIDTH;
+      testHeight = FEED_TEST_HEIGHT;
+      Engine::useTestScreenSize = true;
+
+      ghostScreenScaling = double(testWidth) / 800;
+      setWindowSize(testWidth, testHeight);
+    }
   }
 
   float SCROLL_ANIMATION_TIME = CoreViews::getInstance().getNumConstant("SCROLL_ANIMATION_TIME");
@@ -954,6 +962,22 @@ void Feed::makeShader() {
 void Feed::draw() {
   if (!hasSetWindowSize) {
     return;
+  }
+
+  if (testWidth > 0 && testHeight > 0) {
+    static auto quad = [&]() {
+      std::vector<love::graphics::Vertex> quadVerts {
+        { 0, 0, 0, 0, { 0xff, 0xff, 0xff, 0xff } },
+        { 1, 0, 1, 0, { 0xff, 0xff, 0xff, 0xff } },
+        { 1, 1, 1, 1, { 0xff, 0xff, 0xff, 0xff } },
+        { 0, 1, 0, 1, { 0xff, 0xff, 0xff, 0xff } },
+      };
+      return lv.graphics.newMesh(
+          quadVerts, love::graphics::PRIMITIVE_TRIANGLE_FAN, love::graphics::vertex::USAGE_STATIC);
+    }();
+
+    lv.graphics.setColor({ 0.3, 0.0, 0.0, 1.0 });
+    quad->draw(&lv.graphics, love::Matrix4(0.0, 0.0, 0, testWidth, testHeight, 0, 0, 0, 0));
   }
 
   if (!shader) {
@@ -1707,6 +1731,53 @@ void Feed::addJSComment(std::string deckId) {
 
 void Feed::loadDeckFromDeckJson(int i) {
   decks[i].player = std::make_shared<Player>(bridge);
+  loadDeckCoreViews(i);
+
+  auto deckArchive = Archive::fromJson(decks[i].deckJson->c_str());
+  deckArchive.read([&](Reader &reader) {
+    std::string deckId = reader.str("deckId", "");
+    reader.obj("initialCard", [&]() {
+      auto cardId = reader.str("cardId", "");
+      decks[i].cardId = cardId;
+
+      if (CARD_ID_TO_DATA.find(cardId) != CARD_ID_TO_DATA.end()) {
+        std::string cardData(reinterpret_cast<char *>(CARD_ID_TO_DATA.at(cardId).first),
+            CARD_ID_TO_DATA.at(cardId).second);
+        auto archive = Archive::fromJson(cardData.c_str());
+        archive.read([&](Reader &reader) {
+          decks[i].player->readScene(reader, deckId);
+          decks[i].isLoaded = true;
+        });
+      } else {
+        auto sceneDataUrl = reader.str("sceneDataUrl", "");
+        int myFeedId = feedId;
+        API::loadSceneData(sceneDataUrl, [myFeedId, i, deckId, this](APIResponse &response) {
+          if (!isFeedAlive[myFeedId]) {
+            return;
+          }
+
+          if (i >= (int)decks.size() || decks[i].deckId != deckId) {
+            return;
+          }
+
+          if (response.success) {
+            if (decks[i].player) {
+              const std::string readerJson = response.reader.toJson();
+              decks[i].player->readScene(readerJson, deckId);
+              decks[i].isLoaded = true;
+            }
+          } else {
+            networkErrorAtIndex(i);
+          }
+        });
+      }
+    });
+  });
+
+  sendViewFeedItemEvent();
+}
+
+void Feed::loadDeckCoreViews(int i) {
   decks[i].coreView
       = CoreViews::getInstance().getRenderer("FEED", cardWidth, windowHeight - cardHeight);
   decks[i].coreView->updateProp("container", "top", std::to_string(cardHeight));
@@ -1765,6 +1836,7 @@ void Feed::loadDeckFromDeckJson(int i) {
     decks[i].coreView->updateJSGestureProp("deck", *decks[i].deckJson);
     decks[i].caption = reader.str("caption", "");
     decks[i].coreView->updateProp("caption-0", "text", decks[i].caption);
+    decks[i].captionAnimationLeft = 0.0;
 
     reader.arr("variables", [&]() {
       decks[i].player->readVariables(reader);
@@ -1862,48 +1934,9 @@ void Feed::loadDeckFromDeckJson(int i) {
         }
       }
     });
-
-    reader.obj("initialCard", [&]() {
-      auto cardId = reader.str("cardId", "");
-      decks[i].cardId = cardId;
-
-      if (CARD_ID_TO_DATA.find(cardId) != CARD_ID_TO_DATA.end()) {
-        std::string cardData(reinterpret_cast<char *>(CARD_ID_TO_DATA.at(cardId).first),
-            CARD_ID_TO_DATA.at(cardId).second);
-        auto archive = Archive::fromJson(cardData.c_str());
-        archive.read([&](Reader &reader) {
-          decks[i].player->readScene(reader, deckId);
-          decks[i].isLoaded = true;
-        });
-      } else {
-        auto sceneDataUrl = reader.str("sceneDataUrl", "");
-        int myFeedId = feedId;
-        API::loadSceneData(sceneDataUrl, [myFeedId, i, deckId, this](APIResponse &response) {
-          if (!isFeedAlive[myFeedId]) {
-            return;
-          }
-
-          if (i >= (int)decks.size() || decks[i].deckId != deckId) {
-            return;
-          }
-
-          if (response.success) {
-            if (decks[i].player) {
-              const std::string readerJson = response.reader.toJson();
-              decks[i].player->readScene(readerJson, deckId);
-              decks[i].isLoaded = true;
-            }
-          } else {
-            networkErrorAtIndex(i);
-          }
-        });
-      }
-    });
   });
 
   layoutCoreViews(i);
-
-  sendViewFeedItemEvent();
 }
 
 void Feed::networkErrorAtIndex(int i) {

@@ -67,6 +67,8 @@ public:
   LibraryClipboard &getLibraryClipboard();
   Screenshot *getScreenshot();
 
+  inline static bool useTestScreenSize = false;
+
 private:
   inline static Engine *instance = nullptr;
   Bridge bridge { *this };

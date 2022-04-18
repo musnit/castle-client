@@ -53,6 +53,11 @@ let coreViews = {
 
     FEED_BOTTOM_ACTIONS_CAPTION_HORIZONTAL_PADDING: 3.5,
 
+    FEED_UI_HEIGHT: 150,
+    FEED_MULTILINE_CAPTION_HEIGHT: 200,
+    FEED_TEST_WIDTH: -1,
+    FEED_TEST_HEIGHT: -1,
+
     /*
      * 0 - cubicEaseIn
      * 1 - cubicEaseInOut

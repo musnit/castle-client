@@ -423,42 +423,44 @@ bool Engine::frame() {
   }
 #endif
 
+  if (!useTestScreenSize) {
 #ifdef __EMSCRIPTEN__
-  // Update window size and screen scaling based on canvas in web. This will generate an
-  // `SDL_WINDOWEVENT_RESIZED`, so we do it before the event pump to let Love process that
-  // immediately.
-  if (auto w = JS_getCanvasWidth(), h = JS_getCanvasHeight();
-      w != prevWindowWidth || h != prevWindowHeight) {
-    Debug::log("canvas resized to {}, {}", w, h);
-    SDL_SetWindowSize(lv.window.getSDLWindow(), w, h);
-    ghostScreenScaling = double(w) / 800;
-    prevWindowWidth = w;
-    prevWindowHeight = h;
-  }
+    // Update window size and screen scaling based on canvas in web. This will generate an
+    // `SDL_WINDOWEVENT_RESIZED`, so we do it before the event pump to let Love process that
+    // immediately.
+    if (auto w = JS_getCanvasWidth(), h = JS_getCanvasHeight();
+        w != prevWindowWidth || h != prevWindowHeight) {
+      Debug::log("canvas resized to {}, {}", w, h);
+      SDL_SetWindowSize(lv.window.getSDLWindow(), w, h);
+      ghostScreenScaling = double(w) / 800;
+      prevWindowWidth = w;
+      prevWindowHeight = h;
+    }
 #elif defined(ANDROID)
-  {
-    int w = 0, h = 0;
-    SDL_GetWindowSize(lv.window.getSDLWindow(), &w, &h);
-    ghostScreenScaling = androidGetGhostScreenScaling();
+    {
+      int w = 0, h = 0;
+      SDL_GetWindowSize(lv.window.getSDLWindow(), &w, &h);
+      ghostScreenScaling = androidGetGhostScreenScaling();
 
-    auto screen = maybeGetScreen();
-    if (screen) {
-      screen->setWindowSize(800, h / (double(w) / 800));
+      auto screen = maybeGetScreen();
+      if (screen) {
+        screen->setWindowSize(800, h / (double(w) / 800));
+      }
     }
-  }
 #else
-  // Just set screen scaling based on window size in desktop
-  {
-    int w = 0, h = 0;
-    SDL_GetWindowSize(lv.window.getSDLWindow(), &w, &h);
-    ghostScreenScaling = double(w) / 800;
+    // Just set screen scaling based on window size in desktop
+    {
+      int w = 0, h = 0;
+      SDL_GetWindowSize(lv.window.getSDLWindow(), &w, &h);
+      ghostScreenScaling = double(w) / 800;
 
-    auto screen = maybeGetScreen();
-    if (screen) {
-      screen->setWindowSize(800, h / ghostScreenScaling);
+      auto screen = maybeGetScreen();
+      if (screen) {
+        screen->setWindowSize(800, h / ghostScreenScaling);
+      }
     }
-  }
 #endif
+  }
 
   // Process events. Quit if the window was closed.
   lv.event.pump();
