@@ -976,6 +976,8 @@ void Feed::makeShader() {
 }
 
 void Feed::draw() {
+  lv.graphics.setColor({ 1.0, 1.0, 1.0, 1.0 });
+
   if (!hasSetWindowSize) {
     return;
   }
