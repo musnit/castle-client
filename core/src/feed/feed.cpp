@@ -210,6 +210,13 @@ void Feed::update(double dt) {
     dt = 1.0 / 60.0;
   }
 
+  update1(dt);
+  update2(dt);
+  update3(dt, wasLongFrame);
+  update4(dt);
+}
+
+void Feed::update1(double dt) {
   int FEED_TEST_WIDTH = CoreViews::getInstance().getNumConstant("FEED_TEST_WIDTH");
   int FEED_TEST_HEIGHT = CoreViews::getInstance().getNumConstant("FEED_TEST_HEIGHT");
 
@@ -224,7 +231,6 @@ void Feed::update(double dt) {
     }
   }
 
-  float SCROLL_ANIMATION_TIME = CoreViews::getInstance().getNumConstant("SCROLL_ANIMATION_TIME");
   float DRAG_START_OFFSET = CoreViews::getInstance().getNumConstant("DRAG_START_OFFSET");
   float SCROLL_MULTIPLIER = CoreViews::getInstance().getNumConstant("SCROLL_MULTIPLIER");
   float FAST_SWIPE_MAX_DURATION
@@ -431,6 +437,10 @@ void Feed::update(double dt) {
       }
     }
   });
+}
+
+void Feed::update2(double dt) {
+  float SCROLL_ANIMATION_TIME = CoreViews::getInstance().getNumConstant("SCROLL_ANIMATION_TIME");
 
 #ifdef DEBUG_AUTO_ADVANCE
   if (rand() % 100 > 94) {
@@ -460,7 +470,10 @@ void Feed::update(double dt) {
       sendViewFeedItemEvent();
     }
   }
+}
 
+void Feed::update3(double dt, bool wasLongFrame) {
+  float SCROLL_ANIMATION_TIME = CoreViews::getInstance().getNumConstant("SCROLL_ANIMATION_TIME");
   int idx = getCurrentIndex();
 
   if (!dragStarted && !isAnimating) {
@@ -575,7 +588,10 @@ void Feed::update(double dt) {
     loadAvatarAtIndex(idx + 2);
     loadAvatarAtIndex(idx + 3);
   }
+}
 
+void Feed::update4(double dt) {
+  int idx = getCurrentIndex();
   for (int i = idx - 2; i <= idx + 2; i++) {
     if (i >= 0 && i < (int)decks.size()) {
       decks[i].loadingTime += dt;
