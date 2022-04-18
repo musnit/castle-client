@@ -55,10 +55,14 @@ export const EditDeckCaptionScreen = ({ route }) => {
   );
 
   const maybeSaveCaption = React.useCallback(async () => {
+    let mounted = true;
     await setLoading(true);
     await onChangeCaption(caption);
-    setLoading(false);
-    navigate('TabNavigator');
+    if (mounted) {
+      setLoading(false);
+      navigate('TabNavigator');
+    }
+    return () => (mounted = false);
   }, [caption, setLoading, onChangeCaption, navigate]);
 
   return (
