@@ -19,6 +19,8 @@ private:
   double timeSinceLastUpdate = 0.0;
 
   void sendUpdate();
+  void sendUpdateWithOldIds(
+      std::string newDeckId, std::string newCardId, std::string newImpressionId);
 };
 
 inline DeckPlays &DeckPlays::getInstance() {
