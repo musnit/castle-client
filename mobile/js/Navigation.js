@@ -1,5 +1,5 @@
 import React from 'react';
-import { Platform } from 'react-native';
+import { LogBox, Platform } from 'react-native';
 import { enableScreens } from 'react-native-screens';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import BootSplash from 'react-native-bootsplash';
@@ -38,6 +38,9 @@ const Stack = createNativeStackNavigator();
 const Tab = createTopTabNavigator();
 
 const ICON_SIZE = 22;
+
+// we don't need the react-nav feature which would be broken according to this warning
+LogBox.ignoreLogs(['Non-serializable values were found in the navigation state']);
 
 // App UI layout
 
