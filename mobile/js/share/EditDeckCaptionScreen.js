@@ -71,7 +71,7 @@ export const EditDeckCaptionScreen = ({ route }) => {
         <View style={styles.captionInputWrapper}>
           <TextInput
             value={caption}
-            placeholder="My deck is about owls"
+            placeholder="My deck is about #owls"
             multiline
             editable={!loading}
             onChangeText={setCaption}
