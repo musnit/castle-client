@@ -151,6 +151,9 @@ void Sound::clear() {
   // pause time
   suspend();
 
+  // explicitly shut down sounds - shouldn't be needed? but might prevent crash on next lines
+  stopCurrentlyPlayingSounds();
+
   // forget all state
   // don't need to lock clockMutex here because clock thread was just stopped
   {
