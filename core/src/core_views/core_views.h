@@ -44,6 +44,8 @@ public:
   float getWidth() {
     return savedWidth;
   }
+  virtual void truncateWithEllipses(int width) {
+  }
 
   void baseRead(Reader &reader, CoreView *parent,
       std::unordered_map<std::string, std::unordered_map<std::string, std::string>> *props,

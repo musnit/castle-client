@@ -937,6 +937,25 @@ class TextView : public CoreView {
     return (float)width * downscale;
   }
 
+  void truncateWithEllipses(int width) {
+    int testWidth = testTextWidth(text);
+    int charsToTruncate = 0;
+
+    while (testWidth > width) {
+      charsToTruncate++;
+
+      if (charsToTruncate > text.length() - 3) {
+        return;
+      }
+
+      testWidth = testTextWidth(text.substr(0, text.length() - charsToTruncate) + "...");
+    }
+
+    if (charsToTruncate > 0) {
+      text = text.substr(0, text.length() - charsToTruncate) + "...";
+    }
+  }
+
   void read(Reader &reader, int viewportWidth, int viewportHeight) {
     if (reader.has("text")) {
       text = reader.str("text", "");

@@ -1473,6 +1473,8 @@ void Feed::layoutCoreViews(int i) {
       = CoreViews::getInstance().getNumConstant("FEED_BOTTOM_ACTIONS_CAPTION_DEFAULT_LEFT");
   float FEED_BOTTOM_ACTIONS_CAPTION_HORIZONTAL_PADDING
       = CoreViews::getInstance().getNumConstant("FEED_BOTTOM_ACTIONS_CAPTION_HORIZONTAL_PADDING");
+  float FEED_BOTTOM_ACTIONS_USERNAME_LEFT
+      = CoreViews::getInstance().getNumConstant("FEED_BOTTOM_ACTIONS_USERNAME_LEFT");
 
   float vw = cardWidth / 100.0;
   int currentRight = FEED_BOTTOM_ACTIONS_INITIAL_RIGHT * vw;
@@ -1526,6 +1528,13 @@ void Feed::layoutCoreViews(int i) {
   }
 
   decks[i].coreView->updateProp("comment-icon", "right", std::to_string(currentRight));
+
+  float feedUsernameLeft = FEED_BOTTOM_ACTIONS_USERNAME_LEFT * vw;
+  // 5.5 is comment icon width
+  // 0.5 is padding
+  float usernameWidth = cardWidth - feedUsernameLeft - currentRight - 5.5 * vw - 0.5 * vw;
+  decks[i].coreView->updateProp("username", "width", std::to_string(usernameWidth));
+  decks[i].coreView->getView("username").truncateWithEllipses(usernameWidth);
 
   // Remix and captions
   auto remixVisibility = decks[i].coreView->getProp("remix-icon", "visibility");

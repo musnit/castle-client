@@ -10,6 +10,7 @@ let FEED_ICON_SIZE = '5.5vw';
 let FEED_ICON_TOP = '2.7vw';
 let FEED_FONT_SIZE = '0.45vw';
 let FEED_TEXT_TOP = '3.4vw';
+let FEED_USERNAME_LEFT = 15;
 
 function onPressComments(params) {
   let deck = {
@@ -52,6 +53,8 @@ let coreViews = {
     FEED_BOTTOM_ACTIONS_CAPTION_OVERLAY_GRADIENT_LEFT_PADDING: 11,
 
     FEED_BOTTOM_ACTIONS_CAPTION_HORIZONTAL_PADDING: 3.5,
+
+    FEED_BOTTOM_ACTIONS_USERNAME_LEFT: FEED_USERNAME_LEFT,
 
     FEED_UI_HEIGHT: 150,
     FEED_MULTILINE_CAPTION_HEIGHT: 200,
@@ -205,7 +208,7 @@ let coreViews = {
       {
         id: 'username',
         type: 'text',
-        left: '15vw',
+        left: `${FEED_USERNAME_LEFT}vw`,
         top: FEED_TEXT_TOP,
         width: '45vw',
         height: '5vw',
