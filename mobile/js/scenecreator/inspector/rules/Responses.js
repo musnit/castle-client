@@ -633,7 +633,7 @@ const SetBehavior = ({ response, context }) => {
       }
     }
   }
-  if (response.params?.value === undefined) {
+  if (response.params?.value === undefined || response.params?.value === null) {
     valueLabel = 0;
   } else {
     if (response.params.value.expressionType) {
