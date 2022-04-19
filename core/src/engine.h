@@ -81,6 +81,7 @@ private:
   bool pendingSceneLoadedEvent = false;
   bool paused = false;
   bool newPausedState = false;
+  bool coreViewsReady = false;
 
   struct PreInit {
     // Allows us to run some early initialization steps before the rest of the

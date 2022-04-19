@@ -210,10 +210,26 @@ void Feed::update(double dt) {
     dt = 1.0 / 60.0;
   }
 
+  update01(dt);
+  update02(dt);
+  update03(dt);
   update1(dt);
   update2(dt);
   update3(dt, wasLongFrame);
   update4(dt);
+}
+
+void Feed::update01(double dt) {
+  CoreViews::getInstance().getNumConstant("FEED_TEST_WIDTH");
+}
+
+void Feed::update02(double dt) {
+  gesture.update();
+}
+
+void Feed::update03(double dt) {
+  int fps = lv.timer.getFPS();
+  Debug::display("fps: {}", fps);
 }
 
 void Feed::update1(double dt) {
@@ -241,8 +257,6 @@ void Feed::update1(double dt) {
   float DRAG_VELOCITY_ROLLING_AVERAGE_TIME
       = CoreViews::getInstance().getNumConstant("DRAG_VELOCITY_ROLLING_AVERAGE_TIME");
 
-  int fps = lv.timer.getFPS();
-  Debug::display("fps: {}", fps);
   elapsedTime += dt;
   nuxAnimationTime += dt;
   timeSinceLastTapGesture += dt;
@@ -266,7 +280,6 @@ void Feed::update1(double dt) {
     }
   }
 
-  gesture.update();
   gesture.withSingleTouch([&](const Touch &touch) {
     if (touch.pressed) {
       // ignore the touch if the current animation is from a tap gesture
@@ -381,17 +394,19 @@ void Feed::update1(double dt) {
           && !isAnimating) {
         bool coreViewHasGesture = false;
         int idx = getCurrentIndex();
-        if (decks[idx].coreView) {
-          auto gestureViewId = decks[idx].coreView->gestureViewId();
-          if (gestureViewId && *gestureViewId != "container") {
-            coreViewHasGesture = true;
+        if (idx >= 0 && idx < (int)decks.size()) {
+          if (decks[idx].coreView) {
+            auto gestureViewId = decks[idx].coreView->gestureViewId();
+            if (gestureViewId && *gestureViewId != "container") {
+              coreViewHasGesture = true;
+            }
           }
-        }
 
-        if (!coreViewHasGesture && decks[idx].avatarCoreView) {
-          auto gestureViewId = decks[idx].avatarCoreView->gestureViewId();
-          if (gestureViewId && *gestureViewId != "container") {
-            coreViewHasGesture = true;
+          if (!coreViewHasGesture && decks[idx].avatarCoreView) {
+            auto gestureViewId = decks[idx].avatarCoreView->gestureViewId();
+            if (gestureViewId && *gestureViewId != "container") {
+              coreViewHasGesture = true;
+            }
           }
         }
 

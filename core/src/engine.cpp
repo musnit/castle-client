@@ -270,6 +270,7 @@ void Engine::setInitialParams(const char *initialParamsJson) {
 
 void Engine::setCoreViews(const char *coreViewsJson) {
   coreViews.setJson(coreViewsJson);
+  coreViewsReady = true;
 }
 
 void Engine::setBeltHeightFraction(double beltHeightFraction) {
@@ -546,9 +547,11 @@ void Engine::update(double dt) {
     }
   }
 
-  auto screen = maybeGetScreen();
-  if (screen) {
-    screen->update(dt);
+  if (coreViewsReady) {
+    auto screen = maybeGetScreen();
+    if (screen) {
+      screen->update(dt);
+    }
   }
 
 #ifdef CASTLE_ENABLE_TESTS
@@ -562,9 +565,11 @@ void Engine::update(double dt) {
 //
 
 void Engine::draw() {
-  auto screen = maybeGetScreen();
-  if (screen) {
-    screen->draw();
+  if (coreViewsReady) {
+    auto screen = maybeGetScreen();
+    if (screen) {
+      screen->draw();
+    }
   }
 
 #ifdef CASTLE_ENABLE_TESTS

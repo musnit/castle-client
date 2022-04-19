@@ -67,6 +67,9 @@ public:
 
   ScreenType screenType();
   void update(double dt);
+  void update01(double dt);
+  void update02(double dt);
+  void update03(double dt);
   void update1(double dt);
   void update2(double dt);
   void update3(double dt, bool wasLongFrame);
