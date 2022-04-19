@@ -755,10 +755,14 @@ export function useCoreViews(opts) {
 
         let gestureHandlerId = params.gestureHandlerId;
         if (coreViewGestureHandlers[gestureHandlerId]) {
-          coreViewGestureHandlers[gestureHandlerId](props);
+          try {
+            coreViewGestureHandlers[gestureHandlerId](props);
+          } catch (e) {
+            console.error(`core views gesture handler error: ${e}`);
+          }
         }
       },
-      [isFocused]
+      [isFocused, opts]
     ),
   });
 }
