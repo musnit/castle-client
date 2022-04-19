@@ -46,7 +46,7 @@ struct TextComponent : BaseComponent {
             "Tektur"
            )
          )
-            = "BreiteGrotesk";
+            = "DMSans";
     PROP(float, fontSize,
         .label("Font size")
          .rulesGet(false)
@@ -112,11 +112,11 @@ public:
   inline static const TouchToken leaderboardTouchToken;
 
   struct OverlayStyle {
-    PROP(love::Colorf, regularBackgroundColor) = { 227 / 255.0, 230 / 255.0, 255 / 255.0, 1};
-    PROP(love::Colorf, regularForegroundColor) = { 36 / 255.0, 34 / 255.0, 52 / 255.0, 1};
-    PROP(love::Colorf, tappableBackgroundColor) = { 36 / 255.0, 34 / 255.0, 52 / 255.0, 1};
-    PROP(love::Colorf, tappingBackgroundColor) = { 64 / 255.0, 51 / 255.0, 83 / 255.0, 1};
-    PROP(love::Colorf, tappableForegroundColor) = { 227 / 255.0, 230 / 255.0, 255 / 255.0, 1};
+    PROP(love::Colorf, regularBackgroundColor) = { 227 / 255.0, 230 / 255.0, 255 / 255.0, 1 };
+    PROP(love::Colorf, regularForegroundColor) = { 36 / 255.0, 34 / 255.0, 52 / 255.0, 1 };
+    PROP(love::Colorf, tappableBackgroundColor) = { 36 / 255.0, 34 / 255.0, 52 / 255.0, 1 };
+    PROP(love::Colorf, tappingBackgroundColor) = { 64 / 255.0, 51 / 255.0, 83 / 255.0, 1 };
+    PROP(love::Colorf, tappableForegroundColor) = { 227 / 255.0, 230 / 255.0, 255 / 255.0, 1 };
     PROP(float, fontSize) = 20;
     PROP(float, horizontalPadding) = 4;
     PROP(float, topPadding) = 2.75;

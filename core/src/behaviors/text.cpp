@@ -124,6 +124,13 @@ void TextBehavior::handleReadComponent(ActorId actorId, TextComponent &component
     component.props.order() = maxExistingOrder + 1;
   }
 
+  // Migrate old font names
+  if (component.props.fontName() == "BreiteGrotesk") {
+    component.props.fontName() = "DMSans";
+  } else if (component.props.fontName() == "Compagnon") {
+    component.props.fontName() = "CourierPrime";
+  }
+
   updateFont(actorId, component);
 
   // If we're invisible according to legacy prop, propagate to body prop
