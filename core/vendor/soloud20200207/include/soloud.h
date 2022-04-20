@@ -483,7 +483,7 @@ namespace SoLoud
 		// Owners of the resample data
 		AudioSourceInstance **mResampleDataOwner;
 		// Audio voices.
-		AudioSourceInstance *mVoice[VOICE_COUNT];
+		AudioSourceInstance *mVoice[VOICE_COUNT] = { nullptr };
 		// Output sample rate (not float)
 		unsigned int mSamplerate;
 		// Output channel count
