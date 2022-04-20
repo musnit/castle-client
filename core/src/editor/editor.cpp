@@ -2104,6 +2104,10 @@ struct EditorRulesDataEvent {
 };
 
 void Editor::sendRulesData() {
+  if (rulesDataSent) {
+    return;
+  }
+
   EditorRulesDataEvent ev;
 
   for (auto &triggerWriter : RulesBehavior::triggerWriters) {
@@ -2132,6 +2136,8 @@ void Editor::sendRulesData() {
   }
 
   bridge.sendEvent("EDITOR_RULES_DATA", ev);
+
+  rulesDataSent = true;
 }
 
 struct EditorChangeSceneSettingsReceiver {
