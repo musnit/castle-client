@@ -125,11 +125,13 @@ namespace SoLoud
 			mVoice[aVoice] = 0;
 
 			unsigned int i;
-			for (i = 0; i < mMaxActiveVoices; i++)
-			{
-				if (mResampleDataOwner[i] == v)
+			if (mResampleDataOwner) {
+				for (i = 0; i < mMaxActiveVoices; i++)
 				{
-					mResampleDataOwner[i] = NULL;
+					if (mResampleDataOwner[i] == v)
+					{
+						mResampleDataOwner[i] = NULL;
+					}
 				}
 			}
 
