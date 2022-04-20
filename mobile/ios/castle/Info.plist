@@ -57,7 +57,7 @@
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>You can use photos in $(PRODUCT_NAME) as your avatar, and you can also use them as artwork when you create cards.</string>
 	<key>SceneCreatorApiVersion</key>
-	<string>105</string>
+	<string>104</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>AntDesign.ttf</string>
