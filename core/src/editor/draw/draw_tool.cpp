@@ -563,6 +563,9 @@ void DrawTool::saveDrawing(std::string commandDescription) {
   auto &drawBehavior = scene.getBehaviors().byType<Drawing2Behavior>();
   auto actorId = editor.getSelection().firstSelectedActorId();
   auto component = drawBehavior.maybeGetComponent(actorId);
+  if (!component) {
+    return;
+  }
 
   auto newDrawData = drawData->serialize();
   auto newPhysicsBodyData = physicsBodyData->serialize();
