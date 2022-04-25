@@ -554,6 +554,9 @@ void DrawTool::setIsPlayingAnimation(bool isPlayingAnimation_) {
 }
 
 void DrawTool::saveDrawing(std::string commandDescription) {
+  if (!drawData || !physicsBodyData) {
+    return;
+  }
   drawData->updateFramePreview(selectedLayerId, selectedFrameIndex);
   physicsBodyData->updatePreview();
 
@@ -584,6 +587,9 @@ void DrawTool::saveDrawing(std::string commandDescription) {
 
     auto &drawBehavior = scene.getBehaviors().byType<Drawing2Behavior>();
     auto drawComponent = drawBehavior.maybeGetComponent(actorId);
+    if (!drawComponent) {
+      return;
+    }
     drawComponent->drawData = std::make_shared<love::DrawData>(drawData);
     drawComponent->physicsBodyData = std::make_shared<PhysicsBodyData>(physicsBodyData);
     drawComponent->hash = hash;
