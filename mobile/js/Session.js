@@ -16,6 +16,7 @@ import * as PushNotifications from './PushNotifications';
 import * as EventEmitter from './EventEmitter';
 import * as Sentry from '@sentry/react-native';
 import * as Analytics from './common/Analytics';
+import * as CoreEvents from './core/CoreEvents';
 
 const SKIP_NUX = false;
 
@@ -1135,3 +1136,11 @@ export const fetchMoreNotifications = async (oldNotifications) => {
     notifications: [...oldNotifications, ...notifications],
   });
 };
+
+CoreEvents.listen('SENTRY_BREADCRUMB', (params) => {
+  Sentry.addBreadcrumb({
+    category: params.category,
+    message: params.message,
+    level: params.level || Sentry.Severity.Info,
+  });
+});
