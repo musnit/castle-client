@@ -60,6 +60,23 @@ void Bridge::flushPendingReceives() {
 
 
 //
+// Sentry breadcrumbs
+//
+
+void Bridge::SentryBreadcrumb::write(Writer &writer) const {
+  writer.str("category", category);
+  writer.str("message", message);
+  if (level != "info") {
+    writer.str("level", level);
+  }
+}
+
+void Bridge::addSentryBreadcrumb(const SentryBreadcrumb &breadcrumb) {
+  sendEvent("SENTRY_BREADCRUMB", breadcrumb);
+}
+
+
+//
 // Android implementation
 //
 

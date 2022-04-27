@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
+import * as Sentry from '@sentry/react-native';
 
 import { useListen, useCoreEvents, sendAsync } from '../core/CoreEvents';
 import CastleCoreView from '../core/CastleCoreView';
@@ -103,6 +104,17 @@ export const GameView = React.forwardRef(({
   useListen({
     eventName: 'SCENE_LOADED',
     handler: onLoaded,
+  });
+
+  useListen({
+    eventName: 'SENTRY_BREADCRUMB',
+    handler: (params) => {
+      Sentry.addBreadcrumb({
+        category: params.category,
+        message: params.message,
+        level: params.level || Sentry.Severity.Info,
+      });
+    },
   });
 
   useFocusEffect(React.useCallback(() => {

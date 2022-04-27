@@ -32,6 +32,18 @@ public:
   void flushPendingReceives();
 
 
+  // Sentry breadcrumbs
+
+  struct SentryBreadcrumb {
+    std::string category;
+    std::string message;
+    std::string level = "info"; // "fatal", "error", "warning", "log", "info", "debug" or "critical"
+
+    void write(Writer &writer) const;
+  };
+  void addSentryBreadcrumb(const SentryBreadcrumb &breadcrumb);
+
+
 private:
   Engine &engine;
 
