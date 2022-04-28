@@ -20821,7 +20821,7 @@ ma_result ma_context_init__coreaudio(const ma_context_config* pConfig, ma_contex
         #endif
 
             // XXX(castle): required to make airpods work
-            options |= AVAudioSessionCategoryOptionAllowBluetooth;
+            options |= AVAudioSessionCategoryOptionAllowBluetoothA2DP;
             if ([pAudioSession setCategory: AVAudioSessionCategoryPlayAndRecord withOptions:options error:nil]) {
               /* Using PlayAndRecord */
               printf("Castle: Use PlayAndRecord audio session\n");
