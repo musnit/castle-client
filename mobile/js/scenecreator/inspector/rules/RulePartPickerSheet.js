@@ -70,9 +70,11 @@ export default RulePartPickerSheet = ({
 
   // hide empty sections
   let isCategoryVisible = {};
-  Object.entries(entries).forEach(([category, contents]) => {
-    isCategoryVisible[category] = contents.some((entry) => isEntryVisible(entry));
-  });
+  if (entries) {
+    Object.entries(entries).forEach(([category, contents]) => {
+      isCategoryVisible[category] = contents.some((entry) => isEntryVisible(entry));
+    });
+  }
 
   if (!categoryOrder && entries) {
     categoryOrder = Object.keys(entries);
