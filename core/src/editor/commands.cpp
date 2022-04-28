@@ -77,6 +77,11 @@ void Commands::execute(
     editor.setEditorStateDirty(); // `canUndo` or `canRedo` may have changed -- avoid over-sending
                                   // when coalescing though
     editor.updateCommandCount();
+
+    Bridge::SentryBreadcrumb breadcrumb;
+    breadcrumb.category = "editor_command";
+    breadcrumb.message = description;
+    editor.getBridge().addSentryBreadcrumb(breadcrumb);
   }
 }
 
