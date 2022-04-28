@@ -16,6 +16,9 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import Feather from 'react-native-vector-icons/Feather';
 
 const styles = StyleSheet.create({
+  content: {
+    padding: 16,
+  },
   item: {
     padding: 16,
     borderBottomColor: Constants.colors.grayOnBlackBorder,
@@ -44,44 +47,15 @@ const styles = StyleSheet.create({
     color: Constants.colors.white,
     fontSize: 16,
   },
-  deckPreview: {
-    height: '100%',
-    flexShrink: 1,
-    paddingVertical: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderBottomWidth: 1,
-    borderBottomColor: Constants.colors.grayOnBlackBorder,
-  },
-  topCard: {
-    flexShrink: 1,
-  },
-  cardArt: {
-    aspectRatio: Constants.CARD_RATIO,
-    flexShrink: 1,
-    borderBottomLeftRadius: Constants.CARD_BORDER_RADIUS,
-    borderBottomRightRadius: Constants.CARD_BORDER_RADIUS,
-  },
-  topCardFooter: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 12,
-    borderTopLeftRadius: Constants.CARD_BORDER_RADIUS,
-    borderTopRightRadius: Constants.CARD_BORDER_RADIUS,
-  },
-  avatar: {
-    width: 24,
-    height: 24,
-  },
-  username: {
-    color: '#fff',
-    fontWeight: '700',
+  visibilityExplainer: {
+    color: Constants.colors.white,
     fontSize: 16,
-    marginLeft: 8,
-    ...Constants.styles.textShadow,
+    paddingBottom: 16,
   },
-  remixIcon: {
-    marginLeft: 8,
+  visibilityContainer: {
+    borderColor: Constants.colors.white,
+    borderRadius: 4,
+    borderWidth: 1,
   },
   caption: {
     paddingHorizontal: 16,
@@ -130,11 +104,18 @@ const VisibilityButton = ({
 export const ShareDeckScreen = ({ route }) => {
   const { navigate, setOptions } = useNavigation();
   const deck = route.params.deck;
-  const [visibility, setVisibility] = React.useState(deck.visibility);
-  const [caption, setCaption] = React.useState(deck.caption);
+
+  // TODO: add everything from deck settings sheet
+  const [updatedDeck, setUpdatedDeck] = React.useState({
+    visibility: deck.visibility,
+    caption: deck.caption,
+    isChanged: false,
+  });
+
   const initialCard = deck.cards.find((c) => c.cardId === deck.initialCard.cardId);
   const backgroundColor = getCardBackgroundColor(initialCard);
 
+  // TODO: add fragment from deck settings sheet
   const [saveDeck] = useMutation(
     gql`
       mutation UpdateDeck($deck: DeckInput!) {
@@ -147,132 +128,109 @@ export const ShareDeckScreen = ({ route }) => {
     `
   );
 
-  const onChangeVisibility = React.useCallback(
-    async (visibility) => {
-      const deckUpdateFragment = {
-        deckId: deck.deckId,
-        visibility,
-        caption: deck.caption,
-      };
+  const onSaveDeck = React.useCallback(async () => {
+    const deckUpdateFragment = {
+      deckId: deck.deckId,
+      ...updatedDeck,
+    };
+    delete deckUpdateFragment.isChanged;
+
+    if (updatedDeck.visibility !== deck.visibility) {
       Analytics.logEvent('CHANGE_DECK_VISIBILITY', {
         deckId: deck.deckId,
-        visibility,
+        visibility: updatedDeck.visibility,
       });
-      saveDeck({ variables: { deck: deckUpdateFragment } });
-      setVisibility(visibility);
-    },
-    [setVisibility, saveDeck, deck]
-  );
-
-  const onChangeCaption = React.useCallback(
-    async (caption) => {
-      const deckUpdateFragment = {
-        deckId: deck.deckId,
-        visibility: deck.visibility,
-        caption,
-      };
+    }
+    if (updatedDeck.caption !== deck.caption) {
       Analytics.logEvent('CHANGE_DECK_CAPTION', {
         deckId: deck.deckId,
       });
-      await saveDeck({ variables: { deck: deckUpdateFragment } });
-      setCaption(caption);
-    },
-    [setCaption, saveDeck, deck]
+    }
+    await saveDeck({ variables: { deck: deckUpdateFragment } });
+    setUpdatedDeck({
+      ...updatedDeck,
+      isChanged: false,
+    });
+  }, [saveDeck, deck, updatedDeck, setUpdatedDeck]);
+
+  const onChangeCaption = React.useCallback(
+    (caption) =>
+      setUpdatedDeck({
+        ...updatedDeck,
+        caption,
+        isChanged: true,
+      }),
+    [updatedDeck]
   );
 
-  const onTapShare = React.useCallback((deck, visibility) => {
-    if (visibility === 'private') {
-      Alert.alert("Can't share deck", 'Make this deck Public or Unlisted in order to share it.');
-    } else {
-      shareDeck(deck);
-    }
-  }, []);
+  const onChangeVisibility = React.useCallback(
+    (visibility) =>
+      setUpdatedDeck({
+        ...updatedDeck,
+        visibility,
+        isChanged: true,
+      }),
+    [updatedDeck]
+  );
 
   const onPressCaption = React.useCallback(
     () =>
       navigate('ModalEditDeckCaptionNavigator', {
         screen: 'EditDeckCaption',
-        params: { caption, onChangeCaption },
+        params: { caption: updatedDeck.caption, onChangeCaption },
       }),
-    [navigate, caption, onChangeCaption]
+    [navigate, updatedDeck, onChangeCaption]
   );
 
   return (
     <SafeAreaView style={Constants.styles.container} edges={['left', 'right', 'bottom']}>
       <ScreenHeader
-        title="Share Deck"
+        title="Deck Sharing"
         RightButtonComponent={
           <Pressable
-            style={Constants.styles.siteHeaderIcon}
-            onPress={() => onTapShare(deck, visibility)}>
-            {({ pressed }) => (
-              <Feather
-                name={Constants.iOS ? 'share' : 'share-2'}
-                size={24}
-                color={
-                  visibility === 'private' || pressed
-                    ? Constants.colors.grayText
-                    : Constants.colors.white
-                }
-              />
-            )}
+            style={[
+              Constants.styles.primaryButton,
+              {
+                marginRight: 16,
+                opacity: updatedDeck.isChanged ? 1 : 0.5,
+              },
+            ]}
+            disabled={!updatedDeck.isChanged}
+            onPress={onSaveDeck}>
+            <Text style={styles.primaryButtonLabel}>Save</Text>
           </Pressable>
         }
       />
-      <View style={styles.deckPreview}>
-        <View style={styles.topCard}>
-          <View style={[styles.cardArt, { backgroundColor: backgroundColor }]}>
-            <CardCell card={initialCard} previewVideo={deck.previewVideo} />
-          </View>
-          <View style={[styles.topCardFooter, { backgroundColor: backgroundColor }]}>
-            <View style={styles.avatar}>
-              <UserAvatar url={deck.creator.photo?.url} />
-            </View>
-            <Text style={styles.username}>{deck.creator.username}</Text>
-            {deck.parentDeckId && deck.parentDeck && (
-              <>
-                <Feather name="refresh-cw" color="#fff" size={12} style={styles.remixIcon} />
-                <Text numberOfLines={1} style={styles.username}>
-                  {deck.parentDeck?.creator?.username}
-                </Text>
-              </>
-            )}
-          </View>
-          <Pressable style={styles.caption} onPress={onPressCaption}>
-            <Feather name="edit" color={Constants.colors.white} size={16} />
-            <Text style={styles.captionLabel} numberOfLines={1} ellipsizeMode="tail">
-              {caption?.length ? caption : 'Add a caption'}
-            </Text>
-          </Pressable>
+      <View style={styles.content}>
+        <Text style={styles.visibilityExplainer}>Who can play your deck?</Text>
+        <View style={styles.visibilityContainer}>
+          <VisibilityButton
+            icon="public"
+            visibility="public"
+            name="Public"
+            description="Anyone can find and view"
+            isSelected={updatedDeck.visibility === 'public'}
+            onChangeVisibility={onChangeVisibility}
+          />
+          <VisibilityButton
+            icon="link"
+            visibility="unlisted"
+            name="Unlisted"
+            description="Anyone with the link can view"
+            isSelected={updatedDeck.visibility === 'unlisted'}
+            onChangeVisibility={onChangeVisibility}
+          />
+          <VisibilityButton
+            icon="lock"
+            visibility="private"
+            name="Private"
+            description="Only visible to you"
+            isSelected={updatedDeck.visibility === 'private'}
+            onChangeVisibility={onChangeVisibility}
+            isLast
+          />
         </View>
       </View>
-      <VisibilityButton
-        icon="public"
-        visibility="public"
-        name="Public"
-        description="Anyone can find and view"
-        isSelected={visibility === 'public'}
-        onChangeVisibility={onChangeVisibility}
-        isLast={false}
-      />
-      <VisibilityButton
-        icon="link"
-        visibility="unlisted"
-        name="Unlisted"
-        description="Anyone with the link can view"
-        isSelected={visibility === 'unlisted'}
-        onChangeVisibility={onChangeVisibility}
-        isLast={false}
-      />
-      <VisibilityButton
-        icon="lock"
-        visibility="private"
-        name="Private"
-        description="Only visible to you"
-        isSelected={visibility === 'private'}
-        onChangeVisibility={onChangeVisibility}
-        isLast={true}
-      />
     </SafeAreaView>
   );
 };
