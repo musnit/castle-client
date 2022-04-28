@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Alert, Pressable, TouchableOpacity, StyleSheet, View } from 'react-native';
+import { Alert, Pressable, TextInput, TouchableOpacity, StyleSheet, View } from 'react-native';
 import { AppText as Text } from '../components/AppText';
 import { CardCell } from '../components/CardCell';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -53,20 +53,26 @@ const styles = StyleSheet.create({
     paddingBottom: 16,
   },
   visibilityContainer: {
-    borderColor: Constants.colors.white,
+    borderColor: '#888',
     borderRadius: 4,
     borderWidth: 1,
   },
-  caption: {
-    paddingHorizontal: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
-    maxWidth: 300,
+  captionForm: {
+    borderColor: '#888',
+    borderWidth: 1,
+    marginBottom: 16,
+    borderRadius: 4,
   },
-  captionLabel: {
-    color: Constants.colors.white,
+  captionInputWrapper: {
+    padding: 12,
+    paddingTop: 6,
+    alignItems: 'flex-end',
+  },
+  captionInput: {
+    width: '100%',
     fontSize: 16,
-    marginLeft: 8,
+    minHeight: 72,
+    color: '#fff',
   },
 });
 
@@ -105,6 +111,8 @@ export const ShareDeckScreen = ({ route }) => {
   const { navigate, setOptions } = useNavigation();
   const deck = route.params.deck;
 
+  const [loading, setLoading] = React.useState(false);
+
   // TODO: add everything from deck settings sheet
   const [updatedDeck, setUpdatedDeck] = React.useState({
     visibility: deck.visibility,
@@ -129,12 +137,14 @@ export const ShareDeckScreen = ({ route }) => {
   );
 
   const onSaveDeck = React.useCallback(async () => {
+    let mounted = true;
     const deckUpdateFragment = {
       deckId: deck.deckId,
       ...updatedDeck,
     };
     delete deckUpdateFragment.isChanged;
 
+    await setLoading(true);
     if (updatedDeck.visibility !== deck.visibility) {
       Analytics.logEvent('CHANGE_DECK_VISIBILITY', {
         deckId: deck.deckId,
@@ -147,11 +157,15 @@ export const ShareDeckScreen = ({ route }) => {
       });
     }
     await saveDeck({ variables: { deck: deckUpdateFragment } });
-    setUpdatedDeck({
-      ...updatedDeck,
-      isChanged: false,
-    });
-  }, [saveDeck, deck, updatedDeck, setUpdatedDeck]);
+    if (mounted) {
+      setLoading(false);
+      setUpdatedDeck({
+        ...updatedDeck,
+        isChanged: false,
+      });
+    }
+    return () => (mounted = false);
+  }, [saveDeck, deck, updatedDeck, setUpdatedDeck, setLoading]);
 
   const onChangeCaption = React.useCallback(
     (caption) =>
@@ -171,15 +185,6 @@ export const ShareDeckScreen = ({ route }) => {
         isChanged: true,
       }),
     [updatedDeck]
-  );
-
-  const onPressCaption = React.useCallback(
-    () =>
-      navigate('ModalEditDeckCaptionNavigator', {
-        screen: 'EditDeckCaption',
-        params: { caption: updatedDeck.caption, onChangeCaption },
-      }),
-    [navigate, updatedDeck, onChangeCaption]
   );
 
   return (
@@ -202,6 +207,19 @@ export const ShareDeckScreen = ({ route }) => {
         }
       />
       <View style={styles.content}>
+        <View style={styles.captionForm}>
+          <View style={styles.captionInputWrapper}>
+            <TextInput
+              value={updatedDeck.caption}
+              placeholder="Add a caption and #tags"
+              multiline
+              editable={!loading}
+              onChangeText={onChangeCaption}
+              style={styles.captionInput}
+              placeholderTextColor={Constants.colors.grayOnBlackText}
+            />
+          </View>
+        </View>
         <Text style={styles.visibilityExplainer}>Who can play your deck?</Text>
         <View style={styles.visibilityContainer}>
           <VisibilityButton

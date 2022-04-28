@@ -12,7 +12,6 @@ import { CreateScreen } from './create/CreateScreen';
 import { CreateChooseKitScreen } from './create/CreateChooseKitScreen';
 import { CreateDeckNavigator } from './create/CreateDeckNavigator';
 import { useAppState } from './ghost/GhostAppState';
-import { EditDeckCaptionScreen } from './share/EditDeckCaptionScreen';
 import { HomeScreen } from './home/HomeScreen';
 import { ExploreScreen } from './explore/ExploreScreen';
 import { ExploreFeed } from './explore/ExploreFeed';
@@ -379,16 +378,6 @@ const ModalCreateDeckNavigator = () => (
   </Stack.Navigator>
 );
 
-const ModalEditDeckCaptionNavigator = () => (
-  <Stack.Navigator screenOptions={makeModalHeaderStyles}>
-    <Stack.Screen
-      name="EditDeckCaption"
-      component={EditDeckCaptionScreen}
-      options={{ title: 'Edit Deck Caption' }}
-    />
-  </Stack.Navigator>
-);
-
 const AuthNavigator = () => (
   <Stack.Navigator screenOptions={makeModalHeaderStyles}>
     <Stack.Screen
@@ -440,7 +429,6 @@ const MainAppNavigator = () => (
     <Stack.Screen name="TabNavigator" component={TabNavigator} />
     <Stack.Screen name="AuthNavigator" component={AuthNavigator} />
     <Stack.Screen name="ModalCreateDeckNavigator" component={ModalCreateDeckNavigator} />
-    <Stack.Screen name="ModalEditDeckCaptionNavigator" component={ModalEditDeckCaptionNavigator} />
   </Stack.Navigator>
 );
 
