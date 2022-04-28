@@ -20820,21 +20820,16 @@ ma_result ma_context_init__coreaudio(const ma_context_config* pConfig, ma_contex
             options |= AVAudioSessionCategoryOptionDefaultToSpeaker;
         #endif
 
+            // XXX(castle): required to make airpods work
+            options |= AVAudioSessionCategoryOptionAllowBluetooth;
             if ([pAudioSession setCategory: AVAudioSessionCategoryPlayAndRecord withOptions:options error:nil]) {
               /* Using PlayAndRecord */
-              // XXX(castle): maybe required to make airpods work
-              options |= AVAudioSessionCategoryOptionAllowBluetooth;
               printf("Castle: Use PlayAndRecord audio session\n");
             } else if ([pAudioSession setCategory: AVAudioSessionCategoryPlayback withOptions:options error:nil]) {
               /* Using Playback */
-              /// XXX(castle): maybe required to make airpods work
-              options |= AVAudioSessionCategoryOptionAllowBluetoothA2DP;
               printf("Castle: Use Playback audio session\n");
             } else if ([pAudioSession setCategory: AVAudioSessionCategoryRecord withOptions:options error:nil]) {
-                /* Using Record */
-              /* Using PlayAndRecord */
-              // XXX(castle): maybe required to make airpods work
-              options |= AVAudioSessionCategoryOptionAllowBluetooth;
+              /* Using Record */
               printf("Castle: Use Record audio session\n");
             } else {
                 /* Leave as default? */
