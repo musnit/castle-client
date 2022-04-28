@@ -1,11 +1,10 @@
 import * as React from 'react';
-import { Alert, Pressable, TextInput, TouchableOpacity, StyleSheet, View } from 'react-native';
+import { Pressable, TextInput, TouchableOpacity, StyleSheet, View } from 'react-native';
 import { AppText as Text } from '../components/AppText';
-import { CardCell } from '../components/CardCell';
+import { ConfigureDeck } from '../create/ConfigureDeck';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ScreenHeader } from '../components/ScreenHeader';
-import { UserAvatar } from '../components/UserAvatar';
-import { shareDeck, getCardBackgroundColor } from '../common/utilities';
+import { shareDeck } from '../common/utilities';
 import { useMutation, gql } from '@apollo/client';
 import { useNavigation } from '../ReactNavigation';
 import * as Analytics from '../common/Analytics';
@@ -13,7 +12,6 @@ import * as Analytics from '../common/Analytics';
 import * as Constants from '../Constants';
 
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import Feather from 'react-native-vector-icons/Feather';
 
 const styles = StyleSheet.create({
   content: {
@@ -108,22 +106,18 @@ const VisibilityButton = ({
 };
 
 export const ShareDeckScreen = ({ route }) => {
-  const { navigate, setOptions } = useNavigation();
+  const { popToTop } = useNavigation();
   const deck = route.params.deck;
 
   const [loading, setLoading] = React.useState(false);
-
-  // TODO: add everything from deck settings sheet
   const [updatedDeck, setUpdatedDeck] = React.useState({
     visibility: deck.visibility,
     caption: deck.caption,
+    accessPermissions: deck.accessPermissions,
+    commentsEnabled: deck.commentsEnabled,
     isChanged: false,
   });
 
-  const initialCard = deck.cards.find((c) => c.cardId === deck.initialCard.cardId);
-  const backgroundColor = getCardBackgroundColor(initialCard);
-
-  // TODO: add fragment from deck settings sheet
   const [saveDeck] = useMutation(
     gql`
       mutation UpdateDeck($deck: DeckInput!) {
@@ -133,8 +127,38 @@ export const ShareDeckScreen = ({ route }) => {
           caption
         }
       }
+    `,
+    {
+      update: (cache, { data }) => {
+        // clear comments cache in case they modified the comment enabled flag
+        // https://www.apollographql.com/docs/react/caching/cache-interaction/#example-deleting-a-field-from-a-cached-object
+        cache.modify({
+          id: cache.identify(deck),
+          fields: {
+            comments(_, { DELETE }) {
+              return DELETE;
+            },
+          },
+        });
+      },
+    }
+  );
+
+  const [deleteDeck] = useMutation(
+    gql`
+      mutation DeleteDeck($deckId: ID!) {
+        deleteDeck(deckId: $deckId)
+      }
     `
   );
+  const onDeleteDeck = React.useCallback(async () => {
+    if (deck?.deckId) {
+      await deleteDeck({ variables: { deckId: deck.deckId } });
+    }
+    popToTop();
+  }, [deck, deleteDeck, popToTop]);
+
+  // TODO: prompt to save when going back
 
   const onSaveDeck = React.useCallback(async () => {
     let mounted = true;
@@ -174,7 +198,7 @@ export const ShareDeckScreen = ({ route }) => {
         caption,
         isChanged: true,
       }),
-    [updatedDeck]
+    [updatedDeck, setUpdatedDeck]
   );
 
   const onChangeVisibility = React.useCallback(
@@ -184,7 +208,27 @@ export const ShareDeckScreen = ({ route }) => {
         visibility,
         isChanged: true,
       }),
-    [updatedDeck]
+    [updatedDeck, setUpdatedDeck]
+  );
+
+  const onChangeAccessPermissions = React.useCallback(
+    (accessPermissions) =>
+      setUpdatedDeck({
+        ...updatedDeck,
+        accessPermissions,
+        isChanged: true,
+      }),
+    [updatedDeck, setUpdatedDeck]
+  );
+
+  const onChangeCommentsEnabled = React.useCallback(
+    (commentsEnabled) =>
+      setUpdatedDeck({
+        ...updatedDeck,
+        commentsEnabled,
+        isChanged: true,
+      }),
+    [updatedDeck, setUpdatedDeck]
   );
 
   return (
@@ -248,6 +292,12 @@ export const ShareDeckScreen = ({ route }) => {
             isLast
           />
         </View>
+        <ConfigureDeck
+          deck={updatedDeck}
+          onDeleteDeck={onDeleteDeck}
+          onChangeAccessPermissions={onChangeAccessPermissions}
+          onChangeCommentsEnabled={onChangeCommentsEnabled}
+        />
       </View>
     </SafeAreaView>
   );

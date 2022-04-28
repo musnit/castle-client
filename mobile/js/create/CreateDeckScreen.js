@@ -2,18 +2,15 @@ import React from 'react';
 import {
   ActivityIndicator,
   InteractionManager,
-  Pressable,
   TouchableOpacity,
   View,
   StyleSheet,
 } from 'react-native';
 import { AppText as Text } from '../components/AppText';
 import { CardsSet } from '../components/CardsSet';
-import { DeckSettingsSheet } from './DeckSettingsSheet';
 import { RecoverUnsavedWorkAlert } from './RecoverUnsavedWorkAlert';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ScreenHeader } from '../components/ScreenHeader';
-import { SheetBackgroundOverlay } from '../components/SheetBackgroundOverlay';
 import { useQuery, useMutation, gql } from '@apollo/client';
 import { useNavigation, useFocusEffect } from '../ReactNavigation';
 import { useActionSheet } from '@expo/react-native-action-sheet';
@@ -26,7 +23,6 @@ import * as Utilities from '../common/utilities';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
-import FeatherIcon from 'react-native-vector-icons/Feather';
 import FastImage from 'react-native-fast-image';
 
 import * as Constants from '../Constants';
@@ -182,7 +178,6 @@ export const CreateDeckScreen = (props) => {
   const { showActionSheetWithOptions } = useActionSheet();
   const deckId = props.route.params.deckIdToEdit;
   const [deck, setDeck] = React.useState(null);
-  const [settingsSheetVisible, setSettingsSheetVisible] = React.useState(false);
   const [viewMode, setViewMode] = React.useReducer((state, action) => {
     const { mode, deckId } = action;
     if (deckId) {
@@ -194,38 +189,6 @@ export const CreateDeckScreen = (props) => {
   if (!deckId || LocalId.isLocalId(deckId)) {
     throw new Error(`CreateDeckScreen requires an existing deck id`);
   }
-
-  const [saveDeck] = useMutation(
-    gql`
-      mutation UpdateDeck($deck: DeckInput!) {
-        updateDeckV2(deck: $deck) {
-          ${DECK_FRAGMENT}
-        }
-      }
-    `,
-    {
-      update: (cache, { data }) => {
-        // clear comments cache in case they modified the comment enabled flag
-        // https://www.apollographql.com/docs/react/caching/cache-interaction/#example-deleting-a-field-from-a-cached-object
-        cache.modify({
-          id: cache.identify(deck),
-          fields: {
-            comments(_, { DELETE }) {
-              return DELETE;
-            },
-          },
-        });
-      },
-    }
-  );
-
-  const [deleteDeck] = useMutation(
-    gql`
-      mutation DeleteDeck($deckId: ID!) {
-        deleteDeck(deckId: $deckId)
-      }
-    `
-  );
 
   const [deleteCard] = useMutation(
     gql`
@@ -255,25 +218,6 @@ export const CreateDeckScreen = (props) => {
     { variables: { deckId }, fetchPolicy: 'no-cache' }
   );
 
-  const _maybeSaveDeck = async () => {
-    if (deck && deck.isChanged) {
-      const deckUpdateFragment = {
-        deckId,
-        title: deck.title,
-        // visibility: deck.visibility,
-        accessPermissions: deck.accessPermissions,
-      };
-      saveDeck({ variables: { deck: deckUpdateFragment } });
-      setDeck({ ...deck, isChanged: false });
-    }
-  };
-
-  const openSettingsSheet = React.useCallback(() => setSettingsSheetVisible(true), []);
-  const closeSettingsSheet = React.useCallback(() => {
-    _maybeSaveDeck();
-    setSettingsSheetVisible(false);
-  }, [_maybeSaveDeck]);
-
   // kludge for https://github.com/apollographql/react-apollo/issues/3917
   const _refetch = React.useCallback(() => {
     const task = InteractionManager.runAfterInteractions(async () => {
@@ -288,18 +232,11 @@ export const CreateDeckScreen = (props) => {
         _refetch();
       }
       lastFocusedTime = Date.now();
-      return () => _maybeSaveDeck(); // save on blur
     }, [deck, _refetch])
   );
 
   const _goBack = async () => {
-    await _maybeSaveDeck();
     navigation.goBack();
-  };
-
-  const _deleteDeck = async () => {
-    await deleteDeck({ variables: { deckId } });
-    _goBack();
   };
 
   React.useEffect(() => {
@@ -313,14 +250,6 @@ export const CreateDeckScreen = (props) => {
       })();
     }
   }, [loadDeck.loading, loadDeck.error, loadDeck.data]);
-
-  const _changeDeck = (changes) => {
-    setDeck({
-      ...deck,
-      ...changes,
-      isChanged: true,
-    });
-  };
 
   const maybeDeleteCard = React.useCallback(
     (cardId) => {
@@ -346,7 +275,7 @@ export const CreateDeckScreen = (props) => {
   );
 
   const _showCardOptions = (card) => {
-    let destructiveButtonIndex = undefined;
+    let destructiveButtonIndex;
     let actions = [
       {
         name: 'Use as Top Card',
@@ -406,30 +335,12 @@ export const CreateDeckScreen = (props) => {
         });
       }
     },
-    [deck]
+    [deck, navigation]
   );
 
   const onPressNewCard = React.useCallback(
     () => _navigateToCreateCard({ cardId: LocalId.makeId() }),
     [_navigateToCreateCard]
-  );
-
-  const onChangeAccessPermissions = React.useCallback(
-    async (accessPermissions) => {
-      const deckUpdateFragment = { deckId, accessPermissions };
-      saveDeck({ variables: { deck: deckUpdateFragment } });
-      setDeck({ ...deck, accessPermissions });
-    },
-    [setDeck, saveDeck, deck, deckId]
-  );
-
-  const onChangeCommentsEnabled = React.useCallback(
-    async (commentsEnabled) => {
-      const deckUpdateFragment = { deckId, commentsEnabled };
-      saveDeck({ variables: { deck: deckUpdateFragment } });
-      setDeck({ ...deck, commentsEnabled });
-    },
-    [setDeck, saveDeck, deck, deckId]
   );
 
   const onSelectSegmentedNavItem = React.useCallback(
@@ -497,11 +408,6 @@ export const CreateDeckScreen = (props) => {
                     <Text style={styles.settingItemLabel}>{deck.reactions[0].count}</Text>
                   </View>
                 ) : null}
-                <Pressable onPress={openSettingsSheet} style={styles.settingItem}>
-                  {({ pressed }) => (
-                    <FeatherIcon name="settings" size={16} color={pressed ? '#333' : '#888'} />
-                  )}
-                </Pressable>
               </View>
             </View>
             <RecoverUnsavedWorkAlert context="backup" deckId={deck?.deckId} />
@@ -521,16 +427,6 @@ export const CreateDeckScreen = (props) => {
           </>
         )}
       </SafeAreaView>
-      {settingsSheetVisible ? <SheetBackgroundOverlay onPress={closeSettingsSheet} /> : null}
-      <DeckSettingsSheet
-        isOpen={settingsSheetVisible}
-        onClose={closeSettingsSheet}
-        deck={deck}
-        onChange={_changeDeck}
-        onDeleteDeck={_deleteDeck}
-        onChangeAccessPermissions={onChangeAccessPermissions}
-        onChangeCommentsEnabled={onChangeCommentsEnabled}
-      />
     </React.Fragment>
   );
 };

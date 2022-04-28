@@ -1,7 +1,6 @@
 import React from 'react';
 import { TouchableOpacity, StyleSheet, Switch, View } from 'react-native';
 import { AppText as Text } from '../components/AppText';
-import { ConfigureInput } from '../components/ConfigureInput';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 
 import * as Constants from '../Constants';
@@ -10,18 +9,14 @@ const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 16,
     width: '100%',
-    maxWidth: Constants.TABLET_MAX_FORM_WIDTH,
   },
   deleteButton: {
-    borderWidth: 1,
-    borderColor: '#f00',
-    borderRadius: 6,
     alignItems: 'center',
     justifyContent: 'center',
     padding: 8,
   },
   deleteLabel: {
-    color: '#f00',
+    color: '#888',
     fontSize: 16,
   },
   row: {
@@ -31,13 +26,13 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
   },
   rowLabel: {
+    color: Constants.colors.white,
     fontSize: 16,
   },
 });
 
 export const ConfigureDeck = ({
   deck,
-  onChange,
   onDeleteDeck,
   onChangeAccessPermissions,
   onChangeCommentsEnabled,
@@ -78,7 +73,7 @@ export const ConfigureDeck = ({
         />
       </View>
       <TouchableOpacity style={styles.deleteButton} onPress={maybeDeleteDeck}>
-        <Text style={styles.deleteLabel}>Delete Deck</Text>
+        <Text style={styles.deleteLabel}>Delete this deck</Text>
       </TouchableOpacity>
     </View>
   ) : (
