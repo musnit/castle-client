@@ -44,7 +44,6 @@
     "react-native-safe-area-context": "^3.2.0",
     "react-native-screens": "^3.8.0",
     "react-native-vector-icons": "^7.1.0",
-    "react-native-video": "^5.1.1",
     "shortid": "^2.2.15",
     "tinycolor2": "^1.4.1",
     "url-parse": "1.5.6",

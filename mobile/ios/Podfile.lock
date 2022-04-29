@@ -8,7 +8,6 @@ PODS:
     - React-Core
   - boost-for-react-native (1.63.0)
   - DoubleConversion (1.1.6)
-  - DVAssetLoaderDelegate (0.3.3)
   - FBLazyVector (0.64.2)
   - FBReactNativeSpec (0.64.2):
     - RCT-Folly (= 2020.01.13.00)
@@ -230,16 +229,6 @@ PODS:
     - React-Core
   - react-native-safe-area-context (3.3.2):
     - React-Core
-  - react-native-video (5.2.0):
-    - React-Core
-    - react-native-video/Video (= 5.2.0)
-  - react-native-video/Video (5.2.0):
-    - React-Core
-  - react-native-video/VideoCaching (5.2.0):
-    - DVAssetLoaderDelegate (~> 0.3.1)
-    - React-Core
-    - react-native-video/Video
-    - SPTPersistentCache (~> 1.1.0)
   - React-perflogger (0.64.2)
   - React-RCTActionSheet (0.64.2):
     - React-Core/RCTActionSheetHeaders (= 0.64.2)
@@ -341,7 +330,6 @@ PODS:
   - Sentry (7.10.2):
     - Sentry/Core (= 7.10.2)
   - Sentry/Core (7.10.2)
-  - SPTPersistentCache (1.1.0)
   - Yoga (1.14.0)
 
 DEPENDENCIES:
@@ -369,9 +357,6 @@ DEPENDENCIES:
   - react-native-get-random-values (from `../node_modules/react-native-get-random-values`)
   - react-native-image-picker (from `../node_modules/react-native-image-picker`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
-  - react-native-video (from `../node_modules/react-native-video`)
-  - react-native-video/Video (from `../node_modules/react-native-video`)
-  - react-native-video/VideoCaching (from `../node_modules/react-native-video`)
   - React-perflogger (from `../node_modules/react-native/ReactCommon/reactperflogger`)
   - React-RCTActionSheet (from `../node_modules/react-native/Libraries/ActionSheetIOS`)
   - React-RCTAnimation (from `../node_modules/react-native/Libraries/NativeAnimation`)
@@ -403,12 +388,10 @@ SPEC REPOS:
     - Adjust
     - Amplitude
     - boost-for-react-native
-    - DVAssetLoaderDelegate
     - libwebp
     - SDWebImage
     - SDWebImageWebPCoder
     - Sentry
-    - SPTPersistentCache
 
 EXTERNAL SOURCES:
   amplitude-react-native:
@@ -453,8 +436,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-image-picker"
   react-native-safe-area-context:
     :path: "../node_modules/react-native-safe-area-context"
-  react-native-video:
-    :path: "../node_modules/react-native-video"
   React-perflogger:
     :path: "../node_modules/react-native/ReactCommon/reactperflogger"
   React-RCTActionSheet:
@@ -512,7 +493,6 @@ SPEC CHECKSUMS:
   amplitude-react-native: fa5e830e59fd8ed440a74d58fd72ad4b37e7c946
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   DoubleConversion: cf9b38bf0b2d048436d9a82ad2abe1404f11e7de
-  DVAssetLoaderDelegate: 0caec20e4e08b8560b691131539e9180024d4bce
   FBLazyVector: e686045572151edef46010a6f819ade377dfeb4b
   FBReactNativeSpec: 6baddc2c2b39d192b96965ec745b4d6628e62b2e
   glog: 73c2498ac6884b13ede40eda8228cb1eee9d9d62
@@ -533,7 +513,6 @@ SPEC CHECKSUMS:
   react-native-get-random-values: 237bffb1c7e05fb142092681531810a29ba53015
   react-native-image-picker: 31971f6184e7c1dcb4fc1f122e1ba2c3fb11ef1e
   react-native-safe-area-context: 584dc04881deb49474363f3be89e4ca0e854c057
-  react-native-video: a4c2635d0802f983594b7057e1bce8f442f0ad28
   React-perflogger: 25373e382fed75ce768a443822f07098a15ab737
   React-RCTActionSheet: af7796ba49ffe4ca92e7277a5d992d37203f7da5
   React-RCTAnimation: 6a2e76ab50c6f25b428d81b76a5a45351c4d77aa
@@ -561,9 +540,8 @@ SPEC CHECKSUMS:
   SDWebImage: a7f831e1a65eb5e285e3fb046a23fcfbf08e696d
   SDWebImageWebPCoder: f93010f3f6c031e2f8fb3081ca4ee6966c539815
   Sentry: 7bf9bfe713692cf87812e55f0999260494ba7982
-  SPTPersistentCache: df36ea46762d7cf026502bbb86a8b79d0080dff4
   Yoga: 575c581c63e0d35c9a83f4b46d01d63abc1100ac
 
-PODFILE CHECKSUM: e9eedcff4774083dac09b2b954c4923687d20b1e
+PODFILE CHECKSUM: 974e9f51d30718f6f2e725bda866259c7bedb382
 
 COCOAPODS: 1.11.2
