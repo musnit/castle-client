@@ -5,10 +5,11 @@ import { ConfigureDeck } from '../create/ConfigureDeck';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { shareDeck } from '../common/utilities';
+import { useActionSheet } from '@expo/react-native-action-sheet';
 import { useMutation, gql } from '@apollo/client';
 import { useNavigation } from '../ReactNavigation';
-import * as Analytics from '../common/Analytics';
 
+import * as Analytics from '../common/Analytics';
 import * as Constants from '../Constants';
 
 import Feather from 'react-native-vector-icons/Feather';
@@ -145,7 +146,8 @@ const Congratulations = () => (
 );
 
 export const ShareDeckScreen = ({ route }) => {
-  const { popToTop } = useNavigation();
+  const { pop, popToTop } = useNavigation();
+  const { showActionSheetWithOptions } = useActionSheet();
   const deck = route.params.deck;
 
   const [loading, setLoading] = React.useState(false);
@@ -198,8 +200,6 @@ export const ShareDeckScreen = ({ route }) => {
     }
     popToTop();
   }, [deck, deleteDeck, popToTop]);
-
-  // TODO: prompt to save when going back
 
   const onSaveDeck = React.useCallback(async () => {
     let mounted = true;
@@ -288,10 +288,30 @@ export const ShareDeckScreen = ({ route }) => {
     [updatedDeck, setUpdatedDeck]
   );
 
+  const maybeGoBack = React.useCallback(() => {
+    if (updatedDeck.isChanged) {
+      showActionSheetWithOptions(
+        {
+          title: 'Discard changes?',
+          options: ['Discard', 'Cancel'],
+          destructiveButtonIndex: 0,
+        },
+        (index) => {
+          if (index === 0) {
+            pop();
+          }
+        }
+      );
+    } else {
+      pop();
+    }
+  }, [pop, updatedDeck, showActionSheetWithOptions]);
+
   return (
     <SafeAreaView style={Constants.styles.container} edges={['left', 'right', 'bottom']}>
       <ScreenHeader
         title="Deck Sharing"
+        onBackButtonPress={maybeGoBack}
         RightButtonComponent={
           <Pressable
             style={[
