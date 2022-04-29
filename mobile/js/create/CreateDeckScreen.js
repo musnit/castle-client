@@ -3,10 +3,12 @@ import {
   ActivityIndicator,
   InteractionManager,
   TouchableOpacity,
+  Pressable,
   View,
   StyleSheet,
 } from 'react-native';
 import { AppText as Text } from '../components/AppText';
+import { CardCell } from '../components/CardCell';
 import { CardsSet } from '../components/CardsSet';
 import { RecoverUnsavedWorkAlert } from './RecoverUnsavedWorkAlert';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -22,6 +24,7 @@ import * as Utilities from '../common/utilities';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import Feather from 'react-native-vector-icons/Feather';
 import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import FastImage from 'react-native-fast-image';
 
@@ -30,7 +33,6 @@ import * as Constants from '../Constants';
 const styles = StyleSheet.create({
   settingsRow: {
     backgroundColor: '#000',
-    marginTop: -1, // hide the border built into ScreenHeader
     flexDirection: 'row',
     alignItems: 'flex-start',
     justifyContent: 'space-between',
@@ -85,6 +87,49 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     margin: 24,
+  },
+  header: {
+    backgroundColor: '#000',
+    marginTop: -1, // hide the border built into ScreenHeader
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+  },
+  caption: {
+    fontSize: 16,
+    color: Constants.colors.white,
+    marginBottom: 16,
+  },
+  emptyCaption: {
+    fontSize: 16,
+    color: '#ccc',
+    marginBottom: 16,
+  },
+  shareContent: {
+    marginRight: 16,
+    alignItems: 'flex-start',
+  },
+  shareTopCard: {
+    flexShrink: 1,
+    maxWidth: '20%',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  shareActions: {
+    flexDirection: 'row',
+  },
+  shareButton: {
+    ...Constants.styles.primaryButton,
+    backgroundColor: '#000',
+    borderColor: '#fff',
+    borderWidth: 1,
+    marginLeft: 8,
+  },
+  shareButtonLabel: {
+    ...Constants.styles.primaryButtonLabel,
+    color: '#fff',
+    marginLeft: 4,
   },
 });
 
@@ -159,6 +204,70 @@ const getViewModePreference = async (deckId) => {
   preferences = JSON.parse(preferences);
   const preference = preferences[deckId];
   return preference ?? 'carousel';
+};
+
+const CreateDeckHeader = ({ deck }) => {
+  const navigation = useNavigation();
+
+  if (!deck) return null;
+
+  const initialCard = deck.cards.find((c) => c.cardId === deck.initialCard.cardId);
+  const backgroundColor = Utilities.getCardBackgroundColor(initialCard);
+
+  const onEditShareSettings = deck ? () => navigation.navigate('ShareDeck', { deck }) : null;
+
+  return (
+    <View style={styles.header}>
+      <View style={styles.shareContent}>
+        <Pressable onPress={onEditShareSettings}>
+          {deck.caption ? (
+            <Text style={styles.caption}>{deck.caption}</Text>
+          ) : (
+            <Text style={styles.emptyCaption}>Add a caption and #tags</Text>
+          )}
+        </Pressable>
+        <View style={styles.shareActions}>
+          <Pressable onPress={onEditShareSettings}>
+            {deck.visibility === 'private' ? (
+              <View style={Constants.styles.primaryButton}>
+                <Text style={Constants.styles.primaryButtonLabel}>Share your deck</Text>
+              </View>
+            ) : (
+              <View style={Constants.styles.primaryButton}>
+                <Icon
+                  name={
+                    deck.visibility === 'private'
+                      ? 'lock'
+                      : deck.visibility === 'unlisted'
+                      ? 'link'
+                      : 'public'
+                  }
+                  size={18}
+                  color="#000"
+                  style={Constants.styles.primaryButtonIconLeft}
+                />
+                <Text style={Constants.styles.primaryButtonLabel}>Sharing</Text>
+              </View>
+            )}
+          </Pressable>
+          {deck.visibility !== 'private' ? (
+            <Pressable
+              style={({ pressed }) => [
+                styles.shareButton,
+                { backgroundColor: pressed ? '#333' : undefined },
+              ]}
+              onPress={() => Utilities.shareDeck(deck)}>
+              <Feather name={Constants.iOS ? 'share' : 'share-2'} size={16} color="#fff" />
+              <Text style={styles.shareButtonLabel}>Copy link</Text>
+            </Pressable>
+          ) : null}
+        </View>
+      </View>
+      <View style={[styles.shareTopCard, { backgroundColor }]}>
+        <CardCell card={initialCard} />
+      </View>
+    </View>
+  );
 };
 
 const TAB_ITEMS = [
@@ -353,80 +462,53 @@ export const CreateDeckScreen = (props) => {
   );
 
   return (
-    <React.Fragment>
-      <SafeAreaView style={Constants.styles.container} edges={['left', 'right', 'bottom']}>
-        <ScreenHeader
-          title="Deck"
-          onBackButtonPress={_goBack}
-          RightButtonComponent={
-            deck ? (
-              <TouchableOpacity
-                style={Constants.styles.siteHeaderButton}
-                onPress={deck ? () => navigation.navigate('ShareDeck', { deck }) : null}>
-                <View style={Constants.styles.primaryButton}>
-                  <Icon
-                    name={
-                      deck.visibility === 'private'
-                        ? 'lock'
-                        : deck.visibility === 'unlisted'
-                        ? 'link'
-                        : 'public'
-                    }
-                    size={18}
-                    color="#000"
-                    style={Constants.styles.primaryButtonIconLeft}
-                  />
-                  <Text style={Constants.styles.primaryButtonLabel}>Share</Text>
-                </View>
-              </TouchableOpacity>
-            ) : null
-          }
-        />
-        {loadDeck.loading && !deck ? (
-          <ActivityIndicator size="large" color="#fff" style={{ padding: 48 }} />
-        ) : (
-          <>
-            <View style={styles.settingsRow}>
-              <View style={styles.settingsColumn}>
-                <SegmentedNavigation
-                  items={TAB_ITEMS}
-                  selectedItem={TAB_ITEMS.find((item) => item.value === viewMode)}
-                  onSelectItem={onSelectSegmentedNavItem}
-                  compact={true}
-                />
-              </View>
-              <View style={styles.settingsColumn}>
-                {deck && deck.playCount ? (
-                  <View style={styles.settingItem}>
-                    <MCIcon name="play" size={16} color="#888" />
-                    <Text style={styles.settingItemLabel}>{deck.playCount}</Text>
-                  </View>
-                ) : null}
-                {deck && deck.reactions?.length ? (
-                  <View style={styles.settingItem}>
-                    <MCIcon name="fire" size={16} color="#888" />
-                    <Text style={styles.settingItemLabel}>{deck.reactions[0].count}</Text>
-                  </View>
-                ) : null}
-              </View>
-            </View>
-            <RecoverUnsavedWorkAlert context="backup" deckId={deck?.deckId} />
-            <CardsSet
-              deck={deck}
-              onShowCardOptions={_showCardOptions}
-              onPress={_navigateToCreateCard}
-              mode={viewMode}
-            />
-            <TouchableOpacity style={styles.addCard} onPress={onPressNewCard}>
-              <FastImage
-                style={styles.addCardIcon}
-                source={require('../../assets/images/create-card.png')}
+    <SafeAreaView style={Constants.styles.container} edges={['left', 'right', 'bottom']}>
+      <ScreenHeader title="Deck" onBackButtonPress={_goBack} />
+      {loadDeck.loading && !deck ? (
+        <ActivityIndicator size="large" color="#fff" style={{ padding: 48 }} />
+      ) : (
+        <>
+          <CreateDeckHeader deck={deck} />
+          <View style={styles.settingsRow}>
+            <View style={styles.settingsColumn}>
+              <SegmentedNavigation
+                items={TAB_ITEMS}
+                selectedItem={TAB_ITEMS.find((item) => item.value === viewMode)}
+                onSelectItem={onSelectSegmentedNavItem}
+                compact={true}
               />
-              <Text style={styles.addCardLabel}>Add Card</Text>
-            </TouchableOpacity>
-          </>
-        )}
-      </SafeAreaView>
-    </React.Fragment>
+            </View>
+            <View style={styles.settingsColumn}>
+              {deck && deck.playCount ? (
+                <View style={styles.settingItem}>
+                  <MCIcon name="play" size={16} color="#888" />
+                  <Text style={styles.settingItemLabel}>{deck.playCount}</Text>
+                </View>
+              ) : null}
+              {deck && deck.reactions?.length ? (
+                <View style={styles.settingItem}>
+                  <MCIcon name="fire" size={16} color="#888" />
+                  <Text style={styles.settingItemLabel}>{deck.reactions[0].count}</Text>
+                </View>
+              ) : null}
+            </View>
+          </View>
+          <RecoverUnsavedWorkAlert context="backup" deckId={deck?.deckId} />
+          <CardsSet
+            deck={deck}
+            onShowCardOptions={_showCardOptions}
+            onPress={_navigateToCreateCard}
+            mode={viewMode}
+          />
+          <TouchableOpacity style={styles.addCard} onPress={onPressNewCard}>
+            <FastImage
+              style={styles.addCardIcon}
+              source={require('../../assets/images/create-card.png')}
+            />
+            <Text style={styles.addCardLabel}>Add Card</Text>
+          </TouchableOpacity>
+        </>
+      )}
+    </SafeAreaView>
   );
 };
