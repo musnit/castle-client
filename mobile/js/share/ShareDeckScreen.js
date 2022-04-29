@@ -79,14 +79,27 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   shareLink: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
+    padding: 8,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
   },
   shareLinkUrl: {
     fontSize: 16,
+  },
+  congratulations: {
+    borderBottomWidth: 1,
+    borderBottomColor: '#000',
+    padding: 8,
+    flexDirection: 'row',
+  },
+  congratsIcon: {
+    marginRight: 16,
+  },
+  congratsHeader: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    lineHeight: 22,
   },
 });
 
@@ -121,11 +134,23 @@ const VisibilityButton = ({
   );
 };
 
+const Congratulations = () => (
+  <View style={styles.congratulations}>
+    <Text style={styles.congratsIcon}>🎉</Text>
+    <View>
+      <Text style={styles.congratsHeader}>Your deck has been published!</Text>
+      <Text>Anyone on Castle can find and play it. Share the link to play it on the web.</Text>
+    </View>
+  </View>
+);
+
 export const ShareDeckScreen = ({ route }) => {
   const { popToTop } = useNavigation();
   const deck = route.params.deck;
 
   const [loading, setLoading] = React.useState(false);
+  const [didPublish, setDidPublish] = React.useState(false);
+  const [lastSavedVisibility, setLastSavedVisibility] = React.useState(deck.visibility);
   const [updatedDeck, setUpdatedDeck] = React.useState({
     visibility: deck.visibility,
     caption: deck.caption,
@@ -178,6 +203,8 @@ export const ShareDeckScreen = ({ route }) => {
 
   const onSaveDeck = React.useCallback(async () => {
     let mounted = true;
+    let didPublish = false;
+
     const deckUpdateFragment = {
       deckId: deck.deckId,
       ...updatedDeck,
@@ -185,11 +212,14 @@ export const ShareDeckScreen = ({ route }) => {
     delete deckUpdateFragment.isChanged;
 
     await setLoading(true);
-    if (updatedDeck.visibility !== deck.visibility) {
+    if (updatedDeck.visibility !== lastSavedVisibility) {
       Analytics.logEvent('CHANGE_DECK_VISIBILITY', {
         deckId: deck.deckId,
         visibility: updatedDeck.visibility,
       });
+      if (updatedDeck.visibility === 'public') {
+        didPublish = true;
+      }
     }
     if (updatedDeck.caption !== deck.caption) {
       Analytics.logEvent('CHANGE_DECK_CAPTION', {
@@ -203,9 +233,20 @@ export const ShareDeckScreen = ({ route }) => {
         ...updatedDeck,
         isChanged: false,
       });
+      setLastSavedVisibility(updatedDeck.visibility);
+      setDidPublish(didPublish);
     }
     return () => (mounted = false);
-  }, [saveDeck, deck, updatedDeck, setUpdatedDeck, setLoading]);
+  }, [
+    saveDeck,
+    deck,
+    updatedDeck,
+    setUpdatedDeck,
+    setLoading,
+    lastSavedVisibility,
+    setLastSavedVisibility,
+    setDidPublish,
+  ]);
 
   const onChangeCaption = React.useCallback(
     (caption) =>
@@ -267,8 +308,9 @@ export const ShareDeckScreen = ({ route }) => {
         }
       />
       <View style={styles.content}>
-        {deck.visibility === 'public' ? (
+        {lastSavedVisibility !== 'private' ? (
           <View style={styles.shareContainer}>
+            {didPublish ? <Congratulations /> : null}
             <Pressable
               style={({ pressed }) => [
                 styles.shareLink,
