@@ -29,8 +29,6 @@ import java.util.List;
 import ghost.GhostPackage;
 import xyz.castle.generated.CastleSecret;
 
-import com.brentvatne.react.ReactVideoPackage;
-
 public class MainApplication extends Application implements ReactApplication {
 
   private ReactNativeHost mReactNativeHost;
@@ -77,7 +75,6 @@ public class MainApplication extends Application implements ReactApplication {
                       // Packages that cannot be autolinked yet can be added manually here, for example:
                       // packages.add(new MyReactNativePackage());
                       packages.add(new GhostPackage());
-                      packages.add(new ReactVideoPackage());
 
                       return packages;
                   }
