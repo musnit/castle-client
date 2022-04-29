@@ -35,7 +35,7 @@ const EMPTY_PARAMSPEC = {
 
 export const RuleParamInputSheet = ({
   title,
-  entry,
+  entry = {},
   triggerFilter,
   onChangeParams,
   paramNames,
