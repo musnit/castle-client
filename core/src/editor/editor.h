@@ -163,7 +163,6 @@ private:
   void sendSelectedActorData();
 
   void sendAllBehaviorsData();
-  inline static bool rulesDataSent = false;
   void sendRulesData();
 
   // behaviorId present indicates dirty state for selected actor
