@@ -11,6 +11,7 @@ import * as Analytics from '../common/Analytics';
 
 import * as Constants from '../Constants';
 
+import Feather from 'react-native-vector-icons/Feather';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const styles = StyleSheet.create({
@@ -71,6 +72,21 @@ const styles = StyleSheet.create({
     fontSize: 16,
     minHeight: 72,
     color: '#fff',
+  },
+  shareContainer: {
+    backgroundColor: Constants.colors.white,
+    borderRadius: 4,
+    marginBottom: 16,
+  },
+  shareLink: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  shareLinkUrl: {
+    fontSize: 16,
   },
 });
 
@@ -251,6 +267,19 @@ export const ShareDeckScreen = ({ route }) => {
         }
       />
       <View style={styles.content}>
+        {deck.visibility === 'public' ? (
+          <View style={styles.shareContainer}>
+            <Pressable
+              style={({ pressed }) => [
+                styles.shareLink,
+                { backgroundColor: pressed ? '#ccc' : undefined },
+              ]}
+              onPress={() => shareDeck(deck)}>
+              <Text style={styles.shareLinkUrl}>Get a link</Text>
+              <Feather name={Constants.iOS ? 'share' : 'share-2'} size={24} color="#000" />
+            </Pressable>
+          </View>
+        ) : null}
         <View style={styles.captionForm}>
           <View style={styles.captionInputWrapper}>
             <TextInput

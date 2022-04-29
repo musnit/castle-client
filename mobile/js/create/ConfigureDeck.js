@@ -28,6 +28,7 @@ const styles = StyleSheet.create({
   rowLabel: {
     color: Constants.colors.white,
     fontSize: 16,
+    marginRight: 16,
   },
 });
 
