@@ -5,7 +5,6 @@ import { UserAvatar } from '../components/UserAvatar';
 
 import FastImage from 'react-native-fast-image';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import Video from 'react-native-video';
 
 import * as Constants from '../Constants';
 
@@ -90,16 +89,9 @@ const InitialCardIndicator = ({ inGrid }) => (
   </View>
 );
 
-const CardArtwork = ({ card, previewVideo, previewVideoPaused }) => {
+const CardArtwork = ({ card }) => {
   let image = null;
-  let backgroundImage;
-  const [videoLoading, setVideoLoading] = React.useState(!!previewVideo?.url);
-  const onVideoLoad = React.useCallback(() => requestAnimationFrame(() => setVideoLoading(false)));
-  if (previewVideo?.firstFrameImage) {
-    backgroundImage = previewVideo.firstFrameImage;
-  } else if (card.backgroundImage) {
-    backgroundImage = card.backgroundImage;
-  }
+  let backgroundImage = card.backgroundImage;
   if (backgroundImage) {
     let uri;
     const { url, smallUrl } = backgroundImage;
@@ -110,26 +102,7 @@ const CardArtwork = ({ card, previewVideo, previewVideoPaused }) => {
     }
     image = <FastImage style={[styles.cardPreview, styles.cardPreviewImage]} source={{ uri }} />;
   }
-  if (previewVideo?.url) {
-    // NOTE: rn-video includes a "poster" prop to show a built-in preview image,
-    // but it seems to drop frames before the video actually plays.
-    // instead, show our own image over the video until onLoad is called
-    return (
-      <View pointerEvents="none" style={styles.cardPreview}>
-        <Video
-          style={styles.cardPreview}
-          source={{ uri: previewVideo.url }}
-          repeat={true}
-          muted={true}
-          mixWithOthers="mix"
-          ignoreSilentSwitch="obey"
-          onLoad={onVideoLoad}
-          paused={previewVideoPaused ?? false}
-        />
-        {videoLoading ? image : null}
-      </View>
-    );
-  } else if (image) {
+  if (image) {
     return image;
   }
   return null;
@@ -143,8 +116,6 @@ export const CardCell = ({
   isInitialCard,
   visibility,
   showVisibility,
-  previewVideo,
-  previewVideoPaused,
   inGrid,
   style,
 }) => {
@@ -157,11 +128,7 @@ export const CardCell = ({
           ...styles.card,
           borderRadius: inGrid ? Constants.CARD_SMALL_BORDER_RADIUS : Constants.CARD_BORDER_RADIUS,
         }}>
-        <CardArtwork
-          card={card}
-          previewVideo={previewVideo}
-          previewVideoPaused={previewVideoPaused}
-        />
+        <CardArtwork card={card} />
         {creator?.photo?.url || title ? (
           <View style={styles.meta}>
             {creator?.photo?.url && (

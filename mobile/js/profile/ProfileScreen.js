@@ -67,7 +67,6 @@ const ProfileDecksGrid = ({ user, refreshing, onRefresh, error, isMe, ...props }
       }
       refreshing={refreshing}
       onRefresh={onRefresh}
-      enablePreviewVideo={false}
       scrollViewRef={scrollViewRef}
       {...props}
     />

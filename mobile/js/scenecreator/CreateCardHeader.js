@@ -14,7 +14,6 @@ import { useActionSheet } from '@expo/react-native-action-sheet';
 
 import * as Constants from '../Constants';
 import * as SceneCreatorConstants from './SceneCreatorConstants';
-import { CreateCardCaptureActions } from './CreateCardCaptureActions';
 
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -115,7 +114,6 @@ https://github.com/th3rdwave/react-native-safe-area-context/issues/124
             <TouchableOpacity style={styles.action} onPress={() => sendGlobalAction('onRewind')}>
               <CastleIcon name="rewind" size={22} color="#000" />
             </TouchableOpacity>
-            <CreateCardCaptureActions />
           </>
         ) : (
           <>

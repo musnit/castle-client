@@ -159,7 +159,6 @@ const DECK_FRAGMENT = `
       backgroundImage { url }
     }
   }
-  previewVideo { url }
   variables
   cards {
     id

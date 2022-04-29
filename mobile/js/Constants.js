@@ -249,10 +249,6 @@ export const FEED_ITEM_DECK_FRAGMENT = `
       smallUrl
     }
   }
-  previewVideo {
-    url
-    firstFrameImage { url, smallUrl }
-  }
   reactions {
     id
     reactionId

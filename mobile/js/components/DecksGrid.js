@@ -15,7 +15,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const CardGridRow = React.memo(({ decks, enablePreviewVideo, onPress }) => {
+const CardGridRow = React.memo(({ decks, onPress }) => {
   const spacers = new Array(Math.max(0, 3 - decks.length)).fill(0);
   return (
     <View style={{ flexDirection: 'row', paddingLeft: Constants.GRID_PADDING }}>
@@ -24,7 +24,6 @@ const CardGridRow = React.memo(({ decks, enablePreviewVideo, onPress }) => {
           key={`card-${deck.initialCard.cardId}`}
           style={[Constants.styles.gridItem, { flex: 1 }]}
           card={deck.initialCard}
-          previewVideo={enablePreviewVideo ? deck.previewVideo : undefined}
           visibility={deck.visibility}
           creator={deck.creator}
           onPress={() => onPress(deck, col)}
@@ -38,14 +37,7 @@ const CardGridRow = React.memo(({ decks, enablePreviewVideo, onPress }) => {
   );
 });
 
-export const DecksGrid = ({
-  decks,
-  onPressDeck,
-  enablePreviewVideo,
-  scrollViewRef,
-  keyboardAware,
-  ...props
-}) => {
+export const DecksGrid = ({ decks, onPressDeck, scrollViewRef, keyboardAware, ...props }) => {
   const [groupedDecks, setGroupedDecks] = React.useState([]);
   React.useEffect(() => {
     const newGroupedDecks = decks
@@ -64,13 +56,7 @@ export const DecksGrid = ({
   const renderItem = React.useCallback(
     ({ item, index }) => {
       let row = index;
-      return (
-        <CardGridRow
-          decks={item}
-          enablePreviewVideo={enablePreviewVideo}
-          onPress={(deck, col) => onPressDeck(deck, row * 3 + col)}
-        />
-      );
+      return <CardGridRow decks={item} onPress={(deck, col) => onPressDeck(deck, row * 3 + col)} />;
     },
     [onPressDeck]
   );
