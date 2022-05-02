@@ -163,13 +163,6 @@ export const getIsTabBarVisible = ({ route, navigation }) => {
         isPlayingFeedDeck = currentTabState.state.routes[0].params?.deckId !== undefined;
       }
       isVisible = isVisible && !isPlayingFeedDeck;
-    } else if (tabState.index === 2) {
-      // create tab
-      let isEditing = false;
-      if (currentTabState?.state?.routes && currentTabState.state.routes.length > 1) {
-        isEditing = currentTabState.state.routes[1].params?.cardIdToEdit;
-      }
-      return isVisible || !isEditing;
     }
   }
   return isVisible;
