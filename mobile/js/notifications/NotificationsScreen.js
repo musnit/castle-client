@@ -14,7 +14,6 @@ import { FollowButton } from '../components/FollowButton';
 import { MessageBody } from '../components/MessageBody';
 import { NotificationsSettingsSheet } from './NotificationsSettingsSheet';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ScreenHeader } from '../components/ScreenHeader';
 import { toRecentDate } from '../common/date-utilities';
 import { useAppState } from '../ghost/GhostAppState';
 import {
@@ -136,7 +135,12 @@ const NotificationHeader = ({ status }) => {
   );
 };
 
-const NotificationItem = ({ notification, navigateToUser, navigateToDecks, navigateToUserList }) => {
+const NotificationItem = ({
+  notification,
+  navigateToUser,
+  navigateToDecks,
+  navigateToUserList,
+}) => {
   const user = notification.users?.length ? notification.users[0] : null;
   const type = Utilities.getNotificationType(notification);
 

@@ -20,6 +20,7 @@ const styles = StyleSheet.create({
     borderColor: '#666',
   },
   content: {
+    paddingTop: 12,
     backgroundColor: Constants.colors.white,
     minHeight: DRAWER_EXPANDED_HEIGHT - 16 - 24,
   },

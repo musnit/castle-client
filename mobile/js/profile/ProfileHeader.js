@@ -21,7 +21,7 @@ const styles = StyleSheet.create({
   },
   profileRow: {
     padding: 16,
-    paddingBottom: 0,
+    paddingTop: 0,
     flexDirection: 'row',
   },
   avatar: {

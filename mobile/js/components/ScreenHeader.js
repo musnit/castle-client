@@ -4,7 +4,7 @@ import { useNavigation } from '../ReactNavigation';
 import { getIsTabBarVisible } from '../Navigation';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import { CastleIcon } from '../Constants';
 
 import * as Constants from '../Constants';
 
@@ -12,27 +12,21 @@ const styles = StyleSheet.create({
   header: {
     width: '100%',
     flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    minHeight: 54,
     borderBottomWidth: 1,
     borderColor: Constants.colors.grayOnBlackBorder,
+    paddingHorizontal: 12,
+    paddingVertical: 12,
+    marginBottom: 16,
   },
   button: {
-    flexShrink: 0,
     width: 60,
-    alignItems: 'flex-start',
     justifyContent: 'center',
   },
-  buttonLeft: {
-    alignItems: 'flex-start',
-    paddingLeft: 12,
+  buttonRight: {
+    alignItems: 'flex-end',
   },
   title: {
-    width: '100%',
-    height: '100%',
-    flexShrink: 1,
-    flexDirection: 'row',
+    flexGrow: 1,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -40,7 +34,6 @@ const styles = StyleSheet.create({
     color: Constants.colors.white,
     fontFamily: 'Basteleur-Bold',
     fontSize: 20,
-    marginVertical: 16,
   },
 });
 
@@ -63,17 +56,16 @@ export const ScreenHeader = ({ title, onBackButtonPress, RightButtonComponent })
       <StatusBar barStyle="light-content" />
       <View style={[styles.header, addTopInset ? { paddingTop: top } : null]}>
         {showBackButton ? (
-          <TouchableOpacity style={[styles.button, styles.buttonLeft]} onPress={onPressBack}>
-            <Icon name="arrow-back" size={32} color="#fff" />
+          <TouchableOpacity style={[styles.button]} onPress={onPressBack}>
+            <CastleIcon name="back" size={22} color="#fff" />
           </TouchableOpacity>
         ) : (
-          <View style={[styles.button, styles.buttonLeft]} />
+          <View style={[styles.button]} />
         )}
-        <View style={[styles.title, showBackButton ? styles.centerTitle : null]}>
+        <View style={[styles.title]}>
           <Text style={styles.titleText}>{title}</Text>
         </View>
-        <View style={[styles.button]} />
-        {RightButtonComponent}
+        <View style={[styles.button, styles.buttonRight]}>{RightButtonComponent}</View>
       </View>
     </>
   );

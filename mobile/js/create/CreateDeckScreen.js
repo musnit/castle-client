@@ -40,6 +40,7 @@ const styles = StyleSheet.create({
     paddingBottom: 0,
     borderBottomWidth: 1,
     borderBottomColor: Constants.colors.grayOnBlackBorder,
+    marginBottom: 16,
   },
   settingsColumn: {
     flexDirection: 'row',
@@ -89,8 +90,6 @@ const styles = StyleSheet.create({
     margin: 24,
   },
   header: {
-    backgroundColor: '#000',
-    marginTop: -1, // hide the border built into ScreenHeader
     flexDirection: 'row',
     alignItems: 'flex-start',
     justifyContent: 'space-between',
