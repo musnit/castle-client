@@ -23,7 +23,8 @@ public:
     bool coalesceLastOnly = true;
     int behaviorId = -1;
   };
-  void execute(std::string description, Params params, Closure doClosure, Closure undoClosure);
+  void execute(
+      const std::string &description, Params params, Closure doClosure, Closure undoClosure);
 
   bool canUndo();
   void undo();

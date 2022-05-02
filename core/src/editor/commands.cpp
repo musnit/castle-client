@@ -13,11 +13,11 @@ constexpr auto undoCoalesceInterval = 2.2;
 //
 
 void Commands::execute(
-    std::string description, Params params, Closure doClosure, Closure undoClosure) {
+    const std::string &description, Params params, Closure doClosure, Closure undoClosure) {
   auto coalesced = false;
   {
     Command command {
-      std::move(description),
+      description,
       lv.timer.getTime(),
       params.behaviorId,
     };
