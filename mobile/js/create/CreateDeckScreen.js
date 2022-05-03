@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
     paddingBottom: 0,
     borderBottomWidth: 1,
     borderBottomColor: Constants.colors.grayOnBlackBorder,
-    marginBottom: 16,
+    marginBottom: 24,
   },
   settingsColumn: {
     flexDirection: 'row',
@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
   addCard: {
     position: 'absolute',
     right: 16,
-    bottom: 16,
+    bottom: 32,
     width: 60,
     height: 84,
     borderRadius: 4,
@@ -94,7 +94,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     justifyContent: 'space-between',
     paddingHorizontal: 16,
-    paddingBottom: 8,
+    paddingBottom: 12,
   },
   caption: {
     fontSize: 16,

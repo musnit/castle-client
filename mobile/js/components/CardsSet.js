@@ -10,7 +10,7 @@ import * as Constants from '../Constants';
 import * as LocalId from '../common/local-id';
 import * as Utilities from '../common/utilities';
 
-let CAROUSEL_LEFT_PAD = 24;
+let CAROUSEL_LEFT_PAD = 32;
 let CAROUSEL_ITEM_WIDTH = Viewport.vw * 100 - CAROUSEL_LEFT_PAD * 2;
 let CAROUSEL_HEIGHT = CAROUSEL_ITEM_WIDTH * (1.0 / Constants.CARD_RATIO) - 24;
 
