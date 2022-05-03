@@ -14,15 +14,18 @@ import * as Constants from '../Constants';
 
 import Feather from 'react-native-vector-icons/Feather';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import FastImage from 'react-native-fast-image';
 
 const styles = StyleSheet.create({
   content: {
-    padding: 16,
+    paddingHorizontal: 16,
   },
   item: {
-    padding: 16,
-    borderBottomColor: Constants.colors.grayOnBlackBorder,
+    height: 48,
+    paddingHorizontal: 12,
+    borderBottomColor: '#888',
     flexDirection: 'row',
+    alignItems: 'center',
   },
   itemIcon: {
     flexShrink: 0,
@@ -31,8 +34,9 @@ const styles = StyleSheet.create({
   itemContents: {
     width: '100%',
     flexShrink: 1,
+    flexDirection: 'row',
   },
-  itemSelected: {
+  itemSelectedIcon: {
     flexShrink: 0,
     alignItems: 'center',
     justifyContent: 'center',
@@ -40,8 +44,8 @@ const styles = StyleSheet.create({
   itemName: {
     color: Constants.colors.white,
     fontWeight: 'bold',
-    marginBottom: 4,
     fontSize: 16,
+    width: 80,
   },
   itemDescription: {
     color: Constants.colors.white,
@@ -50,22 +54,23 @@ const styles = StyleSheet.create({
   visibilityExplainer: {
     color: Constants.colors.white,
     fontSize: 16,
-    paddingBottom: 16,
+    paddingBottom: 12,
   },
   visibilityContainer: {
     borderColor: '#888',
     borderRadius: 4,
     borderWidth: 1,
+    marginBottom: 20,
   },
   captionForm: {
     borderColor: '#888',
     borderWidth: 1,
-    marginBottom: 16,
+    marginBottom: 20,
     borderRadius: 4,
   },
   captionInputWrapper: {
     padding: 12,
-    paddingTop: 6,
+    paddingTop: 4,
     alignItems: 'flex-end',
   },
   captionInput: {
@@ -77,10 +82,11 @@ const styles = StyleSheet.create({
   shareContainer: {
     backgroundColor: Constants.colors.white,
     borderRadius: 4,
-    marginBottom: 16,
+    marginBottom: 20,
   },
   shareLink: {
-    padding: 8,
+    padding: 10,
+    paddingLeft: 12,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -90,8 +96,9 @@ const styles = StyleSheet.create({
   },
   congratulations: {
     borderBottomWidth: 1,
-    borderBottomColor: '#000',
-    padding: 8,
+    borderBottomColor: '#ccc',
+    paddingHorizontal: 12,
+    paddingVertical: 10,
     flexDirection: 'row',
   },
   congratsIcon: {
@@ -100,7 +107,11 @@ const styles = StyleSheet.create({
   congratsHeader: {
     fontSize: 16,
     fontWeight: 'bold',
-    lineHeight: 22,
+    marginBottom: 4,
+  },
+  congratsText: {
+    fontSize: 16,
+    lineHeight: 20,
   },
 });
 
@@ -115,20 +126,22 @@ const VisibilityButton = ({
 }) => {
   return (
     <TouchableOpacity
-      style={{ ...styles.item, borderBottomWidth: isLast ? 0 : 1 }}
+      style={[styles.item, { borderBottomWidth: isLast ? 0 : 1 }]}
       onPress={() => onChangeVisibility(visibility)}>
       {icon ? (
         <View style={styles.itemIcon}>
-          <Icon name={icon} color="#fff" size={22} />
+          <Icon name={icon} color={isSelected ? '#fff' : '#888'} size={22} />
         </View>
       ) : null}
       <View style={styles.itemContents}>
-        <Text style={styles.itemName}>{name}</Text>
-        <Text style={styles.itemDescription}>{description}</Text>
+        <Text style={[styles.itemName, isSelected ? null : { opacity: 0.5 }]}>{name}</Text>
+        <Text style={[styles.itemDescription, isSelected ? null : { opacity: 0.5 }]}>
+          {description}
+        </Text>
       </View>
       {isSelected ? (
-        <View style={styles.itemSelected}>
-          <Icon name="check" color="#fff" size={32} />
+        <View style={styles.itemSelectedIcon}>
+          <Icon name="check" color="#fff" size={28} />
         </View>
       ) : null}
     </TouchableOpacity>
@@ -137,10 +150,15 @@ const VisibilityButton = ({
 
 const Congratulations = () => (
   <View style={styles.congratulations}>
-    <Text style={styles.congratsIcon}>🎉</Text>
-    <View>
+    <FastImage
+      style={{ height: 26, aspectRatio: 1, marginRight: 12 }}
+      source={require('../../assets/images/emoji/wand-black.png')}
+    />
+    <View style={{ flex: 1 }}>
       <Text style={styles.congratsHeader}>Your deck has been published!</Text>
-      <Text>Anyone on Castle can find and play it. Share the link to play it on the web.</Text>
+      <Text style={styles.congratsText}>
+        Anyone on Castle can find and play it. Share the link to play it on the web.
+      </Text>
     </View>
   </View>
 );
@@ -317,13 +335,12 @@ export const ShareDeckScreen = ({ route }) => {
             style={[
               Constants.styles.primaryButton,
               {
-                marginRight: 16,
-                opacity: updatedDeck.isChanged ? 1 : 0.5,
+                opacity: updatedDeck.isChanged ? 1 : 0.35,
               },
             ]}
             disabled={!updatedDeck.isChanged}
             onPress={onSaveDeck}>
-            <Text style={styles.primaryButtonLabel}>Save</Text>
+            <Text style={Constants.styles.primaryButtonLabel}>Save</Text>
           </Pressable>
         }
       />
@@ -337,8 +354,12 @@ export const ShareDeckScreen = ({ route }) => {
                 { backgroundColor: pressed ? '#ccc' : undefined },
               ]}
               onPress={() => shareDeck(deck)}>
-              <Text style={styles.shareLinkUrl}>Get a link</Text>
-              <Feather name={Constants.iOS ? 'share' : 'share-2'} size={24} color="#000" />
+              <Text style={styles.shareLinkUrl}>Copy share link</Text>
+              <Constants.CastleIcon
+                name={Constants.iOS ? 'share-ios' : 'share-android'}
+                size={20}
+                color="#000"
+              />
             </Pressable>
           </View>
         ) : null}
@@ -355,13 +376,15 @@ export const ShareDeckScreen = ({ route }) => {
             />
           </View>
         </View>
-        <Text style={styles.visibilityExplainer}>Who can play your deck?</Text>
+        <Text style={styles.visibilityExplainer}>
+          <Text style={{ fontWeight: 'bold' }}>Visibility:</Text> Who can play your deck?
+        </Text>
         <View style={styles.visibilityContainer}>
           <VisibilityButton
             icon="public"
             visibility="public"
             name="Public"
-            description="Anyone can find and view"
+            description="Anyone on Castle"
             isSelected={updatedDeck.visibility === 'public'}
             onChangeVisibility={onChangeVisibility}
           />
@@ -369,7 +392,7 @@ export const ShareDeckScreen = ({ route }) => {
             icon="link"
             visibility="unlisted"
             name="Unlisted"
-            description="Anyone with the link can view"
+            description="Anyone with the link"
             isSelected={updatedDeck.visibility === 'unlisted'}
             onChangeVisibility={onChangeVisibility}
           />
@@ -377,7 +400,7 @@ export const ShareDeckScreen = ({ route }) => {
             icon="lock"
             visibility="private"
             name="Private"
-            description="Only visible to you"
+            description="Only you"
             isSelected={updatedDeck.visibility === 'private'}
             onChangeVisibility={onChangeVisibility}
             isLast

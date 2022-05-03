@@ -7,12 +7,13 @@ import * as Constants from '../Constants';
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: 16,
     width: '100%',
   },
-  deleteButton: {
+  deleteContainer: {
     alignItems: 'center',
-    justifyContent: 'center',
+    marginTop: 16,
+  },
+  deleteButton: {
     padding: 8,
   },
   deleteLabel: {
@@ -23,12 +24,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 16,
+    marginBottom: 8,
   },
   rowLabel: {
     color: Constants.colors.white,
     fontSize: 16,
-    marginRight: 16,
   },
 });
 
@@ -61,6 +61,7 @@ export const ConfigureDeck = ({
           ios_backgroundColor="#888"
           value={deck.commentsEnabled === true}
           onValueChange={(value) => onChangeCommentsEnabled(value)}
+          style={{ transform: [{ scaleX: 0.9 }, { scaleY: 0.9 }] }}
         />
       </View>
       <View style={styles.row}>
@@ -71,11 +72,14 @@ export const ConfigureDeck = ({
           onValueChange={(value) =>
             onChangeAccessPermissions(value ? 'cloneable' : 'sourceReadable')
           }
+          style={{ transform: [{ scaleX: 0.9 }, { scaleY: 0.9 }] }}
         />
       </View>
-      <TouchableOpacity style={styles.deleteButton} onPress={maybeDeleteDeck}>
-        <Text style={styles.deleteLabel}>Delete this deck</Text>
-      </TouchableOpacity>
+      <View style={styles.deleteContainer}>
+        <TouchableOpacity style={styles.deleteButton} onPress={maybeDeleteDeck}>
+          <Text style={styles.deleteLabel}>Delete this deck</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   ) : (
     <View style={styles.container} />

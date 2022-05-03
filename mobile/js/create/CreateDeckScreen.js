@@ -24,7 +24,7 @@ import * as Utilities from '../common/utilities';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import Feather from 'react-native-vector-icons/Feather';
+import { CastleIcon } from '../Constants';
 import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import FastImage from 'react-native-fast-image';
 
@@ -119,16 +119,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   shareButton: {
-    ...Constants.styles.primaryButton,
-    backgroundColor: '#000',
-    borderColor: '#fff',
-    borderWidth: 1,
-    marginLeft: 8,
+    marginLeft: 12,
   },
   shareButtonLabel: {
     ...Constants.styles.primaryButtonLabel,
     color: '#fff',
-    marginLeft: 4,
   },
 });
 
@@ -240,9 +235,9 @@ const CreateDeckHeader = ({ deck }) => {
                       ? 'link'
                       : 'public'
                   }
-                  size={18}
+                  size={16}
                   color="#000"
-                  style={Constants.styles.primaryButtonIconLeft}
+                  style={Constants.styles.buttonIconLeft}
                 />
                 <Text style={Constants.styles.primaryButtonLabel}>Sharing</Text>
               </View>
@@ -255,14 +250,21 @@ const CreateDeckHeader = ({ deck }) => {
                 { backgroundColor: pressed ? '#333' : undefined },
               ]}
               onPress={() => Utilities.shareDeck(deck)}>
-              <Feather name={Constants.iOS ? 'share' : 'share-2'} size={16} color="#fff" />
-              <Text style={styles.shareButtonLabel}>Copy link</Text>
+              <View style={Constants.styles.secondaryButton}>
+                <Constants.CastleIcon
+                  name={Constants.iOS ? 'share-ios' : 'share-android'}
+                  size={16}
+                  color="#fff"
+                  style={Constants.styles.buttonIconLeft}
+                />
+                <Text style={Constants.styles.secondaryButtonLabel}>Copy link</Text>
+              </View>
             </Pressable>
           ) : null}
         </View>
       </View>
       <View style={[styles.shareTopCard, { backgroundColor }]}>
-        <CardCell card={initialCard} />
+        <CardCell card={initialCard} inGrid />
       </View>
     </View>
   );
