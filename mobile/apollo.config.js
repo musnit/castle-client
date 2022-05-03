@@ -3,7 +3,7 @@ module.exports = {
     includes: ['js/**/*.js'],
     service: {
       name: 'Castle',
-      url: 'https://api.castle.xyz/graphql',
+      url: 'https://api2.castle.xyz/graphql',
     },
   },
 };
