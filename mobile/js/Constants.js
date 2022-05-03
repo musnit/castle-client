@@ -78,19 +78,10 @@ export const styles = {
     color: '#000',
     fontSize: 16,
   },
-  primaryButtonIconLeft: {
-    marginLeft: -2,
-    marginRight: 6,
-  },
-  primaryButtonIconRight: {
-    marginRight: -5,
-    marginLeft: 6,
-    marginBottom: -1,
-  },
   secondaryButton: {
     borderRadius: 4,
-    paddingHorizontal: 8,
     paddingVertical: 5,
+    paddingHorizontal: 9,
     backgroundColor: '#000',
     flexDirection: 'row',
     alignItems: 'center',
@@ -102,10 +93,9 @@ export const styles = {
     color: '#fff',
     fontSize: 16,
   },
-  secondaryButtonIconLeft: {
-    marginLeft: -5,
+  buttonIconLeft: {
+    marginLeft: -3,
     marginRight: 6,
-    marginBottom: -1,
   },
   buttonLarge: {
     paddingTop: 8,
