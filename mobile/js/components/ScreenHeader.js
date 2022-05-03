@@ -16,7 +16,6 @@ const styles = StyleSheet.create({
     borderColor: Constants.colors.grayOnBlackBorder,
     paddingHorizontal: 16,
     paddingBottom: 16,
-    marginBottom: 16,
   },
   button: {
     width: 60,

@@ -1,5 +1,5 @@
 import React from 'react';
-import { ActivityIndicator, Alert, TouchableOpacity } from 'react-native';
+import { View, ActivityIndicator, Alert, TouchableOpacity } from 'react-native';
 import { CardsSet } from '../components/CardsSet';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useQuery, gql } from '@apollo/client';

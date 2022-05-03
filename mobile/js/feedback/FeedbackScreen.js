@@ -19,6 +19,7 @@ const styles = StyleSheet.create({
     backgroundColor: Constants.colors.black,
   },
   feedbackForm: {
+    marginTop: 20,
     marginHorizontal: 16,
     borderColor: '#888',
     borderWidth: 1,

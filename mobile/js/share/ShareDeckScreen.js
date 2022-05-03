@@ -18,6 +18,7 @@ import FastImage from 'react-native-fast-image';
 
 const styles = StyleSheet.create({
   content: {
+    paddingTop: 20,
     paddingHorizontal: 16,
   },
   item: {

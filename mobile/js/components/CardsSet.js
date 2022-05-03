@@ -23,6 +23,7 @@ if (CAROUSEL_HEIGHT > Viewport.vh * 75) {
 
 const styles = StyleSheet.create({
   gridContainer: {
+    paddingTop: Constants.GRID_PADDING * 2,
     paddingLeft: Constants.GRID_PADDING,
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -204,7 +205,7 @@ const CardsCarousel = ({ cards, titles, initialCard, onPress, onShowCardOptions 
 
   return (
     <FlatList
-      contentContainerStyle={{ height: CAROUSEL_HEIGHT }}
+      contentContainerStyle={{ paddingTop: Constants.GRID_PADDING * 2, height: CAROUSEL_HEIGHT }}
       horizontal
       data={paddedCards}
       renderItem={renderItem}

@@ -1,5 +1,5 @@
 import React from 'react';
-import { StatusBar, StyleSheet } from 'react-native';
+import { View, StatusBar, StyleSheet } from 'react-native';
 import { useFocusEffect } from '../ReactNavigation';
 import { useGameViewAndroidBackHandler } from '../common/GameViewAndroidBackHandler';
 import { CommentsSheet } from '../comments/CommentsSheet';
@@ -76,7 +76,9 @@ export const PlayDeckScreen = ({ decks, initialDeckIndex = 0, title, route, pagi
   return (
     <SafeAreaView style={styles.container} edges={['left', 'right', 'bottom']}>
       <PopoverProvider>
-        <ScreenHeader title={title} />
+        <View style={{ marginBottom: 12 }}>
+          <ScreenHeader title={title} />
+        </View>
         <NativeDecksFeed
           onPressComments={openComments}
           isCommentsOpen={isCommentsVisible}

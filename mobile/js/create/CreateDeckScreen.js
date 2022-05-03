@@ -40,7 +40,6 @@ const styles = StyleSheet.create({
     paddingBottom: 0,
     borderBottomWidth: 1,
     borderBottomColor: Constants.colors.grayOnBlackBorder,
-    marginBottom: 24,
   },
   settingsColumn: {
     flexDirection: 'row',
@@ -94,7 +93,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     justifyContent: 'space-between',
     paddingHorizontal: 16,
-    paddingBottom: 12,
+    paddingVertical: 12,
   },
   caption: {
     fontSize: 16,

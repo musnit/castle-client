@@ -17,7 +17,7 @@ import * as Utilities from '../common/utilities';
 
 const styles = StyleSheet.create({
   container: {
-    paddingBottom: 16,
+    paddingVertical: 16,
   },
   profileRow: {
     padding: 16,
