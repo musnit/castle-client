@@ -94,6 +94,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     justifyContent: 'space-between',
     paddingHorizontal: 16,
+    paddingBottom: 8,
   },
   caption: {
     fontSize: 16,
@@ -463,7 +464,7 @@ export const CreateDeckScreen = (props) => {
 
   return (
     <SafeAreaView style={Constants.styles.container} edges={['left', 'right', 'bottom']}>
-      <ScreenHeader title="Deck" onBackButtonPress={_goBack} />
+      <ScreenHeader title="Deck" onBackButtonPress={_goBack} borderless />
       {loadDeck.loading && !deck ? (
         <ActivityIndicator size="large" color="#fff" style={{ padding: 48 }} />
       ) : (

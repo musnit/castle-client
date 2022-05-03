@@ -14,8 +14,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     borderBottomWidth: 1,
     borderColor: Constants.colors.grayOnBlackBorder,
-    paddingHorizontal: 12,
-    paddingVertical: 12,
+    paddingHorizontal: 16,
+    paddingBottom: 16,
     marginBottom: 16,
   },
   button: {
@@ -37,7 +37,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export const ScreenHeader = ({ title, onBackButtonPress, RightButtonComponent }) => {
+export const ScreenHeader = ({ title, onBackButtonPress, RightButtonComponent, borderless }) => {
   const navigation = useNavigation();
   const { pop, getState } = navigation;
   const { top } = useSafeAreaInsets();
@@ -54,7 +54,12 @@ export const ScreenHeader = ({ title, onBackButtonPress, RightButtonComponent })
   return (
     <>
       <StatusBar barStyle="light-content" />
-      <View style={[styles.header, addTopInset ? { paddingTop: top } : null]}>
+      <View
+        style={[
+          styles.header,
+          { paddingTop: addTopInset ? top + 8 : 8 },
+          borderless ? { paddingBottom: 6, borderBottomWidth: 0 } : null,
+        ]}>
         {showBackButton ? (
           <TouchableOpacity style={[styles.button]} onPress={onPressBack}>
             <CastleIcon name="back" size={22} color="#fff" />
