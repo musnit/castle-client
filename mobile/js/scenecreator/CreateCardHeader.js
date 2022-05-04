@@ -35,10 +35,10 @@ const styles = StyleSheet.create({
     borderColor: Constants.colors.grayOnBlackBorder,
   },
   back: {
-    width: 67,
+    width: 68,
     alignItems: 'flex-start',
     justifyContent: 'center',
-    paddingLeft: 16,
+    paddingLeft: 12,
   },
   actionsContainer: {
     width: '100%',
@@ -162,7 +162,7 @@ https://github.com/th3rdwave/react-native-safe-area-context/issues/124
           <Pressable
             style={({ pressed }) => [
               SceneCreatorConstants.styles.button,
-              { width: 56 },
+              { width: 60, justifyContent: 'center' },
               isCardChanged && !loading && !pressed ? null : { opacity: 0.33, shadowOpacity: 0 },
             ]}
             onPress={onSave}
@@ -180,7 +180,7 @@ https://github.com/th3rdwave/react-native-safe-area-context/issues/124
             <Text style={Constants.styles.primaryButtonLabel}>Remix</Text>
           </TouchableOpacity>
         ) : (
-          <View pointerEvents="none" style={{ width: 56 }} />
+          <View pointerEvents="none" style={{ width: 60 }} />
         )
       ) : null}
     </View>
