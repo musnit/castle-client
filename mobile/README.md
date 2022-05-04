@@ -23,7 +23,7 @@
 
 ### Android
 
-- `./run_android`
+- `./run_android.sh`
 
 Once you have the app running, shake the device to open the React Native developer menu and select 'Enable Live Reload'. Then, you should be able to modify any of the files under 'js/' and save to trigger a reload of the app that picks up your changes!
 
