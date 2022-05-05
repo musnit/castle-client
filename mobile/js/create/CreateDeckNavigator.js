@@ -26,7 +26,7 @@ export const CreateDeckNavigator = (props) => {
 
   React.useEffect(() => {
     if (deckId) {
-      Analytics.logEvent('VIEW_CREATE_DECK', { deckId });
+      Analytics.logEventSkipAmplitude('VIEW_CREATE_DECK', { deckId });
     }
   }, [deckId]);
 

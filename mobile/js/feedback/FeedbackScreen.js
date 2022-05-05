@@ -69,7 +69,7 @@ export const FeedbackScreen = () => {
   const [feedbackSent, setFeedbackSent] = React.useState(false);
   useFocusEffect(
     React.useCallback(() => {
-      Analytics.logEvent('VIEW_FEEDBACK');
+      Analytics.logEventSkipAmplitude('VIEW_FEEDBACK');
       setFeedbackSent(false);
     }, [setFeedbackSent])
   );

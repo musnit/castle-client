@@ -58,7 +58,7 @@ export const ExploreFeed = ({ route }) => {
 
   useFocusEffect(
     React.useCallback(() => {
-      Analytics.logEvent('VIEW_EXPLORE_FEED', { feedId });
+      Analytics.logEventSkipAmplitude('VIEW_EXPLORE_FEED', { feedId });
     }, [feedId])
   );
 
