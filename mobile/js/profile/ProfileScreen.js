@@ -110,7 +110,7 @@ export const ProfileScreen = ({ userId, route }) => {
   useFocusEffect(
     React.useCallback(() => {
       StatusBar.setBarStyle('light-content'); // needed for tab navigator
-      Analytics.logEvent('VIEW_PROFILE', { userId, isOwnProfile: isMe });
+      Analytics.logEventSkipAmplitude('VIEW_PROFILE', { userId, isOwnProfile: isMe });
 
       if (
         !(lastFetchTime.current && Date.now() - lastFetchTime.current < REFETCH_PROFILE_INTERVAL_MS)

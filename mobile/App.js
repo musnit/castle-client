@@ -20,6 +20,7 @@ Sentry.init({
 });
 
 if (AMPLITUDE_KEY) {
+  Amplitude.getInstance().trackingSessionEvents(true);
   Amplitude.getInstance().init(AMPLITUDE_KEY);
 }
 

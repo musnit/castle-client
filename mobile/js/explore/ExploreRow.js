@@ -66,7 +66,7 @@ export const ExploreRow = ({ feed, last }) => {
 
   const onPressDeck = React.useCallback(
     (deck, index) => {
-      Analytics.logEvent('PLAY_EXPLORE_ROW_ITEM', {
+      Analytics.logEventSkipAmplitude('PLAY_EXPLORE_ROW_ITEM', {
         feedId: feed.feedId,
         deckId: deck.deckId,
         index,

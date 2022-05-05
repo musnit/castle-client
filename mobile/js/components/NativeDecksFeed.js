@@ -173,7 +173,7 @@ export const NativeDecksFeed = ({
   useFocusEffect(
     React.useCallback(() => {
       setIsFocused(true);
-      Analytics.logEvent('VIEW_FEED', {
+      Analytics.logEventSkipAmplitude('VIEW_FEED', {
         screen: previousScreenName,
       });
 

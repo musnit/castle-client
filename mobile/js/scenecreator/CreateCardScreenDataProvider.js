@@ -245,7 +245,7 @@ class CreateCardScreenDataProvider extends React.Component {
       undefined,
       kitDeckId
     );
-    Analytics.logEvent('SAVE_DECK', {
+    Analytics.logEventSkipAmplitude('SAVE_DECK', {
       deckId: deck.deckId,
       cardId: card.cardId,
     });

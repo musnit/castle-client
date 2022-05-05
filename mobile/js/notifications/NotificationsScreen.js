@@ -211,7 +211,7 @@ export const NotificationsScreen = () => {
 
   useFocusEffect(
     React.useCallback(() => {
-      Analytics.logEvent('VIEW_NOTIFICATIONS');
+      Analytics.logEventSkipAmplitude('VIEW_NOTIFICATIONS');
     }, [])
   );
 

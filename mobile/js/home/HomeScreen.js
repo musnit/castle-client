@@ -79,7 +79,7 @@ export const HomeScreen = ({ route }) => {
   useFocusEffect(
     React.useCallback(() => {
       StatusBar.setBarStyle('light-content'); // needed for tab navigator
-      Analytics.logEvent('VIEW_HOME', { mode });
+      Analytics.logEventSkipAmplitude('VIEW_HOME', { mode });
     }, [mode])
   );
 

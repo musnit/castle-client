@@ -374,7 +374,7 @@ const CreateScreenAuthenticated = () => {
   useFocusEffect(
     React.useCallback(() => {
       StatusBar.setBarStyle('light-content'); // needed for tab navigator
-      Analytics.logEvent('VIEW_CREATE');
+      Analytics.logEventSkipAmplitude('VIEW_CREATE');
       fetchDecks();
     }, [])
   );
