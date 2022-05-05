@@ -13,7 +13,7 @@ void ExpressionRegistrar::registerSceneExpressions() {
 
 struct TimeExpression : BaseExpression {
   inline static const RuleRegistration<TimeExpression> registration { "time" };
-  static constexpr auto description = "Time elapsed since the card started";
+  static constexpr auto description = "time elapsed since the card started";
 
   struct Params {
   } params;
@@ -266,5 +266,39 @@ struct SpeedExpression : BaseExpression {
       }
     }
     return 0;
+  }
+};
+
+struct TouchXExpression : BaseExpression {
+  inline static const RuleRegistration<TouchXExpression> registration { "touch x" };
+  static constexpr auto description = "the X coordinate of the user's touch";
+
+  struct Params {
+  } params;
+
+  ExpressionValue eval(RuleContext &ctx) override {
+    auto &scene = ctx.getScene();
+    if (auto touch = scene.getGesture().maybeGetTouch(ctx.extras.touchId)) {
+      return touch->pos.x;
+    } else {
+      return scene.getLastTouchPos().x;
+    }
+  }
+};
+
+struct TouchYExpression : BaseExpression {
+  inline static const RuleRegistration<TouchYExpression> registration { "touch y" };
+  static constexpr auto description = "the Y coordinate of the user's touch";
+
+  struct Params {
+  } params;
+
+  ExpressionValue eval(RuleContext &ctx) override {
+    auto &scene = ctx.getScene();
+    if (auto touch = scene.getGesture().maybeGetTouch(ctx.extras.touchId)) {
+      return touch->pos.y;
+    } else {
+      return scene.getLastTouchPos().y;
+    }
   }
 };

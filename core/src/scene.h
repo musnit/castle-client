@@ -170,6 +170,7 @@ public:
 
   Gesture &getGesture();
   const Gesture &getGesture() const;
+  love::Vector2 getLastTouchPos() const;
 
 
   // Variables
@@ -305,6 +306,7 @@ private:
   mutable ActorId cameraTarget = nullActor;
 
   Gesture gesture { this };
+  love::Vector2 lastTouchPos;
 
   double performTime = 0;
 
@@ -590,6 +592,10 @@ inline bool Scene::isBackgroundDark() const {
 
 inline Gesture &Scene::getGesture() {
   return gesture;
+}
+
+inline love::Vector2 Scene::getLastTouchPos() const {
+  return lastTouchPos;
 }
 
 inline const Gesture &Scene::getGesture() const {

@@ -324,6 +324,10 @@ void BodyBehavior::handlePerform(double dt) {
           || touch.isUsed(TextBehavior::leaderboardTouchToken)) {
         return;
       }
+
+      RuleContextExtras extras;
+      extras.touchId = touchId;
+
       auto &prevHits = getActorsAtTouch(touchId);
       ActorsAtTouch currHits;
       forEachActorAtPoint(touch.pos.x, touch.pos.y, [&](ActorId actorId, const b2Fixture *fixture) {
@@ -335,7 +339,7 @@ void BodyBehavior::handlePerform(double dt) {
       if (touch.released && !touch.movedFar && currTime - touch.pressTime < 0.3) {
         // Tap
         for (auto actorId : currHits) {
-          if (rulesBehavior.fire<TapTrigger>(actorId, {})) {
+          if (rulesBehavior.fire<TapTrigger>(actorId, extras)) {
             touch.forceUse(triggerTouchToken);
           }
         }
@@ -343,19 +347,19 @@ void BodyBehavior::handlePerform(double dt) {
       if (touch.released) {
         // Touch up
         for (auto actorId : currHits) {
-          rulesBehavior.fire<TouchUpTrigger>(actorId, {});
+          rulesBehavior.fire<TouchUpTrigger>(actorId, extras);
         }
       } else {
         for (auto actorId : currHits) {
           if (touch.pressed
               || std::find(prevHits.begin(), prevHits.end(), actorId) == prevHits.end()) {
             // Pressed or moved onto actor -- touch down
-            if (rulesBehavior.fire<TouchDownTrigger>(actorId, {})) {
+            if (rulesBehavior.fire<TouchDownTrigger>(actorId, extras)) {
               touch.forceUse(triggerTouchToken);
             }
           }
           // Currently on actor -- press
-          if (rulesBehavior.fire<PressTrigger>(actorId, {})) {
+          if (rulesBehavior.fire<PressTrigger>(actorId, extras)) {
             touch.forceUse(triggerTouchToken);
           }
         }
@@ -363,7 +367,7 @@ void BodyBehavior::handlePerform(double dt) {
       for (auto actorId : prevHits) {
         if (std::find(currHits.begin(), currHits.end(), actorId) == currHits.end()) {
           // Moved off actor -- touch up
-          rulesBehavior.fire<TouchUpTrigger>(actorId, {});
+          rulesBehavior.fire<TouchUpTrigger>(actorId, extras);
         }
       }
       gesture.setData<ActorsAtTouch>(touchId, std::move(currHits));

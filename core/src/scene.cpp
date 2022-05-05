@@ -400,6 +400,9 @@ void Scene::update(double dt) {
 
   // Update gesture first so behaviors can read it
   updateGesture();
+  gesture.forEachTouch([&](TouchId touchId, const Touch &touch) {
+    lastTouchPos = touch.pos;
+  });
 
   // Leaderboard first so it can take the gesture if necessary
   leaderboardView->update(dt);

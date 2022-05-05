@@ -536,6 +536,12 @@ const data = {
     ['speed']: {
       category: 'spatial relationships',
     },
+    ['touch x']: {
+      category: 'spatial relationships',
+    },
+    ['touch y']: {
+      category: 'spatial relationships',
+    },
     abs: {
       category: 'functions',
     },
