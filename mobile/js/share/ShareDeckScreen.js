@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Pressable, TextInput, TouchableOpacity, StyleSheet, View } from 'react-native';
 import { AppText as Text } from '../components/AppText';
+import { AuthPrompt } from '../auth/AuthPrompt';
 import { ConfigureDeck } from '../create/ConfigureDeck';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ScreenHeader } from '../components/ScreenHeader';
@@ -8,6 +9,7 @@ import { shareDeck } from '../common/utilities';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import { useMutation, gql } from '@apollo/client';
 import { useNavigation } from '../ReactNavigation';
+import { useSession } from '../Session';
 
 import * as Analytics from '../common/Analytics';
 import * as Constants from '../Constants';
@@ -17,6 +19,10 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import FastImage from 'react-native-fast-image';
 
 const styles = StyleSheet.create({
+  authContainer: {
+    backgroundColor: '#000',
+    flex: 1,
+  },
   content: {
     paddingTop: 20,
     paddingHorizontal: 16,
@@ -164,7 +170,25 @@ const Congratulations = () => (
   </View>
 );
 
-export const ShareDeckScreen = ({ route }) => {
+export const ShareDeckScreen = (props) => {
+  const { isAnonymous } = useSession();
+
+  if (isAnonymous) {
+    return (
+      <View style={styles.authContainer}>
+        <ScreenHeader title="Deck Sharing" />
+        <AuthPrompt
+          title="Share your decks"
+          message="Publish your decks to the public Castle feed, or get a link to share to other apps."
+        />
+      </View>
+    );
+  } else {
+    return <ShareDeckScreenAuthenticated {...props} />;
+  }
+};
+
+const ShareDeckScreenAuthenticated = ({ route }) => {
   const { pop, popToTop } = useNavigation();
   const { showActionSheetWithOptions } = useActionSheet();
   const deck = route.params.deck;

@@ -10,7 +10,6 @@ import {
   View,
 } from 'react-native';
 import { AppText as Text } from '../components/AppText';
-import { AuthPrompt } from '../auth/AuthPrompt';
 import { CardCell } from '../components/CardCell';
 import {
   useNavigation,
@@ -26,10 +25,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { SegmentedNavigation } from '../components/SegmentedNavigation';
 import { UnsavedCardsList } from './UnsavedCardsList';
 import { useLazyQuery, gql } from '@apollo/client';
-import { useSession } from '../Session';
 
 import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
-import AntIcon from 'react-native-vector-icons/AntDesign';
 import FastImage from 'react-native-fast-image';
 
 import * as Analytics from '../common/Analytics';
@@ -262,28 +259,12 @@ const filterDecks = (decks, filter) => {
       case 'recovered':
         // use different view for this tab
         return [];
-        break;
       case 'recent':
       default:
         return decks.sort((a, b) => new Date(b.lastModified) - new Date(a.lastModified));
     }
   } else {
     return [];
-  }
-};
-
-export const CreateScreen = () => {
-  const { isAnonymous } = useSession();
-
-  if (isAnonymous) {
-    return (
-      <AuthPrompt
-        title="Create interactive cards"
-        message="Make digital toys, living doodles, or tiny games."
-      />
-    );
-  } else {
-    return <CreateScreenAuthenticated />;
   }
 };
 
@@ -310,7 +291,7 @@ const TAB_ITEMS = [
   },
 ];
 
-const CreateScreenAuthenticated = () => {
+export const CreateScreen = () => {
   const { navigate } = useNavigation();
 
   // maintain decks, filter, and filtered decks atomically
