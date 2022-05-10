@@ -149,6 +149,7 @@ void ImageImporter::generateImportedImageFilteredPreview(love::image::ImageData 
 }
 
 void ImageImporter::imageFilterFinished(love::image::ImageData *imageData) {
+  love::thread::Lock lock(imageFilteredDataMutex);
   if (importedImageFilteredData) {
     importedImageFilteredData->release();
     importedImageFilteredData = nullptr;
@@ -294,6 +295,7 @@ struct ImportImageActionReceiver {
 };
 
 void ImageImporter::update(double dt) {
+  love::thread::Lock lock(imageFilteredDataMutex);
   if (hasNewFilteredData) {
     // new filtered data may have been set by the filter runner on another thread.
     // `imageDataToImage` only works on the main thread

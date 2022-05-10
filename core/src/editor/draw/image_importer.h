@@ -47,6 +47,7 @@ private:
   uint8 minEqualNeighbors = 1;
   bool normalizeRgb = false;
 
+  love::thread::MutexRef imageFilteredDataMutex;
   love::image::ImageData *importedImageOriginalData = nullptr;
   love::image::ImageData *importedImageFilteredData = nullptr;
   love::Image *importedImageFilteredPreview = nullptr;
@@ -73,6 +74,7 @@ inline ImageImporter::ImageImporter(DrawTool &drawTool_)
 }
 
 inline love::image::ImageData *ImageImporter::getFilteredImageData() {
+  love::thread::Lock lock(imageFilteredDataMutex);
   if (!importedImageFilteredPreview) {
     regeneratePreview();
   }
