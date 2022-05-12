@@ -21,6 +21,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'flex-end',
+    paddingHorizontal: 16,
   },
   bottomSection: {
     flex: 1,
@@ -41,7 +42,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export const AuthPrompt = ({ title, message }) => {
+export const AuthPrompt = ({ title, message, hideLogin }) => {
   const { navigate } = useNavigation();
 
   const imageHeight = 160;
@@ -127,17 +128,16 @@ export const AuthPrompt = ({ title, message }) => {
               Sign up
             </Text>
           </TouchableOpacity>
-          <TouchableOpacity
-            style={[Constants.styles.secondaryButton, Constants.styles.buttonLarge]}
-            onPress={onPressSignIn}>
-            <Text
-              style={[Constants.styles.secondaryButtonLabel, Constants.styles.buttonLargeLabel]}>
-              Log in
-            </Text>
-          </TouchableOpacity>
-        </View>
-        <View style={{ flexShrink: 1 }}>
-          <MiscLinks />
+          {!hideLogin ? (
+            <TouchableOpacity
+              style={[Constants.styles.secondaryButton, Constants.styles.buttonLarge]}
+              onPress={onPressSignIn}>
+              <Text
+                style={[Constants.styles.secondaryButtonLabel, Constants.styles.buttonLargeLabel]}>
+                Log in
+              </Text>
+            </TouchableOpacity>
+          ) : null}
         </View>
       </View>
     </SafeAreaView>

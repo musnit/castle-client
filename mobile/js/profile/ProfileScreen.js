@@ -14,6 +14,7 @@ import { ProfileSettingsSheet } from './ProfileSettingsSheet';
 import * as Analytics from '../common/Analytics';
 
 import * as Constants from '../Constants';
+import { MiscLinks } from './MiscLinks';
 
 const useProfileQuery = (userId) => {
   const { userId: signedInUserId } = useSession();
@@ -147,10 +148,15 @@ export const ProfileScreen = ({ userId, route }) => {
 
   if (isMe && isAnonymous) {
     return (
-      <AuthPrompt
-        title="Build your profile"
-        message="Show off your decks and follow other creators."
-      />
+      <SafeAreaView style={{ flex: 1 }} edges={['left', 'right', 'bottom']}>
+        <AuthPrompt
+          title="Build your profile"
+          message="Show off your decks and follow other creators."
+        />
+        <View style={{ width: '100%', alignItems: 'center', paddingBottom: 16 }}>
+          <MiscLinks />
+        </View>
+      </SafeAreaView>
     );
   } else {
     if (isMe && user && user.isAnonymous) {
