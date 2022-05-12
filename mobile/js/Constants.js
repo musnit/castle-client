@@ -98,9 +98,10 @@ export const styles = {
     marginRight: 6,
   },
   buttonLarge: {
-    paddingTop: 8,
-    paddingBottom: 8,
-    width: 220,
+    borderRadius: 6,
+    paddingTop: 12,
+    paddingBottom: 12,
+    width: 200,
   },
   buttonLargeLabel: {
     fontSize: 20,
