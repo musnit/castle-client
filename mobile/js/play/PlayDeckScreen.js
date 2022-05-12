@@ -76,9 +76,7 @@ export const PlayDeckScreen = ({ decks, initialDeckIndex = 0, title, route, pagi
   return (
     <SafeAreaView style={styles.container} edges={['left', 'right', 'bottom']}>
       <PopoverProvider>
-        <View style={{ marginBottom: 12 }}>
-          <ScreenHeader title={title} />
-        </View>
+        <ScreenHeader title={title} borderless />
         <NativeDecksFeed
           onPressComments={openComments}
           isCommentsOpen={isCommentsVisible}
