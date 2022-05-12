@@ -56,7 +56,7 @@ export function getDropdownItems({
   dropdownItems.push({
     id: 'restart',
     icon: 'restart',
-    name: 'Restart Deck',
+    name: 'Restart deck',
   });
 
   dropdownItems.push({
