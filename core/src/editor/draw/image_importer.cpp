@@ -77,18 +77,24 @@ void ImageImporter::importImage(std::string uri) {
   }
 
   // decode original data and downsize, generate initial preview
-  love::filesystem::File *file = lv.filesystem.newFile(uri.c_str());
-  love::filesystem::FileData *data = file->read();
   love::image::ImageData *imageData = nullptr;
+  love::filesystem::File *file = nullptr;
   try {
+    file = lv.filesystem.newFile(uri.c_str());
+    love::filesystem::FileData *data = file->read();
     imageData = new love::image::ImageData(data);
+    file->release();
+    file = nullptr;
   } catch (const love::Exception &e) {
     // most likely love couldn't decode the image
+    if (file) {
+      file->release();
+      file = nullptr;
+    }
     status = Status::Error;
     sendEvent();
     return;
   }
-  file->release();
   if (imageData) {
     imageData = ImageProcessing::fitToMaxSize(imageData, getMaxImageSize());
     if (importedImageOriginalData) {
