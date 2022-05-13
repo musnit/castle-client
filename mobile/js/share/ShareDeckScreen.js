@@ -179,7 +179,7 @@ export const ShareDeckScreen = (props) => {
         <ScreenHeader title="Deck Sharing" />
         <AuthPrompt
           title="Share your decks"
-          message="Publish your decks to the public Castle feed, or get a link to share to other apps."
+          message="Publish your decks to your profile, or get a link to share with friends."
           hideLogin
         />
       </View>
