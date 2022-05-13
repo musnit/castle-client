@@ -80,7 +80,7 @@ export const BottomSheetHeader = ({
     {onDone ? (
       <TouchableOpacity style={styles.done} onPress={onDone} disabled={loading}>
         {loading ? (
-          <ActivityIndicator />
+          <ActivityIndicator color="#000" />
         ) : (
           <Text style={styles.doneText}>{doneLabel ?? 'Done'}</Text>
         )}
