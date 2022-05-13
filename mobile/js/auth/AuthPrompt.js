@@ -16,6 +16,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 12,
+
+    /* prevents carousel from peeking onto previous screen during navigation back */
+    overflow: 'hidden',
   },
   topSection: {
     flex: 1,
