@@ -45,8 +45,10 @@ void PhysicsBodyData::makeShader() {
       return vec4(color.rgb, (1.0 - diagonal) * color.a);
     }
   )";
-  shader.reset(
-      lv.graphics.newShader(lv.wrapVertexShaderCode(vert), lv.wrapFragmentShaderCode(frag)));
+  if (!shader) {
+    shader.reset(
+        lv.graphics.newShader(lv.wrapVertexShaderCode(vert), lv.wrapFragmentShaderCode(frag)));
+  }
 
   auto dpiScale = float(lv.graphics.getScreenDPIScale());
   {

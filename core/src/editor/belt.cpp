@@ -21,7 +21,7 @@ Belt::Belt(Editor &editor_)
       return transformProjection * vertexPosition;
     }
   )";
-  {
+  if (!highlightShader) {
     static const char frag[] = R"(
       vec4 effect(vec4 color, Image texture, vec2 texCoords, vec2 screenCoords) {
           color = Texel(texture, texCoords);
@@ -46,7 +46,7 @@ Belt::Belt(Editor &editor_)
     highlightShader.reset(
         lv.graphics.newShader(lv.wrapVertexShaderCode(vert), lv.wrapFragmentShaderCode(frag)));
   }
-  {
+  if (!outlineShader) {
     static const char frag[] = R"(
       vec4 effect(vec4 color, Image texture, vec2 texCoords, vec2 screenCoords) {
           vec4 c = Texel(texture, texCoords);
@@ -65,7 +65,7 @@ Belt::Belt(Editor &editor_)
     outlineShader.reset(
         lv.graphics.newShader(lv.wrapVertexShaderCode(vert), lv.wrapFragmentShaderCode(frag)));
   }
-  {
+  if (!outlineThickeningShader) {
     static const char frag[] = R"(
       vec4 effect(vec4 color, Image texture, vec2 texCoords, vec2 screenCoords) {
           float c = Texel(texture, texCoords).r;
@@ -495,13 +495,15 @@ void Belt::drawHighlight() const {
   }
   auto &scene = editor.getScene();
 
-  if (!highlightCanvas || !highlightCanvas2) {
-    love::Canvas::Settings settings;
-    settings.width = lv.graphics.getWidth();
-    settings.height = lv.graphics.getHeight();
-    settings.dpiScale = 1;
-    settings.msaa = 4;
+  love::Canvas::Settings settings;
+  settings.width = lv.graphics.getWidth();
+  settings.height = lv.graphics.getHeight();
+  settings.dpiScale = 1;
+  settings.msaa = 4;
+  if (!highlightCanvas) {
     highlightCanvas.reset(lv.graphics.newCanvas(settings));
+  }
+  if (!highlightCanvas2) {
     highlightCanvas2.reset(lv.graphics.newCanvas(settings));
   }
 

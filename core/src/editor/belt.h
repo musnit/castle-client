@@ -74,12 +74,12 @@ private:
 
   bool highlightEnabled = false;
 
-  std::unique_ptr<love::Shader> highlightShader;
-  std::unique_ptr<love::Shader> outlineShader;
-  std::unique_ptr<love::Shader> outlineThickeningShader;
+  inline static std::unique_ptr<love::Shader> highlightShader;
+  inline static std::unique_ptr<love::Shader> outlineShader;
+  inline static std::unique_ptr<love::Shader> outlineThickeningShader;
 
-  mutable std::unique_ptr<love::Canvas> highlightCanvas;
-  mutable std::unique_ptr<love::Canvas> highlightCanvas2;
+  inline static std::unique_ptr<love::Canvas> highlightCanvas;
+  inline static std::unique_ptr<love::Canvas> highlightCanvas2;
 
 
   float getElementX(int index) const;
