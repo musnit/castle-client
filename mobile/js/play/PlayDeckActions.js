@@ -65,14 +65,12 @@ export function getDropdownItems({
     name: isMuted ? 'Unmute sound' : 'Mute sound',
   });
 
-  if (!isAnonymous) {
-    // TODO: enable anonymous view source
-    dropdownItems.push({
-      id: 'view-source',
-      icon: 'magnify',
-      name: 'View deck source',
-    });
-  }
+  dropdownItems.push({
+    id: 'view-source',
+    icon: 'magnify',
+    name: 'View deck source',
+  });
+
   if (!isMe && onReportDeck) {
     dropdownItems.push({
       id: 'report',
