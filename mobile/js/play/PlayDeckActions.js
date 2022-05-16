@@ -54,6 +54,12 @@ export function getDropdownItems({
   });
 
   dropdownItems.push({
+    id: 'remix',
+    castleIcon: 'remix',
+    name: 'Remix Deck',
+  });
+
+  dropdownItems.push({
     id: 'restart',
     icon: 'restart',
     name: 'Restart deck',
@@ -121,7 +127,7 @@ export function getOnSelectDropdownAction({
   onSetIsMuted,
   isMuted,
 }) {
-  const { push } = useNavigation();
+  const navigation = useNavigation();
   const { showActionSheetWithOptions } = useActionSheet();
 
   const [addCurationPolicy] = useMutation(
@@ -164,6 +170,39 @@ export function getOnSelectDropdownAction({
     [addStaffPick, deck]
   );
 
+  const [remix] = useMutation(
+    gql`
+      mutation ($deckId: ID!) {
+        remixDeck(deckId: $deckId) {
+          deckId
+        }
+      }
+    `
+  );
+
+  const onRemix = React.useCallback(async () => {
+    await remix({
+      variables: { deckId: deck.deckId },
+    });
+
+    // reset to top of current nav stack in order to unmount the view source editor
+    if (navigation.canGoBack()) {
+      await navigation.popToTop();
+    }
+
+    // ensure we're at the root/default screen of the Create tab
+    await navigation.navigate('CreateTab');
+
+    // push the new deck onto Create stack
+    navigation.navigate('CreateTab', {
+      screen: 'CreateDeck',
+      params: {
+        deckIdToEdit: deck.deckId,
+        cardIdToEdit: undefined,
+      },
+    });
+  }, [deck, navigation]);
+
   const onShare = React.useCallback(
     () =>
       shareDeck({
@@ -187,6 +226,10 @@ export function getOnSelectDropdownAction({
           onShare();
           break;
         }
+        case 'remix': {
+          onRemix();
+          break;
+        }
         case 'restart': {
           onRestartDeck();
           break;
@@ -196,7 +239,7 @@ export function getOnSelectDropdownAction({
           break;
         }
         case 'view-source': {
-          push('ViewSource', { deckIdToEdit: deck.deckId });
+          navigation.push('ViewSource', { deckIdToEdit: deck.deckId });
           break;
         }
         case 'block': {
@@ -280,7 +323,17 @@ export function getOnSelectDropdownAction({
         }
       }
     },
-    [deck?.deckId, onBlockUser, onReportDeck, onSetIsMuted, isMuted]
+    [
+      deck?.deckId,
+      showActionSheetWithOptions,
+      navigation,
+      onBlockUser,
+      onReportDeck,
+      onSetIsMuted,
+      isMuted,
+      onShare,
+      onRemix,
+    ]
   );
 }
 
