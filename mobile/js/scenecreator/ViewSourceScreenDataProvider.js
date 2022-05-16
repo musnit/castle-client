@@ -177,10 +177,10 @@ class ViewSourceScreenDataProvider extends React.Component {
     await this.props.navigation.popToTop();
 
     // ensure we're at the root/default screen of the Create tab
-    await this.props.navigation.navigate('Create');
+    await this.props.navigation.navigate('CreateTab');
 
     // push the new deck onto Create stack
-    this.props.navigation.navigate('Create', {
+    this.props.navigation.navigate('CreateTab', {
       screen: 'CreateDeck',
       params: {
         deckIdToEdit: deck.deckId,
