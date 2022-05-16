@@ -203,6 +203,21 @@ export function getOnSelectDropdownAction({
     });
   }, [deck, navigation]);
 
+  const maybeRemix = React.useCallback(() => {
+    showActionSheetWithOptions(
+      {
+        title: `Save a private copy of @${deck.creator?.username}'s deck to your own profile?`,
+        options: ['Save Copy', 'Cancel'],
+        cancelButtonIndex: 1,
+      },
+      (buttonIndex) => {
+        if (buttonIndex === 0) {
+          return onRemix();
+        }
+      }
+    );
+  }, [showActionSheetWithOptions, onRemix, deck]);
+
   const onShare = React.useCallback(
     () =>
       shareDeck({
@@ -227,7 +242,7 @@ export function getOnSelectDropdownAction({
           break;
         }
         case 'remix': {
-          onRemix();
+          maybeRemix();
           break;
         }
         case 'restart': {
@@ -332,7 +347,7 @@ export function getOnSelectDropdownAction({
       onSetIsMuted,
       isMuted,
       onShare,
-      onRemix,
+      maybeRemix,
     ]
   );
 }
