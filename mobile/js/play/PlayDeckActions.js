@@ -58,7 +58,7 @@ export function getDropdownItems({
     dropdownItems.push({
       id: 'remix',
       castleIcon: 'remix',
-      name: 'Remix Deck',
+      name: 'Remix deck',
     });
   }
 
