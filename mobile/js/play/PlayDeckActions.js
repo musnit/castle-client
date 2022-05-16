@@ -57,7 +57,7 @@ export function getDropdownItems({
   if (isRemixEnabled) {
     dropdownItems.push({
       id: 'remix',
-      castleIcon: 'remix',
+      icon: 'shuffle-variant',
       name: 'Remix deck',
     });
   }
