@@ -35,6 +35,7 @@ const std::string GRAPHQL_DECK_FIELDS
       "  deckId\n"
       "  creator { username }\n"
       "}\n"
+      "accessPermissions\n"
       "creator "
       "{\nuserId\nusername\nphoto "
       "{\nsmallAvatarUrl\nurl\n}\n}\ninitialCard {\n    "

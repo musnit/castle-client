@@ -44,6 +44,7 @@ export function getDropdownItems({
   onBlockUser,
   onReportDeck,
   isMuted,
+  isRemixEnabled,
 }) {
   let dropdownItems = [];
 
@@ -53,11 +54,13 @@ export function getDropdownItems({
     name: 'Share deck',
   });
 
-  dropdownItems.push({
-    id: 'remix',
-    castleIcon: 'remix',
-    name: 'Remix Deck',
-  });
+  if (isRemixEnabled) {
+    dropdownItems.push({
+      id: 'remix',
+      castleIcon: 'remix',
+      name: 'Remix Deck',
+    });
+  }
 
   dropdownItems.push({
     id: 'restart',
@@ -380,6 +383,7 @@ export const PlayDeckActions = ({
   let dropdownItems = getDropdownItems({
     isAnonymous,
     creatorUsername: creator.username,
+    isRemixEnabled: deck.accessPermissions === 'cloneable',
     isMe,
     onBlockUser,
     onReportDeck,

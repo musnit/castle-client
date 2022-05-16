@@ -80,6 +80,7 @@ export const NativeDecksFeed = ({
       let dropdownItems = getDropdownItems({
         isAnonymous,
         creatorUsername: deck?.creator?.username,
+        isRemixEnabled: deck.accessPermissions === 'cloneable',
         isMe,
         onBlockUser,
         onReportDeck,
