@@ -79,8 +79,8 @@ export const CreateCardHeader = ({
   const maybeClone = React.useCallback(() => {
     showActionSheetWithOptions(
       {
-        title: `Save a private copy of @${creatorUsername}'s deck to your own profile?`,
-        options: ['Save Copy', 'Cancel'],
+        title: `Start a remix of @${creatorUsername}'s deck and copy it to your create screen?`,
+        options: ['Remix', 'Cancel'],
         cancelButtonIndex: 1,
       },
       (buttonIndex) => {
