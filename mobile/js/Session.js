@@ -915,16 +915,16 @@ export const blockUser = async (userId, isBlocked) => {
   return result?.data?.blockUser;
 };
 
-export const reportDeck = async (deckId) => {
+export const reportDeck = async ({ deckId, reason }) => {
   const result = await apolloClient.mutate({
     mutation: gql`
-      mutation ($deckId: ID!) {
-        reportDeck(deckId: $deckId) {
+      mutation ($deckId: ID!, $reason: String) {
+        reportDeck(deckId: $deckId, reason: $reason) {
           deckId
         }
       }
     `,
-    variables: { deckId },
+    variables: { deckId, reason },
   });
   return result?.data?.reportDeck;
 };

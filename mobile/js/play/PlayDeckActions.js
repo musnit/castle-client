@@ -37,6 +37,37 @@ const styles = StyleSheet.create({
   },
 });
 
+const DECK_REPORT_REASONS = [
+  {
+    id: 'offensive',
+    label: `It's offensive or rude`,
+  },
+  {
+    id: 'spam',
+    label: 'It is spam',
+  },
+  {
+    id: 'clone',
+    label: `It's an unfair clone`,
+  },
+  {
+    id: 'harrassment',
+    label: 'It bullies someone',
+  },
+  {
+    id: 'violence',
+    label: 'It encourages violence',
+  },
+  {
+    id: 'self-harm',
+    label: 'It encourages self-harm',
+  },
+  {
+    id: 'other',
+    label: 'Other reason',
+  },
+];
+
 export function getDropdownItems({
   isAnonymous,
   creatorUsername,
@@ -286,7 +317,18 @@ export function getOnSelectDropdownAction({
             },
             (buttonIndex) => {
               if (buttonIndex === 0) {
-                onReportDeck();
+                showActionSheetWithOptions(
+                  {
+                    title: `What is wrong with this deck?`,
+                    options: DECK_REPORT_REASONS.map((reason) => reason.label).concat(['Cancel']),
+                    cancelButtonIndex: DECK_REPORT_REASONS.length,
+                  },
+                  (buttonIndex) => {
+                    if (buttonIndex !== DECK_REPORT_REASONS.length) {
+                      onReportDeck({ reason: DECK_REPORT_REASONS[buttonIndex].id });
+                    }
+                  }
+                );
               }
             }
           );

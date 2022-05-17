@@ -51,7 +51,10 @@ export const NativeDecksFeed = ({
   useAppState(setAppState);
 
   const onBlockUser = React.useCallback(() => blockUser(creatorUserId, true), [creatorUserId]);
-  const onReportDeck = React.useCallback(() => reportDeck(deck.deckId), [deck]);
+  const onReportDeck = React.useCallback(
+    ({ reason }) => reportDeck({ deckId: deck.deckId, reason }),
+    [deck]
+  );
   const onSetIsMuted = React.useCallback((isMuted) => {
     setIsMuted(isMuted);
     sendAsync('SET_SOUND_ENABLED', { enabled: isMuted ? false : true });
