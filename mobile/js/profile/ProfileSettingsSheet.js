@@ -89,20 +89,28 @@ const updateUserAsync = async ({ user, aboutBodyCache = {} }) => {
   }
   const result = await Session.apolloClient.mutate({
     mutation: gql`
-      mutation ($userId: ID!, $username: String!, $websiteUrl: String, $tiktokUsername: String, $twitterUsername: String, $itchUsername: String, $about: String) {
-       updateUser(
-         userId: $userId
-         user: {
-           username: $username,
-           websiteUrl: $websiteUrl,
-           tiktokUsername: $tiktokUsername,
-           twitterUsername: $twitterUsername,
-           itchUsername: $itchUsername,
-           about: $about,
-         }
-       ) {
-         ${Constants.USER_PROFILE_FRAGMENT}
-       }
+      mutation (
+        $userId: ID!
+        $username: String!
+        $websiteUrl: String
+        $tiktokUsername: String
+        $twitterUsername: String
+        $itchUsername: String
+        $about: String
+      ) {
+        updateUser(
+          userId: $userId
+          user: {
+            username: $username
+            websiteUrl: $websiteUrl
+            tiktokUsername: $tiktokUsername
+            twitterUsername: $twitterUsername
+            itchUsername: $itchUsername
+            about: $about
+          }
+        ) {
+          ${Constants.USER_PROFILE_FRAGMENT}
+        }
       }
     `,
     variables: {

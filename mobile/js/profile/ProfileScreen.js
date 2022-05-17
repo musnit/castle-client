@@ -16,24 +16,31 @@ import * as Analytics from '../common/Analytics';
 import * as Constants from '../Constants';
 import { MiscLinks } from './MiscLinks';
 
-const useProfileQuery = (userId) => {
+const useProfileQuery = ({ userId, lastModifiedBefore }) => {
   const { userId: signedInUserId } = useSession();
   if (!userId || userId === signedInUserId) {
-    return useLazyQuery(
+    const [fetchProfile, query] = useLazyQuery(
       gql`
-      query Me {
+      query OwnProfile($userId: ID!) {
         me {
           isAnonymous
           ${Constants.USER_PROFILE_FRAGMENT}
         }
+        decksForUser(userId: $userId, limit: 18) {
+          ${Constants.FEED_ITEM_DECK_FRAGMENT}
+        }
       }`
     );
+    return [() => fetchProfile({ variables: { userId } }), query];
   } else {
     const [fetchProfile, query] = useLazyQuery(
       gql`
       query UserProfile($userId: ID!) {
         user(userId: $userId) {
           ${Constants.USER_PROFILE_FRAGMENT}
+        }
+        decksForUser(userId: $userId, limit: 18) {
+          ${Constants.FEED_ITEM_DECK_FRAGMENT}
         }
       }`
     );
@@ -43,8 +50,8 @@ const useProfileQuery = (userId) => {
 
 // keep as separate component so that the isFocused hook doesn't re-render
 // the entire profile screen
-const ProfileDecksGrid = ({ user, refreshing, onRefresh, error, isMe, ...props }) => {
-  const decks = user?.decks.filter((deck) => deck.visibility === 'public');
+const ProfileDecksGrid = ({ user, decks, refreshing, onRefresh, error, isMe, ...props }) => {
+  const filteredDecks = decks ? decks.filter((deck) => deck.visibility === 'public') : [];
   const { push } = useNavigation();
 
   const scrollViewRef = React.useRef(null);
@@ -52,12 +59,12 @@ const ProfileDecksGrid = ({ user, refreshing, onRefresh, error, isMe, ...props }
 
   return (
     <DecksGrid
-      decks={decks}
+      decks={filteredDecks}
       onPressDeck={(deck, index) =>
         push(
           'PlayDeck',
           {
-            decks,
+            filteredDecks,
             initialDeckIndex: index,
             title: `@${user.username}'s Decks`,
           },
@@ -79,6 +86,7 @@ const REFETCH_PROFILE_INTERVAL_MS = 60 * 1000;
 export const ProfileScreen = ({ userId, route }) => {
   const [settingsSheetIsOpen, setSettingsSheet] = useState(false);
   const [user, setUser] = React.useState(null);
+  const [decks, setDecks] = React.useState();
   const [error, setError] = React.useState(undefined);
 
   const { userId: signedInUserId, isAnonymous } = useSession();
@@ -89,7 +97,7 @@ export const ProfileScreen = ({ userId, route }) => {
 
   let lastFetchTime = React.useRef();
 
-  const [fetchProfile, query] = useProfileQuery(userId);
+  const [fetchProfile, query] = useProfileQuery({ userId: isMe ? signedInUserId : userId });
 
   const onRefresh = React.useCallback(() => {
     fetchProfile();
@@ -99,6 +107,7 @@ export const ProfileScreen = ({ userId, route }) => {
     if (query.called && !query.loading) {
       if (query.data) {
         setUser(isMe ? query.data.me : query.data.user);
+        setDecks(query.data.decksForUser);
         setError(undefined);
       } else if (query.error) {
         setError(query.error);
@@ -173,6 +182,7 @@ export const ProfileScreen = ({ userId, route }) => {
             <PopoverProvider>
               <ProfileDecksGrid
                 user={user}
+                decks={decks}
                 refreshing={query.loading}
                 onRefresh={onRefresh}
                 error={error}

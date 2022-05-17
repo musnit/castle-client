@@ -280,9 +280,6 @@ export const USER_PROFILE_FRAGMENT = `
     username
     photo { url }
   }
-  decks {
-    ${FEED_ITEM_DECK_FRAGMENT}
-  }
 `;
 
 export const COMMENT_FRAGMENT = `
