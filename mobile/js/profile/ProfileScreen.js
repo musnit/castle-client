@@ -16,35 +16,41 @@ import * as Analytics from '../common/Analytics';
 import * as Constants from '../Constants';
 import { MiscLinks } from './MiscLinks';
 
-const useProfileQuery = ({ userId, lastModifiedBefore }) => {
+const useProfileQuery = ({ userId }) => {
   const { userId: signedInUserId } = useSession();
   if (!userId || userId === signedInUserId) {
     const [fetchProfile, query] = useLazyQuery(
       gql`
-      query OwnProfile($userId: ID!) {
+      query OwnProfile($userId: ID!, $lastModifiedBefore: Datetime) {
         me {
           isAnonymous
           ${Constants.USER_PROFILE_FRAGMENT}
         }
-        decksForUser(userId: $userId, limit: 18) {
+        decksForUser(userId: $userId, limit: 18, lastModifiedBefore: $lastModifiedBefore) {
           ${Constants.FEED_ITEM_DECK_FRAGMENT}
         }
       }`
     );
-    return [() => fetchProfile({ variables: { userId } }), query];
+    return [
+      ({ lastModifiedBefore }) => fetchProfile({ variables: { userId, lastModifiedBefore } }),
+      query,
+    ];
   } else {
     const [fetchProfile, query] = useLazyQuery(
       gql`
-      query UserProfile($userId: ID!) {
+      query UserProfile($userId: ID!, $lastModifiedBefore: Datetime) {
         user(userId: $userId) {
           ${Constants.USER_PROFILE_FRAGMENT}
         }
-        decksForUser(userId: $userId, limit: 18) {
+        decksForUser(userId: $userId, limit: 18, lastModifiedBefore: $lastModifiedBefore) {
           ${Constants.FEED_ITEM_DECK_FRAGMENT}
         }
       }`
     );
-    return [() => fetchProfile({ variables: { userId } }), query];
+    return [
+      ({ lastModifiedBefore }) => fetchProfile({ variables: { userId, lastModifiedBefore } }),
+      query,
+    ];
   }
 };
 
@@ -86,7 +92,14 @@ const REFETCH_PROFILE_INTERVAL_MS = 60 * 1000;
 export const ProfileScreen = ({ userId, route }) => {
   const [settingsSheetIsOpen, setSettingsSheet] = useState(false);
   const [user, setUser] = React.useState(null);
-  const [decks, setDecks] = React.useState();
+  const [decks, changeDecks] = React.useReducer((state, type) => {
+    if (type.type === 'set') {
+      return type.decks;
+    } else if (type.type === 'append') {
+      return state.concat(type.decks);
+    }
+    return state;
+  }, null);
   const [error, setError] = React.useState(undefined);
 
   const { userId: signedInUserId, isAnonymous } = useSession();
@@ -95,19 +108,52 @@ export const ProfileScreen = ({ userId, route }) => {
   }
   const isMe = !userId || userId === signedInUserId;
 
-  let lastFetchTime = React.useRef();
+  const lastFetched = React.useRef({
+    time: undefined,
+    lastDeckId: undefined,
+  });
+  const lastQueryData = React.useRef(null);
 
   const [fetchProfile, query] = useProfileQuery({ userId: isMe ? signedInUserId : userId });
 
-  const onRefresh = React.useCallback(() => {
-    fetchProfile();
-  }, [fetchProfile]);
+  const onRefresh = React.useCallback(
+    (lastDeck) => {
+      fetchProfile({ lastModifiedBefore: lastDeck?.lastModified });
+      lastFetched.current = { time: Date.now(), lastDeckId: lastDeck?.deckId };
+    },
+    [fetchProfile]
+  );
+
+  const onEndReached = React.useCallback(() => {
+    if (!query.loading && decks?.length) {
+      const lastDeck = decks[decks.length - 1];
+      onRefresh(lastDeck);
+    }
+  }, [query.loading, decks, onRefresh]);
 
   React.useEffect(() => {
     if (query.called && !query.loading) {
       if (query.data) {
+        // Without this, both "set" and "append" get called every time a new page is loaded
+        if (lastQueryData.current == query.data) {
+          return;
+        }
+        lastQueryData.current = query.data;
+
         setUser(isMe ? query.data.me : query.data.user);
-        setDecks(query.data.decksForUser);
+        const decks = query.data.decksForUser;
+        if (decks.length > 0) {
+          if (
+            lastFetched.current.lastDeckId &&
+            decks[decks.length - 1].deckId !== lastFetched.current.lastDeckId
+          ) {
+            // append next page
+            changeDecks({ type: 'append', decks });
+          } else {
+            // clean refresh
+            changeDecks({ type: 'set', decks });
+          }
+        }
         setError(undefined);
       } else if (query.error) {
         setError(query.error);
@@ -123,10 +169,13 @@ export const ProfileScreen = ({ userId, route }) => {
       Analytics.logEventSkipAmplitude('VIEW_PROFILE', { userId, isOwnProfile: isMe });
 
       if (
-        !(lastFetchTime.current && Date.now() - lastFetchTime.current < REFETCH_PROFILE_INTERVAL_MS)
+        !(
+          lastFetched.current.time &&
+          Date.now() - lastFetched.current.time < REFETCH_PROFILE_INTERVAL_MS
+        )
       ) {
         onRefresh();
-        lastFetchTime.current = Date.now();
+        lastFetched.current.time = Date.now();
       }
     }, [userId, isMe, onRefresh])
   );
@@ -185,6 +234,8 @@ export const ProfileScreen = ({ userId, route }) => {
                 decks={decks}
                 refreshing={query.loading}
                 onRefresh={onRefresh}
+                onEndReached={onEndReached}
+                onEndReachedThreshold={0.5}
                 error={error}
                 isMe={isMe}
                 ListHeaderComponent={ListHeaderComponent}
