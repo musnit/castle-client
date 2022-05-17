@@ -70,7 +70,7 @@ const ProfileDecksGrid = ({ user, decks, refreshing, onRefresh, error, isMe, ...
         push(
           'PlayDeck',
           {
-            filteredDecks,
+            decks: filteredDecks,
             initialDeckIndex: index,
             title: `@${user.username}'s Decks`,
           },
