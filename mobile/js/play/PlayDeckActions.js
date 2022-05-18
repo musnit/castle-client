@@ -1,46 +1,18 @@
 import React from 'react';
 import { Platform } from 'react-native';
+import { blockUser, reportDeck, DECK_REPORT_REASONS } from '../moderation/ModerationActions';
+import { isAdmin, useSession } from '../Session';
+import { sendAsync } from '../core/CoreEvents';
 import { shareDeck } from '../common/utilities';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import { useNavigation } from '../ReactNavigation';
-import { isAdmin } from '../Session';
-import { sendAsync } from '../core/CoreEvents';
 import { useMutation, gql } from '@apollo/client';
 
-const DECK_REPORT_REASONS = [
-  {
-    id: 'offensive',
-    label: `It's offensive or rude`,
-  },
-  {
-    id: 'spam',
-    label: 'It is spam',
-  },
-  {
-    id: 'clone',
-    label: `It's an unfair clone`,
-  },
-  {
-    id: 'harrassment',
-    label: 'It bullies someone',
-  },
-  {
-    id: 'violence',
-    label: 'It encourages violence',
-  },
-  {
-    id: 'self-harm',
-    label: 'It encourages self-harm',
-  },
-  {
-    id: 'other',
-    label: 'Other reason',
-  },
-];
-
-const getDropdownItems = (props) => {
-  const { creatorUsername, isMe, onBlockUser, onReportDeck, isMuted, isRemixEnabled } = props;
+const getDropdownItems = ({ deck, isMe, isMuted }) => {
   let dropdownItems = [];
+
+  const creatorUsername = deck?.creator?.username;
+  const isRemixEnabled = deck?.accessPermissions === 'cloneable';
 
   dropdownItems.push({
     id: 'share',
@@ -74,14 +46,14 @@ const getDropdownItems = (props) => {
     name: 'View deck source',
   });
 
-  if (!isMe && onReportDeck) {
+  if (!isMe) {
     dropdownItems.push({
       id: 'report',
       icon: 'flag-outline',
       name: 'Report and hide deck',
     });
   }
-  if (!isMe && onBlockUser) {
+  if (!isMe) {
     dropdownItems.push({
       id: 'block',
       icon: 'cancel',
@@ -117,8 +89,8 @@ const getDropdownItems = (props) => {
   return dropdownItems;
 };
 
-export const usePlayDeckActions = (props) => {
-  const { deck, onBlockUser, onReportDeck, onSetIsMuted, isMuted } = props;
+export const usePlayDeckActions = ({ deck, isMe }) => {
+  const { isMuted, setIsMuted } = useSession();
   const navigation = useNavigation();
   const { showActionSheetWithOptions } = useActionSheet();
 
@@ -224,6 +196,25 @@ export const usePlayDeckActions = (props) => {
         deckId: deck.deckId,
       }),
     [deck]
+  );
+
+  const onReportDeck = React.useCallback(
+    ({ reason }) => reportDeck({ deckId: deck.deckId, reason }),
+    [deck]
+  );
+
+  const onBlockUser = React.useCallback(() => {
+    if (deck?.creator?.userId) {
+      blockUser(deck.creator.userId, true);
+    }
+  }, [deck]);
+
+  const onSetIsMuted = React.useCallback(
+    (isMuted) => {
+      setIsMuted(isMuted);
+      sendAsync('SET_SOUND_ENABLED', { enabled: isMuted ? false : true });
+    },
+    [setIsMuted]
   );
 
   const onSelectItem = React.useCallback(
@@ -359,7 +350,7 @@ export const usePlayDeckActions = (props) => {
   );
 
   return {
-    items: getDropdownItems(props),
+    items: getDropdownItems({ deck, isMe, isMuted }),
     onSelectItem,
   };
 };

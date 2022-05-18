@@ -8,8 +8,8 @@ import * as CoreViews from '../CoreViews';
 import { DropdownItemsList } from './Dropdown';
 import { usePopover } from './PopoverProvider';
 import { usePlayDeckActions } from '../play/PlayDeckActions';
-import { useSession, blockUser, reportDeck } from '../Session';
-import { sendAsync, useListen } from '../core/CoreEvents';
+import { useSession } from '../Session';
+import { useListen } from '../core/CoreEvents';
 import { useAppState } from '../ghost/GhostAppState';
 import { useGameViewAndroidBackHandler } from '../common/GameViewAndroidBackHandler';
 import { useFocusEffect, useNavigation } from '../ReactNavigation';
@@ -29,8 +29,6 @@ export const NativeDecksFeed = ({
 }) => {
   const {
     userId: signedInUserId,
-    isMuted,
-    setIsMuted,
     setIsNuxCompleted,
     setIsNativeFeedNuxCompleted,
     isNuxCompleted,
@@ -43,21 +41,10 @@ export const NativeDecksFeed = ({
   const { navigate } = useNavigation();
 
   const [deck, setDeck] = React.useState(null);
-  const [creatorUserId, setCreatorUserId] = React.useState(null);
 
   const [popoverProps, setPopoverProps] = React.useState(null);
   const [appState, setAppState] = React.useState('active');
   useAppState(setAppState);
-
-  const onBlockUser = React.useCallback(() => blockUser(creatorUserId, true), [creatorUserId]);
-  const onReportDeck = React.useCallback(
-    ({ reason }) => reportDeck({ deckId: deck.deckId, reason }),
-    [deck]
-  );
-  const onSetIsMuted = React.useCallback((isMuted) => {
-    setIsMuted(isMuted);
-    sendAsync('SET_SOUND_ENABLED', { enabled: isMuted ? false : true });
-  });
 
   useListen({
     eventName: 'NUX_COMPLETED',
@@ -71,13 +58,7 @@ export const NativeDecksFeed = ({
   const isMe = deck?.creator?.userId === signedInUserId;
   playDeckActions.current = usePlayDeckActions({
     deck,
-    creatorUsername: deck?.creator?.username,
-    isRemixEnabled: deck?.accessPermissions === 'cloneable',
     isMe,
-    onBlockUser,
-    onReportDeck,
-    isMuted,
-    onSetIsMuted,
   });
 
   React.useEffect(() => {
@@ -122,8 +103,6 @@ export const NativeDecksFeed = ({
     let deck = JSON.parse(props.deck);
 
     setDeck(deck);
-    setCreatorUserId(deck?.creator?.userId);
-
     setPopoverProps(props);
   };
 
