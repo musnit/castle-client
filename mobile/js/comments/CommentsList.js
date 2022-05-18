@@ -2,12 +2,14 @@ import * as React from 'react';
 import { ActivityIndicator, FlatList, Pressable, StyleSheet, View } from 'react-native';
 import { AppText as Text } from '../components/AppText';
 import { MessageBody } from '../components/MessageBody';
+import { reportComment, COMMENT_REPORT_REASONS } from '../moderation/ModerationActions';
 import { toRecentDate } from '../common/date-utilities';
 import { UserAvatar } from '../components/UserAvatar';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import { useLazyQuery, useMutation, gql } from '@apollo/client';
 import { useNavigation } from '../ReactNavigation';
 import { useSession, isAdmin } from '../Session';
+
 import orderby from 'lodash.orderby';
 
 import * as Constants from '../Constants';
@@ -306,24 +308,6 @@ export const CommentsList = ({ deck, isOpen, setReplyingToComment, newComment })
     }
   );
 
-  const [reportComment] = useMutation(
-    gql`
-      mutation ($commentId: ID!) {
-        reportComment(commentId: $commentId) {
-          ${Constants.COMMENTS_LIST_FRAGMENT}
-        }
-      }
-    `
-  );
-
-  const onReportComment = React.useCallback(
-    (comment) =>
-      reportComment({
-        variables: { commentId: comment.commentId },
-      }),
-    [reportComment]
-  );
-
   const [shadowbanUser] = useMutation(
     gql`
       mutation ($userId: ID!) {
@@ -491,7 +475,23 @@ export const CommentsList = ({ deck, isOpen, setReplyingToComment, newComment })
               },
               (buttonIndex) => {
                 if (buttonIndex === 0) {
-                  onReportComment(comment);
+                  showActionSheetWithOptions(
+                    {
+                      title: `What is wrong with this comment?`,
+                      options: COMMENT_REPORT_REASONS.map((reason) => reason.label).concat([
+                        'Cancel',
+                      ]),
+                      cancelButtonIndex: COMMENT_REPORT_REASONS.length,
+                    },
+                    (buttonIndex) => {
+                      if (buttonIndex !== COMMENT_REPORT_REASONS.length) {
+                        reportComment({
+                          commentId: comment.commentId,
+                          reason: COMMENT_REPORT_REASONS[buttonIndex].id,
+                        });
+                      }
+                    }
+                  );
                 }
               }
             ),
@@ -534,7 +534,6 @@ export const CommentsList = ({ deck, isOpen, setReplyingToComment, newComment })
     [
       showActionSheetWithOptions,
       setReplyingToComment,
-      onReportComment,
       onDeleteComment,
       onShadowbanUser,
       signedInUserId,
