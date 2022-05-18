@@ -2,7 +2,11 @@ import * as React from 'react';
 import { ActivityIndicator, FlatList, Pressable, StyleSheet, View } from 'react-native';
 import { AppText as Text } from '../components/AppText';
 import { MessageBody } from '../components/MessageBody';
-import { reportComment, COMMENT_REPORT_REASONS } from '../moderation/ModerationActions';
+import {
+  reportComment,
+  shadowbanUser,
+  COMMENT_REPORT_REASONS,
+} from '../moderation/ModerationActions';
 import { toRecentDate } from '../common/date-utilities';
 import { UserAvatar } from '../components/UserAvatar';
 import { useActionSheet } from '@expo/react-native-action-sheet';
@@ -308,24 +312,6 @@ export const CommentsList = ({ deck, isOpen, setReplyingToComment, newComment })
     }
   );
 
-  const [shadowbanUser] = useMutation(
-    gql`
-      mutation ($userId: ID!) {
-        setIsShadowbanned(userId: $userId, isShadowbanned: true) {
-          userId
-        }
-      }
-    `
-  );
-
-  const onShadowbanUser = React.useCallback(
-    (userId) =>
-      shadowbanUser({
-        variables: { userId },
-      }),
-    [shadowbanUser]
-  );
-
   const [deleteComment] = useMutation(
     gql`
       mutation ($commentId: ID!) {
@@ -510,7 +496,7 @@ export const CommentsList = ({ deck, isOpen, setReplyingToComment, newComment })
               },
               (buttonIndex) => {
                 if (buttonIndex === 0) {
-                  onShadowbanUser(comment.fromUser.userId);
+                  shadowbanUser({ userId: comment.fromUser.userId });
                 }
               }
             ),
@@ -535,7 +521,6 @@ export const CommentsList = ({ deck, isOpen, setReplyingToComment, newComment })
       showActionSheetWithOptions,
       setReplyingToComment,
       onDeleteComment,
-      onShadowbanUser,
       signedInUserId,
       isAnonymous,
       deck,

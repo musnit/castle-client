@@ -111,3 +111,17 @@ export const reportComment = async ({ commentId, reason }) => {
   });
   return result?.data?.reportComment;
 };
+
+export const shadowbanUser = async ({ userId }) => {
+  const result = await apolloClient.mutate({
+    mutation: gql`
+      mutation ($userId: ID!) {
+        setIsShadowbanned(userId: $userId, isShadowbanned: true) {
+          userId
+        }
+      }
+    `,
+    variables: { userId },
+  });
+  return result?.data?.setIsShadowbanned;
+};
