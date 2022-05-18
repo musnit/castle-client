@@ -32,7 +32,7 @@ const useProfileQuery = ({ userId }) => {
       }`
     );
     return [
-      ({ lastModifiedBefore }) => fetchProfile({ variables: { userId, lastModifiedBefore } }),
+      ({ lastModifiedBefore } = {}) => fetchProfile({ variables: { userId, lastModifiedBefore } }),
       query,
     ];
   } else {
@@ -48,7 +48,7 @@ const useProfileQuery = ({ userId }) => {
       }`
     );
     return [
-      ({ lastModifiedBefore }) => fetchProfile({ variables: { userId, lastModifiedBefore } }),
+      ({ lastModifiedBefore } = {}) => fetchProfile({ variables: { userId, lastModifiedBefore } }),
       query,
     ];
   }
