@@ -1,41 +1,11 @@
 import React from 'react';
-import { Animated, Pressable, StyleSheet, View, Platform } from 'react-native';
-import { Dropdown } from '../components/Dropdown';
+import { Platform } from 'react-native';
 import { shareDeck } from '../common/utilities';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import { useNavigation } from '../ReactNavigation';
 import { isAdmin } from '../Session';
 import { sendAsync } from '../core/CoreEvents';
 import { useMutation, gql } from '@apollo/client';
-
-import * as Constants from '../Constants';
-const CastleIcon = Constants.CastleIcon;
-
-const ICON_SIZE = 22;
-
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    height: Constants.FEED_ITEM_HEADER_HEIGHT,
-    width: '100%',
-    borderTopLeftRadius: Constants.CARD_BORDER_RADIUS,
-    borderTopRightRadius: Constants.CARD_BORDER_RADIUS,
-    overflow: 'hidden',
-  },
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  rightButton: {
-    minWidth: 28,
-    minHeight: 28,
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexDirection: 'row',
-    marginLeft: 16,
-  },
-});
 
 const DECK_REPORT_REASONS = [
   {
@@ -68,15 +38,8 @@ const DECK_REPORT_REASONS = [
   },
 ];
 
-export function getDropdownItems({
-  isAnonymous,
-  creatorUsername,
-  isMe,
-  onBlockUser,
-  onReportDeck,
-  isMuted,
-  isRemixEnabled,
-}) {
+const getDropdownItems = (props) => {
+  const { creatorUsername, isMe, onBlockUser, onReportDeck, isMuted, isRemixEnabled } = props;
   let dropdownItems = [];
 
   dropdownItems.push({
@@ -152,15 +115,10 @@ export function getDropdownItems({
   }
 
   return dropdownItems;
-}
+};
 
-export function getOnSelectDropdownAction({
-  deck,
-  onBlockUser,
-  onReportDeck,
-  onSetIsMuted,
-  isMuted,
-}) {
+export const usePlayDeckActions = (props) => {
+  const { deck, onBlockUser, onReportDeck, onSetIsMuted, isMuted } = props;
   const navigation = useNavigation();
   const { showActionSheetWithOptions } = useActionSheet();
 
@@ -235,7 +193,7 @@ export function getOnSelectDropdownAction({
         cardIdToEdit: undefined,
       },
     });
-  }, [deck, navigation]);
+  }, [deck, navigation, remix]);
 
   const maybeRemix = React.useCallback(() => {
     showActionSheetWithOptions(
@@ -268,7 +226,7 @@ export function getOnSelectDropdownAction({
     [deck]
   );
 
-  return React.useCallback(
+  const onSelectItem = React.useCallback(
     (id) => {
       switch (id) {
         case 'share': {
@@ -393,85 +351,15 @@ export function getOnSelectDropdownAction({
       isMuted,
       onShare,
       maybeRemix,
+      onAddStaffPick,
+      onBlacklistDeck,
+      onBlacklistDeckFromFeatured,
+      onRestartDeck,
     ]
   );
-}
 
-export const PlayDeckActions = ({
-  deck,
-  isPlaying,
-  onPressBack,
-  disabled,
-  onBlockUser,
-  onReportDeck,
-  onSetIsMuted,
-  isMe = false,
-  isMuted = false,
-  isAnonymous = false,
-}) => {
-  const { creator } = deck;
-
-  let playingTransition = React.useRef(new Animated.Value(0)).current;
-
-  React.useEffect(() => {
-    Animated.spring(playingTransition, {
-      toValue: isPlaying ? 1 : 0,
-      friction: 20,
-      tension: 10,
-      useNativeDriver: true,
-    }).start();
-  }, [isPlaying]);
-
-  let dropdownItems = getDropdownItems({
-    isAnonymous,
-    creatorUsername: creator.username,
-    isRemixEnabled: deck.accessPermissions === 'cloneable',
-    isMe,
-    onBlockUser,
-    onReportDeck,
-    onSetIsMuted,
-    isMuted,
-  });
-
-  const onSelectDropdownAction = getOnSelectDropdownAction({
-    deck,
-    onBlockUser,
-    onReportDeck,
-    onSetIsMuted,
-    isMuted,
-  });
-
-  return (
-    <Animated.View
-      style={{
-        ...styles.container,
-        paddingHorizontal: 16,
-        opacity: playingTransition,
-      }}>
-      <View style={styles.row}>
-        <Pressable style={styles.back} onPress={onPressBack}>
-          {({ pressed }) => (
-            <CastleIcon name="back" color={pressed ? '#ccc' : '#fff'} size={ICON_SIZE} />
-          )}
-        </Pressable>
-      </View>
-      <View style={styles.row} pointerEvents={disabled ? 'none' : 'auto'}>
-        <Dropdown
-          style={styles.rightButton}
-          labeledItems={dropdownItems}
-          onChange={onSelectDropdownAction}>
-          <CastleIcon name="overflow" color="#fff" size={ICON_SIZE} />
-        </Dropdown>
-        <Pressable style={styles.rightButton} onPress={() => shareDeck(deck)}>
-          {({ pressed }) => (
-            <CastleIcon
-              name={Constants.iOS ? 'share-ios' : 'share-android'}
-              color={pressed ? '#ccc' : '#fff'}
-              size={ICON_SIZE}
-            />
-          )}
-        </Pressable>
-      </View>
-    </Animated.View>
-  );
+  return {
+    items: getDropdownItems(props),
+    onSelectItem,
+  };
 };

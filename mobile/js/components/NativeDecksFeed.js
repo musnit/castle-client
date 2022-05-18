@@ -7,7 +7,7 @@ import * as Constants from '../Constants';
 import * as CoreViews from '../CoreViews';
 import { DropdownItemsList } from './Dropdown';
 import { usePopover } from './PopoverProvider';
-import { getDropdownItems, getOnSelectDropdownAction } from '../play/PlayDeckActions';
+import { usePlayDeckActions } from '../play/PlayDeckActions';
 import { useSession, blockUser, reportDeck } from '../Session';
 import { sendAsync, useListen } from '../core/CoreEvents';
 import { useAppState } from '../ghost/GhostAppState';
@@ -29,7 +29,6 @@ export const NativeDecksFeed = ({
 }) => {
   const {
     userId: signedInUserId,
-    isAnonymous,
     isMuted,
     setIsMuted,
     setIsNuxCompleted,
@@ -68,35 +67,29 @@ export const NativeDecksFeed = ({
     },
   });
 
-  let onSelectDropdownAction = getOnSelectDropdownAction({
+  const playDeckActions = React.useRef({});
+  const isMe = deck?.creator?.userId === signedInUserId;
+  playDeckActions.current = usePlayDeckActions({
     deck,
+    creatorUsername: deck?.creator?.username,
+    isRemixEnabled: deck?.accessPermissions === 'cloneable',
+    isMe,
     onBlockUser,
     onReportDeck,
-    onSetIsMuted,
     isMuted,
+    onSetIsMuted,
   });
 
   React.useEffect(() => {
     if (popoverProps) {
-      const isMe = deck?.creator?.userId === signedInUserId;
-
-      let dropdownItems = getDropdownItems({
-        isAnonymous,
-        creatorUsername: deck?.creator?.username,
-        isRemixEnabled: deck.accessPermissions === 'cloneable',
-        isMe,
-        onBlockUser,
-        onReportDeck,
-        isMuted,
-      });
-
+      const { items: dropdownItems, onSelectItem } = playDeckActions.current;
       const popover = {
         Component: DropdownItemsList,
         items: dropdownItems,
         selectedItem: null,
         height: 45 * dropdownItems.length,
         width: 256,
-        onSelectItem: (item) => onSelectDropdownAction(item.id),
+        onSelectItem: (item) => onSelectItem(item.id),
       };
 
       let measureRef = null;
