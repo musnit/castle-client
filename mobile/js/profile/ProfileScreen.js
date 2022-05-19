@@ -16,6 +16,8 @@ import * as Analytics from '../common/Analytics';
 import * as Constants from '../Constants';
 import { MiscLinks } from './MiscLinks';
 
+const DECKS_PAGE_SIZE = 9;
+
 const useProfileQuery = ({ userId }) => {
   const { userId: signedInUserId } = useSession();
   if (!userId || userId === signedInUserId) {
@@ -26,7 +28,7 @@ const useProfileQuery = ({ userId }) => {
           isAnonymous
           ${Constants.USER_PROFILE_FRAGMENT}
         }
-        decksForUser(userId: $userId, limit: 18, lastModifiedBefore: $lastModifiedBefore) {
+        decksForUser(userId: $userId, limit: ${DECKS_PAGE_SIZE}, lastModifiedBefore: $lastModifiedBefore) {
           ${Constants.FEED_ITEM_DECK_FRAGMENT}
         }
       }`
@@ -42,7 +44,7 @@ const useProfileQuery = ({ userId }) => {
         user(userId: $userId) {
           ${Constants.USER_PROFILE_FRAGMENT}
         }
-        decksForUser(userId: $userId, limit: 18, lastModifiedBefore: $lastModifiedBefore) {
+        decksForUser(userId: $userId, limit: ${DECKS_PAGE_SIZE}, lastModifiedBefore: $lastModifiedBefore) {
           ${Constants.FEED_ITEM_DECK_FRAGMENT}
         }
       }`
@@ -54,10 +56,8 @@ const useProfileQuery = ({ userId }) => {
   }
 };
 
-// keep as separate component so that the isFocused hook doesn't re-render
-// the entire profile screen
 const ProfileDecksGrid = ({ user, decks, refreshing, onRefresh, error, isMe, ...props }) => {
-  const filteredDecks = decks ? decks.filter((deck) => deck.visibility === 'public') : [];
+  const filteredDecks = decks; // TODO: ? decks.filter((deck) => deck.visibility === 'public') : [];
   const { push } = useNavigation();
 
   const scrollViewRef = React.useRef(null);
@@ -125,7 +125,7 @@ export const ProfileScreen = ({ userId, route }) => {
   );
 
   const onEndReached = React.useCallback(() => {
-    if (!query.loading && decks?.length) {
+    if (!query.loading && decks?.length >= DECKS_PAGE_SIZE) {
       const lastDeck = decks[decks.length - 1];
       onRefresh(lastDeck);
     }
@@ -169,6 +169,7 @@ export const ProfileScreen = ({ userId, route }) => {
       Analytics.logEventSkipAmplitude('VIEW_PROFILE', { userId, isOwnProfile: isMe });
 
       if (
+        !query.loading &&
         !(
           lastFetched.current.time &&
           Date.now() - lastFetched.current.time < REFETCH_PROFILE_INTERVAL_MS
@@ -177,7 +178,7 @@ export const ProfileScreen = ({ userId, route }) => {
         onRefresh();
         lastFetched.current.time = Date.now();
       }
-    }, [userId, isMe, onRefresh])
+    }, [userId, isMe, onRefresh, query])
   );
 
   const settingsSheetOnClose = React.useCallback(
@@ -195,7 +196,7 @@ export const ProfileScreen = ({ userId, route }) => {
       user={user}
       isMe={isMe}
       isAnonymous={isAnonymous}
-      loading={query.loading}
+      loading={query.loading && !user}
       error={error}
       onRefresh={onRefresh}
       onPressSettings={() => {
