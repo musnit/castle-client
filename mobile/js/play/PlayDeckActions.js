@@ -145,9 +145,13 @@ export const usePlayDeckActions = ({ deck, isMe }) => {
   );
 
   const onRemix = React.useCallback(async () => {
-    await remix({
+    const result = await remix({
       variables: { deckId: deck.deckId },
     });
+    const remixDeckId = result?.data?.remixDeck?.deckId;
+    if (!remixDeckId) {
+      return;
+    }
 
     // reset to top of current nav stack in order to unmount the view source editor
     if (navigation.canGoBack()) {
@@ -161,7 +165,7 @@ export const usePlayDeckActions = ({ deck, isMe }) => {
     navigation.navigate('CreateTab', {
       screen: 'CreateDeck',
       params: {
-        deckIdToEdit: deck.deckId,
+        deckIdToEdit: remixDeckId,
         cardIdToEdit: undefined,
       },
     });
