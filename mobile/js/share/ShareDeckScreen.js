@@ -6,6 +6,8 @@ import { ConfigureDeck } from '../create/ConfigureDeck';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { shareDeck } from '../common/utilities';
+import { ShareRemixInterstitialSheet } from './ShareRemixInterstitialSheet';
+import { SheetBackgroundOverlay } from '../components/SheetBackgroundOverlay';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import { useMutation, gql } from '@apollo/client';
 import { useNavigation } from '../ReactNavigation';
@@ -204,6 +206,7 @@ const ShareDeckScreenAuthenticated = ({ route }) => {
     commentsEnabled: deck.commentsEnabled,
     isChanged: false,
   });
+  const [isRemixInterstitialVisible, setRemixInterstitialVisible] = React.useState(false);
 
   const [saveDeck] = useMutation(
     gql`
@@ -292,6 +295,34 @@ const ShareDeckScreenAuthenticated = ({ route }) => {
     setDidPublish,
   ]);
 
+  const maybeSaveDeck = React.useCallback(() => {
+    // if this is a remix and we're switching it to public, prompt before saving
+    if (
+      deck.parentDeckId &&
+      updatedDeck.visibility !== lastSavedVisibility &&
+      updatedDeck.visibility === 'public'
+    ) {
+      setRemixInterstitialVisible(true);
+    } else {
+      onSaveDeck();
+    }
+  }, [
+    updatedDeck,
+    lastSavedVisibility,
+    onSaveDeck,
+    deck.parentDeckId,
+    setRemixInterstitialVisible,
+  ]);
+
+  const onCancelPublishRemix = React.useCallback(
+    () => setRemixInterstitialVisible(false),
+    [setRemixInterstitialVisible]
+  );
+  const onConfirmPublishRemix = React.useCallback(() => {
+    setRemixInterstitialVisible(false);
+    onSaveDeck();
+  }, [onSaveDeck, setRemixInterstitialVisible]);
+
   const onChangeCaption = React.useCallback(
     (caption) =>
       setUpdatedDeck({
@@ -352,93 +383,102 @@ const ShareDeckScreenAuthenticated = ({ route }) => {
   }, [pop, updatedDeck, showActionSheetWithOptions]);
 
   return (
-    <SafeAreaView style={Constants.styles.container} edges={['left', 'right', 'bottom']}>
-      <ScreenHeader
-        title="Deck Sharing"
-        onBackButtonPress={maybeGoBack}
-        RightButtonComponent={
-          <Pressable
-            style={[
-              Constants.styles.primaryButton,
-              {
-                opacity: updatedDeck.isChanged ? 1 : 0.35,
-              },
-            ]}
-            disabled={!updatedDeck.isChanged}
-            onPress={onSaveDeck}>
-            <Text style={Constants.styles.primaryButtonLabel}>Save</Text>
-          </Pressable>
-        }
-      />
-      <View style={styles.content}>
-        {lastSavedVisibility !== 'private' ? (
-          <View style={styles.shareContainer}>
-            {didPublish ? <Congratulations /> : null}
+    <>
+      <SafeAreaView style={Constants.styles.container} edges={['left', 'right', 'bottom']}>
+        <ScreenHeader
+          title="Deck Sharing"
+          onBackButtonPress={maybeGoBack}
+          RightButtonComponent={
             <Pressable
-              style={({ pressed }) => [
-                styles.shareLink,
-                { backgroundColor: pressed ? '#ccc' : undefined },
+              style={[
+                Constants.styles.primaryButton,
+                {
+                  opacity: updatedDeck.isChanged ? 1 : 0.35,
+                },
               ]}
-              onPress={() => shareDeck(deck)}>
-              <Text style={styles.shareLinkUrl}>Copy share link</Text>
-              <Constants.CastleIcon
-                name={Constants.iOS ? 'share-ios' : 'share-android'}
-                size={20}
-                color="#000"
-              />
+              disabled={!updatedDeck.isChanged}
+              onPress={maybeSaveDeck}>
+              <Text style={Constants.styles.primaryButtonLabel}>Save</Text>
             </Pressable>
+          }
+        />
+        <View style={styles.content}>
+          {lastSavedVisibility !== 'private' ? (
+            <View style={styles.shareContainer}>
+              {didPublish ? <Congratulations /> : null}
+              <Pressable
+                style={({ pressed }) => [
+                  styles.shareLink,
+                  { backgroundColor: pressed ? '#ccc' : undefined },
+                ]}
+                onPress={() => shareDeck(deck)}>
+                <Text style={styles.shareLinkUrl}>Copy share link</Text>
+                <Constants.CastleIcon
+                  name={Constants.iOS ? 'share-ios' : 'share-android'}
+                  size={20}
+                  color="#000"
+                />
+              </Pressable>
+            </View>
+          ) : null}
+          <View style={styles.captionForm}>
+            <View style={styles.captionInputWrapper}>
+              <TextInput
+                value={updatedDeck.caption}
+                placeholder="Add a caption and #tags"
+                multiline
+                editable={!loading}
+                onChangeText={onChangeCaption}
+                style={styles.captionInput}
+                placeholderTextColor={Constants.colors.grayOnBlackText}
+              />
+            </View>
           </View>
-        ) : null}
-        <View style={styles.captionForm}>
-          <View style={styles.captionInputWrapper}>
-            <TextInput
-              value={updatedDeck.caption}
-              placeholder="Add a caption and #tags"
-              multiline
-              editable={!loading}
-              onChangeText={onChangeCaption}
-              style={styles.captionInput}
-              placeholderTextColor={Constants.colors.grayOnBlackText}
+          <Text style={styles.visibilityExplainer}>
+            <Text style={{ fontWeight: 'bold' }}>Visibility:</Text> Who can play your deck?
+          </Text>
+          <View style={styles.visibilityContainer}>
+            <VisibilityButton
+              icon="public"
+              visibility="public"
+              name="Public"
+              description="Anyone on Castle"
+              isSelected={updatedDeck.visibility === 'public'}
+              onChangeVisibility={onChangeVisibility}
+            />
+            <VisibilityButton
+              icon="link"
+              visibility="unlisted"
+              name="Unlisted"
+              description="Anyone with the link"
+              isSelected={updatedDeck.visibility === 'unlisted'}
+              onChangeVisibility={onChangeVisibility}
+            />
+            <VisibilityButton
+              icon="lock"
+              visibility="private"
+              name="Private"
+              description="Only you"
+              isSelected={updatedDeck.visibility === 'private'}
+              onChangeVisibility={onChangeVisibility}
+              isLast
             />
           </View>
-        </View>
-        <Text style={styles.visibilityExplainer}>
-          <Text style={{ fontWeight: 'bold' }}>Visibility:</Text> Who can play your deck?
-        </Text>
-        <View style={styles.visibilityContainer}>
-          <VisibilityButton
-            icon="public"
-            visibility="public"
-            name="Public"
-            description="Anyone on Castle"
-            isSelected={updatedDeck.visibility === 'public'}
-            onChangeVisibility={onChangeVisibility}
-          />
-          <VisibilityButton
-            icon="link"
-            visibility="unlisted"
-            name="Unlisted"
-            description="Anyone with the link"
-            isSelected={updatedDeck.visibility === 'unlisted'}
-            onChangeVisibility={onChangeVisibility}
-          />
-          <VisibilityButton
-            icon="lock"
-            visibility="private"
-            name="Private"
-            description="Only you"
-            isSelected={updatedDeck.visibility === 'private'}
-            onChangeVisibility={onChangeVisibility}
-            isLast
+          <ConfigureDeck
+            deck={updatedDeck}
+            onDeleteDeck={onDeleteDeck}
+            onChangeAccessPermissions={onChangeAccessPermissions}
+            onChangeCommentsEnabled={onChangeCommentsEnabled}
           />
         </View>
-        <ConfigureDeck
-          deck={updatedDeck}
-          onDeleteDeck={onDeleteDeck}
-          onChangeAccessPermissions={onChangeAccessPermissions}
-          onChangeCommentsEnabled={onChangeCommentsEnabled}
-        />
-      </View>
-    </SafeAreaView>
+      </SafeAreaView>
+      {isRemixInterstitialVisible ? <SheetBackgroundOverlay /> : null}
+      <ShareRemixInterstitialSheet
+        deck={deck}
+        isOpen={isRemixInterstitialVisible}
+        onClose={onCancelPublishRemix}
+        onConfirm={onConfirmPublishRemix}
+      />
+    </>
   );
 };
