@@ -57,7 +57,7 @@ const useProfileQuery = ({ userId }) => {
 };
 
 const ProfileDecksGrid = ({ user, decks, refreshing, onRefresh, error, isMe, ...props }) => {
-  const filteredDecks = decks; // TODO: ? decks.filter((deck) => deck.visibility === 'public') : [];
+  const filteredDecks = decks; // ? decks.filter((deck) => deck.visibility === 'public') : [];
   const { push } = useNavigation();
 
   const scrollViewRef = React.useRef(null);
@@ -89,7 +89,28 @@ const ProfileDecksGrid = ({ user, decks, refreshing, onRefresh, error, isMe, ...
 
 const REFETCH_PROFILE_INTERVAL_MS = 60 * 1000;
 
-export const ProfileScreen = ({ userId, route }) => {
+export const ProfileScreen = (props) => {
+  const { userId } = props;
+  const { userId: signedInUserId, isAnonymous } = useSession();
+  const isMe = !userId || userId === signedInUserId;
+
+  if (isMe && isAnonymous) {
+    return (
+      <SafeAreaView style={{ flex: 1 }} edges={['left', 'right', 'bottom']}>
+        <AuthPrompt
+          title="Build your profile"
+          message="Show off your decks and follow other creators."
+        />
+        <View style={{ width: '100%', alignItems: 'center', paddingBottom: 16 }}>
+          <MiscLinks />
+        </View>
+      </SafeAreaView>
+    );
+  }
+  return <ProfileScreenAuthenticated {...props} />;
+};
+
+const ProfileScreenAuthenticated = ({ userId, route }) => {
   const [settingsSheetIsOpen, setSettingsSheet] = useState(false);
   const [user, setUser] = React.useState(null);
   const [decks, changeDecks] = React.useReducer((state, type) => {
@@ -205,53 +226,40 @@ export const ProfileScreen = ({ userId, route }) => {
     />
   );
 
-  if (isMe && isAnonymous) {
-    return (
-      <SafeAreaView style={{ flex: 1 }} edges={['left', 'right', 'bottom']}>
-        <AuthPrompt
-          title="Build your profile"
-          message="Show off your decks and follow other creators."
-        />
-        <View style={{ width: '100%', alignItems: 'center', paddingBottom: 16 }}>
-          <MiscLinks />
-        </View>
-      </SafeAreaView>
-    );
-  } else {
-    if (isMe && user && user.isAnonymous) {
-      return <View />;
-    }
-
-    return (
-      <>
-        <SafeAreaView style={{ flex: 1 }} edges={['left', 'right', 'bottom']}>
-          <ScreenHeader title={'Profile'} />
-          {error ? (
-            <EmptyFeed error={error} onRefresh={onRefresh} />
-          ) : (
-            <PopoverProvider>
-              <ProfileDecksGrid
-                user={user}
-                decks={decks}
-                refreshing={query.loading}
-                onRefresh={onRefresh}
-                onEndReached={onEndReached}
-                onEndReachedThreshold={0.5}
-                error={error}
-                isMe={isMe}
-                ListHeaderComponent={ListHeaderComponent}
-              />
-            </PopoverProvider>
-          )}
-        </SafeAreaView>
-        {isMe && user ? (
-          <ProfileSettingsSheet
-            me={user}
-            isOpen={settingsSheetIsOpen}
-            onClose={settingsSheetOnClose}
-          />
-        ) : null}
-      </>
-    );
+  if (isMe && user && user.isAnonymous) {
+    // prevents anonymous user flicker right after signing in
+    return <View />;
   }
+
+  return (
+    <>
+      <SafeAreaView style={{ flex: 1 }} edges={['left', 'right', 'bottom']}>
+        <ScreenHeader title={'Profile'} />
+        {error ? (
+          <EmptyFeed error={error} onRefresh={onRefresh} />
+        ) : (
+          <PopoverProvider>
+            <ProfileDecksGrid
+              user={user}
+              decks={decks}
+              refreshing={query.loading}
+              onRefresh={onRefresh}
+              onEndReached={onEndReached}
+              onEndReachedThreshold={0.5}
+              error={error}
+              isMe={isMe}
+              ListHeaderComponent={ListHeaderComponent}
+            />
+          </PopoverProvider>
+        )}
+      </SafeAreaView>
+      {isMe && user ? (
+        <ProfileSettingsSheet
+          me={user}
+          isOpen={settingsSheetIsOpen}
+          onClose={settingsSheetOnClose}
+        />
+      ) : null}
+    </>
+  );
 };
