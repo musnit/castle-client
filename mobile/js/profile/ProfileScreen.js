@@ -3,6 +3,7 @@ import { StatusBar, View } from 'react-native';
 import { AuthPrompt } from '../auth/AuthPrompt';
 import { DecksGrid } from '../components/DecksGrid';
 import { EmptyFeed } from '../home/EmptyFeed';
+import { MiscLinks } from './MiscLinks';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { useLazyQuery, gql } from '@apollo/client';
@@ -11,10 +12,9 @@ import { useSession } from '../Session';
 import { PopoverProvider } from '../components/PopoverProvider';
 import { ProfileHeader } from './ProfileHeader';
 import { ProfileSettingsSheet } from './ProfileSettingsSheet';
-import * as Analytics from '../common/Analytics';
 
+import * as Analytics from '../common/Analytics';
 import * as Constants from '../Constants';
-import { MiscLinks } from './MiscLinks';
 
 const DECKS_PAGE_SIZE = 9;
 
@@ -28,7 +28,7 @@ const useProfileQuery = ({ userId }) => {
           isAnonymous
           ${Constants.USER_PROFILE_FRAGMENT}
         }
-        decksForUser(userId: $userId, limit: ${DECKS_PAGE_SIZE}, lastModifiedBefore: $lastModifiedBefore) {
+        decksForUser(userId: $userId, limit: ${DECKS_PAGE_SIZE}, filter: public, lastModifiedBefore: $lastModifiedBefore) {
           ${Constants.FEED_ITEM_DECK_FRAGMENT}
         }
       }`
@@ -44,7 +44,7 @@ const useProfileQuery = ({ userId }) => {
         user(userId: $userId) {
           ${Constants.USER_PROFILE_FRAGMENT}
         }
-        decksForUser(userId: $userId, limit: ${DECKS_PAGE_SIZE}, lastModifiedBefore: $lastModifiedBefore) {
+        decksForUser(userId: $userId, limit: ${DECKS_PAGE_SIZE}, filter: public, lastModifiedBefore: $lastModifiedBefore) {
           ${Constants.FEED_ITEM_DECK_FRAGMENT}
         }
       }`
@@ -57,7 +57,6 @@ const useProfileQuery = ({ userId }) => {
 };
 
 const ProfileDecksGrid = ({ user, decks, refreshing, onRefresh, error, isMe, ...props }) => {
-  const filteredDecks = decks; // ? decks.filter((deck) => deck.visibility === 'public') : [];
   const { push } = useNavigation();
 
   const scrollViewRef = React.useRef(null);
@@ -65,12 +64,12 @@ const ProfileDecksGrid = ({ user, decks, refreshing, onRefresh, error, isMe, ...
 
   return (
     <DecksGrid
-      decks={filteredDecks}
+      decks={decks}
       onPressDeck={(deck, index) =>
         push(
           'PlayDeck',
           {
-            decks: filteredDecks,
+            decks,
             initialDeckIndex: index,
             title: `@${user.username}'s Decks`,
           },
@@ -156,7 +155,7 @@ const ProfileScreenAuthenticated = ({ userId, route }) => {
     if (query.called && !query.loading) {
       if (query.data) {
         // Without this, both "set" and "append" get called every time a new page is loaded
-        if (lastQueryData.current == query.data) {
+        if (lastQueryData.current === query.data) {
           return;
         }
         lastQueryData.current = query.data;
@@ -182,7 +181,7 @@ const ProfileScreenAuthenticated = ({ userId, route }) => {
     } else {
       setError(undefined);
     }
-  }, [query.called, query.loading, query.error, query.data]);
+  }, [query.called, query.loading, query.error, query.data, isMe]);
 
   useFocusEffect(
     React.useCallback(() => {
