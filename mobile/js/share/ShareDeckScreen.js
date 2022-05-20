@@ -45,6 +45,7 @@ const styles = StyleSheet.create({
     width: '100%',
     flexShrink: 1,
     flexDirection: 'row',
+    alignItems: 'center',
   },
   itemSelectedIcon: {
     width: 30,
