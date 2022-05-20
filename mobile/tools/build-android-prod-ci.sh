@@ -3,7 +3,7 @@ set -e
 
 pushd .. > /dev/null
 
-git clone https://$GHOST_SECRET_GITHUB_TOKEN@github.com/castle-xyz/ghost-server.git
+git clone https://$GHOST_SECRET_GITHUB_TOKEN@github.com/castle-xyz/ghost-secret.git
 
 popd > /dev/null
 
