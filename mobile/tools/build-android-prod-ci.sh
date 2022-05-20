@@ -1,17 +1,15 @@
 #!/bin/sh
 set -e
 
-pushd .. > /dev/null
-
-git clone https://$GHOST_SECRET_GITHUB_TOKEN@github.com/castle-xyz/ghost-secret.git
-
-popd > /dev/null
-
 DIRNAME=`dirname "$0"`
 pushd $DIRNAME > /dev/null
 
 rm -rf build
 mkdir build
+
+pushd ../../.. > /dev/null
+git clone https://$GHOST_SECRET_GITHUB_TOKEN@github.com/castle-xyz/ghost-secret.git
+popd > /dev/null
 
 pushd .. > /dev/null
 
