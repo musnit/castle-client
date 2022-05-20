@@ -32,9 +32,10 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   item: {
-    height: 36,
+    height: 38,
     flexDirection: 'row',
     alignItems: 'center',
+    marginRight: -1,
   },
   itemIcon: {
     flexShrink: 0,
@@ -51,7 +52,7 @@ const styles = StyleSheet.create({
     flexShrink: 0,
     alignItems: 'center',
     justifyContent: 'center',
-    borderColor: '#fff',
+    borderColor: '#888',
     borderWidth: 1,
     borderRadius: 28,
   },
@@ -140,11 +141,9 @@ const VisibilityButton = ({
           {description}
         </Text>
       </View>
-      {isSelected ? (
-        <View style={styles.itemSelectedIcon}>
-          <Constants.CastleIcon name="checkmark" size={18} color={'#fff'} />
-        </View>
-      ) : null}
+      <View style={[styles.itemSelectedIcon, isSelected ? { borderColor: '#fff' } : null]}>
+        {isSelected ? <Constants.CastleIcon name="checkmark" size={18} color={'#fff'} /> : null}
+      </View>
     </TouchableOpacity>
   );
 };
