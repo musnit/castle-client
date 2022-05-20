@@ -25,11 +25,15 @@ void Bridge::sendEvent(const char *eventJson) {
 
 struct AnalyticsLogEvent {
   PROP(std::string, event);
+  PROP(std::vector<std::string>, properties);
 };
 
-void Bridge::analyticsLogEvent(std::string event) {
+void Bridge::analyticsLogEvent(std::string event, std::initializer_list<std::string> properties) {
   AnalyticsLogEvent ev;
   ev.event = event;
+  for (auto property : properties) {
+    ev.properties().push_back(property);
+  }
   sendEvent("ANALYTICS_LOG_EVENT", ev);
 }
 

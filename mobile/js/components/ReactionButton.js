@@ -109,8 +109,9 @@ export const ReactionButton = ({
       isSelected: !state,
     });
 
-    Analytics.logEventSkipAmplitude(!state ? 'TOGGLE_DECK_REACTION_ON' : 'TOGGLE_DECK_REACTION_OFF', {
+    Analytics.logEventSkipAmplitude('TOGGLE_DECK_REACTION', {
       deckId: deck.deckId,
+      enabled: !state,
     });
 
     toggleReactionDebounce({

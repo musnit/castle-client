@@ -43,7 +43,7 @@ public:
   };
   void addSentryBreadcrumb(const SentryBreadcrumb &breadcrumb);
 
-  void analyticsLogEvent(std::string event);
+  void analyticsLogEvent(std::string event, std::initializer_list<std::string> properties = {});
 
 
 private:

@@ -452,8 +452,23 @@ export const RootNavigator = () => {
 
   useListen({
     eventName: 'ANALYTICS_LOG_EVENT',
-    handler: (props) => {
-      Analytics.logEventSkipAmplitude(props.event);
+    handler: (event) => {
+      let properties = {};
+
+      for (let i = 0; i < event.properties.length - 1; i += 2) {
+        let value = event.properties[i + 1];
+        if (value == 'true') {
+          value = true;
+        } else if (value == 'false') {
+          value = false;
+        } else if (Number(value) != NaN) {
+          value = Number(value);
+        }
+
+        properties[event.properties[i]] = value;
+      }
+
+      Analytics.logEventSkipAmplitude(event.event, properties);
     },
   });
 

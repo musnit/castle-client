@@ -1842,10 +1842,10 @@ void Feed::loadDeckCoreViews(int i) {
 
       if (decks[i].isCurrentUserReactionToggled == FeedItem::True) {
         (*decks[i].reactionCount)++;
-        bridge.analyticsLogEvent("TOGGLE_DECK_REACTION_ON");
+        bridge.analyticsLogEvent("TOGGLE_DECK_REACTION", { "enabled", "true" });
       } else {
         (*decks[i].reactionCount)--;
-        bridge.analyticsLogEvent("TOGGLE_DECK_REACTION_OFF");
+        bridge.analyticsLogEvent("TOGGLE_DECK_REACTION", { "enabled", "false" });
       }
       decks[i].coreView->updateProp(
           "reaction-count", "text", FormatNumber::toString(*decks[i].reactionCount));
