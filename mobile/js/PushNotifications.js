@@ -35,7 +35,7 @@ eventEmitter.addListener('CastlePushNotificationClicked', (event) => {
     markPushNotificationClicked(data?.pushNotificationId);
   }
 
-  Analytics.logEvent('OPEN_PUSH_NOTIFICATION', {
+  Analytics.logEventSkipAmplitude('OPEN_PUSH_NOTIFICATION', {
     type: data?.type, // category of notif, e.g. 'play_deck'
   });
   for (const [_, listener] of Object.entries(gClickedListeners)) {
@@ -55,7 +55,7 @@ export const setInitialData = (dataString) => {
     }, 2000);
   }
 
-  Analytics.logEvent('OPEN_PUSH_NOTIFICATION', {
+  Analytics.logEventSkipAmplitude('OPEN_PUSH_NOTIFICATION', {
     type: gInitialData?.type, // category of notif, e.g. 'play_deck'
   });
 };

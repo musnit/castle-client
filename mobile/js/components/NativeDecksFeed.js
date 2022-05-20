@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View } from 'react-native';
 import { gql } from '@apollo/client';
 
@@ -51,8 +51,16 @@ export const NativeDecksFeed = ({
     handler: () => {
       setIsNuxCompleted(true);
       setIsNativeFeedNuxCompleted(true);
+
+      Analytics.logEventSkipAmplitude('NUX_COMPLETED');
     },
   });
+
+  useEffect(() => {
+    if (!isNuxCompleted) {
+      Analytics.logEventSkipAmplitude('NUX_STARTED');
+    }
+  }, [isNuxCompleted]);
 
   const playDeckActions = React.useRef({});
   const isMe = deck?.creator?.userId === signedInUserId;
@@ -104,6 +112,10 @@ export const NativeDecksFeed = ({
 
     setDeck(deck);
     setPopoverProps(props);
+
+    Analytics.logEventSkipAmplitude('OPEN_SHARE_MENU', {
+      deckId: deck.deckId,
+    });
   };
 
   const onNavigateToParent = async (props) => {
@@ -120,6 +132,11 @@ export const NativeDecksFeed = ({
       variables: { deckId: deck.parentDeckId },
     });
     if (result?.data?.deck && result.data.deck.visibility === 'public') {
+      Analytics.logEventSkipAmplitude('VIEW_PARENT_DECK', {
+        deckId: deck.deckId,
+        parentDeckId: deck.parentDeckId
+      });
+
       return navigate(
         'DeckRemixes',
         {

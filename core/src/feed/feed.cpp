@@ -1842,8 +1842,10 @@ void Feed::loadDeckCoreViews(int i) {
 
       if (decks[i].isCurrentUserReactionToggled == FeedItem::True) {
         (*decks[i].reactionCount)++;
+        bridge.analyticsLogEvent("TOGGLE_DECK_REACTION_ON");
       } else {
         (*decks[i].reactionCount)--;
+        bridge.analyticsLogEvent("TOGGLE_DECK_REACTION_OFF");
       }
       decks[i].coreView->updateProp(
           "reaction-count", "text", FormatNumber::toString(*decks[i].reactionCount));
@@ -1998,6 +2000,8 @@ void Feed::networkErrorAtIndex(int i) {
     }
   });
   decks[i].hasNetworkError = true;
+
+  bridge.analyticsLogEvent("FEED_NETWORK_ERROR");
 }
 
 void Feed::loadMoreDecksError() {
@@ -2020,6 +2024,8 @@ void Feed::loadMoreDecksError() {
   });
   feedItem.hasNetworkError = true;
   decks.push_back(std::move(feedItem));
+
+  bridge.analyticsLogEvent("FEED_LOAD_MORE_DECKS_ERROR");
 }
 
 void Feed::removeLoadMoreDecksError() {

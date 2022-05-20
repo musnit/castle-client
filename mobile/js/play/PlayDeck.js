@@ -55,7 +55,7 @@ export const PlayDeck = ({ deck, visibility, route, paused }) => {
   });
 
   React.useEffect(() => {
-    Analytics.logEvent('VIEW_PLAY_DECK', { deckId: deck.deckId, visibility });
+    Analytics.logEventSkipAmplitude('VIEW_PLAY_DECK', { deckId: deck.deckId, visibility });
     AdjustEvents.trackEvent(AdjustEvents.tokens.PLAY_DECK);
     Sentry.addBreadcrumb({
       category: 'play_deck',

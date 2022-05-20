@@ -7,6 +7,7 @@ import { shareDeck } from '../common/utilities';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import { useNavigation } from '../ReactNavigation';
 import { useMutation, gql } from '@apollo/client';
+import * as Analytics from '../common/Analytics';
 
 const getDropdownItems = ({ deck, isMe, isMuted }) => {
   let dropdownItems = [];
@@ -169,6 +170,10 @@ export const usePlayDeckActions = ({ deck, isMe }) => {
         cardIdToEdit: undefined,
       },
     });
+
+    Analytics.logEventSkipAmplitude('REMIX_DECK', {
+      deckId: deck?.deckId,
+    });
   }, [deck, navigation, remix]);
 
   const maybeRemix = React.useCallback(() => {
@@ -234,14 +239,24 @@ export const usePlayDeckActions = ({ deck, isMe }) => {
         }
         case 'restart': {
           onRestartDeck();
+          Analytics.logEventSkipAmplitude('RESTART_DECK', {
+            deckId: deck?.deckId,
+          });
           break;
         }
         case 'mute': {
+          Analytics.logEventSkipAmplitude('MUTE_DECK', {
+            deckId: deck?.deckId,
+            isMuted: !isMuted,
+          });
           onSetIsMuted(!isMuted);
           break;
         }
         case 'view-source': {
           navigation.push('ViewSource', { deckIdToEdit: deck.deckId });
+          Analytics.logEventSkipAmplitude('VIEW_DECK_SOURCE', {
+            deckId: deck?.deckId,
+          });
           break;
         }
         case 'block': {
@@ -255,6 +270,9 @@ export const usePlayDeckActions = ({ deck, isMe }) => {
             (buttonIndex) => {
               if (buttonIndex === 0) {
                 onBlockUser();
+                Analytics.logEventSkipAmplitude('BLOCK_USER', {
+                  deckId: deck?.deckId,
+                });
               }
             }
           );
@@ -279,6 +297,9 @@ export const usePlayDeckActions = ({ deck, isMe }) => {
                   (buttonIndex) => {
                     if (buttonIndex !== DECK_REPORT_REASONS.length) {
                       onReportDeck({ reason: DECK_REPORT_REASONS[buttonIndex].id });
+                      Analytics.logEventSkipAmplitude('REPORT_DECK', {
+                        deckId: deck?.deckId,
+                      });
                     }
                   }
                 );

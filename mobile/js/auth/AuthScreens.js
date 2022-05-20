@@ -257,7 +257,7 @@ const CreateAccountForm = ({ route }) => {
   const pwInput = React.useRef();
 
   useEffect(() => {
-    Analytics.logEvent('VIEW_SIGN_UP');
+    Analytics.logEventSkipAmplitude('VIEW_SIGN_UP');
   }, []);
 
   const onPressCreateAccount = async () => {

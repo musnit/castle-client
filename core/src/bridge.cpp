@@ -23,6 +23,16 @@ void Bridge::sendEvent(const char *eventJson) {
 #endif
 }
 
+struct AnalyticsLogEvent {
+  PROP(std::string, event);
+};
+
+void Bridge::analyticsLogEvent(std::string event) {
+  AnalyticsLogEvent ev;
+  ev.event = event;
+  sendEvent("ANALYTICS_LOG_EVENT", ev);
+}
+
 
 //
 // From JS

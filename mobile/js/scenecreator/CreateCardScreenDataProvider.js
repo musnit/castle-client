@@ -191,6 +191,11 @@ class CreateCardScreenDataProvider extends React.Component {
       const cardFragment = this._makeCardSaveFragment();
       const kitDeckId = this.props?.route.params?.kitDeckId ?? undefined;
       Session.saveDeck(cardFragment, this.state.deck, this._variables, true, undefined, kitDeckId);
+
+      Analytics.logEventSkipAmplitude('AUTOSAVE_DECK', {
+        deckId: this.state?.deck?.deckId,
+        cardId: this.state?.cardId,
+      });
     }
   };
 

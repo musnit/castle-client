@@ -6,6 +6,7 @@ import { SocialCount } from './SocialCount';
 import * as Constants from '../Constants';
 import * as Session from '../Session';
 import { sendAsync } from '../core/CoreEvents';
+import * as Analytics from '../common/Analytics';
 
 import debounce from 'lodash.debounce';
 
@@ -106,6 +107,10 @@ export const ReactionButton = ({
     sendAsync('UPDATE_FEED_REACTION', {
       deckId: deck.deckId,
       isSelected: !state,
+    });
+
+    Analytics.logEventSkipAmplitude(!state ? 'TOGGLE_DECK_REACTION_ON' : 'TOGGLE_DECK_REACTION_OFF', {
+      deckId: deck.deckId,
     });
 
     toggleReactionDebounce({

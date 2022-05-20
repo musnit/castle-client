@@ -29,6 +29,8 @@ import createTopTabNavigator from './navigator/createTopTabNavigator';
 import * as DeepLinks from './DeepLinks';
 import * as PushNotifications from './PushNotifications';
 import * as Constants from './Constants';
+import * as Analytics from './common/Analytics';
+import { useListen } from './core/CoreEvents';
 
 import FastImage from 'react-native-fast-image';
 
@@ -441,8 +443,19 @@ export const RootNavigator = () => {
       if (state === 'active') {
         maybeFetchNotificationsAsync();
       }
+
+      Analytics.logEventSkipAmplitude('APP_STATE_CHANGED', {
+        state,
+      });
     }, [])
   );
+
+  useListen({
+    eventName: 'ANALYTICS_LOG_EVENT',
+    handler: (props) => {
+      Analytics.logEventSkipAmplitude(props.event);
+    },
+  });
 
   let navigator;
   if (isSignedIn) {

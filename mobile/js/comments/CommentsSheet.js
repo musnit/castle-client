@@ -69,7 +69,7 @@ export const CommentsSheet = ({ isOpen, onClose, deck, isFullScreen, ...props })
   const onAddComment = React.useCallback(
     (message, parentCommentId = null, commentBodyCache = {}, imageFileId = null) => {
       const formattedMessage = formatMessage(message, commentBodyCache);
-      Analytics.logEvent('ADD_COMMENT', {
+      Analytics.logEventSkipAmplitude('ADD_COMMENT', {
         deckId: deck.deckId,
         hasScreenshot: !!imageFileId,
       });

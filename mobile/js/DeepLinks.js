@@ -20,7 +20,7 @@ const _navigateToDeck = ({ deck, resolvedUrl }) => {
   const url = new Url(resolvedUrl, true);
   const cxshid = url?.query?.cxshid;
 
-  Analytics.logEvent('OPEN_DECK_LINK', {
+  Analytics.logEventSkipAmplitude('OPEN_DECK_LINK', {
     deckId: deck.deckId,
     url: resolvedUrl,
     cxshid,

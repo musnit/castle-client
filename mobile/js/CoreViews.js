@@ -5,6 +5,7 @@ import { useNavigation } from './ReactNavigation';
 import { useFocusEffect } from './ReactNavigation';
 import { apolloClient } from './Session';
 import { gql } from '@apollo/client';
+import * as Analytics from './common/Analytics';
 
 let FEED_ICON_SIZE = '5.5vw';
 let FEED_ICON_TOP = '2.7vw';
@@ -30,6 +31,10 @@ function onPressComments(params) {
 
   params.onPressComments({
     deck,
+  });
+
+  Analytics.logEventSkipAmplitude('OPEN_COMMENTS', {
+    deckId: deck?.deckId,
   });
 }
 

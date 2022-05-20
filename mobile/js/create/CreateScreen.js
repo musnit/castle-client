@@ -215,7 +215,7 @@ const EditDeckCell = (props) => {
 
 const CreateHelpLinks = () => {
   const onPressHelpLink = React.useCallback((url) => {
-    Analytics.logEvent('OPEN_CREATE_HELP_LINK', {
+    Analytics.logEventSkipAmplitude('OPEN_CREATE_HELP_LINK', {
       url,
     });
     Linking.openURL(url);

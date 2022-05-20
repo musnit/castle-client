@@ -240,7 +240,7 @@ export const shareDeck = async (deck) => {
   try {
     const result = await Share.share(params);
     if (result?.action === sharedAction) {
-      Analytics.logEvent('SHARE_DECK', {
+      Analytics.logEventSkipAmplitude('SHARE_DECK', {
         deckId: deck.deckId,
         cxshid,
         activityType: result.activityType,

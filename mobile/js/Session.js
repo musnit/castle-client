@@ -285,7 +285,7 @@ export class Provider extends React.Component {
         }
       `,
     });
-    Analytics.logEvent('SIGN_OUT'); // user id is still set in amplitude
+    Analytics.logEventSkipAmplitude('SIGN_OUT'); // user id is still set in amplitude
     await this.useNewAuthTokenAsync({}); // clear user id
   };
 

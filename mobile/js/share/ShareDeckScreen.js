@@ -260,7 +260,7 @@ const ShareDeckScreenAuthenticated = ({ route }) => {
 
     await setLoading(true);
     if (updatedDeck.visibility !== lastSavedVisibility) {
-      Analytics.logEvent('CHANGE_DECK_VISIBILITY', {
+      Analytics.logEventSkipAmplitude('CHANGE_DECK_VISIBILITY', {
         deckId: deck.deckId,
         visibility: updatedDeck.visibility,
       });
@@ -269,7 +269,7 @@ const ShareDeckScreenAuthenticated = ({ route }) => {
       }
     }
     if (updatedDeck.caption !== deck.caption) {
-      Analytics.logEvent('CHANGE_DECK_CAPTION', {
+      Analytics.logEventSkipAmplitude('CHANGE_DECK_CAPTION', {
         deckId: deck.deckId,
       });
     }
