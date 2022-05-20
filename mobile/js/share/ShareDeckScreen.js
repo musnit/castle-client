@@ -260,7 +260,7 @@ const ShareDeckScreenAuthenticated = ({ route }) => {
 
     await setLoading(true);
     if (updatedDeck.visibility !== lastSavedVisibility) {
-      Analytics.logEventSkipAmplitude('CHANGE_DECK_VISIBILITY', {
+      Analytics.logEvent('CHANGE_DECK_VISIBILITY', {
         deckId: deck.deckId,
         visibility: updatedDeck.visibility,
       });
