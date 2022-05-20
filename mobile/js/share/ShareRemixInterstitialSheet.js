@@ -6,6 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import FastImage from 'react-native-fast-image';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { CastleIcon } from '../Constants';
 import Viewport from '../common/viewport';
 
 import * as Constants from '../Constants';
@@ -28,17 +29,19 @@ const styles = StyleSheet.create({
   heading: {
     fontWeight: 'bold',
     fontSize: 16,
-    marginBottom: 16,
+    marginBottom: 8,
   },
   creator: {
     fontWeight: 'bold',
   },
   message: {
     fontSize: 16,
+    lineHeight: 20,
     textAlign: 'center',
   },
   actions: {
-    marginVertical: 12,
+    marginTop: 24,
+    marginBottom: 16,
     flexDirection: 'row',
   },
   learnMore: {
@@ -63,7 +66,6 @@ const ShareRemixInterstitial = ({ deck, onConfirm, onCancel }) => {
     <View style={[styles.content, { paddingBottom: insets.bottom }]}>
       <FastImage
         style={{ width: 36, height: 36, marginBottom: 12, marginRight: 12 }}
-        tintColor={'#888'}
         source={require('../../assets/images/emoji/key-black.png')}
       />
       <Text style={styles.heading}>You're publishing a remix!</Text>
@@ -84,7 +86,12 @@ const ShareRemixInterstitial = ({ deck, onConfirm, onCancel }) => {
       </View>
       <TouchableOpacity onPress={openRemixWiki} style={styles.learnMore}>
         <Text style={styles.learnMoreLabel}>Learn more about remixing</Text>
-        <Icon name="arrow-forward" color={Constants.colors.grayOnWhiteText} />
+        <CastleIcon
+          name="back"
+          style={{ marginLeft: 2, transform: [{ scaleX: -1 }] }}
+          color={Constants.colors.grayOnWhiteText}
+          size={13}
+        />
       </TouchableOpacity>
     </View>
   );
