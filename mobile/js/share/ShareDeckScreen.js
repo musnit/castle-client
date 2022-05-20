@@ -25,14 +25,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#000',
     flex: 1,
   },
-  content: {
-    paddingTop: 20,
-    paddingHorizontal: 16,
+  content: {},
+  section: {
+    borderTopWidth: 1,
+    borderColor: Constants.colors.grayOnBlackBorder,
+    padding: 16,
   },
   item: {
-    height: 48,
-    paddingHorizontal: 12,
-    borderBottomColor: '#888',
+    height: 36,
     flexDirection: 'row',
     alignItems: 'center',
   },
@@ -46,9 +46,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   itemSelectedIcon: {
+    width: 30,
+    height: 30,
     flexShrink: 0,
     alignItems: 'center',
     justifyContent: 'center',
+    borderColor: '#fff',
+    borderWidth: 1,
+    borderRadius: 28,
   },
   itemName: {
     color: Constants.colors.white,
@@ -63,23 +68,11 @@ const styles = StyleSheet.create({
   visibilityExplainer: {
     color: Constants.colors.white,
     fontSize: 16,
-    paddingBottom: 12,
-  },
-  visibilityContainer: {
-    borderColor: '#888',
-    borderRadius: 4,
-    borderWidth: 1,
-    marginBottom: 20,
-  },
-  captionForm: {
-    borderColor: '#888',
-    borderWidth: 1,
-    marginBottom: 20,
-    borderRadius: 4,
+    paddingBottom: 8,
   },
   captionInputWrapper: {
-    padding: 12,
-    paddingTop: 4,
+    padding: 16,
+    paddingTop: 12,
     alignItems: 'flex-end',
   },
   captionInput: {
@@ -89,13 +82,15 @@ const styles = StyleSheet.create({
     color: '#fff',
   },
   shareContainer: {
-    backgroundColor: Constants.colors.white,
-    borderRadius: 4,
-    marginBottom: 20,
+    padding: 16,
+    borderBottomWidth: 1,
+    borderColor: Constants.colors.grayOnBlackBorder,
   },
   shareLink: {
-    padding: 10,
+    paddingVertical: 10,
     paddingLeft: 12,
+    paddingRight: 10,
+    borderRadius: 4,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -104,10 +99,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   congratulations: {
-    borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
-    paddingHorizontal: 12,
-    paddingVertical: 10,
+    marginBottom: 12,
     flexDirection: 'row',
   },
   congratsIcon: {
@@ -117,10 +109,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     marginBottom: 4,
+    color: '#fff',
   },
   congratsText: {
     fontSize: 16,
     lineHeight: 20,
+    color: '#fff',
   },
 });
 
@@ -134,12 +128,10 @@ const VisibilityButton = ({
   isLast,
 }) => {
   return (
-    <TouchableOpacity
-      style={[styles.item, { borderBottomWidth: isLast ? 0 : 1 }]}
-      onPress={() => onChangeVisibility(visibility)}>
+    <TouchableOpacity style={[styles.item]} onPress={() => onChangeVisibility(visibility)}>
       {icon ? (
         <View style={styles.itemIcon}>
-          <Icon name={icon} color={isSelected ? '#fff' : '#888'} size={22} />
+          <Icon name={icon} color={isSelected ? '#fff' : '#888'} size={20} />
         </View>
       ) : null}
       <View style={styles.itemContents}>
@@ -150,7 +142,7 @@ const VisibilityButton = ({
       </View>
       {isSelected ? (
         <View style={styles.itemSelectedIcon}>
-          <Icon name="check" color="#fff" size={28} />
+          <Constants.CastleIcon name="checkmark" size={18} color={'#fff'} />
         </View>
       ) : null}
     </TouchableOpacity>
@@ -162,12 +154,12 @@ const Congratulations = () => (
     <FastImage
       style={{ height: 26, aspectRatio: 1, marginRight: 12 }}
       source={require('../../assets/images/emoji/wand-black.png')}
+      tintColor="#fff"
     />
     <View style={{ flex: 1 }}>
       <Text style={styles.congratsHeader}>Your deck has been published!</Text>
-      <Text style={styles.congratsText}>
-        Anyone on Castle can find and play it. Share the link to play it on the web.
-      </Text>
+      <Text style={styles.congratsText}>Anyone on Castle can find and play it.</Text>
+      <Text style={styles.congratsText}>Share the link to play it on the web.</Text>
     </View>
   </View>
 );
@@ -409,7 +401,7 @@ const ShareDeckScreenAuthenticated = ({ route }) => {
               <Pressable
                 style={({ pressed }) => [
                   styles.shareLink,
-                  { backgroundColor: pressed ? '#ccc' : undefined },
+                  { backgroundColor: pressed ? '#ccc' : '#fff' },
                 ]}
                 onPress={() => shareDeck(deck)}>
                 <Text style={styles.shareLinkUrl}>Copy share link</Text>
@@ -434,42 +426,44 @@ const ShareDeckScreenAuthenticated = ({ route }) => {
               />
             </View>
           </View>
-          <Text style={styles.visibilityExplainer}>
-            <Text style={{ fontWeight: 'bold' }}>Visibility:</Text> Who can play your deck?
-          </Text>
-          <View style={styles.visibilityContainer}>
-            <VisibilityButton
-              icon="public"
-              visibility="public"
-              name="Public"
-              description="Anyone on Castle"
-              isSelected={updatedDeck.visibility === 'public'}
-              onChangeVisibility={onChangeVisibility}
-            />
-            <VisibilityButton
-              icon="link"
-              visibility="unlisted"
-              name="Unlisted"
-              description="Anyone with the link"
-              isSelected={updatedDeck.visibility === 'unlisted'}
-              onChangeVisibility={onChangeVisibility}
-            />
-            <VisibilityButton
-              icon="lock"
-              visibility="private"
-              name="Private"
-              description="Only you"
-              isSelected={updatedDeck.visibility === 'private'}
-              onChangeVisibility={onChangeVisibility}
-              isLast
+          <View style={styles.section}>
+            <Text style={styles.visibilityExplainer}>Visibility: Who can play your deck?</Text>
+            <View style={styles.visibilityContainer}>
+              <VisibilityButton
+                icon="public"
+                visibility="public"
+                name="Public"
+                description="Anyone on Castle"
+                isSelected={updatedDeck.visibility === 'public'}
+                onChangeVisibility={onChangeVisibility}
+              />
+              <VisibilityButton
+                icon="link"
+                visibility="unlisted"
+                name="Unlisted"
+                description="Anyone with the link"
+                isSelected={updatedDeck.visibility === 'unlisted'}
+                onChangeVisibility={onChangeVisibility}
+              />
+              <VisibilityButton
+                icon="lock"
+                visibility="private"
+                name="Private"
+                description="Only you"
+                isSelected={updatedDeck.visibility === 'private'}
+                onChangeVisibility={onChangeVisibility}
+                isLast
+              />
+            </View>
+          </View>
+          <View style={styles.section}>
+            <ConfigureDeck
+              deck={updatedDeck}
+              onDeleteDeck={onDeleteDeck}
+              onChangeAccessPermissions={onChangeAccessPermissions}
+              onChangeCommentsEnabled={onChangeCommentsEnabled}
             />
           </View>
-          <ConfigureDeck
-            deck={updatedDeck}
-            onDeleteDeck={onDeleteDeck}
-            onChangeAccessPermissions={onChangeAccessPermissions}
-            onChangeCommentsEnabled={onChangeCommentsEnabled}
-          />
         </View>
       </SafeAreaView>
       {isRemixInterstitialVisible ? <SheetBackgroundOverlay /> : null}

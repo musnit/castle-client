@@ -12,7 +12,7 @@ const styles = StyleSheet.create({
   },
   deleteContainer: {
     alignItems: 'center',
-    marginTop: 16,
+    marginTop: 12,
   },
   deleteButton: {
     padding: 8,
@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: 12,
   },
   rowLabel: {
     color: Constants.colors.white,
