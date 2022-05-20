@@ -7,7 +7,7 @@ import { useNavigation, useFocusEffect } from '../ReactNavigation';
 import { ScreenHeader } from '../components/ScreenHeader';
 
 import * as LocalId from '../common/local-id';
-
+import * as Analytics from '../common/Analytics';
 import * as Constants from '../Constants';
 
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -74,11 +74,14 @@ export const ViewSourceDeckScreen = (props) => {
 
   useFocusEffect(
     React.useCallback(() => {
+      Analytics.logEventSkipAmplitude('VIEW_DECK_SOURCE', {
+        deckId,
+      });
       if (lastFocusedTime.current > 0) {
         loadDeck.refetch();
       }
       lastFocusedTime.current = Date.now();
-    }, [loadDeck])
+    }, [loadDeck, deckId])
   );
 
   if (!loadDeck.loading && !loadDeck.error && loadDeck.data && deck === null) {

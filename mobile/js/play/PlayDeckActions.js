@@ -254,9 +254,6 @@ export const usePlayDeckActions = ({ deck, isMe }) => {
         }
         case 'view-source': {
           navigation.push('ViewSource', { deckIdToEdit: deck.deckId });
-          Analytics.logEventSkipAmplitude('VIEW_DECK_SOURCE', {
-            deckId: deck?.deckId,
-          });
           break;
         }
         case 'block': {
