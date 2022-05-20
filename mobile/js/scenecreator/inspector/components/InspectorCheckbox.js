@@ -26,15 +26,21 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginRight: 16,
   },
+  boxInverted: {
+    backgroundColor: '#000',
+    borderColor: '#fff',
+  },
 });
 
-export const InspectorCheckbox = ({ value, label, onChange, style, ...props }) => {
+export const InspectorCheckbox = ({ value, label, onChange, style, inverted, ...props }) => {
   const onPress = React.useCallback(() => onChange(!value), [value, onChange]);
   return (
     <View style={[styles.container, style]} {...props}>
       {label?.length ? <Text style={styles.label}>{label}</Text> : null}
-      <Pressable onPress={onPress} style={styles.box}>
-        {value ? <Constants.CastleIcon name="checkmark" size={18} color="#000" /> : null}
+      <Pressable onPress={onPress} style={[styles.box, inverted ? styles.boxInverted : null]}>
+        {value ? (
+          <Constants.CastleIcon name="checkmark" size={18} color={inverted ? '#fff' : '#000'} />
+        ) : null}
       </Pressable>
     </View>
   );

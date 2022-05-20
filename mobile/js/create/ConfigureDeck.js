@@ -4,6 +4,7 @@ import { AppText as Text } from '../components/AppText';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 
 import * as Constants from '../Constants';
+import { InspectorCheckbox } from '../scenecreator/inspector/components/InspectorCheckbox';
 
 const styles = StyleSheet.create({
   container: {
@@ -57,22 +58,18 @@ export const ConfigureDeck = ({
     <View style={styles.container}>
       <View style={styles.row}>
         <Text style={styles.rowLabel}>Allow others to comment on this deck</Text>
-        <Switch
-          ios_backgroundColor="#888"
+        <InspectorCheckbox
           value={deck.commentsEnabled === true}
-          onValueChange={(value) => onChangeCommentsEnabled(value)}
-          style={{ transform: [{ scaleX: 0.9 }, { scaleY: 0.9 }] }}
+          onChange={(value) => onChangeCommentsEnabled(value)}
+          inverted
         />
       </View>
       <View style={styles.row}>
         <Text style={styles.rowLabel}>Allow others to remix this deck</Text>
-        <Switch
-          ios_backgroundColor="#888"
+        <InspectorCheckbox
           value={deck.accessPermissions === 'cloneable'}
-          onValueChange={(value) =>
-            onChangeAccessPermissions(value ? 'cloneable' : 'sourceReadable')
-          }
-          style={{ transform: [{ scaleX: 0.9 }, { scaleY: 0.9 }] }}
+          onChange={(value) => onChangeAccessPermissions(value ? 'cloneable' : 'sourceReadable')}
+          inverted
         />
       </View>
       <View style={styles.deleteContainer}>
