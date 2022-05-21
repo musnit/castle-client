@@ -30,4 +30,10 @@ cp app/build/outputs/bundle/release/app-release.aab ../tools/build
 echo ""
 echo "Done building"
 
+
+echo ""
+echo "Uploading to Sentry..."
+cd ..
+./node_modules/@sentry/cli/bin/sentry-cli upload-dif -o castle-xyz -p castle-mobile android/app/build/intermediates/merged_native_libs/release
+
 popd > /dev/null
