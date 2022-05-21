@@ -8,10 +8,12 @@ mkdir build
 
 export CIRCLE_TOKEN=`node ../../../ghost-secret/get-secret.js circleci.apiToken`
 
+read -p "Enter build number: " BUILD_NUM
+
 echo "Downloading..."
 
 cd build
-curl -H "Circle-Token: $CIRCLE_TOKEN" https://circleci.com/api/v1.1/project/github/castle-xyz/castle-client/latest/artifacts \
+curl -H "Circle-Token: $CIRCLE_TOKEN" https://circleci.com/api/v1.1/project/github/castle-xyz/castle-client/$BUILD_NUM/artifacts \
   | grep -o 'https://[^"]*' \
   | wget --verbose --header "Circle-Token: $CIRCLE_TOKEN" --input-file -
 cd ..
