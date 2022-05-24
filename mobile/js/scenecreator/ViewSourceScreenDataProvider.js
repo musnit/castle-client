@@ -253,6 +253,7 @@ class ViewSourceScreenDataProvider extends React.Component {
         deck={deck}
         cardId={cardId}
         isNewScene={false}
+        isViewSource={true}
         initialSnapshotJson={this._initialSnapshotJson}
         loading={loading}
         goToDeck={this._goToDeck}

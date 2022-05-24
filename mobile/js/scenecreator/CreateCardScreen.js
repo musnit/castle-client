@@ -61,6 +61,7 @@ export const CreateCardScreen = ({
   deck,
   cardId,
   isNewScene = false,
+  isViewSource = false,
   initialSnapshotJson = null,
   loading,
   goToDeck,
@@ -337,6 +338,7 @@ export const CreateCardScreen = ({
                   interactionEnabled={true}
                   style={styles.scene}
                   isNewScene={isNewScene}
+                  isViewSource={isViewSource}
                   isEditable={true}
                   paused={appState !== 'active'}
                   onMessage={onSceneMessage}

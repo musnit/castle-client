@@ -143,6 +143,7 @@ void Engine::setInitialParams(const char *initialParamsJson) {
   int initialDeckIndex = 0;
   auto useNativeFeed = false;
   auto isNewScene = false;
+  auto isViewSource = false;
   auto isNuxCompleted = true;
   auto isNativeFeedNuxCompleted = true;
   auto archive = Archive::fromJson(initialParamsJson);
@@ -155,6 +156,7 @@ void Engine::setInitialParams(const char *initialParamsJson) {
     initialSnapshotJson = reader.str("initialSnapshotJson", nullptr);
     jsScreenId = reader.str("screenId", nullptr);
     isNewScene = reader.boolean("isNewScene", false);
+    isViewSource = reader.boolean("isViewSource", false);
     Scene::uiPixelRatio = float(reader.num("pixelRatio", Scene::uiPixelRatio));
     reader.obj("textOverlayStyle", [&]() {
       reader.read(TextBehavior::overlayStyle);
@@ -201,6 +203,17 @@ void Engine::setInitialParams(const char *initialParamsJson) {
 
   if (activeScreenId != screenId && screens.find(activeScreenId) != screens.end()) {
     screens[activeScreenId]->suspend();
+  }
+
+  // Clear feed screens when editing and not viewing source
+  if (isEditing && !isViewSource) {
+    for (auto it = screens.begin(); it != screens.end(); ) {
+      if (it->second->screenType() == FEED) {
+        it = screens.erase(it);
+      } else {
+        ++it;
+      }
+    }
   }
 
   activeScreenId = screenId;

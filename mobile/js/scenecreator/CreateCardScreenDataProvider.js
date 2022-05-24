@@ -390,6 +390,7 @@ class CreateCardScreenDataProvider extends React.Component {
         deck={deck}
         cardId={cardId}
         isNewScene={this._isNewScene}
+        isViewSource={false}
         initialSnapshotJson={this._initialSnapshotJson}
         loading={loading}
         goToDeck={this._goToDeck}
