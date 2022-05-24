@@ -88,13 +88,14 @@ const lightBackgroundStyles = StyleSheet.create({
 });
 
 export const SegmentedNavigation = (props) => {
-  const { items, selectedItem, onSelectItem, isLightBackground, compact } = props;
+  const { items, selectedItem, onSelectItem, isLightBackground, compact, disabled } = props;
   const styles = isLightBackground ? lightBackgroundStyles : darkBackgroundStyles;
 
   return (
     <View style={styles.container}>
       {items.map((item) => (
         <Pressable
+          disabled={disabled}
           key={item.value}
           style={[
             styles.item,
