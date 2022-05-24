@@ -17,6 +17,7 @@ import {
   useScrollToTop,
   ANDROID_USE_NATIVE_NAVIGATION,
 } from '../ReactNavigation';
+import { DecksGrid } from '../components/DecksGrid';
 import { EmptyFeed } from '../home/EmptyFeed';
 import { formatCount } from '../common/utilities';
 import { formatTimeInterval } from '../common/date-utilities';
@@ -60,9 +61,6 @@ const styles = StyleSheet.create({
   },
   gridContainer: {
     paddingTop: Constants.GRID_PADDING * 2,
-    paddingLeft: Constants.GRID_PADDING,
-    flexDirection: 'row',
-    flexWrap: 'wrap',
   },
   deckStats: {
     paddingTop: 6,
@@ -109,12 +107,11 @@ const styles = StyleSheet.create({
   helpRowButton: {},
 });
 
-const EditDecksList = ({ filter, fetchDecks, refreshing, filteredDecks, error }) => {
+const EditDecksList = ({ onRefresh, refreshing, filteredDecks, error, onEndReached }) => {
   const { push } = useNavigation();
-  const onRefresh = React.useCallback(() => fetchDecks({ filter }), [filter]);
   const refreshControl = (
     <RefreshControl
-      refreshing={refreshing}
+      refreshing={refreshing && !filteredDecks?.length}
       onRefresh={onRefresh}
       tintColor="#fff"
       colors={['#fff', '#ccc']}
@@ -123,6 +120,18 @@ const EditDecksList = ({ filter, fetchDecks, refreshing, filteredDecks, error })
 
   const scrollViewRef = React.useRef();
   useScrollToTop(scrollViewRef);
+
+  const onPressDeck = React.useCallback(
+    (deck) =>
+      push(
+        'CreateDeck',
+        {
+          deckIdToEdit: deck.deckId,
+        },
+        { isFullscreen: true }
+      ),
+    [push]
+  );
 
   if (error) {
     return <EmptyFeed error={error} onRefresh={onRefresh} />;
@@ -144,49 +153,27 @@ const EditDecksList = ({ filter, fetchDecks, refreshing, filteredDecks, error })
     );
   }
 
-  if (!filteredDecks || filteredDecks.length > 0) {
-    return (
-      <ScrollView
-        ref={scrollViewRef}
-        contentContainerStyle={styles.gridContainer}
-        refreshControl={refreshControl}>
-        {filteredDecks
-          ? filteredDecks.map((deck) => (
-              <EditDeckCell
-                key={deck.deckId}
-                deck={deck}
-                onPress={() => {
-                  push(
-                    'CreateDeck',
-                    {
-                      deckIdToEdit: deck.deckId,
-                    },
-                    { isFullscreen: true }
-                  );
-                }}
-              />
-            ))
-          : null}
-        <CreateHelpLinks />
-      </ScrollView>
-    );
-  }
-  return null;
+  return (
+    <DecksGrid
+      contentContainerStyle={styles.gridContainer}
+      decks={filteredDecks}
+      onPressDeck={onPressDeck}
+      scrollViewRef={scrollViewRef}
+      refreshControl={refreshControl}
+      onEndReached={onEndReached}
+      onEndReachedThreshold={0.5}
+      DeckComponent={EditDeckCell}
+      ListFooterComponent={CreateHelpLinks}
+    />
+  );
 };
 
 const EditDeckCell = (props) => {
-  const { deck, onPress } = props;
+  const { style, deck, onPress } = props;
 
   return (
-    <View style={[Constants.styles.gridItem, { width: '33.3%' }]}>
-      <CardCell
-        card={deck.initialCard}
-        onPress={onPress}
-        visibility={deck.visibility}
-        showVisibility={true}
-        playCount={deck.playCount}
-        inGrid={true}
-      />
+    <View style={style}>
+      <CardCell playCount={deck.playCount} {...props} creator={undefined} />
       <View style={styles.deckStats}>
         {deck.playCount ? (
           <>
@@ -251,25 +238,6 @@ const CreateHelpLinks = () => {
   );
 };
 
-const filterDecks = (decks, filter) => {
-  if (decks?.length) {
-    switch (filter) {
-      case 'private':
-      case 'unlisted':
-      case 'public':
-        return decks.filter((d) => d.visibility === filter);
-      case 'recovered':
-        // use different view for this tab
-        return [];
-      case 'recent':
-      default:
-        return decks.sort((a, b) => new Date(b.lastModified) - new Date(a.lastModified));
-    }
-  } else {
-    return [];
-  }
-};
-
 const TAB_ITEMS = [
   {
     name: 'Recent',
@@ -311,6 +279,16 @@ export const CreateScreen = () => {
             },
           };
         }
+        case 'append': {
+          const existing = state.filteredDecks[state.filter];
+          return {
+            ...state,
+            filteredDecks: {
+              ...state.filteredDecks,
+              [state.filter]: existing.concat(action.decks),
+            },
+          };
+        }
         case 'filter': {
           return {
             ...state,
@@ -329,8 +307,8 @@ export const CreateScreen = () => {
   const [error, setError] = React.useState();
   const [fetchDecksQuery, query] = useLazyQuery(
     gql`
-      query($userId: ID!, $filter: DeckListFilter) {
-        decksForUser(userId: $userId, limit: ${DECKS_PAGE_SIZE}, filter: $filter) {
+      query($userId: ID!, $filter: DeckListFilter, $lastModifiedBefore: Datetime) {
+        decksForUser(userId: $userId, limit: ${DECKS_PAGE_SIZE}, filter: $filter, lastModifiedBefore: $lastModifiedBefore) {
           id
           deckId
           title
@@ -359,24 +337,51 @@ export const CreateScreen = () => {
   );
 
   const fetchDecks = React.useCallback(
-    ({ filter }) =>
-      fetchDecksQuery({
-        variables: {
-          userId: signedInUserId,
-          filter,
-        },
-      }),
+    ({ filter, lastModifiedBefore }) => {
+      if (filter !== 'recovered') {
+        fetchDecksQuery({
+          variables: {
+            userId: signedInUserId,
+            filter,
+            lastModifiedBefore,
+          },
+        });
+      }
+    },
     [signedInUserId]
   );
 
-  React.useEffect(() => fetchDecks({ filter: list.filter }), [list.filter]);
+  const lastFetched = React.useRef({
+    filter: list.filter,
+    deckId: undefined,
+  });
 
+  const onRefresh = React.useCallback(
+    (lastDeck) => {
+      fetchDecks({ filter: list.filter, lastModifiedBefore: lastDeck?.lastModified });
+      lastFetched.current = { filter: list.filter, deckId: lastDeck?.deckId };
+    },
+    [fetchDecks, list.filter]
+  );
+
+  const onEndReached = React.useCallback(() => {
+    const decks = list.filteredDecks[list.filter];
+    if (!query.loading && decks?.length >= DECKS_PAGE_SIZE) {
+      const lastDeck = decks[decks.length - 1];
+      onRefresh(lastDeck);
+    }
+  }, [query.loading, list, onRefresh]);
+
+  // load when filter changed
+  React.useEffect(onRefresh, [list.filter]);
+
+  // load when focused
   useFocusEffect(
     React.useCallback(() => {
       StatusBar.setBarStyle('light-content'); // needed for tab navigator
       Analytics.logEventSkipAmplitude('VIEW_CREATE');
-      fetchDecks({ filter: list.filter });
-    }, [list.filter])
+      onRefresh();
+    }, [onRefresh])
   );
 
   React.useEffect(() => {
@@ -384,9 +389,20 @@ export const CreateScreen = () => {
       if (query.data) {
         const decks = query.data.decksForUser;
         if (decks) {
-          setList({ action: 'set', decks });
+          if (
+            lastFetched.current.deckId &&
+            (!decks.length || decks[decks.length - 1].deckId !== lastFetched.current.deckId)
+          ) {
+            setList({ action: 'append', decks });
+          } else {
+            setList({ action: 'set', decks });
+          }
         } else {
-          setList({ action: 'set', decks: [] });
+          console.log(`no decks in new query`);
+          if (!lastFetched.current.deckId) {
+            console.log(`clear decks`);
+            setList({ action: 'set', decks: [] });
+          }
         }
         setError(undefined);
       } else if (query.error) {
@@ -412,6 +428,7 @@ export const CreateScreen = () => {
     // assuming the restored card caused a deck to be newly visible here
     setList({ action: 'filter', filter: 'recent' });
     fetchDecks({ filter: 'recent' });
+    lastFetched.current = { filter: 'recent' };
   }, [setList, fetchDecks]);
 
   return (
@@ -444,9 +461,9 @@ export const CreateScreen = () => {
         <UnsavedCardsList onCardChosen={onUnsavedCardRestored} />
       ) : (
         <EditDecksList
-          filter={list.filter}
-          fetchDecks={fetchDecks}
+          onRefresh={onRefresh}
           refreshing={query.loading}
+          onEndReached={onEndReached}
           filteredDecks={list.filteredDecks[list.filter]}
           error={error}
         />

@@ -15,14 +15,16 @@ const styles = StyleSheet.create({
   },
 });
 
-const CardGridRow = React.memo(({ decks, onPress }) => {
+const CardGridRow = React.memo(({ decks, onPress, DeckComponent }) => {
   const spacers = new Array(Math.max(0, 3 - decks.length)).fill(0);
+  const Component = DeckComponent ?? CardCell;
   return (
     <View style={{ flexDirection: 'row', paddingLeft: Constants.GRID_PADDING }}>
       {decks.map((deck, col) => (
-        <CardCell
+        <Component
           key={`card-${deck.initialCard.cardId}`}
           style={[Constants.styles.gridItem, { flex: 1 }]}
+          deck={deck}
           card={deck.initialCard}
           visibility={deck.visibility}
           creator={deck.creator}
@@ -37,7 +39,14 @@ const CardGridRow = React.memo(({ decks, onPress }) => {
   );
 });
 
-export const DecksGrid = ({ decks, onPressDeck, scrollViewRef, keyboardAware, ...props }) => {
+export const DecksGrid = ({
+  decks,
+  onPressDeck,
+  scrollViewRef,
+  keyboardAware,
+  DeckComponent,
+  ...props
+}) => {
   const [groupedDecks, setGroupedDecks] = React.useState([]);
   React.useEffect(() => {
     const newGroupedDecks = decks
@@ -56,7 +65,13 @@ export const DecksGrid = ({ decks, onPressDeck, scrollViewRef, keyboardAware, ..
   const renderItem = React.useCallback(
     ({ item, index }) => {
       let row = index;
-      return <CardGridRow decks={item} onPress={(deck, col) => onPressDeck(deck, row * 3 + col)} />;
+      return (
+        <CardGridRow
+          decks={item}
+          DeckComponent={DeckComponent}
+          onPress={(deck, col) => onPressDeck(deck, row * 3 + col)}
+        />
+      );
     },
     [onPressDeck]
   );
