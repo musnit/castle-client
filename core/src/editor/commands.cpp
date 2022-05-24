@@ -4,7 +4,7 @@
 #include "library.h"
 
 
-constexpr auto maxUndos = 100;
+constexpr auto maxUndos = 50;
 constexpr auto undoCoalesceInterval = 2.2;
 
 
