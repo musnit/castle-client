@@ -148,12 +148,16 @@ inline void Engine::clearScreen() {
       activeScreenId = "";
     }
   }
+  lv.graphics.clear(love::Colorf(0, 0, 0, 1), {}, {});
+  lv.graphics.present(nullptr);
 }
 
 inline void Engine::suspendScreen() {
   if (screens.find(activeScreenId) != screens.end()) {
     screens[activeScreenId]->suspend();
   }
+  lv.graphics.clear(love::Colorf(0, 0, 0, 1), {}, {});
+  lv.graphics.present(nullptr);
 }
 
 inline void Engine::resumeScreen() {
