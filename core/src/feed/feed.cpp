@@ -1170,6 +1170,12 @@ void Feed::resume() {
 void Feed::clearState() {
 }
 
+void Feed::clearMemory() {
+  for (size_t i = 0; i < decks.size(); ++i) {
+    unloadDeckAtIndex(i, true);
+  }
+}
+
 void Feed::setDeepLinkDeckId(std::string deckId) {
   if (deckId == deepLinkDeckId) {
     return;

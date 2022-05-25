@@ -207,11 +207,9 @@ void Engine::setInitialParams(const char *initialParamsJson) {
 
   // Clear feed screens when editing and not viewing source
   if (isEditing && !isViewSource) {
-    for (auto it = screens.begin(); it != screens.end(); ) {
-      if (it->second->screenType() == FEED) {
-        it = screens.erase(it);
-      } else {
-        ++it;
+    for (auto &[screenId, screen] : screens) {
+      if (screen->screenType() == FEED) {
+        screen->clearMemory();
       }
     }
   }

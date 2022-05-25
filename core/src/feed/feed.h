@@ -78,6 +78,7 @@ public:
   void suspend();
   void resume();
   void clearState();
+  void clearMemory();
   void fetchInitialDecks(std::vector<std::string> deckIds, int initialDeckIndex = 0,
       std::optional<std::string> paginateFeedId = std::nullopt, bool isNuxCompleted = false,
       bool isNativeFeedNuxCompleted = false);
