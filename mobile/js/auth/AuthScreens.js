@@ -248,17 +248,20 @@ const CreateAccountForm = ({ route }) => {
     }
   }, [setErrors, username, email, password]);
 
-  let uriAfter;
+  let uriAfter, referringScreen;
   if (route && route.params) {
     uriAfter = route.params.uriAfter;
+    referringScreen = route.params.referringScreen;
   }
 
   const emailInput = React.useRef();
   const pwInput = React.useRef();
 
   useEffect(() => {
-    Analytics.logEventSkipAmplitude('VIEW_SIGN_UP');
-  }, []);
+    Analytics.logEventSkipAmplitude('VIEW_SIGN_UP', {
+      referringScreen,
+    });
+  }, [referringScreen]);
 
   const onPressCreateAccount = async () => {
     try {
@@ -470,11 +473,14 @@ export const LoginScreen = () => (
   </WithHeader>
 );
 
-export const CreateAccountScreen = () => (
-  <WithHeader>
-    <CreateAccountForm />
-  </WithHeader>
-);
+export const CreateAccountScreen = (props) => {
+  useNavigation();
+  return (
+    <WithHeader>
+      <CreateAccountForm {...props} />
+    </WithHeader>
+  );
+};
 
 export const ForgotPasswordScreen = () => (
   <WithHeader>

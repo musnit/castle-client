@@ -174,6 +174,7 @@ export const ShareDeckScreen = (props) => {
         <AuthPrompt
           title="Share your decks"
           message="Publish your decks to your profile, or get a link to share with friends."
+          referringScreen="share"
           hideLogin
         />
       </View>

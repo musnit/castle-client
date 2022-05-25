@@ -99,6 +99,7 @@ export const ProfileScreen = (props) => {
         <AuthPrompt
           title="Build your profile"
           message="Show off your decks and follow other creators."
+          referringScreen="profile"
         />
         <View style={{ width: '100%', alignItems: 'center', paddingBottom: 16 }}>
           <MiscLinks />

@@ -6,6 +6,7 @@ import { useNavigation, ANDROID_USE_NATIVE_NAVIGATION } from '../ReactNavigation
 
 import FastImage from 'react-native-fast-image';
 
+import * as Analytics from '../common/Analytics';
 import * as Constants from '../Constants';
 import Viewport from '../common/viewport';
 import { MiscLinks } from '../profile/MiscLinks';
@@ -45,8 +46,14 @@ const styles = StyleSheet.create({
   },
 });
 
-export const AuthPrompt = ({ title, message, hideLogin }) => {
+export const AuthPrompt = ({ title, message, referringScreen, hideLogin }) => {
   const { navigate } = useNavigation();
+
+  React.useEffect(() => {
+    Analytics.logEventSkipAmplitude('VIEW_AUTH_PROMPT', {
+      referringScreen,
+    });
+  }, [referringScreen]);
 
   const imageHeight = 160;
   const imageWidth = imageHeight * 12.352657005; // Original dimensions are 3435x278
@@ -75,20 +82,20 @@ export const AuthPrompt = ({ title, message, hideLogin }) => {
   const onPressSignIn = React.useCallback(() => {
     if (Constants.iOS || !ANDROID_USE_NATIVE_NAVIGATION) {
       // use native modal on iOS
-      navigate('AuthNavigator', { screen: 'LoginScreen' });
+      navigate('AuthNavigator', { screen: 'LoginScreen', params: { referringScreen } });
     } else {
       // use separate root navigator on Android
-      navigate('LoginScreen', {}, { isFullscreen: true });
+      navigate('LoginScreen', { referringScreen }, { isFullscreen: true });
     }
   }, [navigate]);
 
   const onPressCreateAccount = React.useCallback(() => {
     if (Constants.iOS || !ANDROID_USE_NATIVE_NAVIGATION) {
       // use native modal on iOS
-      navigate('AuthNavigator', { screen: 'CreateAccountScreen' });
+      navigate('AuthNavigator', { screen: 'CreateAccountScreen', params: { referringScreen } });
     } else {
       // use separate root navigator on Android
-      navigate('CreateAccountScreen', {}, { isFullscreen: true });
+      navigate('CreateAccountScreen', { referringScreen }, { isFullscreen: true });
     }
   }, [navigate]);
 
