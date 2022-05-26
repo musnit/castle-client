@@ -1170,9 +1170,12 @@ void Feed::resume() {
 void Feed::clearState() {
 }
 
-void Feed::clearMemory() {
-  for (size_t i = 0; i < decks.size(); ++i) {
-    unloadDeckAtIndex(i, true);
+void Feed::clearFeed(bool isViewSource) {
+  auto idx = getCurrentIndex();
+  for (int i = 0; i < int(decks.size()); ++i) {
+    if (!(isViewSource && i == idx)) {
+      unloadDeckAtIndex(i, true);
+    }
   }
 }
 

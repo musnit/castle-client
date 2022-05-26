@@ -206,10 +206,10 @@ void Engine::setInitialParams(const char *initialParamsJson) {
   }
 
   // Clear feed screens when editing and not viewing source
-  if (isEditing && !isViewSource) {
+  if (isEditing) {
     for (auto &[screenId, screen] : screens) {
       if (screen->screenType() == FEED) {
-        screen->clearMemory();
+        screen->clearFeed(isViewSource);
       }
     }
   }

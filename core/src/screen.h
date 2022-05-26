@@ -18,7 +18,7 @@ public:
   virtual void suspend() = 0;
   virtual void resume() = 0;
   virtual void clearState() = 0;
-  virtual void clearMemory() {
+  virtual void clearFeed(bool isViewSource) {
   }
   virtual bool hasScene() = 0;
   virtual Scene &getScene() = 0;
