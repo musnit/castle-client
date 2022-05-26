@@ -221,7 +221,7 @@ void DrawDataFrame::compressFillCanvas() {
   if (fillImageData == NULL) {
     return;
   }
-  if (fillImageData->isEmpty()) {
+  if (fillImageData->isEmpty() && !parentLayer()->isBitmap) {
     fillImageData->release();
     if (fillImage != NULL) {
       fillImage->release();
