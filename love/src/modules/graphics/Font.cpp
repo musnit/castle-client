@@ -347,7 +347,8 @@ void Font::getCodepointsFromString(const std::string &text, Codepoints &codepoin
 	}
 	catch (utf8::exception &e)
 	{
-		throw love::Exception("UTF-8 decoding error: %s", e.what());
+		// XXX(Castle): Don't crash
+		//throw love::Exception("UTF-8 decoding error: %s", e.what());
 	}
 }
 
@@ -697,7 +698,8 @@ int Font::getWidth(const std::string &str)
 		}
 		catch (utf8::exception &e)
 		{
-			throw love::Exception("UTF-8 decoding error: %s", e.what());
+			// XXX(Castle): Don't crash
+			break;
 		}
 
 		max_width = std::max(max_width, width);
