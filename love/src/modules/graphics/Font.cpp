@@ -699,6 +699,7 @@ int Font::getWidth(const std::string &str)
 		catch (utf8::exception &e)
 		{
 			// XXX(Castle): Don't crash
+			//throw love::Exception("UTF-8 decoding error: %s", e.what());
 			break;
 		}
 
