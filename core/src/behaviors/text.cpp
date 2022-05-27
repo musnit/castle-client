@@ -5,6 +5,8 @@
 #include "js.h"
 #include "engine.h"
 
+#include "libraries/utf8/utf8.h" // UTF-8 library that Love depends on
+
 
 //
 // Triggers
@@ -606,8 +608,33 @@ std::string TextBehavior::formatContent(ActorId actorId, const std::string &cont
 }
 
 void TextBehavior::asciifyContent(std::string &content) {
-  const auto isNotAscii = [&](char c) {
-    return !(0 <= c && c <= 127);
-  };
-  content.erase(std::remove_if(content.begin(), content.end(), isNotAscii), content.end());
+  // NOTE: Allowed characters are listed in this string literal, between the "s
+  std::string allowed = u8"…“”";
+
+  utf8::iterator<std::string::const_iterator> allowedBegin(
+      allowed.begin(), allowed.begin(), allowed.end());
+  utf8::iterator<std::string::const_iterator> allowedEnd(
+      allowed.end(), allowed.begin(), allowed.end());
+  std::string result;
+  auto resultInserter = std::back_inserter(result);
+  utf8::iterator<std::string::const_iterator> it(content.begin(), content.begin(), content.end());
+  utf8::iterator<std::string::const_iterator> end(content.end(), content.begin(), content.end());
+  while (it != end) {
+    uint32_t curr = *it++;
+    if (curr <= 127) { // Regular ASCII
+      utf8::append(curr, resultInserter);
+      continue;
+    }
+    auto isAllowed = false;
+    for (auto allowedIt = allowedBegin; allowedIt != allowedEnd; ++allowedIt) {
+      if (*allowedIt == curr) {
+        isAllowed = true;
+        break;
+      }
+    }
+    if (isAllowed) {
+      utf8::append(curr, resultInserter);
+    }
+  }
+  content = result;
 }
