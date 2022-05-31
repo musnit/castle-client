@@ -156,6 +156,7 @@ const EditDecksList = ({ onRefresh, refreshing, filteredDecks, error, onEndReach
   return (
     <DecksGrid
       contentContainerStyle={styles.gridContainer}
+      gridItemStyle={{ paddingBottom: 0 }}
       decks={filteredDecks}
       onPressDeck={onPressDeck}
       scrollViewRef={scrollViewRef}

@@ -15,7 +15,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const CardGridRow = React.memo(({ decks, onPress, DeckComponent }) => {
+const CardGridRow = React.memo(({ decks, onPress, DeckComponent, itemStyle }) => {
   const spacers = new Array(Math.max(0, 3 - decks.length)).fill(0);
   const Component = DeckComponent ?? CardCell;
   return (
@@ -23,7 +23,7 @@ const CardGridRow = React.memo(({ decks, onPress, DeckComponent }) => {
       {decks.map((deck, col) => (
         <Component
           key={`card-${deck.initialCard.cardId}`}
-          style={[Constants.styles.gridItem, { flex: 1 }]}
+          style={[Constants.styles.gridItem, itemStyle, { flex: 1 }]}
           deck={deck}
           card={deck.initialCard}
           visibility={deck.visibility}
@@ -33,7 +33,10 @@ const CardGridRow = React.memo(({ decks, onPress, DeckComponent }) => {
         />
       ))}
       {spacers.map((_, col) => (
-        <View key={`empty-cell-${col}`} style={[styles.emptyCell, Constants.styles.gridItem]} />
+        <View
+          key={`empty-cell-${col}`}
+          style={[styles.emptyCell, Constants.styles.gridItem, itemStyle]}
+        />
       ))}
     </View>
   );
@@ -45,6 +48,7 @@ export const DecksGrid = ({
   scrollViewRef,
   keyboardAware,
   DeckComponent,
+  gridItemStyle,
   ...props
 }) => {
   const [groupedDecks, setGroupedDecks] = React.useState([]);
@@ -69,11 +73,12 @@ export const DecksGrid = ({
         <CardGridRow
           decks={item}
           DeckComponent={DeckComponent}
+          itemStyle={gridItemStyle}
           onPress={(deck, col) => onPressDeck(deck, row * 3 + col)}
         />
       );
     },
-    [onPressDeck]
+    [onPressDeck, gridItemStyle]
   );
 
   if (keyboardAware) {
