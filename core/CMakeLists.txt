@@ -95,9 +95,10 @@ if(NOT MSVC)
 endif()
 
 # Disable exceptions
-if(WEB)
-  target_compile_options(castle-core PRIVATE -fno-exceptions)
-endif()
+# NOTE: Actually, enabled exceptions again because Love's UTF-8 library gets inlined and uses exceptions
+#if(WEB)
+  #target_compile_options(castle-core PRIVATE -fno-exceptions)
+#endif()
 
 # Precompiled header
 if(NOT CMAKE_EXPORT_COMPILE_COMMANDS)
