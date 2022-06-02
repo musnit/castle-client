@@ -92,6 +92,7 @@ Engine::Engine() {
 #endif
 
 #ifdef __EMSCRIPTEN__
+  coreViewsReady = true;
   auto screen = std::make_unique<Player>(bridge);
   screen->resume();
   activeScreenId = "player:web";
