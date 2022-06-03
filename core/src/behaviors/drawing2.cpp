@@ -180,7 +180,7 @@ void Drawing2Behavior::cleanupRenderData() {
   for (auto &[hash, drawData] : drawDataCache) {
     for (auto &layer : drawData->layers) {
       for (auto &frame : layer->frames) {
-        if (time - frame->lastRenderTime > 1) {
+        if (time - frame->lastRenderTime > 5) {
           frame->releaseRenderData();
         }
         if (frame->_graphics || frame->fillImageData || frame->fillImage) {
