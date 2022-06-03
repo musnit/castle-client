@@ -616,27 +616,6 @@ void Feed::update4(double dt) {
 }
 
 void Feed::runUpdateAtIndex(int idx, double dt) {
-  if (!multilineCaptions && decks[idx].captionTextWidth > 0
-      && decks[idx].captionTextWidth > decks[idx].captionDisplayWidth) {
-    if (decks[idx].captionAnimationDelay > 0) {
-      decks[idx].captionAnimationDelay -= dt;
-    } else {
-      int minLeft
-          = decks[idx].captionDisplayWidth - decks[idx].captionTextWidth - windowWidth * 0.06;
-
-      if (decks[idx].captionAnimationLeft < minLeft) {
-        decks[idx].captionAnimationLeft = 0.0;
-        decks[idx].captionAnimationDelay = CAPTION_ANIMATION_DELAY;
-      } else {
-        decks[idx].captionAnimationLeft -= dt * CAPTION_ANIMATION_SPEED;
-
-        if (decks[idx].captionAnimationLeft < minLeft) {
-          decks[idx].captionAnimationDelay = CAPTION_ANIMATION_DELAY;
-        }
-      }
-    }
-  }
-
   if (!decks[idx].player) {
     return;
   }
@@ -807,8 +786,7 @@ void Feed::renderCardAtPosition(
     if (decks[idx].coreView) {
       float padding = (windowWidth - cardWidth) / 2.0;
       lv.graphics.setScissor({ (int)(position - padding), 0, 800, 3000 });
-      decks[idx].coreView->updateProp("caption-0", "left",
-          std::to_string(decks[idx].captionInitialLeft + decks[idx].captionAnimationLeft));
+      decks[idx].coreView->updateProp("caption-0", "left", std::to_string(decks[idx].captionLeft));
       decks[idx].coreView->render();
       lv.graphics.setScissor();
     }
@@ -1611,7 +1589,7 @@ void Feed::layoutCoreViews(int i) {
   int captionLeft = FormatNumber::isInt(captionLeftStr)
       ? std::stoi(captionLeftStr)
       : FEED_BOTTOM_ACTIONS_CAPTION_DEFAULT_LEFT * vw;
-  decks[i].captionInitialLeft = captionLeft;
+  decks[i].captionLeft = captionLeft;
   decks[i].captionDisplayWidth = cardWidth - captionLeft;
 
   if (multilineCaptions) {
@@ -1637,27 +1615,61 @@ void Feed::layoutCoreViews(int i) {
       auto captionViewId = "caption-" + std::to_string(captionLine);
 
       auto newIndex = caption.find(' ', charIndex);
-      if (newIndex == std::string::npos) {
-        decks[i].coreView->updateProp(captionViewId, "text", caption);
-        return;
-      }
+      bool isLastWord = newIndex == std::string::npos;
 
-      std::string substring = caption.substr(0, newIndex);
+      std::string substring = caption;
+      if (!isLastWord) {
+        substring = caption.substr(0, newIndex);
+      }
       float lineWidth = decks[i].coreView->getView(captionViewId).testTextWidth(substring);
       float viewWidth = captionLine == 0
           ? (cardWidth - captionLeft) - (FEED_BOTTOM_ACTIONS_CAPTION_HORIZONTAL_PADDING * vw)
           : cardWidth - (FEED_BOTTOM_ACTIONS_CAPTION_HORIZONTAL_PADDING * 2.0 * vw);
+      bool isLineTooLong = lineWidth > viewWidth;
 
-      if (lineWidth > viewWidth) {
-        decks[i].coreView->updateProp(captionViewId, "text", caption.substr(0, charIndex));
-        caption = caption.substr(charIndex);
+      if (isLineTooLong) {
+        // Line is too long, go back to the last word and add it. Check for newlines
+        // in the added substring.
+        std::string line = caption.substr(0, charIndex);
+        auto newlineIndex = line.find('\n');
+        if (newlineIndex == std::string::npos) {
+          decks[i].coreView->updateProp(captionViewId, "text", line);
+          caption = caption.substr(charIndex);
+        } else {
+          decks[i].coreView->updateProp(captionViewId, "text", line.substr(0, newlineIndex));
+          caption = caption.substr(newlineIndex);
+        }
 
         captionLine++;
         charIndex = 0;
       } else {
-        charIndex = newIndex + 1;
+        // Line fits. If this is the last word, add it and check for newlines.
+        // If it is not the last word, move the cursor forward and check if the next word will fit.
+        if (isLastWord) {
+          auto newlineIndex = caption.find('\n');
+          if (newlineIndex == std::string::npos) {
+            decks[i].coreView->updateProp(captionViewId, "text", caption);
+            return;
+          } else {
+            decks[i].coreView->updateProp(captionViewId, "text", caption.substr(0, newlineIndex));
+            caption = caption.substr(newlineIndex + 1);
+
+            captionLine++;
+            charIndex = 0;
+          }
+        } else {
+          charIndex = newIndex + 1;
+        }
       }
     }
+  } else {
+    std::string caption = decks[i].caption;
+    auto newlineIndex = caption.find('\n');
+    if (newlineIndex != std::string::npos) {
+      caption = caption.substr(0, newlineIndex);
+    }
+
+    decks[i].coreView->updateProp("caption-0", "text", caption);
   }
 }
 
@@ -1889,8 +1901,6 @@ void Feed::loadDeckCoreViews(int i) {
     decks[i].coreView->updateJSGestureProp("deckId", deckId);
     decks[i].coreView->updateJSGestureProp("deck", *decks[i].deckJson);
     decks[i].caption = reader.str("caption", "");
-    decks[i].coreView->updateProp("caption-0", "text", decks[i].caption);
-    decks[i].captionAnimationLeft = 0.0;
 
     reader.arr("variables", [&]() {
       decks[i].player->readVariables(reader);
