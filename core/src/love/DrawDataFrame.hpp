@@ -34,6 +34,7 @@ public:
   graphics::Canvas *pathsCanvas = NULL;
   std::optional<std::string> fillPng;
   std::optional<std::string> base64Png;
+  double lastRenderTime = 0;
 
   DrawDataFrame() = default;
   DrawDataFrame(bool isLinked_, DrawDataLayer *parentLayer_)
@@ -48,20 +49,28 @@ public:
   DrawDataFrame(const DrawDataFrame &other) = delete;
 
   ~DrawDataFrame() {
-    if (_graphics) {
-      delete _graphics;
-    }
-
-    if (fillImageData) {
-      fillImageData->release();
-    }
-
-    if (fillImage) {
-      fillImage->release();
-    }
+    releaseRenderData();
 
     if (pathsCanvas) {
       pathsCanvas->release();
+    }
+  }
+
+  void releaseRenderData() {
+    if (_graphics || fillImageData || fillImage) {
+      std::printf("releasing %p\n", (void *)this);
+    }
+    if (_graphics) {
+      delete _graphics;
+      _graphics = nullptr;
+    }
+    if (fillImageData) {
+      fillImageData->release();
+      fillImageData = nullptr;
+    }
+    if (fillImage) {
+      fillImage->release();
+      fillImage = nullptr;
     }
   }
 
@@ -80,8 +89,6 @@ public:
 
     archive.obj("fillImageBounds", fillImageBounds);
     fillPng = archive.str("fillPng", "");
-
-    deserializeFill();
   }
 
   void write(Archive::Writer &archive) {
@@ -105,6 +112,8 @@ public:
       archive.str("fillPng", std::string(result));
       delete result;
       fileData->release();
+    } else if (fillPng && fillPng->length() > 0) {
+      archive.str("fillPng", *fillPng);
     }
   }
 
@@ -124,6 +133,7 @@ public:
   Bounds getFillImageBoundsInPathCoordinates();
   void resetGraphics();
   ToveGraphicsHolder *graphics();
+  void render();
   void renderFill();
   std::optional<std::string> renderPreviewPng(int size);
 

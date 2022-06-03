@@ -11,6 +11,7 @@
 #include "image/Image.h"
 #include "data/DataModule.h"
 #include "filesystem/Filesystem.h"
+#include "timer/Timer.h"
 
 #define DEBUG_FILL_IMAGE_SIZE false
 #define DEBUG_UPDATE_FLOOD_FILL 0
@@ -19,6 +20,8 @@ namespace love {
 
 void DrawDataFrame::deserializeFill() {
   if (fillPng && fillPng->length() > 0) {
+    std::printf("loading %p\n", (void *)this);
+    
     // data::ContainerType ctype = data::CONTAINER_STRING;
     data::EncodeFormat format = data::ENCODE_BASE64;
 
@@ -194,6 +197,9 @@ graphics::Image *DrawDataFrame::imageDataToImage(image::ImageData *imageData) {
 graphics::Image *DrawDataFrame::getFillImage() {
   if (fillImage != NULL) {
     return fillImage;
+  }
+  if (!fillImageData) {
+    deserializeFill();
   }
   if (fillImageData == NULL) {
     return NULL;
@@ -434,6 +440,13 @@ ToveGraphicsHolder *DrawDataFrame::graphics() {
   return _graphics;
 }
 
+void DrawDataFrame::render() {
+  // TODO: Cache the current time and use that instead of calling `getTime` every render
+  lastRenderTime = Module::getInstance<love::timer::Timer>(Module::M_TIMER)->getTime();
+  renderFill();
+  graphics()->draw();
+}
+
 void DrawDataFrame::renderFill() {
   auto fillImage = getFillImage();
   if (fillImage != NULL) {
@@ -538,8 +551,7 @@ std::optional<std::string> DrawDataFrame::renderPreviewPng(int size) {
     graphicsModule->clear(Colorf(0.0f, 0.0f, 0.0f, 0.0f), 0, 1.0);
     graphicsModule->setColor({ 1.0, 1.0, 1.0, 1.0 });
 
-    renderFill();
-    graphics()->draw();
+    render();
     graphicsModule->pop();
   });
 

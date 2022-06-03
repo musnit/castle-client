@@ -110,6 +110,7 @@ public:
   void clearEditorDataCache();
   std::unique_ptr<DrawingEditorDataCache> editorDataCache;
 
+  void cleanupRenderData();
   void cleanupDrawDataCache();
 
 private:
