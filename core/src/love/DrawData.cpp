@@ -623,8 +623,7 @@ void DrawData::renderFrameIndex(int frameIdx /* zero index */) {
     if (layers[l]->isVisible) {
       auto realFrame = getRealFrameIndexForLayerId(layers[l]->id, frameIdx);
       auto frame = layers[l]->frames[realFrame].get();
-      frame->renderFill();
-      frame->graphics()->draw();
+      frame->render();
     }
   }
 }
@@ -644,15 +643,13 @@ void DrawData::renderForTool(DrawDataLayerId layerId, OneIndexFrame frameIndex,
 
         graphicsModule->push(graphics::Graphics::STACK_TRANSFORM);
         graphicsModule->translate(tempTranslateX, tempTranslateY);
-        frame->renderFill();
-        frame->graphics()->draw();
+        frame->render();
         graphicsModule->pop();
         if (tempGraphics) {
           tempGraphics->draw();
         }
       } else {
-        frame->renderFill();
-        frame->graphics()->draw();
+        frame->render();
       }
     }
   }

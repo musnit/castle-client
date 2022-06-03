@@ -174,6 +174,24 @@ void Drawing2Behavior::handleWriteComponent(
   });
 }
 
+void Drawing2Behavior::cleanupRenderData() {
+  auto numFramesLoaded = 0;
+  auto time = lv.timer.getTime();
+  for (auto &[hash, drawData] : drawDataCache) {
+    for (auto &layer : drawData->layers) {
+      for (auto &frame : layer->frames) {
+        if (time - frame->lastRenderTime > 1) {
+          frame->releaseRenderData();
+        }
+        if (frame->_graphics || frame->fillImageData || frame->fillImage) {
+          ++numFramesLoaded;
+        }
+      }
+    }
+  }
+  Debug::display("{} frames currently loaded", numFramesLoaded);
+}
+
 void Drawing2Behavior::cleanupDrawDataCache() {
   for (auto it = drawDataCache.begin(); it != drawDataCache.end();) {
     if (it->second.use_count() == 1) {
@@ -182,6 +200,7 @@ void Drawing2Behavior::cleanupDrawDataCache() {
       ++it;
     }
   }
+  cleanupRenderData();
 }
 
 //
@@ -211,6 +230,8 @@ void Drawing2Behavior::handlePerform(double dt) {
       }
     }
   });
+
+  cleanupRenderData();
 }
 
 
