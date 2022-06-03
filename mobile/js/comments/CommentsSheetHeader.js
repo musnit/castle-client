@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Pressable, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { AppText as Text } from '../components/AppText';
+import { DeckCaption } from '../components/DeckCaption';
 import { formatCount, shareDeck } from '../common/utilities';
 import { gql } from '@apollo/client';
 import { ReactionButton } from '../components/ReactionButton';
@@ -25,6 +26,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between',
+  },
+  captionRemixRow: {
+    paddingHorizontal: 16,
+    marginTop: 8,
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
+  },
+  captionContainer: {
+    marginTop: 4,
+    marginLeft: 8,
   },
   headerLeft: {
     flexDirection: 'row',
@@ -66,7 +77,6 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
     borderRadius: 3,
     padding: 4,
-    marginTop: 8,
     alignItems: 'center',
   },
   parentUsername: {
@@ -148,10 +158,21 @@ export const CommentsSheetHeader = ({ deck = {}, isOpen, onClose }) => {
     }
   }, [deck?.parentDeckId, navigate]);
 
+  const onPressTag = React.useCallback(
+    (tag) => {
+      // TODO: push tag screen with tag
+      console.log(`pressed tag: ${tag}`);
+    },
+    [push]
+  );
+
   if (!deck?.creator) {
     return null;
   }
   const { creator } = deck;
+
+  const isRemix = deck.parentDeckId && deck.parentDeck;
+  const showCaptionRow = isRemix || deck.caption?.length;
 
   return (
     <View style={styles.header}>
@@ -192,16 +213,19 @@ export const CommentsSheetHeader = ({ deck = {}, isOpen, onClose }) => {
           </TouchableOpacity>
         </View>
       </View>
-      {deck.parentDeckId && deck.parentDeck ? (
-        <View style={[styles.row, { paddingHorizontal: 16 }]}>
-          <View style={styles.parentAttrib}>
-            <CastleIcon name="remix" color="#888" size={12} style={styles.remixIcon} />
-            <Pressable onPress={navigateToParent}>
-              <Text numberOfLines={1} style={styles.parentUsername}>
-                Remixed {deck.parentDeck?.creator?.username}
-              </Text>
-            </Pressable>
-          </View>
+      {showCaptionRow ? (
+        <View style={[styles.row, styles.captionRemixRow]}>
+          {isRemix ? (
+            <View style={styles.parentAttrib}>
+              <CastleIcon name="remix" color="#888" size={12} style={styles.remixIcon} />
+              <Pressable onPress={navigateToParent}>
+                <Text numberOfLines={1} style={styles.parentUsername}>
+                  Remixed {deck.parentDeck?.creator?.username}
+                </Text>
+              </Pressable>
+            </View>
+          ) : null}
+          <DeckCaption deck={deck} style={styles.captionContainer} onPressTag={onPressTag} />
         </View>
       ) : null}
       <View style={[styles.row, { paddingHorizontal: 16 }]}>

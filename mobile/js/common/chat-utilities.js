@@ -102,3 +102,74 @@ export const flattenMessageBody = (body) => {
   }
   return '';
 };
+
+const isValidTagCharacter = (c) => {
+  return /[\w\-]/.test(c);
+};
+
+const isTerminalTagCharacter = (c) => {
+  return /[\s.,?!:;~()\*]/.test(c);
+};
+
+const isInitialTagIndex = (message, index) => {
+  return (
+    // must start with #
+    message.charAt(index) === '#' &&
+    // must be preceded by a tag terminal
+    (index == 0 || isTerminalTagCharacter(message.charAt(index - 1)))
+  );
+};
+
+// format a deck caption like "this is a #caption" into
+// [ { text: 'this is a ' }, { tag: 'caption' } ]
+export const formatCaption = (caption) => {
+  let items = [];
+  let start = 0;
+  let i = 0;
+
+  while (i < caption.length) {
+    if (isInitialTagIndex(caption, i)) {
+      // Try converting all #... words into { tag: 'blah' } items
+
+      // find the end index of the tag
+      let j;
+      for (j = i + 1; j < caption.length; j++) {
+        let c = caption.charAt(j);
+        if (isTerminalTagCharacter(c)) {
+          break;
+        }
+        if (!isValidTagCharacter(c)) {
+          i = j + 1;
+          break;
+        }
+      }
+
+      if (i < j && (j >= caption.length || isTerminalTagCharacter(caption.charAt(j)))) {
+        let tag = caption.substr(i + 1, j - i - 1);
+
+        if (i > start) {
+          items.push({
+            text: caption.substr(start, i - start),
+          });
+        }
+
+        items.push({
+          tag,
+        });
+
+        i = j;
+        start = i;
+        continue;
+      }
+
+      i = j + 1;
+    } else {
+      i++;
+    }
+  }
+
+  if (i > start) {
+    items.push({ text: caption.substr(start, i - start) });
+  }
+  return items;
+};
