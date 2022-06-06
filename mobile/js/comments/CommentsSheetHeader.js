@@ -162,10 +162,10 @@ export const CommentsSheetHeader = ({ deck = {}, isOpen, onClose }) => {
   }, [deck?.parentDeckId, navigate]);
 
   const onPressTag = React.useCallback(
-    (tag) => {
-      // TODO: push tag screen with tag
-      console.log(`pressed tag: ${tag}`);
-    },
+    (tag) =>
+      push('TagFeed', {
+        tag,
+      }),
     [push]
   );
 

@@ -20,6 +20,7 @@ import { NotificationsScreen } from './notifications/NotificationsScreen';
 import { PlayDeckScreen } from './play/PlayDeckScreen';
 import { ProfileScreen } from './profile/ProfileScreen';
 import { ShareDeckScreen } from './share/ShareDeckScreen';
+import { TagFeed } from './explore/TagFeed';
 import { UserListScreen } from './components/UserListScreen';
 import { ViewSourceNavigator } from './create/ViewSourceNavigator';
 import { DeckRemixesScreen } from './play/DeckRemixesScreen';
@@ -60,6 +61,7 @@ const BrowseNavigator = () => (
     <Stack.Screen name="HomeScreen" component={HomeScreen} />
     <Stack.Screen name="PlayDeck" component={PlayDeckScreen} options={engineNavigationOptions} />
     <Stack.Screen name="Profile" component={ProfileScreen} />
+    <Stack.Screen name="TagFeed" component={TagFeed} />
     <Stack.Screen
       name="ViewSource"
       component={ViewSourceNavigator}
@@ -77,6 +79,7 @@ const ExploreNavigator = () => (
     }}>
     <Stack.Screen name="Explore" component={ExploreScreen} />
     <Stack.Screen name="ExploreFeed" component={ExploreFeed} />
+    <Stack.Screen name="TagFeed" component={TagFeed} />
     <Stack.Screen name="PlayDeck" component={PlayDeckScreen} options={engineNavigationOptions} />
     <Stack.Screen name="Profile" component={ProfileScreen} />
     <Stack.Screen name="Feedback" component={FeedbackScreen} />
@@ -119,6 +122,7 @@ const NotificationsNavigator = () => (
     />
     <Stack.Screen name="UserList" component={UserListScreen} />
     <Stack.Screen name="Profile" component={ProfileScreen} />
+    <Stack.Screen name="TagFeed" component={TagFeed} />
     <Stack.Screen name="PlayDeck" component={PlayDeckScreen} options={engineNavigationOptions} />
     <Stack.Screen
       name="ViewSource"
@@ -136,6 +140,7 @@ const ProfileNavigator = () => (
       headerShown: false,
     }}>
     <Stack.Screen name="Profile" component={ProfileScreen} />
+    <Stack.Screen name="TagFeed" component={TagFeed} />
     <Stack.Screen name="PlayDeck" component={PlayDeckScreen} options={engineNavigationOptions} />
     <Stack.Screen
       name="ViewSource"
