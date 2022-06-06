@@ -34,6 +34,7 @@ public:
   graphics::Canvas *pathsCanvas = NULL;
   std::optional<std::string> fillPng;
   std::optional<std::string> base64Png;
+  inline static double nextRenderTime = 0;
   double lastRenderTime = 0;
 
   DrawDataFrame() = default;
