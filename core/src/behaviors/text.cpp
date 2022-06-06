@@ -609,7 +609,7 @@ std::string TextBehavior::formatContent(ActorId actorId, const std::string &cont
 
 void TextBehavior::asciifyContent(std::string &content) {
   // NOTE: Allowed characters are listed in this string literal, between the "s
-  std::string allowed = u8"…“”";
+  std::string allowed = u8"…“”„‘’‚«»–—•¡¿";
 
   utf8::iterator<std::string::const_iterator> allowedBegin(
       allowed.begin(), allowed.begin(), allowed.end());
