@@ -338,7 +338,8 @@ let coreViews = {
         fontFamily: 'BaltoBook',
         textAlignVertical: 'top',
         // backgroundColor: '#f00',
-        // touch: 'enabled',
+        touch: 'enabled',
+        onTap: onPressComments,
       },
 
       {
