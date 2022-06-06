@@ -442,7 +442,7 @@ ToveGraphicsHolder *DrawDataFrame::graphics() {
 
 void DrawDataFrame::render() {
   // TODO: Cache the current time and use that instead of calling `getTime` every render
-  lastRenderTime = Module::getInstance<love::timer::Timer>(Module::M_TIMER)->getTime();
+  lastRenderTime = nextRenderTime;
   renderFill();
   graphics()->draw();
 }

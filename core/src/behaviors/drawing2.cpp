@@ -190,6 +190,8 @@ void Drawing2Behavior::cleanupRenderData() {
     }
   }
   Debug::display("{} frames currently loaded", numFramesLoaded);
+
+  love::DrawDataFrame::nextRenderTime = time;
 }
 
 void Drawing2Behavior::cleanupDrawDataCache() {
