@@ -3,13 +3,15 @@ import { AppText as Text } from './AppText';
 import { Pressable, StyleSheet } from 'react-native';
 import { formatCaption } from '../common/chat-utilities';
 
+import * as Constants from '../Constants';
+
 const styles = StyleSheet.create({
   caption: {
     fontSize: 16,
   },
   tag: {
     fontSize: 16,
-    textDecorationLine: 'underline',
+    color: Constants.colors.grayOnWhiteText,
   },
 });
 

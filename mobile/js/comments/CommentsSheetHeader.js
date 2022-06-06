@@ -27,15 +27,18 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
-  captionRemixRow: {
+  remixRow: {
     paddingHorizontal: 16,
     marginTop: 8,
     justifyContent: 'flex-start',
     alignItems: 'flex-start',
   },
+  captionRow: {
+    marginTop: 8,
+    paddingHorizontal: 16,
+  },
   captionContainer: {
     marginTop: 4,
-    marginLeft: 8,
   },
   headerLeft: {
     flexDirection: 'row',
@@ -172,7 +175,6 @@ export const CommentsSheetHeader = ({ deck = {}, isOpen, onClose }) => {
   const { creator } = deck;
 
   const isRemix = deck.parentDeckId && deck.parentDeck;
-  const showCaptionRow = isRemix || deck.caption?.length;
 
   return (
     <View style={styles.header}>
@@ -213,19 +215,21 @@ export const CommentsSheetHeader = ({ deck = {}, isOpen, onClose }) => {
           </TouchableOpacity>
         </View>
       </View>
-      {showCaptionRow ? (
-        <View style={[styles.row, styles.captionRemixRow]}>
-          {isRemix ? (
-            <View style={styles.parentAttrib}>
-              <CastleIcon name="remix" color="#888" size={12} style={styles.remixIcon} />
-              <Pressable onPress={navigateToParent}>
-                <Text numberOfLines={1} style={styles.parentUsername}>
-                  Remixed {deck.parentDeck?.creator?.username}
-                </Text>
-              </Pressable>
-            </View>
-          ) : null}
+      {deck.caption?.length ? (
+        <View style={[styles.row, styles.captionRow]}>
           <DeckCaption deck={deck} style={styles.captionContainer} onPressTag={onPressTag} />
+        </View>
+      ) : null}
+      {isRemix ? (
+        <View style={[styles.row, styles.remixRow]}>
+          <View style={styles.parentAttrib}>
+            <CastleIcon name="remix" color="#888" size={12} style={styles.remixIcon} />
+            <Pressable onPress={navigateToParent}>
+              <Text numberOfLines={1} style={styles.parentUsername}>
+                Remixed {deck.parentDeck?.creator?.username}
+              </Text>
+            </Pressable>
+          </View>
         </View>
       ) : null}
       <View style={[styles.row, { paddingHorizontal: 16 }]}>
