@@ -317,12 +317,19 @@ const ShareDeckScreenAuthenticated = ({ route }) => {
   }, [onSaveDeck, setRemixInterstitialVisible]);
 
   const onChangeCaption = React.useCallback(
-    (caption) =>
+    (caption) => {
+      if (caption) {
+        let splitByNewline = caption.split(/\r?\n/);
+        let numLines = splitByNewline.length;
+        splitByNewline = splitByNewline.filter((line, ii) => line.length > 0 || ii == numLines - 1);
+        caption = splitByNewline.join('\n');
+      }
       setUpdatedDeck({
         ...updatedDeck,
         caption,
         isChanged: true,
-      }),
+      });
+    },
     [updatedDeck, setUpdatedDeck]
   );
 
