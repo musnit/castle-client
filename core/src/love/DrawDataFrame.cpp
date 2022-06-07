@@ -21,7 +21,7 @@ namespace love {
 void DrawDataFrame::deserializeFill() {
   if (fillPng && fillPng->length() > 0) {
     std::printf("loading %p\n", (void *)this);
-    
+
     // data::ContainerType ctype = data::CONTAINER_STRING;
     data::EncodeFormat format = data::ENCODE_BASE64;
 
@@ -34,6 +34,9 @@ void DrawDataFrame::deserializeFill() {
 
     image::Image *imageModule = Module::getInstance<image::Image>(Module::M_IMAGE);
     fillImageData = imageModule->newImageData(byteData);
+    if (fillImageData == nullptr) {
+      // TODO: send diagnostics
+    }
 
     byteData->release(); // this also deletes fileDataString
   }
@@ -306,10 +309,14 @@ bool DrawDataFrame::floodClear(float x, float y, float radius) {
   int pixelCount = 0;
 
   if (parentLayer()->isBitmap) {
-    pixelCount
-        = fillImageData->floodFillErase(floor((x * fillPixelsPerUnit) - fillImageBounds.minX),
-            floor((y * fillPixelsPerUnit) - fillImageBounds.minY),
-            floor(radius * fillPixelsPerUnit), nullptr);
+    if (fillImageData) {
+      pixelCount
+          = fillImageData->floodFillErase(floor((x * fillPixelsPerUnit) - fillImageBounds.minX),
+              floor((y * fillPixelsPerUnit) - fillImageBounds.minY),
+              floor(radius * fillPixelsPerUnit), nullptr);
+    } else {
+      // TODO: send diagnostics about fillImageData being null here
+    }
   } else {
     updatePathsCanvas();
     auto pathsImageData = canvasToImageData(pathsCanvas);
