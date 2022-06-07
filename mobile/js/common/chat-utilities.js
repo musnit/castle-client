@@ -16,6 +16,9 @@ const isInitialMentionIndex = (message, index) => {
 };
 
 export const formatMessage = (message, cache) => {
+  if (!message) {
+    return '';
+  }
   let items = [];
   let start = 0;
   let i = 0;
