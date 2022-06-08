@@ -12,6 +12,7 @@
 #include "data/DataModule.h"
 #include "filesystem/Filesystem.h"
 #include "timer/Timer.h"
+#include "engine.h"
 
 #define DEBUG_FILL_IMAGE_SIZE false
 #define DEBUG_UPDATE_FLOOD_FILL 0
@@ -35,7 +36,9 @@ void DrawDataFrame::deserializeFill() {
     image::Image *imageModule = Module::getInstance<image::Image>(Module::M_IMAGE);
     fillImageData = imageModule->newImageData(byteData);
     if (fillImageData == nullptr) {
-      // TODO: send diagnostics
+      Bridge::SentryBreadcrumb breadcrumb;
+      breadcrumb.category = "draw_deserialize_fill_null_image_data";
+      Engine::getEngine().getBridge().addSentryBreadcrumb(breadcrumb);
     }
 
     byteData->release(); // this also deletes fileDataString
@@ -315,7 +318,9 @@ bool DrawDataFrame::floodClear(float x, float y, float radius) {
               floor((y * fillPixelsPerUnit) - fillImageBounds.minY),
               floor(radius * fillPixelsPerUnit), nullptr);
     } else {
-      // TODO: send diagnostics about fillImageData being null here
+      Bridge::SentryBreadcrumb breadcrumb;
+      breadcrumb.category = "draw_flood_clear_null_image_data";
+      Engine::getEngine().getBridge().addSentryBreadcrumb(breadcrumb);
     }
   } else {
     updatePathsCanvas();
