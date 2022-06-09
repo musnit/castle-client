@@ -92,10 +92,10 @@ export const AuthPrompt = ({ title, message, referringScreen, hideLogin }) => {
   const onPressCreateAccount = React.useCallback(() => {
     if (Constants.iOS || !ANDROID_USE_NATIVE_NAVIGATION) {
       // use native modal on iOS
-      navigate('AuthNavigator', { screen: 'CreateAccountScreen', params: { referringScreen } });
+      navigate('AuthNavigator', { screen: 'ChooseBirthdayScreen', params: { referringScreen } });
     } else {
       // use separate root navigator on Android
-      navigate('CreateAccountScreen', { referringScreen }, { isFullscreen: true });
+      navigate('ChooseBirthdayScreen', { referringScreen }, { isFullscreen: true });
     }
   }, [navigate]);
 
