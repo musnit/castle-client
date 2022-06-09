@@ -7,6 +7,7 @@ import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { useSession, maybeFetchNotificationsAsync, setNotifBadge } from './Session';
 
 import { InitialAuthScreen } from './auth/InitialAuthScreen';
+import { ChooseBirthdayScreen } from './auth/ChooseBirthdayScreen';
 import { CreateAccountScreen } from './auth/CreateAccountScreen';
 import { CreateScreen } from './create/CreateScreen';
 import { CreateChooseKitScreen } from './create/CreateChooseKitScreen';
@@ -386,6 +387,11 @@ const AuthNavigator = () => (
       name="LoginScreen"
       component={LoginScreen}
       options={{ title: 'Log in to Castle' }}
+    />
+    <Stack.Screen
+      name="ChooseBirthdayScreen"
+      component={ChooseBirthdayScreen}
+      options={{ title: 'Choose birthday' }}
     />
     <Stack.Screen
       name="CreateAccountScreen"
