@@ -952,10 +952,14 @@ void DrawTool::dirtySelectedFrameBounds() {
 }
 
 bool DrawTool::resizeSelectedBitmapLayer(float delta) {
+  // always unlink before resize
+  drawData->setCellLinked(selectedLayerId, selectedFrameIndex, false);
+
   if (auto layer = drawData->layerForId(selectedLayerId); layer && layer->isBitmap) {
     auto &selectedFrame = getDrawDataFrame();
     auto maxImageSize = DRAW_MAX_SIZE * 2.0f * drawData->fillPixelsPerUnit;
 
+    selectedFrame.getFillImage(); // ensure deserialized
     int initialWidth = selectedFrame.fillImageData->getWidth(),
         initialHeight = selectedFrame.fillImageData->getHeight();
     float absoluteScale = std::max(float(initialWidth), float(initialHeight)) / maxImageSize;
