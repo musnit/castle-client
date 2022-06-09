@@ -43,16 +43,16 @@
   "script_phases": {
     "name": "Generate Specs",
     "input_files": [
-      "${PODS_TARGET_SRCROOT}/../../Libraries"
+      "/Users/ben/Documents/code/castle/ghost/mobile/node_modules/react-native/scripts/../Libraries"
     ],
     "output_files": [
-      "${DERIVED_FILE_DIR}/codegen-FBReactNativeSpec.log",
-      "${PODS_TARGET_SRCROOT}/../../React/FBReactNativeSpec/FBReactNativeSpec/FBReactNativeSpec.h",
-      "${PODS_TARGET_SRCROOT}/../../React/FBReactNativeSpec/FBReactNativeSpec/FBReactNativeSpec-generated.mm"
+      "$(DERIVED_FILE_DIR)/codegen-FBReactNativeSpec.log",
+      "/Users/ben/Documents/code/castle/ghost/mobile/node_modules/react-native/scripts/../React/FBReactNativeSpec/FBReactNativeSpec/FBReactNativeSpec.h",
+      "/Users/ben/Documents/code/castle/ghost/mobile/node_modules/react-native/scripts/../React/FBReactNativeSpec/FBReactNativeSpec/FBReactNativeSpec-generated.mm"
     ],
-    "script": "set -o pipefail\n\nbash -l -c 'SRCS_DIR=${PODS_TARGET_SRCROOT}/../../Libraries MODULES_OUTPUT_DIR=${PODS_TARGET_SRCROOT}/../../React/FBReactNativeSpec/FBReactNativeSpec MODULES_LIBRARY_NAME=FBReactNativeSpec ${PODS_TARGET_SRCROOT}/../../scripts/generate-specs.sh' 2>&1 | tee \"${SCRIPT_OUTPUT_FILE_0}\"",
+    "script": "set -o pipefail\n\nbash -l -c 'SRCS_DIR=/Users/ben/Documents/code/castle/ghost/mobile/node_modules/react-native/scripts/../Libraries CODEGEN_MODULES_OUTPUT_DIR=/Users/ben/Documents/code/castle/ghost/mobile/node_modules/react-native/scripts/../React/FBReactNativeSpec/FBReactNativeSpec CODEGEN_MODULES_LIBRARY_NAME=FBReactNativeSpec /Users/ben/Documents/code/castle/ghost/mobile/node_modules/react-native/scripts/generate-specs.sh' 2>&1 | tee \"${SCRIPT_OUTPUT_FILE_0}\"",
     "execution_position": "before_compile",
     "show_env_vars_in_log": true
   },
-  "prepare_command": "mkdir -p  ../../React/FBReactNativeSpec/FBReactNativeSpec && touch  ../../React/FBReactNativeSpec/FBReactNativeSpec/FBReactNativeSpec.h ../../React/FBReactNativeSpec/FBReactNativeSpec/FBReactNativeSpec-generated.mm"
+  "prepare_command": "mkdir -p /Users/ben/Documents/code/castle/ghost/mobile/node_modules/react-native/scripts/../React/FBReactNativeSpec/FBReactNativeSpec && touch /Users/ben/Documents/code/castle/ghost/mobile/node_modules/react-native/scripts/../React/FBReactNativeSpec/FBReactNativeSpec/FBReactNativeSpec.h /Users/ben/Documents/code/castle/ghost/mobile/node_modules/react-native/scripts/../React/FBReactNativeSpec/FBReactNativeSpec/FBReactNativeSpec-generated.mm"
 }
