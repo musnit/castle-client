@@ -79,6 +79,19 @@ Engine::PreInit::PreInit() {
   SDL_EventState(SDL_KEYDOWN, SDL_DISABLE);
   SDL_EventState(SDL_KEYUP, SDL_DISABLE);
 #endif
+
+  // Watch for SDL events that we want to intercept as early as possible. The handler will be called
+  // before Love gets to the event.
+  SDL_AddEventWatch(
+      [](void *, SDL_Event *event) {
+        switch (event->type) {
+        case SDL_APP_LOWMEMORY:
+          Engine::getEngine().lowMemory();
+          break;
+        }
+        return 1;
+      },
+      nullptr);
 }
 
 

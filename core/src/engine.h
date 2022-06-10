@@ -66,6 +66,7 @@ public:
   void resumeScreen();
   LibraryClipboard &getLibraryClipboard();
   Screenshot *getScreenshot();
+  void lowMemory();
 
   inline static bool useTestScreenSize = false;
 
@@ -163,6 +164,12 @@ inline void Engine::suspendScreen() {
 inline void Engine::resumeScreen() {
   if (screens.find(activeScreenId) != screens.end()) {
     screens[activeScreenId]->resume();
+  }
+}
+
+inline void Engine::lowMemory() {
+  if (screens.find(activeScreenId) != screens.end()) {
+    screens[activeScreenId]->lowMemory();
   }
 }
 

@@ -591,18 +591,28 @@ void Feed::update3(double dt, bool wasLongFrame) {
       fetchMoreDecks();
     }
 
-    loadDeckAtIndex(idx - 1);
+    auto isLowMemory
+        = gotLowMemoryWarning && lv.timer.getTime() - lastLowMemoryWarningTime < 2 * 60;
+    if (!isLowMemory) {
+      loadDeckAtIndex(idx - 1);
+    }
     loadDeckAtIndex(idx);
-    loadDeckAtIndex(idx + 1);
-    loadDeckAtIndex(idx + 2);
+    if (!isLowMemory) {
+      loadDeckAtIndex(idx + 1);
+      loadDeckAtIndex(idx + 2);
+    }
 
     // load more avatars since you can see the previous/next ones when viewing a deck
-    loadAvatarAtIndex(idx - 2);
-    loadAvatarAtIndex(idx - 1);
+    if (!isLowMemory) {
+      loadAvatarAtIndex(idx - 2);
+      loadAvatarAtIndex(idx - 1);
+    }
     loadAvatarAtIndex(idx);
-    loadAvatarAtIndex(idx + 1);
-    loadAvatarAtIndex(idx + 2);
-    loadAvatarAtIndex(idx + 3);
+    if (!isLowMemory) {
+      loadAvatarAtIndex(idx + 1);
+      loadAvatarAtIndex(idx + 2);
+      loadAvatarAtIndex(idx + 3);
+    }
   }
 }
 
@@ -1153,8 +1163,21 @@ void Feed::clearFeed(bool isViewSource) {
   for (int i = 0; i < int(decks.size()); ++i) {
     if (!(isViewSource && i == idx)) {
       unloadDeckAtIndex(i, true);
+      unloadAvatarAtIndex(i);
     }
   }
+}
+
+void Feed::lowMemory() {
+  auto idx = getCurrentIndex();
+  for (int i = 0; i < int(decks.size()); ++i) {
+    if (i != idx) {
+      unloadDeckAtIndex(i, true);
+      unloadAvatarAtIndex(i);
+    }
+  }
+  gotLowMemoryWarning = true;
+  lastLowMemoryWarningTime = lv.timer.getTime();
 }
 
 void Feed::setDeepLinkDeckId(std::string deckId) {

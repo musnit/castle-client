@@ -392,7 +392,14 @@ void Scene::updateGesture() {
   gesture.update();
 }
 
+extern "C" int SDL_SendAppEvent(SDL_EventType eventType);
+
 void Scene::update(double dt) {
+  // NOTE: Uncomment to try issuing a memory warning on touch in scene
+  //gesture.withSingleTouch([&](const Touch &touch) {
+  //  SDL_SendAppEvent(SDL_APP_LOWMEMORY);
+  //});
+
   // Update time
   dt = std::min(dt, 0.1); // Clamp `dt` to avoid huge steps
   performTime += dt; // For now we're always performing

@@ -20,6 +20,8 @@ public:
   virtual void clearState() = 0;
   virtual void clearFeed(bool isViewSource) {
   }
+  virtual void lowMemory() {
+  }
   virtual bool hasScene() = 0;
   virtual Scene &getScene() = 0;
 

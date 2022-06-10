@@ -76,6 +76,7 @@ public:
   void resume();
   void clearState();
   void clearFeed(bool isViewSource);
+  void lowMemory();
   void fetchInitialDecks(std::vector<std::string> deckIds, int initialDeckIndex = 0,
       std::optional<std::string> paginateFeedId = std::nullopt, bool isNuxCompleted = false,
       bool isNativeFeedNuxCompleted = false);
@@ -181,6 +182,9 @@ private:
   int feedId;
   inline static std::map<int, bool> isFeedAlive;
   inline static int currentFeedId = 0;
+
+  bool gotLowMemoryWarning = false;
+  double lastLowMemoryWarningTime = 0;
 };
 
 inline ScreenType Feed::screenType() {
