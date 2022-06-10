@@ -58,9 +58,6 @@ public:
   }
 
   void releaseRenderData() {
-    if (_graphics || fillImageData || fillImage) {
-      std::printf("releasing %p\n", (void *)this);
-    }
     if (_graphics) {
       delete _graphics;
       _graphics = nullptr;

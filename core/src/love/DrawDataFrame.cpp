@@ -21,8 +21,6 @@ namespace love {
 
 void DrawDataFrame::deserializeFill() {
   if (fillPng && fillPng->length() > 0) {
-    std::printf("loading %p\n", (void *)this);
-
     // data::ContainerType ctype = data::CONTAINER_STRING;
     data::EncodeFormat format = data::ENCODE_BASE64;
 
