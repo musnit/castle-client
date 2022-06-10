@@ -365,14 +365,15 @@ export class Provider extends React.Component {
   signInAsAnonymousUserAsync = async () => {
     const response = await apolloClient.mutate({
       mutation: gql`
-        mutation {
-          createAnonymousUser {
+        mutation ($coppaSupport: Boolean) {
+          createAnonymousUser(coppaSupport: $coppaSupport) {
             userId
             token
             isAnonymous
           }
         }
       `,
+      variables: { coppaSupport: Constants.ENABLE_COPPA_SUPPORT },
     });
 
     if (

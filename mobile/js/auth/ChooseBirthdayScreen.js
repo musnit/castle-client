@@ -49,7 +49,12 @@ export const ChooseBirthdayScreen = ({ route }) => {
       await setLoading(false);
 
       // TODO: maybe enter u13 flow here
-      navigate('CreateAccountScreen');
+      const coppaStatus = `under_13_pending_parent_information`; // `over_13`
+      if (coppaStatus === 'over_13') {
+        navigate('CreateAccountScreen');
+      } else {
+        navigate('RequestParentConsentScreen');
+      }
     } catch (e) {
       setLoading(false);
       setErrors(parseErrors(e));

@@ -6,20 +6,15 @@ import BootSplash from 'react-native-bootsplash';
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { useSession, maybeFetchNotificationsAsync, setNotifBadge } from './Session';
 
-import { InitialAuthScreen } from './auth/InitialAuthScreen';
-import { ChooseBirthdayScreen } from './auth/ChooseBirthdayScreen';
-import { CreateAccountScreen } from './auth/CreateAccountScreen';
 import { CreateScreen } from './create/CreateScreen';
 import { CreateChooseKitScreen } from './create/CreateChooseKitScreen';
 import { CreateDeckNavigator } from './create/CreateDeckNavigator';
-import { ForgotPasswordScreen } from './auth/ForgotPasswordScreen';
 import { useAppState } from './ghost/GhostAppState';
 import { HomeScreen } from './home/HomeScreen';
 import { ExploreScreen } from './explore/ExploreScreen';
 import { ExploreFeed } from './explore/ExploreFeed';
 import { FeedbackScreen } from './feedback/FeedbackScreen';
 import { NotificationsScreen } from './notifications/NotificationsScreen';
-import { LoginScreen } from './auth/LoginScreen';
 import { PlayDeckScreen } from './play/PlayDeckScreen';
 import { ProfileScreen } from './profile/ProfileScreen';
 import { ShareDeckScreen } from './share/ShareDeckScreen';
@@ -27,6 +22,13 @@ import { TagFeed } from './explore/TagFeed';
 import { UserListScreen } from './components/UserListScreen';
 import { ViewSourceNavigator } from './create/ViewSourceNavigator';
 import { DeckRemixesScreen } from './play/DeckRemixesScreen';
+
+import { ChooseBirthdayScreen } from './auth/ChooseBirthdayScreen';
+import { CreateAccountScreen } from './auth/CreateAccountScreen';
+import { ForgotPasswordScreen } from './auth/ForgotPasswordScreen';
+import { InitialAuthScreen } from './auth/InitialAuthScreen';
+import { LoginScreen } from './auth/LoginScreen';
+import { RequestParentConsentScreen } from './auth/RequestParentConsentScreen';
 
 import createTopTabNavigator from './navigator/createTopTabNavigator';
 
@@ -392,6 +394,11 @@ const AuthNavigator = () => (
       name="ChooseBirthdayScreen"
       component={ChooseBirthdayScreen}
       options={{ title: 'Choose birthday' }}
+    />
+    <Stack.Screen
+      name="RequestParentConsentScreen"
+      component={RequestParentConsentScreen}
+      options={{ title: `Add your name and parent's email` }}
     />
     <Stack.Screen
       name="CreateAccountScreen"

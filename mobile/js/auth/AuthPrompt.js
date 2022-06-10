@@ -90,12 +90,15 @@ export const AuthPrompt = ({ title, message, referringScreen, hideLogin }) => {
   }, [navigate]);
 
   const onPressCreateAccount = React.useCallback(() => {
+    const nextAuthScreen = Constants.ENABLE_COPPA_SUPPORT
+      ? 'ChooseBirthdayScreen'
+      : 'CreateAccountScreen';
     if (Constants.iOS || !ANDROID_USE_NATIVE_NAVIGATION) {
       // use native modal on iOS
-      navigate('AuthNavigator', { screen: 'ChooseBirthdayScreen', params: { referringScreen } });
+      navigate('AuthNavigator', { screen: nextAuthScreen, params: { referringScreen } });
     } else {
       // use separate root navigator on Android
-      navigate('ChooseBirthdayScreen', { referringScreen }, { isFullscreen: true });
+      navigate(nextAuthScreen, { referringScreen }, { isFullscreen: true });
     }
   }, [navigate]);
 

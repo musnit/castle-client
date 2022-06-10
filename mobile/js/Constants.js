@@ -16,6 +16,8 @@ export const TABLET_MAX_FORM_WIDTH = 512;
 export const DISCORD_INVITE_LINK = 'https://discord.gg/rQETB4H';
 export const DOCS_LINK = 'https://castle.xyz/docs';
 
+export const ENABLE_COPPA_SUPPORT = false;
+
 export const colors = {
   black: '#000',
   tapHighlight: '#111',
