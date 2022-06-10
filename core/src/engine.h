@@ -168,8 +168,16 @@ inline void Engine::resumeScreen() {
 }
 
 inline void Engine::lowMemory() {
+  // Send active screen a low memory warning, and erase non-active screens
   if (screens.find(activeScreenId) != screens.end()) {
     screens[activeScreenId]->lowMemory();
+  }
+  for (auto it = screens.begin(); it != screens.end();) {
+    if (it->first != activeScreenId) {
+      it = screens.erase(it);
+    } else {
+      ++it;
+    }
   }
 }
 
