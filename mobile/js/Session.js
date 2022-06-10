@@ -23,6 +23,8 @@ const SKIP_NUX = false;
 let gAuthToken,
   gUserId,
   gIsAnonymous = false,
+  gCoppaStatus = 'new_user',
+  gIsUnder13 = false,
   gIsNuxCompleted = false,
   gIsNativeFeedNuxCompleted = false,
   gIsMuted = false;
@@ -98,6 +100,10 @@ export async function loadAuthTokenAsync() {
     gIsAnonymous = isAnonStorageValue === 'true' || isAnonStorageValue === true;
     const isMutedStorageValue = await CastleAsyncStorage.getItem('IS_MUTED');
     gIsMuted = isMutedStorageValue === 'true' || isMutedStorageValue === true;
+    const coppaStatusStorageValue = await CastleAsyncStorage.getItem('COPPA_STATUS');
+    gCoppaStatus = coppaStatusStorageValue || 'new_user';
+    const under13StorageValue = await CastleAsyncStorage.getItem('IS_UNDER_13');
+    gIsUnder13 = under13StorageValue === 'true' || under13StorageValue === true;
     Analytics.setUserId(gUserId);
     AdjustEvents.setUserId(gUserId);
     Sentry.setUser({
@@ -115,6 +121,8 @@ export class Provider extends React.Component {
       isSignedIn: false,
       userId: null,
       isAnonymous: false,
+      coppaStatus: 'new_user',
+      isUnder13: false,
       isMuted: false,
       initialized: false,
       signInAsync: this.signInAsync,
@@ -126,6 +134,7 @@ export class Provider extends React.Component {
       setIsNuxCompleted: this.setIsNuxCompleted,
       setIsNativeFeedNuxCompleted: this.setIsNativeFeedNuxCompleted,
       setIsMuted: this.setIsMuted,
+      setCoppaStatus: this.setCoppaStatus,
       ...gNotificationState,
     };
   }
@@ -140,6 +149,8 @@ export class Provider extends React.Component {
           authToken: gAuthToken,
           isSignedIn: !!gAuthToken,
           isAnonymous: gIsAnonymous,
+          coppaStatus: gCoppaStatus,
+          isUnder13: gIsUnder13,
           isNuxCompleted: gIsNuxCompleted,
           isNativeFeedNuxCompleted: gIsNativeFeedNuxCompleted,
           isMuted: gIsMuted,
@@ -197,13 +208,36 @@ export class Provider extends React.Component {
     return this.setState({ isMuted: gIsMuted });
   };
 
-  useNewAuthTokenAsync = async ({ userId, token, isAnonymous, isAdmin }) => {
+  setCoppaStatus = async ({ userId, coppaStatus, isUnder13 }) => {
+    if (userId === gUserId && coppaStatus) {
+      gCoppaStatus = coppaStatus;
+      gIsUnder13 = !!isUnder13;
+      await CastleAsyncStorage.setItem('COPPA_STATUS', gCoppaStatus);
+      await CastleAsyncStorage.setItem('IS_UNDER_13', gIsUnder13.toString());
+      console.log(`new coppa status: ${coppaStatus}, is under 13: ${isUnder13}`);
+      return this.setState({
+        coppaStatus: gCoppaStatus,
+        isUnder13: gIsUnder13,
+      });
+    }
+  };
+
+  useNewAuthTokenAsync = async ({
+    userId,
+    token,
+    isAnonymous,
+    coppaStatus,
+    isUnder13,
+    isAdmin,
+  }) => {
     if (!TEST_AUTH_TOKEN) {
       apolloClient.cache.reset(); // https://github.com/apollographql/apollo-client/issues/3766
       apolloClient.resetStore();
       gAuthToken = token;
       gUserId = userId;
       gIsAnonymous = !!isAnonymous;
+      gCoppaStatus = coppaStatus || 'new_user';
+      gIsUnder13 = !!isUnder13;
       notifLastFetchTime = null; // want to reload notifs for new user
 
       // don't reset nux state here (logging in/out doesn't affect this)
@@ -212,6 +246,8 @@ export class Provider extends React.Component {
         await CastleAsyncStorage.setItem('AUTH_TOKEN', token);
         await CastleAsyncStorage.setItem('USER_ID', userId);
         await CastleAsyncStorage.setItem('USER_IS_ANONYMOUS', gIsAnonymous.toString());
+        await CastleAsyncStorage.setItem('COPPA_STATUS', gCoppaStatus);
+        await CastleAsyncStorage.setItem('IS_UNDER_13', gIsUnder13.toString());
 
         Analytics.setUserId(gUserId);
         AdjustEvents.setUserId(gUserId);
@@ -226,6 +262,8 @@ export class Provider extends React.Component {
         await CastleAsyncStorage.removeItem('AUTH_TOKEN');
         await CastleAsyncStorage.removeItem('USER_ID');
         await CastleAsyncStorage.removeItem('USER_IS_ANONYMOUS');
+        await CastleAsyncStorage.removeItem('COPPA_STATUS');
+        await CastleAsyncStorage.removeItem('IS_UNDER_13');
         await PushNotifications.clearTokenAsync();
         Analytics.setUserId(null);
         AdjustEvents.clearUserId();
@@ -240,6 +278,8 @@ export class Provider extends React.Component {
       isSignedIn: !!gAuthToken,
       userId: gUserId,
       isAnonymous: gIsAnonymous,
+      coppaStatus: gCoppaStatus,
+      isUnder13: gIsUnder13,
     });
   };
 
@@ -253,6 +293,8 @@ export class Provider extends React.Component {
             token
             isAnonymous
             isAdmin
+            coppaStatus
+            isUnder13
             photo {
               url
             }
@@ -298,6 +340,8 @@ export class Provider extends React.Component {
               userId
               token
               isAnonymous
+              coppaStatus
+              isUnder13
               photo {
                 url
               }
@@ -370,6 +414,8 @@ export class Provider extends React.Component {
             userId
             token
             isAnonymous
+            isUnder13
+            coppaStatus
           }
         }
       `,
