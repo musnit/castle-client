@@ -8,9 +8,11 @@ import { AuthTextInput } from './AuthTextInput';
 import { parseErrors, errorMessages } from './AuthErrors';
 import { resetPasswordFromEmailAsync } from '../Session';
 import { useNavigation } from '../ReactNavigation';
+import { useSession } from '../Session';
 
 import * as Analytics from '../common/Analytics';
 import * as Constants from '../Constants';
+import * as CoppaActions from './CoppaActions';
 
 import DatePicker from 'react-native-date-picker';
 
@@ -21,6 +23,7 @@ const styles = StyleSheet.create({
 
 export const ChooseBirthdayScreen = ({ route }) => {
   const { navigate } = useNavigation();
+  const { coppaStatus, setCoppaStatus } = useSession();
   let referringScreen;
   if (route && route.params) {
     referringScreen = route.params.referringScreen;
@@ -41,25 +44,28 @@ export const ChooseBirthdayScreen = ({ route }) => {
   const [loading, setLoading] = React.useState(false);
   const [errors, setErrors] = React.useState([]);
 
-  const onSubmit = async () => {
+  const onSubmit = React.useCallback(async () => {
     try {
       await setLoading(true);
       setErrors([]);
-      // TODO: set birthday gql mutation
+      const result = await CoppaActions.setBirthday(birthday);
+      await setCoppaStatus(result);
       await setLoading(false);
 
-      // TODO: maybe enter u13 flow here
-      const coppaStatus = `under_13_pending_parent_information`; // `over_13`
-      if (coppaStatus === 'over_13') {
-        navigate('CreateAccountScreen');
-      } else {
-        navigate('RequestParentConsentScreen');
-      }
+      navigate(CoppaActions.getNextCreateAccountScreen(result));
     } catch (e) {
       setLoading(false);
-      setErrors(parseErrors(e));
+      if (
+        e.message === 'Birthday already set' ||
+        (e.graphQLErrors && e.graphQLErrors[0].extensions?.code === 'BIRTHDAY_ALREADY_SET')
+      ) {
+        // birthday already set isn't a blocking error, just advance to next screen
+        navigate(CoppaActions.getNextCreateAccountScreen({ coppaStatus }));
+      } else {
+        setErrors(parseErrors(e));
+      }
     }
-  };
+  }, [birthday, setCoppaStatus, coppaStatus]);
 
   return (
     <AuthScreenLayout>
@@ -73,20 +79,10 @@ export const ChooseBirthdayScreen = ({ route }) => {
       <View style={styles.heading}>
         <Text style={styles.headingLabel}>When is your birthday?</Text>
       </View>
-      {/* <AuthTextInput
-        value={birthday}
-        onChangeText={(newBirthday) => setBirthday(newBirthday)}
-        placeholder="Birthday"
-        placeholderTextColor={Constants.colors.white}
-        editable={!loading}
-        autoFocus={true}
-        returnKeyType="go"
-        onSubmitEditing={onSubmit}
-        /> */}
       <View style={{ backgroundColor: 'white' }}>
         <DatePicker
           date={birthday}
-          onChangeDate={setBirthday}
+          onDateChange={setBirthday}
           mode="date"
           minimumDate={minBirthday.current}
           maximumDate={maxBirthday.current}

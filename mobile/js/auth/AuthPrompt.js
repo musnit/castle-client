@@ -1,8 +1,10 @@
 import React from 'react';
 import { Animated, Easing, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { AppText as Text } from '../components/AppText';
+import { getNextCreateAccountScreen } from './CoppaActions';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation, ANDROID_USE_NATIVE_NAVIGATION } from '../ReactNavigation';
+import { useSession } from '../Session';
 
 import FastImage from 'react-native-fast-image';
 
@@ -48,6 +50,7 @@ const styles = StyleSheet.create({
 
 export const AuthPrompt = ({ title, message, referringScreen, hideLogin }) => {
   const { navigate } = useNavigation();
+  const { coppaStatus } = useSession();
 
   React.useEffect(() => {
     Analytics.logEventSkipAmplitude('VIEW_AUTH_PROMPT', {
@@ -91,7 +94,7 @@ export const AuthPrompt = ({ title, message, referringScreen, hideLogin }) => {
 
   const onPressCreateAccount = React.useCallback(() => {
     const nextAuthScreen = Constants.ENABLE_COPPA_SUPPORT
-      ? 'ChooseBirthdayScreen'
+      ? getNextCreateAccountScreen({ coppaStatus })
       : 'CreateAccountScreen';
     if (Constants.iOS || !ANDROID_USE_NATIVE_NAVIGATION) {
       // use native modal on iOS
