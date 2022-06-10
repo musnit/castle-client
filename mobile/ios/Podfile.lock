@@ -499,7 +499,7 @@ SPEC CHECKSUMS:
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   DoubleConversion: cf9b38bf0b2d048436d9a82ad2abe1404f11e7de
   FBLazyVector: e686045572151edef46010a6f819ade377dfeb4b
-  FBReactNativeSpec: c9e70a3aaa0ffc1ec8a91be2962532bdfb2d6992
+  FBReactNativeSpec: 6baddc2c2b39d192b96965ec745b4d6628e62b2e
   glog: 73c2498ac6884b13ede40eda8228cb1eee9d9d62
   libwebp: 98a37e597e40bfdb4c911fc98f2c53d0b12d05fc
   Permission-Microphone: 7b75718196244a6e59dd60f82f12962562c2ea12
