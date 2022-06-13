@@ -133,6 +133,7 @@ export const ProfileSettingsSheet = ({ me = {}, isOpen, onClose }) => {
   }
 
   const insets = useSafeAreaInsets();
+  const { isUnder13 } = me;
   const [user, changeUser] = React.useReducer(
     (user, changes) => ({
       ...user,
@@ -227,17 +228,19 @@ export const ProfileSettingsSheet = ({ me = {}, isOpen, onClose }) => {
   const renderContent = () => (
     <View style={{ paddingBottom: TAB_BAR_HEIGHT + insets.bottom }}>
       <View style={[styles.section]}>
-        <View style={[styles.row, styles.avatarRow]}>
-          <View style={styles.avatar}>
-            <UserAvatar url={user.photo?.url} />
+        {!isUnder13 ? (
+          <View style={[styles.row, styles.avatarRow]}>
+            <View style={styles.avatar}>
+              <UserAvatar url={user.photo?.url} />
+            </View>
+            <TouchableOpacity
+              style={Constants.styles.buttonOnWhite}
+              onPress={chooseAvatar}
+              disabled={loading}>
+              <Text style={Constants.styles.buttonLabelOnWhite}>Edit avatar</Text>
+            </TouchableOpacity>
           </View>
-          <TouchableOpacity
-            style={Constants.styles.buttonOnWhite}
-            onPress={chooseAvatar}
-            disabled={loading}>
-            <Text style={Constants.styles.buttonLabelOnWhite}>Edit avatar</Text>
-          </TouchableOpacity>
-        </View>
+        ) : null}
         <View style={styles.row}>
           <Text style={Constants.styles.textInputLabelOnWhite}>Username</Text>
           <View style={Constants.styles.textInputWrapperOnWhite}>
@@ -252,79 +255,83 @@ export const ProfileSettingsSheet = ({ me = {}, isOpen, onClose }) => {
             />
           </View>
         </View>
-        <View style={styles.row}>
-          <Text style={Constants.styles.textInputLabelOnWhite}>Link</Text>
-          <View style={Constants.styles.textInputWrapperOnWhite}>
-            <TextInput
-              value={user.websiteUrl}
-              editable={!loading}
-              autoCapitalize="none"
-              autoCorrect={false}
-              onChangeText={(websiteUrl) => changeUser({ websiteUrl })}
-              style={Constants.styles.textInputOnWhite}
-              placeholder="http://geocities.com"
-              placeholderTextColor={Constants.colors.grayText}
-            />
-          </View>
-        </View>
-        <View style={styles.row}>
-          <Text style={Constants.styles.textInputLabelOnWhite}>Tiktok</Text>
-          <View style={Constants.styles.textInputWrapperOnWhite}>
-            <TextInput
-              value={user.tiktokUsername}
-              editable={!loading}
-              autoCapitalize="none"
-              autoCorrect={false}
-              onChangeText={(tiktokUsername) => changeUser({ tiktokUsername })}
-              style={Constants.styles.textInputOnWhite}
-              placeholder="Your Tiktok username"
-              placeholderTextColor={Constants.colors.grayText}
-            />
-          </View>
-        </View>
-        <View style={styles.row}>
-          <Text style={Constants.styles.textInputLabelOnWhite}>Twitter</Text>
-          <View style={Constants.styles.textInputWrapperOnWhite}>
-            <TextInput
-              value={user.twitterUsername}
-              editable={!loading}
-              autoCapitalize="none"
-              autoCorrect={false}
-              onChangeText={(twitterUsername) => changeUser({ twitterUsername })}
-              style={Constants.styles.textInputOnWhite}
-              placeholder="Your Twitter username"
-              placeholderTextColor={Constants.colors.grayText}
-            />
-          </View>
-        </View>
-        <View style={styles.row}>
-          <Text style={Constants.styles.textInputLabelOnWhite}>Itch</Text>
-          <View style={Constants.styles.textInputWrapperOnWhite}>
-            <TextInput
-              value={user.itchUsername}
-              editable={!loading}
-              autoCapitalize="none"
-              autoCorrect={false}
-              onChangeText={(itchUsername) => changeUser({ itchUsername })}
-              style={Constants.styles.textInputOnWhite}
-              placeholder="Your itch username"
-              placeholderTextColor={Constants.colors.grayText}
-            />
-          </View>
-        </View>
-        <View style={styles.row}>
-          <Text style={Constants.styles.textInputLabelOnWhite}>About me</Text>
-          <View style={Constants.styles.textInputWrapperOnWhite}>
-            <AutocompleteTextInput
-              updateCache={updateCache}
-              style={Constants.styles.textInputOnWhite}
-              placeholder="I like turtles"
-              placeholderTextColor={Constants.colors.grayText}
-              value={user.about}
-              onChangeText={(about) => changeUser({ about })}
-            />
-          </View>
-        </View>
+        {!isUnder13 ? (
+          <>
+            <View style={styles.row}>
+              <Text style={Constants.styles.textInputLabelOnWhite}>Link</Text>
+              <View style={Constants.styles.textInputWrapperOnWhite}>
+                <TextInput
+                  value={user.websiteUrl}
+                  editable={!loading}
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  onChangeText={(websiteUrl) => changeUser({ websiteUrl })}
+                  style={Constants.styles.textInputOnWhite}
+                  placeholder="http://geocities.com"
+                  placeholderTextColor={Constants.colors.grayText}
+                />
+              </View>
+            </View>
+            <View style={styles.row}>
+              <Text style={Constants.styles.textInputLabelOnWhite}>Tiktok</Text>
+              <View style={Constants.styles.textInputWrapperOnWhite}>
+                <TextInput
+                  value={user.tiktokUsername}
+                  editable={!loading}
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  onChangeText={(tiktokUsername) => changeUser({ tiktokUsername })}
+                  style={Constants.styles.textInputOnWhite}
+                  placeholder="Your Tiktok username"
+                  placeholderTextColor={Constants.colors.grayText}
+                />
+              </View>
+            </View>
+            <View style={styles.row}>
+              <Text style={Constants.styles.textInputLabelOnWhite}>Twitter</Text>
+              <View style={Constants.styles.textInputWrapperOnWhite}>
+                <TextInput
+                  value={user.twitterUsername}
+                  editable={!loading}
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  onChangeText={(twitterUsername) => changeUser({ twitterUsername })}
+                  style={Constants.styles.textInputOnWhite}
+                  placeholder="Your Twitter username"
+                  placeholderTextColor={Constants.colors.grayText}
+                />
+              </View>
+            </View>
+            <View style={styles.row}>
+              <Text style={Constants.styles.textInputLabelOnWhite}>Itch</Text>
+              <View style={Constants.styles.textInputWrapperOnWhite}>
+                <TextInput
+                  value={user.itchUsername}
+                  editable={!loading}
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  onChangeText={(itchUsername) => changeUser({ itchUsername })}
+                  style={Constants.styles.textInputOnWhite}
+                  placeholder="Your itch username"
+                  placeholderTextColor={Constants.colors.grayText}
+                />
+              </View>
+            </View>
+            <View style={styles.row}>
+              <Text style={Constants.styles.textInputLabelOnWhite}>About me</Text>
+              <View style={Constants.styles.textInputWrapperOnWhite}>
+                <AutocompleteTextInput
+                  updateCache={updateCache}
+                  style={Constants.styles.textInputOnWhite}
+                  placeholder="I like turtles"
+                  placeholderTextColor={Constants.colors.grayText}
+                  value={user.about}
+                  onChangeText={(about) => changeUser({ about })}
+                />
+              </View>
+            </View>
+          </>
+        ) : null}
       </View>
       <View style={[styles.section]}>
         {/* <View style={styles.row}>

@@ -26,6 +26,8 @@ const useProfileQuery = ({ userId }) => {
       query OwnProfile($userId: ID!, $lastModifiedBefore: Datetime) {
         me {
           isAnonymous
+          isUnder13
+          coppaStatus
           ${Constants.USER_PROFILE_FRAGMENT}
         }
         decksForUser(userId: $userId, limit: ${DECKS_PAGE_SIZE}, filter: public, lastModifiedBefore: $lastModifiedBefore) {
