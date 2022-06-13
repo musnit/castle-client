@@ -33,10 +33,13 @@ export const PendingParentConsentScreen = ({ route }) => {
     try {
       setLoading(true);
       setErrors({});
-      let result = null; // TODO: refetch coppa status
+      let result = await CoppaActions.refreshCoppaStatus();
       setLoading(false);
 
-      navigate(CoppaActions.getNextCreateAccountScreen(result));
+      if (result.coppaStatus !== coppaStatus) {
+        await setCoppaStatus(result);
+        navigate(CoppaActions.getNextCreateAccountScreen(result));
+      }
     } catch (e) {
       setLoading(false);
       setErrors(parseErrors(e));

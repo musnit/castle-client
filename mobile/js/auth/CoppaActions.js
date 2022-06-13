@@ -51,3 +51,19 @@ export const setParentInfo = async ({ childName, parentEmail }) => {
     isUnder13: true,
   };
 };
+
+export const refreshCoppaStatus = async () => {
+  const result = await apolloClient.query({
+    query: gql`
+      query {
+        me {
+          userId
+          coppaStatus
+          isUnder13
+        }
+      }
+    `,
+    fetchPolicy: 'no-cache',
+  });
+  return result?.data?.me;
+};
