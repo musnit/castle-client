@@ -10,8 +10,9 @@ export const getNextCreateAccountScreen = ({ coppaStatus }) => {
     case 'under_13_lied_in_signup':
       return 'ChooseBirthdayScreen';
     case 'under_13_pending_parent_information':
-    case 'under_13_pending_parent_decision':
       return 'RequestParentConsentScreen';
+    case 'under_13_pending_parent_decision':
+      return 'PendingParentConsentScreen';
     case 'under_13_parent_rejected':
     case 'aged_up_pending_terms':
     default:
@@ -33,4 +34,20 @@ export const setBirthday = async (birthday) => {
     variables: { birthday },
   });
   return result.data?.setBirthday;
+};
+
+export const setParentInfo = async ({ childName, parentEmail }) => {
+  const result = await apolloClient.mutate({
+    mutation: gql`
+      mutation ($childName: String!, $parentEmail: String!) {
+        setParentInfo(childName: $childName, parentEmail: $parentEmail)
+      }
+    `,
+    variables: { childName, parentEmail },
+  });
+  // TODO: query coppa status from server
+  return {
+    coppaStatus: `under_13_pending_parent_decision`,
+    isUnder13: true,
+  };
 };

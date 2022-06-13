@@ -1,15 +1,16 @@
 import React from 'react';
-import { Linking, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { AppText as Text } from '../components/AppText';
 import { AuthButton } from './AuthButton';
 import { AuthScreenLayout } from './AuthScreenLayout';
 import { Announcement } from './Announcement';
 import { AuthTextInput } from './AuthTextInput';
-import { parseSignupErrors } from './AuthErrors';
+import { parseErrors } from './AuthErrors';
 import { useNavigation } from '../ReactNavigation';
 import { useSession } from '../Session';
 
 import * as Constants from '../Constants';
+import * as CoppaActions from './CoppaActions';
 
 const styles = StyleSheet.create({
   paddingView: {
@@ -24,8 +25,8 @@ const styles = StyleSheet.create({
 });
 
 export const RequestParentConsentScreen = ({ route }) => {
-  useNavigation();
-  const { signUpAsync } = useSession();
+  const { navigate } = useNavigation();
+  const { userId: signedInUserId, coppaStatus, setCoppaStatus } = useSession();
 
   const [childName, setChildName] = React.useState('');
   const [parentEmail, setParentEmail] = React.useState('');
@@ -39,19 +40,34 @@ export const RequestParentConsentScreen = ({ route }) => {
     try {
       setLoading(true);
       setErrors({});
-      let result = null; // TODO: submit parent info
+      let result = await CoppaActions.setParentInfo({ childName, parentEmail });
+      await setCoppaStatus({ ...result, userId: signedInUserId });
       setLoading(false);
 
-      if (result.user) {
-        // TODO: navigate to next step
-      } else if (result.errors) {
-        setErrors(result.errors);
-      }
+      navigate(CoppaActions.getNextCreateAccountScreen(result));
     } catch (e) {
       setLoading(false);
-      setErrors(parseSignupErrors(e));
+      // TODO: detect specific error for double submitting info,
+      // otherwise reject
+      if (
+        e.message === 'Not under 13 and pending parent information' ||
+        (e.graphQLErrors && e.graphQLErrors[0].extensions?.code === 'INVALID_COPPA_STATUS')
+      ) {
+        navigate(CoppaActions.getNextCreateAccountScreen({ coppaStatus }));
+      } else {
+        setErrors(parseErrors(e));
+      }
     }
-  }, [setLoading, setErrors, signUpAsync, parentEmail, childName]);
+  }, [
+    setLoading,
+    setErrors,
+    parentEmail,
+    childName,
+    navigate,
+    signedInUserId,
+    coppaStatus,
+    setCoppaStatus,
+  ]);
 
   return (
     <AuthScreenLayout>
