@@ -36,7 +36,7 @@ export const PendingParentConsentScreen = ({ route }) => {
       let result = await CoppaActions.refreshCoppaStatus();
       setLoading(false);
 
-      if (result.coppaStatus !== coppaStatus) {
+      if (result.coppaStatus !== `under_13_pending_parent_decision`) {
         await setCoppaStatus(result);
         navigate(CoppaActions.getNextCreateAccountScreen(result));
       }

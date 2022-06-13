@@ -40,16 +40,16 @@ export const setParentInfo = async ({ childName, parentEmail }) => {
   const result = await apolloClient.mutate({
     mutation: gql`
       mutation ($childName: String!, $parentEmail: String!) {
-        setParentInfo(childName: $childName, parentEmail: $parentEmail)
+        setParentInfo(childName: $childName, parentEmail: $parentEmail) {
+          userId
+          coppaStatus
+          isUnder13
+        }
       }
     `,
     variables: { childName, parentEmail },
   });
-  // TODO: query coppa status from server
-  return {
-    coppaStatus: `under_13_pending_parent_decision`,
-    isUnder13: true,
-  };
+  return result?.data?.setParentInfo;
 };
 
 export const refreshCoppaStatus = async () => {

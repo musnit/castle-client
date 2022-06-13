@@ -41,19 +41,19 @@ export const RequestParentConsentScreen = ({ route }) => {
       setLoading(true);
       setErrors({});
       let result = await CoppaActions.setParentInfo({ childName, parentEmail });
-      await setCoppaStatus({ ...result, userId: signedInUserId });
+      await setCoppaStatus(result);
       setLoading(false);
 
       navigate(CoppaActions.getNextCreateAccountScreen(result));
     } catch (e) {
       setLoading(false);
-      // TODO: detect specific error for double submitting info,
-      // otherwise reject
       if (
-        e.message === 'Not under 13 and pending parent information' ||
-        (e.graphQLErrors && e.graphQLErrors[0].extensions?.code === 'INVALID_COPPA_STATUS')
+        e.message === 'Parent info already set' ||
+        (e.graphQLErrors && e.graphQLErrors[0].extensions?.code === 'PARENT_INFO_ALREADY_SET')
       ) {
-        navigate(CoppaActions.getNextCreateAccountScreen({ coppaStatus }));
+        const newStatus = `under_13_pending_parent_decision`;
+        await setCoppaStatus({ coppaStatus: newStatus });
+        navigate(CoppaActions.getNextCreateAccountScreen({ coppaStatus: newStatus }));
       } else {
         setErrors(parseErrors(e));
       }
