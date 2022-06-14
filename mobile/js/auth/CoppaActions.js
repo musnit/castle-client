@@ -14,6 +14,7 @@ export const getNextCreateAccountScreen = ({ coppaStatus }) => {
     case 'under_13_pending_parent_decision':
       return 'PendingParentConsentScreen';
     case 'under_13_parent_rejected':
+      return 'ParentRejectedScreen';
     case 'aged_up_pending_terms':
     default:
       throw new Error('unimplemented');

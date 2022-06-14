@@ -29,6 +29,7 @@ import { ForgotPasswordScreen } from './auth/ForgotPasswordScreen';
 import { InitialAuthScreen } from './auth/InitialAuthScreen';
 import { LoginScreen } from './auth/LoginScreen';
 import { PendingParentConsentScreen } from './auth/PendingParentConsentScreen';
+import { ParentRejectedScreen } from './auth/ParentRejectedScreen';
 import { RequestParentConsentScreen } from './auth/RequestParentConsentScreen';
 
 import createTopTabNavigator from './navigator/createTopTabNavigator';
@@ -405,6 +406,11 @@ const AuthNavigator = () => (
       name="PendingParentConsentScreen"
       component={PendingParentConsentScreen}
       options={{ title: `Waiting for permission` }}
+    />
+    <Stack.Screen
+      name="ParentRejectedScreen"
+      component={ParentRejectedScreen}
+      options={{ title: `Unable to sign up` }}
     />
     <Stack.Screen
       name="CreateAccountScreen"
