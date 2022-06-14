@@ -53,10 +53,19 @@ export const PendingParentConsentScreen = ({ route }) => {
       await CoppaActions.resendParentEmail();
       setTimeout(() => setLoading(false), 1000);
     } catch (e) {
-      // TODO: catch throttled email error
+      const errors = parseErrors(e);
+      const code = errors?.length ? errors[0].extensions?.code : null;
+      if (
+        code === 'PARENT_EMAIL_CONFIRMATION_TOO_SOON' ||
+        code === 'PARENT_EMAIL_CONFIRMATION_TOO_MANY'
+      ) {
+        setErrors({
+          global: errors[0].message,
+        });
+      }
       setLoading(false);
     }
-  }, [setLoading]);
+  }, [setLoading, setErrors]);
 
   return (
     <AuthScreenLayout>
