@@ -362,7 +362,12 @@ const InitialAuthNavigator = () => (
 const makeModalHeaderStyles = ({ navigation }) => ({
   headerTintColor: '#fff',
   headerLeft: () => (
-    <Constants.CastleIcon name="close" size={24} color="#fff" onPress={() => navigation.pop()} />
+    <Constants.CastleIcon
+      name="close"
+      size={24}
+      color="#fff"
+      onPress={() => navigation.getParent().goBack()}
+    />
   ),
   headerTitleAlign: 'center',
   headerStyle: {
