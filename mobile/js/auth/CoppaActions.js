@@ -52,6 +52,15 @@ export const setParentInfo = async ({ childName, parentEmail }) => {
   return result?.data?.setParentInfo;
 };
 
+export const resendParentEmail = () =>
+  apolloClient.mutate({
+    mutation: gql`
+      mutation {
+        resendParentEmail
+      }
+    `,
+  });
+
 export const refreshCoppaStatus = async () => {
   const result = await apolloClient.query({
     query: gql`

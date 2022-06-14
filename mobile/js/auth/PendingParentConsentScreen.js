@@ -20,11 +20,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlign: 'center',
   },
+  resendEmail: { color: Constants.colors.grayText, fontSize: 16 },
 });
 
 export const PendingParentConsentScreen = ({ route }) => {
   const { navigate } = useNavigation();
-  const { coppaStatus, setCoppaStatus } = useSession();
+  const { setCoppaStatus } = useSession();
 
   const [loading, setLoading] = React.useState(false);
   const [errors, setErrors] = React.useState({});
@@ -44,7 +45,18 @@ export const PendingParentConsentScreen = ({ route }) => {
       setLoading(false);
       setErrors(parseErrors(e));
     }
-  }, [setLoading, setErrors, navigate, coppaStatus, setCoppaStatus]);
+  }, [setLoading, setErrors, navigate, setCoppaStatus]);
+
+  const onPressResend = React.useCallback(async () => {
+    try {
+      setLoading(true);
+      await CoppaActions.resendParentEmail();
+      setTimeout(() => setLoading(false), 1000);
+    } catch (e) {
+      // TODO: catch throttled email error
+      setLoading(false);
+    }
+  }, [setLoading]);
 
   return (
     <AuthScreenLayout>
@@ -55,6 +67,9 @@ export const PendingParentConsentScreen = ({ route }) => {
       </Text>
       <TouchableOpacity onPress={onSubmit}>
         <AuthButton text="Refresh" spinner={loading} />
+      </TouchableOpacity>
+      <TouchableOpacity disabled={loading} onPress={onPressResend}>
+        <Text style={[styles.resendEmail, loading ? { opacity: 0.5 } : null]}>Resend email</Text>
       </TouchableOpacity>
     </AuthScreenLayout>
   );
