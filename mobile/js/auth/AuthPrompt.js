@@ -103,7 +103,7 @@ export const AuthPrompt = ({ title, message, referringScreen, hideLogin }) => {
       // use separate root navigator on Android
       navigate(nextAuthScreen, { referringScreen }, { isFullscreen: true });
     }
-  }, [navigate]);
+  }, [navigate, coppaStatus]);
 
   return (
     <SafeAreaView style={styles.container}>
