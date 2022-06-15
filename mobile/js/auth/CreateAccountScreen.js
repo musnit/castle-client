@@ -35,7 +35,7 @@ const maybeOpenURL = (url) => {
 
 export const CreateAccountScreen = ({ route }) => {
   useNavigation();
-  const { signUpAsync, validateSignupAsync } = useSession();
+  const { signUpAsync, validateSignupAsync, isUnder13 } = useSession();
 
   const [username, setUsername] = React.useState('');
   const [email, setEmail] = React.useState('');
@@ -161,24 +161,27 @@ export const CreateAccountScreen = ({ route }) => {
       <TouchableOpacity onPress={onPressCreateAccount}>
         <AuthButton text="Create Account" spinner={creatingAccount} />
       </TouchableOpacity>
-      <View>
-        <Text style={styles.finePrint}>
-          By clicking "Create Account," you are agreeing to Castle's&nbsp;
-          <Text
-            style={{ fontWeight: 'bold' }}
-            onPress={() => maybeOpenURL('https://castle.xyz/privacy_policy')}>
-            privacy policy
+      {/* Dont show terms here if under 13, because their parent already consented to the u13 privacy and terms if they reached this screen. */}
+      {!isUnder13 ? (
+        <View>
+          <Text style={styles.finePrint}>
+            By pressing "Create Account," you are agreeing to Castle's&nbsp;
+            <Text
+              style={{ fontWeight: 'bold' }}
+              onPress={() => maybeOpenURL('https://castle.xyz/privacy_policy')}>
+              privacy policy
+            </Text>
+            &nbsp;and
+            <Text
+              style={{ fontWeight: 'bold' }}
+              onPress={() => maybeOpenURL('https://castle.xyz/terms')}>
+              {' '}
+              terms of service
+            </Text>
+            .
           </Text>
-          &nbsp;and
-          <Text
-            style={{ fontWeight: 'bold' }}
-            onPress={() => maybeOpenURL('https://castle.xyz/terms')}>
-            {' '}
-            terms of service
-          </Text>
-          .
-        </Text>
-      </View>
+        </View>
+      ) : null}
     </AuthScreenLayout>
   );
 };
