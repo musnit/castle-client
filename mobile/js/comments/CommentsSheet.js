@@ -25,7 +25,7 @@ const needsTabBarHeightAndroid = ({ isFullScreen }) => {
 };
 
 export const CommentsSheet = ({ isOpen, onClose, deck, isFullScreen, ...props }) => {
-  const { isAnonymous } = useSession();
+  const { isAnonymous, isUnder13 } = useSession();
   const navigation = useNavigation();
   const [newComment, setNewComment] = React.useState(null);
   const tabBarVisible = getIsTabBarVisible({ navigation });
@@ -45,6 +45,9 @@ export const CommentsSheet = ({ isOpen, onClose, deck, isFullScreen, ...props })
   );
 
   const [replyingToComment, setReplyingToComment] = React.useState();
+
+  console.log(`is under 13? ${isUnder13}`);
+  const canPostComments = !isAnonymous && isOpen && deck?.commentsEnabled && !isUnder13;
 
   const [addComment] = useMutation(
     gql`
@@ -100,7 +103,7 @@ export const CommentsSheet = ({ isOpen, onClose, deck, isFullScreen, ...props })
         newComment={newComment}
         {...props}
       />
-      {!isAnonymous && isOpen && deck?.commentsEnabled ? (
+      {canPostComments ? (
         <CommentInput
           onAddComment={onAddComment}
           replyingToComment={replyingToComment}
